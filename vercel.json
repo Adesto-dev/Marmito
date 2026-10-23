@@ -1,18 +1,6 @@
 {
-  "functions": {
-    "api/create-checkout.js": { "memory": 128, "maxDuration": 10 },
-    "api/stripe-webhook.js": { "memory": 128, "maxDuration": 10 }
-  },
   "routes": [
-    {
-      "src": "/api/stripe-webhook",
-      "dest": "/api/stripe-webhook.js",
-      "methods": ["POST"]
-    },
-    {
-      "src": "/api/create-checkout",
-      "dest": "/api/create-checkout.js",
-      "methods": ["POST", "OPTIONS"]
-    }
+    { "src": "/api/stripe-webhook", "dest": "/api/stripe-webhook.js", "methods": ["POST"] },
+    { "src": "/api/create-checkout", "dest": "/api/create-checkout.js", "methods": ["POST", "OPTIONS"] }
   ]
 }
