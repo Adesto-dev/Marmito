@@ -103,8 +103,9 @@
     .result-body{background:var(--card-bg);padding:18px;display:flex;flex-direction:column;gap:14px}
     .result-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);margin-bottom:9px}
     .ingredient-list{display:flex;flex-wrap:wrap;gap:5px}
-    .ingredient-pill{background:var(--green-light);color:var(--green);border-radius:6px;padding:4px 9px;font-size:13px;font-weight:500}
-    @media(prefers-color-scheme:dark){.ingredient-pill{color:#7DB8A0}}
+    .ingredient-pill{background:var(--green-light);color:var(--green);border-radius:6px;padding:4px 9px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:5px}
+    .ing-qty{font-size:11px;font-weight:700;color:var(--accent);background:rgba(212,112,10,0.12);border-radius:4px;padding:1px 5px;letter-spacing:0.02em;flex-shrink:0}
+    @media(prefers-color-scheme:dark){.ingredient-pill{color:#7DB8A0}.ing-qty{background:rgba(232,132,42,0.18);color:var(--accent-dark)}}
     .steps{display:flex;flex-direction:column}
     .step{display:flex;gap:10px;align-items:flex-start;padding:10px 8px 10px 0;border-radius:10px;transition:background 0.2s;position:relative}
     .step:not(:last-child)::after{content:"";position:absolute;left:17px;top:40px;width:2px;height:calc(100% - 28px);background:var(--border);border-radius:1px}
@@ -307,17 +308,151 @@
     .btn-profile-close{padding:12px;background:none;color:var(--fg2);border:none;font-family:inherit;font-size:14px;cursor:pointer;text-decoration:underline}
     .btn-profile-icon{background:none;border:none;cursor:pointer;color:rgba(250,250,245,0.75);font-size:18px;padding:4px;line-height:1}
     .btn-profile-icon:hover{color:#fff}
+
+    /* ===== HAMBURGER BUTTON ===== */
+    .btn-hamburger{background:none;border:none;cursor:pointer;color:rgba(250,250,245,0.85);padding:6px;display:flex;flex-direction:column;gap:5px;justify-content:center;align-items:center;border-radius:8px;transition:background 0.15s}
+    .btn-hamburger:hover{background:rgba(250,250,245,0.1)}
+    .btn-hamburger span{display:block;width:22px;height:2px;background:currentColor;border-radius:2px;transition:all 0.2s}
+
+    /* ===== LEFT DRAWER (MENU) ===== */
+    .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:300;display:none;pointer-events:none;transition:background 0.25s}
+    .drawer-overlay.open{display:block;background:rgba(0,0,0,0.55);pointer-events:all}
+    .drawer{position:fixed;top:0;left:-290px;width:280px;height:100vh;background:var(--card-bg);z-index:301;display:flex;flex-direction:column;box-shadow:4px 0 24px rgba(0,0,0,0.2);transition:left 0.28s cubic-bezier(.4,0,.2,1);overflow-y:auto}
+    .drawer.open{left:0}
+
+    .drawer-top{background:var(--green);padding:20px 20px 16px;flex-shrink:0}
+    .drawer-logo{font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:22px;color:#FAFAF5;letter-spacing:-0.5px;margin-bottom:14px}
+    .drawer-logo span{color:var(--accent)}
+    .drawer-user{background:rgba(250,250,245,0.1);border-radius:12px;padding:12px 14px;display:none}
+    .drawer-user.show{display:block}
+    .drawer-user-email{font-size:12px;color:rgba(250,250,245,0.7);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .drawer-user-plan{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;letter-spacing:0.04em}
+    .drawer-user-plan.free{background:rgba(250,250,245,0.15);color:rgba(250,250,245,0.8)}
+    .drawer-user-plan.pro{background:var(--accent);color:#fff}
+    .drawer-user-count{font-size:11px;color:rgba(250,250,245,0.55);margin-top:6px}
+
+    .drawer-nav{flex:1;padding:10px 0}
+    .drawer-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--fg2);padding:14px 20px 6px;opacity:0.6}
+    .drawer-item{display:flex;align-items:center;gap:13px;padding:11px 20px;cursor:pointer;transition:background 0.12s;border:none;background:none;width:100%;text-align:left;font-family:inherit;font-size:14px;font-weight:500;color:var(--fg);text-decoration:none}
+    .drawer-item:hover{background:var(--accent-light);color:var(--accent)}
+    .drawer-item-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0;line-height:1}
+    .drawer-item-text{flex:1}
+    .drawer-item-badge{font-size:10px;font-weight:700;background:var(--accent);color:#fff;border-radius:10px;padding:2px 7px}
+    .drawer-divider{height:1px;background:var(--border);margin:6px 16px}
+    .drawer-item.pro-cta{background:var(--accent-light);margin:8px 12px;border-radius:10px;padding:11px 14px;width:calc(100% - 24px)}
+    .drawer-item.pro-cta .drawer-item-icon{color:var(--accent)}
+    .drawer-item.pro-cta .drawer-item-text{color:var(--accent);font-weight:700}
+    .drawer-item.manage-cta{background:var(--green-light);margin:8px 12px;border-radius:10px;padding:11px 14px;width:calc(100% - 24px)}
+    .drawer-item.manage-cta .drawer-item-icon{color:var(--green)}
+    .drawer-item.manage-cta .drawer-item-text{color:var(--green);font-weight:700}
+    .drawer-item.danger{color:#C0392B}
+    .drawer-item.danger:hover{background:#FEE}
+    .drawer-bottom{padding:10px 0 24px;border-top:1px solid var(--border);flex-shrink:0}
+    @media(prefers-color-scheme:dark){
+      .drawer-item.danger{color:#E55;}
+      .drawer-item.danger:hover{background:rgba(200,50,50,0.1)}
+    }
+
+    /* ===== ABOUT MODAL ===== */
+    .about-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;display:none;align-items:flex-end;justify-content:center}
+    .about-overlay.open{display:flex}
+    .about-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;max-height:88vh;overflow-y:auto;padding:28px 22px 44px}
+    .about-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 22px}
+    .about-logo{font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:26px;color:var(--green);letter-spacing:-0.5px;margin-bottom:4px}
+    .about-logo span{color:var(--accent)}
+    .about-tagline{font-size:13px;color:var(--fg2);margin-bottom:24px}
+    .about-section{margin-bottom:22px}
+    .about-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:var(--fg2);margin-bottom:10px}
+    .about-text{font-size:14px;line-height:1.65;color:var(--fg)}
+    .about-regions{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+    .about-region-item{display:flex;align-items:flex-start;gap:10px;background:var(--bg);border-radius:10px;padding:10px 12px;border:1px solid var(--border)}
+    .about-region-flag{font-size:20px;flex-shrink:0;line-height:1.3}
+    .about-region-body{}
+    .about-region-name{font-size:13px;font-weight:700;color:var(--fg)}
+    .about-region-desc{font-size:12px;color:var(--fg2);margin-top:2px}
+    .about-steps{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+    .about-step{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--fg)}
+    .about-step-num{width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .about-contact-form{display:flex;flex-direction:column;gap:10px}
+    .about-field{display:flex;flex-direction:column;gap:5px}
+    .about-field label{font-size:12px;font-weight:600;color:var(--fg2);text-transform:uppercase;letter-spacing:0.06em}
+    .about-field input,.about-field textarea{border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:14px;color:var(--fg);background:var(--bg);outline:none;transition:border-color 0.15s;resize:none}
+    .about-field input:focus,.about-field textarea:focus{border-color:var(--accent)}
+    .about-field textarea{min-height:90px}
+    .about-submit{padding:12px;background:var(--green);color:#fff;border:none;border-radius:11px;font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:15px;cursor:pointer;transition:background 0.15s;margin-top:4px}
+    .about-submit:hover{background:var(--green-mid)}
+    .about-submit:disabled{opacity:0.5;cursor:not-allowed}
+    .about-success{text-align:center;padding:18px;background:var(--green-light);border-radius:12px;color:var(--green);font-weight:600;font-size:14px;display:none}
+    .about-success.show{display:block}
+    .about-close{margin-top:22px;padding:12px;background:none;color:var(--fg2);border:none;font-family:inherit;font-size:14px;cursor:pointer;text-decoration:underline;width:100%}
   </style>
 </head>
 <body>
 <header class="header">
+  <button class="btn-hamburger" onclick="openDrawer()" title="Menu" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
   <div class="logo">Marm<span>i</span>to</div>
   <div class="header-actions">
     <span class="recipe-count" id="rc"></span>
-    <button class="btn-profile-icon" onclick="openProfile()" title="Mon profil">&#128100;</button>
     <button class="fav-toggle" id="fav-toggle" onclick="toggleFavPanel()" title="Mes favoris">&#9825;</button>
   </div>
 </header>
+
+<!-- DRAWER MENU -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-top">
+    <div class="drawer-logo">Marm<span>i</span>to</div>
+    <div class="drawer-user" id="drawer-user">
+      <div class="drawer-user-email" id="drawer-email"></div>
+      <span class="drawer-user-plan" id="drawer-plan-badge"></span>
+      <div class="drawer-user-count" id="drawer-count"></div>
+    </div>
+  </div>
+
+  <div class="drawer-nav">
+    <div class="drawer-section-label">Navigation</div>
+    <button class="drawer-item" onclick="drawerAction('home')">
+      <span class="drawer-item-icon">&#127968;</span>
+      <span class="drawer-item-text">Accueil</span>
+    </button>
+    <button class="drawer-item" onclick="drawerAction('favs')">
+      <span class="drawer-item-icon">&#10084;&#65039;</span>
+      <span class="drawer-item-text">Mes favoris</span>
+    </button>
+    <button class="drawer-item" onclick="drawerAction('history')">
+      <span class="drawer-item-icon">&#128203;</span>
+      <span class="drawer-item-text">Mon historique</span>
+    </button>
+    <button class="drawer-item" onclick="drawerAction('profile')">
+      <span class="drawer-item-icon">&#128100;</span>
+      <span class="drawer-item-text">Mon profil</span>
+    </button>
+
+    <div class="drawer-divider"></div>
+    <div class="drawer-section-label">Abonnement</div>
+    <div id="drawer-sub-cta"></div>
+
+    <div class="drawer-divider"></div>
+    <div class="drawer-section-label">Aide</div>
+    <a class="drawer-item" href="mailto:support@marmito.app">
+      <span class="drawer-item-icon">&#128140;</span>
+      <span class="drawer-item-text">Nous contacter</span>
+    </a>
+    <button class="drawer-item" onclick="drawerAction('about')">
+      <span class="drawer-item-icon">&#8505;&#65039;</span>
+      <span class="drawer-item-text">&#192; propos de Marmito</span>
+    </button>
+  </div>
+
+  <div class="drawer-bottom" id="drawer-bottom">
+    <button class="drawer-item danger" onclick="drawerAction('logout')">
+      <span class="drawer-item-icon">&#128682;</span>
+      <span class="drawer-item-text">Se d&#233;connecter</span>
+    </button>
+  </div>
+</nav>
 <div class="toast" id="toast"></div>
 <main class="main">
   <div class="tagline">
@@ -462,6 +597,83 @@
     <button class="btn-profile-close" onclick="closeProfile()">Fermer</button>
   </div>
 </div>
+
+<!-- ABOUT MODAL -->
+<div class="about-overlay" id="about-overlay" onclick="if(event.target===this)closeAbout()">
+  <div class="about-sheet">
+    <div class="about-handle"></div>
+    <div class="about-logo">Marm<span>i</span>to</div>
+    <div class="about-tagline">Des recettes vraies, un chrono int&eacute;gr&eacute;, z&eacute;ro pub.</div>
+
+    <div class="about-section">
+      <div class="about-section-title">C&rsquo;est quoi</div>
+      <div class="about-text">
+        Un g&eacute;n&eacute;rateur de recettes fait pour les cuisines qu&rsquo;on voit rarement dans les apps habituelles.
+        Tu choisis ce que t&rsquo;as dans le frigo ou le type de repas que tu veux — Marmito te sort une recette avec les quantit&eacute;s
+        et un chrono &eacute;tape par &eacute;tape. Pas de scroll infini, pas de blog &agrave; lire avant d&rsquo;arriver aux ingr&eacute;dients.
+      </div>
+    </div>
+
+    <div class="about-section">
+      <div class="about-section-title">Ce qu&rsquo;on couvre</div>
+      <div class="about-regions">
+        <div class="about-region-item">
+          <div class="about-region-flag">🌍</div>
+          <div class="about-region-body">
+            <div class="about-region-name">Afrique subsaharienne</div>
+            <div class="about-region-desc">S&eacute;n&eacute;gal, Cameroun, C&ocirc;te d&rsquo;Ivoire, Nigeria, Congo, Mali&hellip;</div>
+          </div>
+        </div>
+        <div class="about-region-item">
+          <div class="about-region-flag">🇲🇦</div>
+          <div class="about-region-body">
+            <div class="about-region-name">Maghreb</div>
+            <div class="about-region-desc">Maroc, Alg&eacute;rie, Tunisie — couscous, tajines, chorba&hellip;</div>
+          </div>
+        </div>
+        <div class="about-region-item">
+          <div class="about-region-flag">🍁</div>
+          <div class="about-region-body">
+            <div class="about-region-name">Qu&eacute;bec &amp; international</div>
+            <div class="about-region-desc">Les classiques d&rsquo;ici et quelques recettes du reste du monde.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-section">
+      <div class="about-section-title">Comment &ccedil;a marche</div>
+      <div class="about-steps">
+        <div class="about-step"><div class="about-step-num">1</div>Tu entres tes ingr&eacute;dients ou tu choisis un type de repas.</div>
+        <div class="about-step"><div class="about-step-num">2</div>Marmito te g&eacute;n&egrave;re une recette avec quantit&eacute;s et &eacute;tapes.</div>
+        <div class="about-step"><div class="about-step-num">3</div>Tu lances le chrono directement depuis l&rsquo;&eacute;cran — pas besoin de regarder ta montre.</div>
+      </div>
+    </div>
+
+    <div class="about-section">
+      <div class="about-section-title">Nous &eacute;crire</div>
+      <div class="about-success" id="contact-success">&#10003;&nbsp; Message envoy&eacute;&nbsp;! On te r&eacute;pond bient&ocirc;t.</div>
+      <form class="about-contact-form" id="contact-form" onsubmit="submitContact(event)">
+        <div class="about-field">
+          <label>Ton nom</label>
+          <input type="text" name="name" placeholder="Marie Tremblay" required>
+        </div>
+        <div class="about-field">
+          <label>Ton courriel</label>
+          <input type="email" name="email" placeholder="marie@exemple.com" required>
+        </div>
+        <div class="about-field">
+          <label>Message</label>
+          <textarea name="message" placeholder="Une question, un bug, une recette &agrave; ajouter..." required></textarea>
+        </div>
+        <button type="submit" class="about-submit" id="contact-btn">Envoyer</button>
+      </form>
+    </div>
+
+    <button class="about-close" onclick="closeAbout()">Fermer</button>
+  </div>
+</div>
+
 <script>
 
   // ===== SUPABASE AUTH =====
@@ -543,10 +755,12 @@
   }
 
   async function saveRecipeToHistory(title, region) {
-    if (!currentUser) return;
+    if (!currentUser) { console.warn('[Marmito] saveRecipe: pas de currentUser'); return; }
     try {
-      await sb.from('recipes').insert({ user_id: currentUser.id, title, region: region || '' });
-    } catch(e) {}
+      const { data, error } = await sb.from('recipes').insert({ user_id: currentUser.id, title, region: region || '' });
+      if (error) console.error('[Marmito] saveRecipe erreur:', error.message, error.details, error.hint);
+      else console.log('[Marmito] saveRecipe OK:', title);
+    } catch(e) { console.error('[Marmito] saveRecipe exception:', e); }
   }
 
   async function openProfile() {
@@ -585,6 +799,87 @@
     if (e.target === document.getElementById('profile-overlay')) closeProfile();
   }
 
+  // ===== DRAWER MENU =====
+  function openDrawer() {
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('drawer-overlay').classList.add('open');
+    // Remplir les infos utilisateur
+    const userEl = document.getElementById('drawer-user');
+    if (currentUser) {
+      userEl.classList.add('show');
+      document.getElementById('drawer-email').textContent = currentUser.email;
+      const badge = document.getElementById('drawer-plan-badge');
+      badge.textContent = userPlan === 'pro' ? 'Marmito PRO' : 'Gratuit';
+      badge.className = 'drawer-user-plan ' + userPlan;
+      document.getElementById('drawer-count').textContent = userPlan === 'free'
+        ? recipeCount + ' / ' + FREE_LIMIT + ' recettes utilisées'
+        : recipeCount + ' recettes générées';
+      // Bouton abonnement
+      const cta = document.getElementById('drawer-sub-cta');
+      if (userPlan === 'free') {
+        cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')"><span class="drawer-item-icon">⭐</span><span class="drawer-item-text">Passer à Pro — 4.99$/mois</span></button>';
+      } else {
+        cta.innerHTML = '<button class="drawer-item manage-cta" onclick="drawerAction(\'manage\')"><span class="drawer-item-icon">⚙️</span><span class="drawer-item-text">Gérer mon abonnement</span></button>';
+      }
+      document.getElementById('drawer-bottom').style.display = 'block';
+    } else {
+      userEl.classList.remove('show');
+      document.getElementById('drawer-sub-cta').innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')"><span class="drawer-item-icon">⭐</span><span class="drawer-item-text">Passer à Pro — 4.99$/mois</span></button>';
+      document.getElementById('drawer-bottom').style.display = 'none';
+    }
+  }
+
+  function closeDrawer() {
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('drawer-overlay').classList.remove('open');
+  }
+
+  function openAbout() {
+    document.getElementById('about-overlay').classList.add('open');
+  }
+  function closeAbout() {
+    document.getElementById('about-overlay').classList.remove('open');
+  }
+
+  async function submitContact(e) {
+    e.preventDefault();
+    const btn = document.getElementById('contact-btn');
+    const form = document.getElementById('contact-form');
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours...';
+    try {
+      const res = await fetch('https://formspree.io/f/xeaaojol', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new FormData(form)
+      });
+      if (res.ok) {
+        form.style.display = 'none';
+        document.getElementById('contact-success').classList.add('show');
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Envoyer';
+        showToast('Erreur — réessaie dans un moment.');
+      }
+    } catch(err) {
+      btn.disabled = false;
+      btn.textContent = 'Envoyer';
+      showToast('Erreur réseau.');
+    }
+  }
+
+  function drawerAction(action) {
+    closeDrawer();
+    if (action === 'home') { window.scrollTo({top:0,behavior:'smooth'}); }
+    else if (action === 'favs') { setTimeout(()=>toggleFavPanel(), 200); }
+    else if (action === 'history') { setTimeout(()=>openProfile(), 200); }
+    else if (action === 'profile') { setTimeout(()=>openProfile(), 200); }
+    else if (action === 'upgrade') { setTimeout(()=>startUpgrade(), 200); }
+    else if (action === 'manage') { setTimeout(()=>manageSubscription(), 200); }
+    else if (action === 'logout') { if(confirm('Se déconnecter ?')) { sb.auth.signOut().then(()=>location.reload()); } }
+    else if (action === 'about') { setTimeout(()=>openAbout(), 200); }
+  }
+
   async function manageSubscription() {
     const { data } = await sb.from('profiles').select('stripe_customer_id').eq('id', currentUser.id).single();
     if (!data || !data.stripe_customer_id) { showToast('Aucun abonnement actif.'); return; }
@@ -620,6 +915,54 @@
   }
 
   initAuth();
+
+const qtyMap={
+  // Viandes
+  "Poulet":"1 entier","Poulet ou bœuf":"500g","Bœuf":"500g","Bœuf (faux-filet)":"400g",
+  "Viande de bœuf":"500g","Viande de mouton ou bœuf":"500g","Viande hachée":"300g",
+  "Agneau":"500g","Mouton":"600g","Merguez":"300g","Kefta":"400g","Poulet entier":"1,2kg",
+  "Cuisses de poulet":"4","Filet de poulet":"400g","Côtelettes d'agneau":"4",
+  "Poitrine d'agneau":"600g","Veau":"400g","Poulet (sans peau)":"800g",
+  // Poissons & fruits de mer
+  "Poisson":"500g","Tilapia entier":"1 (600g)","Poisson (tilapia)":"500g",
+  "Crevettes":"300g","Crevettes séchées":"30g","Crevettes fumées":"50g",
+  "Filet de cabillaud":"400g","Sardines":"8","Merlan":"400g","Thon (en boîte)":"1 boîte",
+  // Féculents
+  "Riz":"300g","Riz long":"300g","Riz brisé":"400g","Couscous":"300g","Semoule":"300g",
+  "Pâtes":"300g","Pommes de terre":"600g","Patates douces":"400g","Attiéké":"400g",
+  "Haricots blancs":"200g","Lentilles":"250g","Pois chiches":"400g (cuits)","Farine":"250g",
+  "Maïs frais ou en grains":"300g","Graines d'egusi (courge)":"150g",
+  // Légumes
+  "Oignons":"2 gros","Tomates":"3","Poivrons":"2","Ail":"3 gousses",
+  "Gingembre":"1 c.s. râpé","Piment":"1 (au goût)","Aubergines":"2",
+  "Carottes":"3","Navets":"2","Gombos":"300g","Gombo":"300g","Épinards":"200g",
+  "Bananes plantain mûres":"3","Bananes plantain":"3","Courgettes":"2",
+  "Fenouil":"1 bulbe","Céleri":"2 branches","Poireaux":"2","Blettes":"1 botte",
+  "Feuilles de ndolé":"200g","Chou":"½ petit","Navet":"2","Manioc":"200g",
+  // Produits laitiers & œufs
+  "Œufs":"4","Beurre":"60g","Crème fraîche":"200ml","Lait":"250ml","Fromage râpé":"80g",
+  // Condiments & bases
+  "Cube bouillon":"2","Huile":"3 c.s.","Huile de palme":"3 c.s.",
+  "Huile de friture":"500ml","Concentré tomate":"2 c.s.","Moutarde":"2 c.s.",
+  "Harissa":"1 c.s.","Pâte d'arachide":"4 c.s.","Cacahuètes":"100g",
+  "Cacahuètes grillées moulues":"100g","Noix de palme ou huile de palme":"200ml",
+  "Sauce tomate":"200ml","Bouillon":"1L","Jus de citron":"2 c.s.",
+  // Épices & herbes
+  "Sel":"au goût","Poivre":"au goût","Cumin":"1 c.c.","Paprika":"1 c.c.",
+  "Curcuma":"1 c.c.","Cannelle":"½ c.c.","Ras el hanout":"1 c.s.",
+  "Coriandre":"1 bouquet","Persil":"1 bouquet","Menthe":"½ bouquet",
+  "Laurier":"2 feuilles","Thym":"quelques branches","Curry":"1 c.s.",
+  "Safran":"1 pincée","Cardamome":"2 gousses","Clous de girofle":"3",
+  "Piment de Cayenne":"½ c.c.","Origan":"1 c.c.","Basilic":"½ bouquet",
+  "Romarin":"1 branche","Fenouil (graines)":"1 c.c.","Anis":"1 c.c.",
+  // Agrumes & fruits
+  "Citron":"2","Olives":"100g","Olives vertes":"100g","Abricots secs":"80g",
+  "Raisins secs":"50g","Pruneaux":"80g","Dattes":"10","Figues sèches":"8",
+  // Québec & autres
+  "Sirop d'érable":"3 c.s.","Fromage en grains":"200g","Bacon":"150g",
+  "Saucisses":"4","Tourtière (pâte)":"1 abaisse","Bœuf haché":"400g",
+  "Jambon":"150g","Lardons":"150g","Pommes":"3"
+};
 
 const recipes=[// ===== AFRIQUE SUBSAHARIENNE - PLATS PRINCIPAUX =====
 {region:"Afrique subsaharienne",type:"Plat principal",title:"Poulet Yassa",ingredients:["Poulet","Oignons","Citron","Moutarde","Ail","Huile","Sel","Poivre"],steps:[{text:"Mélanger oignons, jus de citron, moutarde et ail. Faire mariner le poulet 2h.",icon:"rest",time:0},{text:"Faire dorer le poulet dans l'huile chaude de chaque côté.",icon:"fry",time:600},{text:"Retirer le poulet. Faire compoter les oignons marinés dans la même poêle.",icon:"cook",time:1200},{text:"Remettre le poulet. Ajouter un peu d'eau. Couvrir et mijoter.",icon:"cook",time:1200},{text:"Servir avec du riz blanc.",icon:"serve"}],time:"45 min",serves:"4 pers.",diff:"Facile"},
@@ -978,7 +1321,7 @@ function show(recipe){
   const isFav=favs.some(f=>f.title===recipe.title);
   fb.textContent=isFav?"❤️":"♡";
   isFav?fb.classList.add("active"):fb.classList.remove("active");
-  document.getElementById("result-ingredients").innerHTML=recipe.ingredients.map(i=>"<span class=\"ingredient-pill\">"+i+"</span>").join("");
+  document.getElementById("result-ingredients").innerHTML=recipe.ingredients.map(i=>{const q=qtyMap[i];return "<span class=\"ingredient-pill\">"+(q?"<span class=\"ing-qty\">"+q+"</span>":"")+i+"</span>";}).join("");
   document.getElementById("result-steps").innerHTML=recipe.steps.map((step,i)=>{
     const text=typeof step==="string"?step:step.text;
     const time=(typeof step==="object"&&step.time>0)?step.time:0;
