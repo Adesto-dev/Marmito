@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Marmito — Connexion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --bg:#FAFAF5;--fg:#1C1C18;--fg2:#5A5A50;
+  --accent:#D4700A;--accent-light:#FDF0E0;
+  --green:#1E4035;--green-light:#E4EDE9;
+  --border:#DDDDD0;--card-bg:#FFFFFF;
+  --shadow:0 4px 24px rgba(30,64,53,0.12);
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#141410;--fg:#F0F0E8;--fg2:#9A9A8A;
+    --accent:#E8820F;--accent-light:#2A1F0A;
+    --green:#2A5444;--green-light:#1A2E25;
+    --border:#2E2E28;--card-bg:#1E1E1A;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+.logo{font-family:'Fraunces',serif;font-size:2rem;color:var(--green);margin-bottom:8px;text-align:center}
+.logo span{color:var(--accent)}
+.tagline{color:var(--fg2);font-size:0.9rem;text-align:center;margin-bottom:32px}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:420px;box-shadow:var(--shadow)}
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:24px}
+.tab{flex:1;padding:10px;text-align:center;font-size:0.95rem;font-weight:600;cursor:pointer;color:var(--fg2);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s}
+.tab.active{color:var(--green);border-bottom-color:var(--green)}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:0.85rem;font-weight:500;color:var(--fg2);margin-bottom:6px}
+.field input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit;background:var(--bg);color:var(--fg);outline:none;transition:border-color 0.2s}
+.field input:focus{border-color:var(--green)}
+.btn-primary{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;font-family:inherit;cursor:pointer;transition:background 0.2s;margin-top:4px}
+.btn-primary:hover{background:#2A5444}
+.btn-primary:disabled{opacity:0.6;cursor:not-allowed}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--fg2);font-size:0.85rem}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--border)}
+.btn-google{width:100%;padding:12px;background:var(--card-bg);border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-weight:500;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--fg);transition:border-color 0.2s}
+.btn-google:hover{border-color:var(--green)}
+.btn-google svg{width:20px;height:20px;flex-shrink:0}
+.msg{padding:10px 14px;border-radius:8px;font-size:0.9rem;margin-bottom:16px;display:none}
+.msg.error{background:#FEE;color:#C00;display:block}
+.msg.success{background:#E8F5E9;color:#2D7A4E;display:block}
+.footer-note{text-align:center;font-size:0.8rem;color:var(--fg2);margin-top:20px}
+.footer-note a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="logo">Marmi<span>to</span></div>
+<p class="tagline">Cuisines du monde, une recette a la fois</p>
+
+<div class="card">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('login')">Connexion</div>
+    <div class="tab" onclick="switchTab('signup')">Inscription</div>
+  </div>
+
+  <div id="msg" class="msg"></div>
+
+  <div id="login-form">
+    <div class="field">
+      <label>Adresse courriel</label>
+      <input type="email" id="login-email" placeholder="vous@exemple.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Mot de passe</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-primary" id="btn-login" onclick="doLogin()">Se connecter</button>
+  </div>
+
+  <div id="signup-form" style="display:none">
+    <div class="field">
+      <label>Adresse courriel</label>
+      <input type="email" id="signup-email" placeholder="vous@exemple.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Mot de passe (8 caracteres min.)</label>
+      <input type="password" id="signup-pass" placeholder="••••••••" autocomplete="new-password">
+    </div>
+    <button class="btn-primary" id="btn-signup" onclick="doSignup()">Creer mon compte</button>
+  </div>
+
+  <div class="divider">ou</div>
+
+  <button class="btn-google" onclick="doGoogle()">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+    </svg>
+    Continuer avec Google
+  </button>
+</div>
+
+<p class="footer-note">En vous inscrivant, vous acceptez nos <a href="#">conditions d'utilisation</a>.</p>
+
+<script>
+const SUPABASE_URL = 'https://kfaabpwvisormfrwceaa.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_n8HXWNlgaJ5Ck749-k8_XQ_HsZ7-BRX';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Already logged in? Go to app
+sb.auth.getSession().then(({data:{session}})=>{
+  if(session) window.location.href='/';
+});
+
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===(tab==='login'?0:1)));
+  document.getElementById('login-form').style.display=tab==='login'?'':'none';
+  document.getElementById('signup-form').style.display=tab==='signup'?'':'none';
+  clearMsg();
+}
+
+function showMsg(text,type){
+  const el=document.getElementById('msg');
+  el.textContent=text;
+  el.className='msg '+type;
+}
+function clearMsg(){
+  const el=document.getElementById('msg');
+  el.className='msg';
+  el.textContent='';
+}
+
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  if(!email||!pass){showMsg('Remplissez tous les champs.','error');return;}
+  const btn=document.getElementById('btn-login');
+  btn.disabled=true;btn.textContent='Connexion...';
+  const{error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){showMsg(error.message,'error');btn.disabled=false;btn.textContent='Se connecter';}
+  else window.location.href='/';
+}
+
+async function doSignup(){
+  const email=document.getElementById('signup-email').value.trim();
+  const pass=document.getElementById('signup-pass').value;
+  if(!email||!pass){showMsg('Remplissez tous les champs.','error');return;}
+  if(pass.length<8){showMsg('Le mot de passe doit avoir au moins 8 caracteres.','error');return;}
+  const btn=document.getElementById('btn-signup');
+  btn.disabled=true;btn.textContent='Creation...';
+  const{error}=await sb.auth.signUp({email,password:pass});
+  if(error){showMsg(error.message,'error');btn.disabled=false;btn.textContent='Creer mon compte';}
+  else showMsg('Compte cree! Verifiez votre courriel pour confirmer.','success');
+}
+
+async function doGoogle(){
+  const{error}=await sb.auth.signInWithOAuth({
+    provider:'google',
+    options:{redirectTo:window.location.origin+'/'}
+  });
+  if(error)showMsg(error.message,'error');
+}
+
+// Enter key support
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  const loginVisible=document.getElementById('login-form').style.display!=='none';
+  if(loginVisible)doLogin();else doSignup();
+});
+</script>
+</body>
+</html>
