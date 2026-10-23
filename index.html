@@ -413,22 +413,10 @@
 
   <div class="drawer-nav">
     <div class="drawer-section-label">Navigation</div>
-    <button class="drawer-item" onclick="drawerAction('home')">
-      <span class="drawer-item-icon">&#127968;</span>
-      <span class="drawer-item-text">Accueil</span>
-    </button>
-    <button class="drawer-item" onclick="drawerAction('favs')">
-      <span class="drawer-item-icon">&#10084;&#65039;</span>
-      <span class="drawer-item-text">Mes favoris</span>
-    </button>
-    <button class="drawer-item" onclick="drawerAction('history')">
-      <span class="drawer-item-icon">&#128203;</span>
-      <span class="drawer-item-text">Mon historique</span>
-    </button>
-    <button class="drawer-item" onclick="drawerAction('profile')">
-      <span class="drawer-item-icon">&#128100;</span>
-      <span class="drawer-item-text">Mon profil</span>
-    </button>
+    <button class="drawer-item" onclick="drawerAction('home')">Accueil</button>
+    <button class="drawer-item" onclick="drawerAction('favs')">Mes favoris</button>
+    <button class="drawer-item" onclick="drawerAction('history')">Mon historique</button>
+    <button class="drawer-item" onclick="drawerAction('profile')">Mon profil</button>
 
     <div class="drawer-divider"></div>
     <div class="drawer-section-label">Abonnement</div>
@@ -436,28 +424,19 @@
 
     <div class="drawer-divider"></div>
     <div class="drawer-section-label">Aide</div>
-    <a class="drawer-item" href="mailto:support@marmito.app">
-      <span class="drawer-item-icon">&#128140;</span>
-      <span class="drawer-item-text">Nous contacter</span>
-    </a>
-    <button class="drawer-item" onclick="drawerAction('about')">
-      <span class="drawer-item-icon">&#8505;&#65039;</span>
-      <span class="drawer-item-text">&#192; propos de Marmito</span>
-    </button>
+    <button class="drawer-item" onclick="drawerAction('contact')">Nous contacter</button>
+    <button class="drawer-item" onclick="drawerAction('about')">&#192; propos de Marmito</button>
   </div>
 
   <div class="drawer-bottom" id="drawer-bottom">
-    <button class="drawer-item danger" onclick="drawerAction('logout')">
-      <span class="drawer-item-icon">&#128682;</span>
-      <span class="drawer-item-text">Se d&#233;connecter</span>
-    </button>
+    <button class="drawer-item danger" onclick="drawerAction('logout')">Se d&#233;connecter</button>
   </div>
 </nav>
 <div class="toast" id="toast"></div>
 <main class="main">
   <div class="tagline">
     <h1>Qu&rsquo;est-ce qu&rsquo;on cuisine ce soir&nbsp;?</h1>
-    <p>Choisis ta cuisine &mdash; et cuisine avec le chrono int&eacute;gr&eacute;.</p>
+    <p>Choisis ta cuisine et cuisine avec le chrono int&eacute;gr&eacute;.</p>
   </div>
   <div class="fav-panel" id="fav-panel">
     <div class="fav-panel-header">
@@ -496,7 +475,7 @@
     <div class="limit-banner" id="limit-banner">
       <h3>Limite atteinte</h3>
       <p>Tu as genere tes 10 recettes gratuites du mois. Passe a Marmito Pro pour des recettes illimitees et toutes les regions.</p>
-      <button class="btn-upgrade-big" onclick="startUpgrade()">Passer a Pro — 4.99$/mois</button>
+      <button class="btn-upgrade-big" onclick="startUpgrade(this)">Passer a Pro — 4.99$/mois</button>
     </div>
 
 <div class="result-card" id="result-card">
@@ -609,7 +588,7 @@
       <div class="about-section-title">C&rsquo;est quoi</div>
       <div class="about-text">
         Un g&eacute;n&eacute;rateur de recettes fait pour les cuisines qu&rsquo;on voit rarement dans les apps habituelles.
-        Tu choisis ce que t&rsquo;as dans le frigo ou le type de repas que tu veux — Marmito te sort une recette avec les quantit&eacute;s
+        Tu choisis ce que t&rsquo;as dans le frigo ou le type de repas que tu veux, Marmito te sort une recette avec les quantit&eacute;s
         et un chrono &eacute;tape par &eacute;tape. Pas de scroll infini, pas de blog &agrave; lire avant d&rsquo;arriver aux ingr&eacute;dients.
       </div>
     </div>
@@ -628,7 +607,7 @@
           <div class="about-region-flag">🇲🇦</div>
           <div class="about-region-body">
             <div class="about-region-name">Maghreb</div>
-            <div class="about-region-desc">Maroc, Alg&eacute;rie, Tunisie — couscous, tajines, chorba&hellip;</div>
+            <div class="about-region-desc">Maroc, Alg&eacute;rie, Tunisie : couscous, tajines, chorba&hellip;</div>
           </div>
         </div>
         <div class="about-region-item">
@@ -646,7 +625,7 @@
       <div class="about-steps">
         <div class="about-step"><div class="about-step-num">1</div>Tu entres tes ingr&eacute;dients ou tu choisis un type de repas.</div>
         <div class="about-step"><div class="about-step-num">2</div>Marmito te g&eacute;n&egrave;re une recette avec quantit&eacute;s et &eacute;tapes.</div>
-        <div class="about-step"><div class="about-step-num">3</div>Tu lances le chrono directement depuis l&rsquo;&eacute;cran — pas besoin de regarder ta montre.</div>
+        <div class="about-step"><div class="about-step-num">3</div>Tu lances le chrono directement depuis l&rsquo;&eacute;cran, pas besoin de regarder ta montre.</div>
       </div>
     </div>
 
@@ -771,7 +750,7 @@
     // Actions
     const act = document.getElementById('p-actions');
     if (userPlan === 'free') {
-      act.innerHTML = '<button class="btn-profile-upgrade" onclick="startUpgrade()">Passer a Pro — 4.99$/mois</button>';
+      act.innerHTML = '<button class="btn-profile-upgrade" onclick="startUpgrade(this)">Passer a Pro — 4.99$/mois</button>';
     } else {
       act.innerHTML = '<button class="btn-profile-manage" onclick="manageSubscription()">Gerer mon abonnement</button>';
     }
@@ -817,14 +796,14 @@
       // Bouton abonnement
       const cta = document.getElementById('drawer-sub-cta');
       if (userPlan === 'free') {
-        cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')"><span class="drawer-item-icon">⭐</span><span class="drawer-item-text">Passer à Pro — 4.99$/mois</span></button>';
+        cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Pro — 4.99$/mois</button>';
       } else {
         cta.innerHTML = '<button class="drawer-item manage-cta" onclick="drawerAction(\'manage\')"><span class="drawer-item-icon">⚙️</span><span class="drawer-item-text">Gérer mon abonnement</span></button>';
       }
       document.getElementById('drawer-bottom').style.display = 'block';
     } else {
       userEl.classList.remove('show');
-      document.getElementById('drawer-sub-cta').innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')"><span class="drawer-item-icon">⭐</span><span class="drawer-item-text">Passer à Pro — 4.99$/mois</span></button>';
+      document.getElementById('drawer-sub-cta').innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Pro — 4.99$/mois</button>';
       document.getElementById('drawer-bottom').style.display = 'none';
     }
   }
@@ -878,6 +857,7 @@
     else if (action === 'manage') { setTimeout(()=>manageSubscription(), 200); }
     else if (action === 'logout') { if(confirm('Se déconnecter ?')) { sb.auth.signOut().then(()=>location.reload()); } }
     else if (action === 'about') { setTimeout(()=>openAbout(), 200); }
+    else if (action === 'contact') { setTimeout(()=>{ openAbout(); setTimeout(()=>{ document.getElementById('contact-form').scrollIntoView({behavior:'smooth'}); }, 300); }, 200); }
   }
 
   async function manageSubscription() {
@@ -889,11 +869,11 @@
     else showToast('Erreur portail Stripe.');
   }
 
-  async function startUpgrade() {
+  async function startUpgrade(btnEl) {
     if (!currentUser) return;
-    const btn = event.currentTarget;
-    const orig = btn.textContent;
-    btn.disabled = true; btn.textContent = 'Chargement...';
+    const btn = btnEl || (typeof event !== 'undefined' && event && event.currentTarget) || null;
+    const orig = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Chargement...'; }
     try {
       const res = await fetch('/api/create-checkout', {
         method: 'POST',
@@ -905,7 +885,7 @@
       window.location.href = url;
     } catch (e) {
       alert('Erreur: ' + e.message);
-      btn.disabled = false; btn.textContent = orig;
+      if (btn) { btn.disabled = false; btn.textContent = orig; }
     }
   }
 
