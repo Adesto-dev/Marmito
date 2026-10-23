@@ -59,7 +59,7 @@
     .logo{font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:24px;color:#FAFAF5;letter-spacing:-0.5px}
     .logo span{color:var(--accent)}
     .header-actions{display:flex;align-items:center;gap:10px}
-    .recipe-count{font-size:11px;font-weight:600;color:rgba(250,250,245,0.45);letter-spacing:0.04em}
+    .recipe-count{font-size:10px;font-weight:500;color:rgba(250,250,245,0.28);letter-spacing:0.03em}
     .fav-toggle{background:none;border:none;cursor:pointer;color:rgba(250,250,245,0.65);font-size:20px;padding:4px;transition:color 0.15s;line-height:1}
     .fav-toggle:hover,.fav-toggle.has-favs{color:#F4A261}
     .main{max-width:640px;margin:0 auto;padding:20px 16px 60px;display:flex;flex-direction:column;gap:14px}
@@ -395,7 +395,7 @@
   <div class="logo">Marm<span>i</span>to</div>
   <div class="header-actions">
     <span class="recipe-count" id="rc"></span>
-    <button class="fav-toggle" id="fav-toggle" onclick="toggleFavPanel()" title="Mes favoris">&#9825;</button>
+    <button class="fav-toggle" id="fav-toggle" onclick="toggleFavPanel()" title="Mes favoris"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
   </div>
 </header>
 
@@ -440,7 +440,7 @@
   </div>
   <div class="fav-panel" id="fav-panel">
     <div class="fav-panel-header">
-      <div class="fav-panel-title">&#10084;&#65039; Mes favoris</div>
+      <div class="fav-panel-title">Mes favoris</div>
       <button class="fav-clear" onclick="clearFavs()">Tout effacer</button>
     </div>
     <div class="fav-list" id="fav-list"></div>
