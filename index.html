@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Marmito — Trouve ta recette ce soir</title>
+  <meta name="description" content="Entre tes ingrédients, choisis ta cuisine, et Marmito te trouve une recette. Afrique, Maghreb, Occident, desserts et boissons.">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600&display=swap">
+  <style>
+    :root {
+      --bg: #FAFAF5;
+      --bg2: #F0EFE6;
+      --fg: #1C1C18;
+      --fg2: #5A5A50;
+      --accent: #D4700A;
+      --accent-light: #FDF0E0;
+      --accent-dark: #B35A00;
+      --green: #1E4035;
+      --green-light: #E4EDE9;
+      --border: #DDDDD0;
+      --result-bg: #FFFFFF;
+      --shadow: 0 2px 16px rgba(30,64,53,0.10);
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #141410;
+        --bg2: #1F1F18;
+        --fg: #F2F2E8;
+        --fg2: #9A9A88;
+        --accent: #E8842A;
+        --accent-light: #2A1F0A;
+        --accent-dark: #F0A050;
+        --green: #2A5444;
+        --green-light: #1A2E28;
+        --border: #2E2E24;
+        --result-bg: #1C1C18;
+        --shadow: 0 2px 20px rgba(0,0,0,0.40);
+        color-scheme: dark;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .header {
+      background: var(--green);
+      padding: 20px max(24px, env(safe-area-inset-right, 0px)) 20px max(24px, env(safe-area-inset-left, 0px));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 900;
+      font-size: 26px;
+      color: #FAFAF5;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--accent); }
+    .header-tag {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(250,250,245,0.55);
+    }
+
+    .main {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 28px max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px));
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .tagline { text-align: center; padding-block: 4px; }
+    .tagline h1 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 700;
+      font-style: italic;
+      font-size: clamp(22px, 5vw, 28px);
+      color: var(--fg);
+      text-wrap: balance;
+      line-height: 1.25;
+      margin-bottom: 6px;
+    }
+    .tagline p { font-size: 14px; color: var(--fg2); }
+
+    .card {
+      background: var(--result-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--fg2);
+      margin-bottom: 12px;
+    }
+
+    .ingredient-field {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      cursor: text;
+      transition: border-color 0.15s;
+      background: var(--bg);
+      min-height: 48px;
+    }
+    .ingredient-field:focus-within { border-color: var(--accent); }
+    .ingredient-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 6px;
+      padding: 3px 8px 3px 10px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .ingredient-tag button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 15px;
+      line-height: 1;
+      padding: 0;
+      opacity: 0.7;
+      transition: opacity 0.1s;
+    }
+    .ingredient-tag button:hover { opacity: 1; }
+    #ingredient-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--fg);
+      font-family: inherit;
+      font-size: 14px;
+      min-width: 120px;
+      flex: 1;
+    }
+    #ingredient-input::placeholder { color: var(--fg2); }
+    .input-hint { font-size: 12px; color: var(--fg2); margin-top: 7px; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--fg2);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .chip:hover { border-color: var(--accent); color: var(--accent); }
+    .chip.active { background: var(--green); border-color: var(--green); color: #FAFAF5; }
+
+    .btn-generate {
+      width: 100%;
+      padding: 15px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 700;
+      font-size: 17px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-generate:hover { background: var(--accent-dark); }
+    .btn-generate:active { transform: scale(0.98); }
+    .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .result-card {
+      border: 2px solid var(--accent);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: none;
+    }
+    .result-card.visible { display: block; }
+
+    .result-header {
+      background: var(--green);
+      padding: 18px 20px 14px;
+    }
+    .result-region {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(250,250,245,0.6);
+      margin-bottom: 5px;
+    }
+    .result-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 900;
+      font-size: clamp(20px, 4vw, 26px);
+      color: #FAFAF5;
+      line-height: 1.2;
+    }
+    .result-type {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 3px 10px;
+      background: var(--accent);
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .result-body {
+      background: var(--result-bg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .result-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .ingredient-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ingredient-pill {
+      background: var(--green-light);
+      color: var(--green);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    @media (prefers-color-scheme: dark) {
+      .ingredient-pill { color: #7DB8A0; }
+    }
+
+    .steps { display: flex; flex-direction: column; gap: 10px; }
+    .step { display: flex; gap: 12px; align-items: flex-start; }
+    .step-num {
+      flex-shrink: 0;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      font-variant-numeric: tabular-nums;
+    }
+    .step-text { font-size: 14px; color: var(--fg); line-height: 1.55; min-width: 0; }
+
+    .result-meta {
+      display: flex;
+      gap: 16px;
+      padding-top: 6px;
+      border-top: 1px solid var(--border);
+    }
+    .meta-item { display: flex; flex-direction: column; gap: 2px; }
+    .meta-label {
+      font-size: 11px;
+      color: var(--fg2);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+    .meta-value { font-size: 14px; font-weight: 600; color: var(--fg); }
+
+    .loading-dots { display: inline-flex; gap: 4px; align-items: center; }
+    .loading-dots span {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: dot-bounce 0.9s infinite ease-in-out;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes dot-bounce {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .loading-dots span { animation: none; }
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: var(--fg2);
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">Marm<span>i</span>to</div>
+  <div class="header-tag">Bêta</div>
+</header>
+
+<main class="main">
+
+  <div class="tagline">
+    <h1>Qu'est-ce qu'on cuisine ce soir ?</h1>
+    <p>Entre tes ingrédients, choisis ta cuisine, et on s'occupe du reste.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Tes ingrédients</div>
+    <div class="ingredient-field" id="ingredient-field" onclick="document.getElementById('ingredient-input').focus()">
+      <span class="ingredient-tag">Poulet<button onclick="removeTag(this)" aria-label="Retirer">×</button></span>
+      <span class="ingredient-tag">Tomate<button onclick="removeTag(this)" aria-label="Retirer">×</button></span>
+      <span class="ingredient-tag">Oignon<button onclick="removeTag(this)" aria-label="Retirer">×</button></span>
+      <input id="ingredient-input" type="text" placeholder="Ajouter un ingrédient..." autocomplete="off">
+    </div>
+    <p class="input-hint">Appuie sur <strong>Entrée</strong> ou <strong>virgule</strong> pour ajouter un ingrédient.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Type de cuisine</div>
+    <div class="chips">
+      <button class="chip active" data-group="cuisine" onclick="selectChip(this)">Toutes</button>
+      <button class="chip" data-group="cuisine" onclick="selectChip(this)">Afrique subsaharienne</button>
+      <button class="chip" data-group="cuisine" onclick="selectChip(this)">Maghreb</button>
+      <button class="chip" data-group="cuisine" onclick="selectChip(this)">Occidentale</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Type de repas</div>
+    <div class="chips">
+      <button class="chip active" data-group="type" onclick="selectChip(this)">Plat principal</button>
+      <button class="chip" data-group="type" onclick="selectChip(this)">Dessert</button>
+      <button class="chip" data-group="type" onclick="selectChip(this)">Boisson</button>
+      <button class="chip" data-group="type" onclick="selectChip(this)">Tout</button>
+    </div>
+  </div>
+
+  <button class="btn-generate" id="gen-btn" onclick="generateRecipe()">
+    Trouver une recette
+  </button>
+
+  <div class="result-card" id="result-card">
+    <div class="result-header">
+      <div class="result-region" id="result-region"></div>
+      <div class="result-title" id="result-title"></div>
+      <span class="result-type" id="result-type"></span>
+    </div>
+    <div class="result-body">
+      <div>
+        <div class="result-section-title">Ingrédients</div>
+        <div class="ingredient-list" id="result-ingredients"></div>
+      </div>
+      <div>
+        <div class="result-section-title">Préparation</div>
+        <div class="steps" id="result-steps"></div>
+      </div>
+      <div class="result-meta">
+        <div class="meta-item">
+          <span class="meta-label">Temps</span>
+          <span class="meta-value" id="result-time"></span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Personnes</span>
+          <span class="meta-value" id="result-serves"></span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Difficulté</span>
+          <span class="meta-value" id="result-diff"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>© 2026 Marmito — Fait avec amour 🍲</footer>
+
+<script>
+const input = document.getElementById('ingredient-input');
+const field = document.getElementById('ingredient-field');
+
+input.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ',') && input.value.trim()) {
+    e.preventDefault();
+    addTag(input.value.trim().replace(/,$/, ''));
+    input.value = '';
+  }
+  if (e.key === 'Backspace' && !input.value) {
+    const tags = field.querySelectorAll('.ingredient-tag');
+    if (tags.length) tags[tags.length - 1].remove();
+  }
+});
+
+function addTag(text) {
+  if (!text) return;
+  const tag = document.createElement('span');
+  tag.className = 'ingredient-tag';
+  tag.innerHTML = `${text}<button onclick="removeTag(this)" aria-label="Retirer">×</button>`;
+  field.insertBefore(tag, input);
+}
+
+function removeTag(btn) {
+  btn.closest('.ingredient-tag').remove();
+}
+
+function selectChip(chip) {
+  const group = chip.dataset.group;
+  document.querySelectorAll(`.chip[data-group="${group}"]`).forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+}
+
+const recipes = [
+  {
+    region: "Afrique subsaharienne", type: "Plat principal", title: "Poulet Yassa",
+    ingredients: ["Poulet","Oignon","Citron","Moutarde","Ail","Huile","Sel","Poivre"],
+    steps: [
+      "Marinade : mélanger oignons, citron, moutarde et ail. Laisser le poulet mariner 2h au frigo.",
+      "Faire revenir le poulet dans l'huile chaude jusqu'à dorure.",
+      "Ajouter la marinade avec les oignons et faire compoter 20 min à feu doux.",
+      "Servir avec du riz blanc."
+    ],
+    time: "45 min", serves: "4 pers.", diff: "Facile"
+  },
+  {
+    region: "Afrique subsaharienne", type: "Plat principal", title: "Riz Jollof aux légumes",
+    ingredients: ["Riz long","Tomate","Poivron","Oignon","Cube bouillon","Huile","Sel","Piment"],
+    steps: [
+      "Mixer tomates, poivrons et oignons en purée.",
+      "Faire revenir la purée dans l'huile 15 min jusqu'à réduction.",
+      "Ajouter le bouillon, le riz lavé et l'eau. Couvrir et cuire 25 min à feu doux.",
+      "Assaisonner et servir."
+    ],
+    time: "40 min", serves: "4 pers.", diff: "Facile"
+  },
+  {
+    region: "Maghreb", type: "Plat principal", title: "Tajine de poulet aux olives",
+    ingredients: ["Poulet","Olives","Citron confit","Oignon","Ail","Gingembre","Curcuma","Huile d'olive"],
+    steps: [
+      "Faire revenir oignon et ail dans l'huile d'olive. Ajouter les épices.",
+      "Ajouter le poulet et faire dorer de tous côtés.",
+      "Incorporer olives, citron confit et un peu d'eau. Couvrir.",
+      "Cuire 40 min à feu doux. Servir avec du pain marocain."
+    ],
+    time: "1h", serves: "4 pers.", diff: "Moyen"
+  },
+  {
+    region: "Occidentale", type: "Plat principal", title: "Poulet rôti à la tomate",
+    ingredients: ["Poulet","Tomate","Oignon","Thym","Ail","Huile","Sel","Poivre"],
+    steps: [
+      "Préchauffer le four à 200°C. Couper tomates et oignons en gros morceaux.",
+      "Disposer le poulet sur les légumes dans un plat. Arroser d'huile, assaisonner.",
+      "Glisser le thym et l'ail sous la peau. Enfourner 50 min.",
+      "Laisser reposer 10 min avant de servir."
+    ],
+    time: "1h10", serves: "4 pers.", diff: "Facile"
+  },
+  {
+    region: "Maghreb", type: "Dessert", title: "Cornes de gazelle",
+    ingredients: ["Farine","Amandes","Sucre glace","Eau de fleur d'oranger","Beurre","Cannelle"],
+    steps: [
+      "Mélanger amandes, sucre glace, cannelle et eau de fleur d'oranger pour la farce.",
+      "Préparer la pâte avec farine et beurre. Réfrigérer 30 min.",
+      "Former des croissants avec la farce à l'intérieur.",
+      "Cuire 15 min à 180°C. Saupoudrer de sucre glace."
+    ],
+    time: "1h", serves: "20 pièces", diff: "Moyen"
+  },
+  {
+    region: "Afrique subsaharienne", type: "Boisson", title: "Bissap (Hibiscus glacé)",
+    ingredients: ["Fleurs d'hibiscus séchées","Eau","Sucre","Menthe fraîche","Gingembre"],
+    steps: [
+      "Porter à ébullition 1,5L d'eau avec les fleurs d'hibiscus et le gingembre tranché.",
+      "Laisser infuser 10 min hors du feu. Filtrer.",
+      "Ajouter le sucre à chaud et mélanger jusqu'à dissolution.",
+      "Réfrigérer. Servir très froid avec de la menthe fraîche."
+    ],
+    time: "20 min", serves: "6 verres", diff: "Très facile"
+  },
+  {
+    region: "Maghreb", type: "Boisson", title: "Thé à la menthe marocain",
+    ingredients: ["Thé vert","Menthe fraîche","Sucre","Eau bouillante"],
+    steps: [
+      "Rincer le thé vert avec un peu d'eau bouillante. Jeter cette eau.",
+      "Ajouter l'eau bouillante, la menthe et le sucre. Laisser infuser 3 min.",
+      "Verser de haut pour aérer le thé. Goûter et ajuster le sucre.",
+      "Servir dans des verres à thé."
+    ],
+    time: "10 min", serves: "4 verres", diff: "Très facile"
+  },
+  {
+    region: "Occidentale", type: "Dessert", title: "Crêpes au sucre",
+    ingredients: ["Farine","Oeufs","Lait","Beurre","Sucre","Sel"],
+    steps: [
+      "Mélanger farine, oeufs, sel et la moitié du lait jusqu'à obtenir une pâte lisse.",
+      "Ajouter le reste du lait et le beurre fondu. Laisser reposer 30 min.",
+      "Cuire dans une poêle légèrement beurrée, 1 min de chaque côté.",
+      "Servir avec du sucre, de la confiture ou du Nutella."
+    ],
+    time: "45 min", serves: "4 pers.", diff: "Facile"
+  }
+];
+
+function generateRecipe() {
+  const btn = document.getElementById('gen-btn');
+  const resultCard = document.getElementById('result-card');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
+  resultCard.classList.remove('visible');
+
+  setTimeout(() => {
+    const cuisine = document.querySelector('.chip[data-group="cuisine"].active')?.textContent || 'Toutes';
+    const type = document.querySelector('.chip[data-group="type"].active')?.textContent || 'Plat principal';
+
+    let filtered = recipes;
+    if (cuisine !== 'Toutes') filtered = filtered.filter(r => r.region === cuisine);
+    if (type !== 'Tout') filtered = filtered.filter(r => r.type === type);
+    if (!filtered.length) filtered = recipes;
+
+    const recipe = filtered[Math.floor(Math.random() * filtered.length)];
+
+    document.getElementById('result-region').textContent = recipe.region;
+    document.getElementById('result-title').textContent = recipe.title;
+    document.getElementById('result-type').textContent = recipe.type;
+    document.getElementById('result-time').textContent = recipe.time;
+    document.getElementById('result-serves').textContent = recipe.serves;
+    document.getElementById('result-diff').textContent = recipe.diff;
+
+    document.getElementById('result-ingredients').innerHTML =
+      recipe.ingredients.map(i => `<span class="ingredient-pill">${i}</span>`).join('');
+
+    document.getElementById('result-steps').innerHTML =
+      recipe.steps.map((s, i) =>
+        `<div class="step"><div class="step-num">${i+1}</div><div class="step-text">${s}</div></div>`
+      ).join('');
+
+    resultCard.classList.add('visible');
+    btn.disabled = false;
+    btn.textContent = 'Trouver une autre recette';
+
+    setTimeout(() => resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  }, 1400);
+}
+</script>
+</body>
+</html>
