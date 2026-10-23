@@ -1,54 +1,1023 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Description" content="100+ recettes : Afrique, Maghreb, Quebec. Genere ta recette avec chrono integre style Thermomix.">
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.3">
-  <style type="text/css">
-    body {background-color: #10100e}
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 24.0px 'Helvetica Neue'; color: #f9f9f2; -webkit-text-stroke: #f9f9f2}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Helvetica Neue'; color: #f9f9f2; color: rgba(249, 249, 242, 0.45); -webkit-text-stroke: rgba(249, 249, 242, 0.45); min-height: 13.0px}
-    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 20.0px 'Helvetica Neue'; color: #f9f9f2; color: rgba(249, 249, 242, 0.65); -webkit-text-stroke: rgba(249, 249, 242, 0.65)}
-    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; -webkit-text-stroke: #ffffff; background-color: #214334; min-height: 16.0px}
-    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px 'Helvetica Neue'; color: #888975; -webkit-text-stroke: #888975}
-    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Helvetica Neue'; color: #888975; -webkit-text-stroke: #888975}
-    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Helvetica Neue'; -webkit-text-stroke: #ffffff; background-color: #171717; min-height: 13.0px}
-    p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'; color: #888975; -webkit-text-stroke: #888975}
-    p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px 'Helvetica Neue'; color: #f9f9f2; -webkit-text-stroke: #f9f9f2; background-color: #214334}
-    p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px 'Helvetica Neue'; color: #888975; -webkit-text-stroke: #888975; background-color: #10100e}
-    p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 16.0px 'Helvetica Neue'; color: #efefe2; -webkit-text-stroke: #ffffff; background-color: #e07021}
-    p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.0px 'Helvetica Neue'; color: #888975; -webkit-text-stroke: #888975}
-    span.s1 {font-kerning: none; background-color: #214334}
-    span.s2 {font-kerning: none; color: #e07021; background-color: #214334; -webkit-text-stroke: 0px #e07021}
-    span.s3 {font-kerning: none}
-    span.s4 {font-kerning: none; background-color: #151613}
-    span.s5 {font: 16.0px '.Apple Color Emoji UI'; font-kerning: none}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Marmito -- Recettes africaines, maghrebines et du monde</title>
+  <meta name="description" content="100+ recettes : Afrique, Maghreb, Quebec. Genere ta recette avec chrono integre style Thermomix.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600&display=swap">
+  <style>
+    :root{
+      --bg:#FAFAF5;--fg:#1C1C18;--fg2:#5A5A50;
+      --accent:#D4700A;--accent-light:#FDF0E0;--accent-dark:#B35A00;
+      --green:#1E4035;--green-mid:#2A5444;--green-light:#E4EDE9;
+      --border:#DDDDD0;--card-bg:#FFFFFF;
+      --shadow:0 2px 16px rgba(30,64,53,0.10);
+      --timer-bg:#F0F8F4;--timer-done:#2D8A5E;
+      color-scheme:light
+    }
+    @media(prefers-color-scheme:dark){:root{
+      --bg:#141410;--fg:#F2F2E8;--fg2:#9A9A88;
+      --accent:#E8842A;--accent-light:#2A1F0A;--accent-dark:#F0A050;
+      --green:#2A5444;--green-mid:#1E4035;--green-light:#1A2E28;
+      --border:#2E2E24;--card-bg:#1C1C18;
+      --shadow:0 2px 20px rgba(0,0,0,0.40);
+      --timer-bg:#1A2E28;--timer-done:#2D8A5E;
+      color-scheme:dark
+    }}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--fg);font-family:"DM Sans",system-ui,sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+
+    /* ===== AUTH USER BAR ===== */
+    .user-bar{background:var(--green-mid);padding:7px 16px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:rgba(250,250,245,0.75);gap:8px}
+    .user-bar-left{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden}
+    .user-email{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+    .plan-badge{padding:2px 8px;border-radius:10px;font-weight:700;font-size:10px;letter-spacing:0.05em;flex-shrink:0}
+    .plan-badge.free{background:rgba(250,250,245,0.15);color:rgba(250,250,245,0.7)}
+    .plan-badge.pro{background:var(--accent);color:#fff}
+    .user-bar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .btn-upgrade{padding:4px 10px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.15s}
+    .btn-upgrade:hover{background:var(--accent-dark)}
+    .btn-logout{background:none;border:none;color:rgba(250,250,245,0.55);font-size:11px;cursor:pointer;font-family:inherit;padding:2px 4px}
+    .btn-logout:hover{color:rgba(250,250,245,0.9)}
+    /* ===== FREEMIUM BANNER ===== */
+    .limit-banner{background:var(--accent-light);border:1.5px solid var(--accent);border-radius:12px;padding:14px 16px;text-align:center;display:none}
+    .limit-banner.show{display:block}
+    .limit-banner h3{color:var(--accent);font-family:"Fraunces",Georgia,serif;font-size:1.1rem;margin-bottom:6px}
+    .limit-banner p{font-size:0.88rem;color:var(--fg2);margin-bottom:12px}
+    .btn-upgrade-big{padding:11px 24px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.15s}
+    .btn-upgrade-big:hover{background:var(--green-mid)}
+    /* ===== AUTH GATE (shown when loading auth) ===== */
+    .auth-loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;gap:12px}
+    .auth-loading.hidden{display:none}
+    .auth-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin-ring 0.8s linear infinite}
+    .auth-loading p{color:var(--fg2);font-size:0.9rem}
+
+    .header{background:var(--green);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+    .logo{font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:24px;color:#FAFAF5;letter-spacing:-0.5px}
+    .logo span{color:var(--accent)}
+    .header-actions{display:flex;align-items:center;gap:10px}
+    .recipe-count{font-size:11px;font-weight:600;color:rgba(250,250,245,0.45);letter-spacing:0.04em}
+    .fav-toggle{background:none;border:none;cursor:pointer;color:rgba(250,250,245,0.65);font-size:20px;padding:4px;transition:color 0.15s;line-height:1}
+    .fav-toggle:hover,.fav-toggle.has-favs{color:#F4A261}
+    .main{max-width:640px;margin:0 auto;padding:20px 16px 60px;display:flex;flex-direction:column;gap:14px}
+    .tagline{text-align:center;padding-block:6px 2px}
+    .tagline h1{font-family:"Fraunces",Georgia,serif;font-weight:700;font-style:italic;font-size:clamp(20px,5vw,26px);color:var(--fg);line-height:1.25;margin-bottom:5px}
+    .tagline p{font-size:13px;color:var(--fg2)}
+    .card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+    .card-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:var(--fg2);margin-bottom:10px}
+    .ingredient-field{border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;cursor:text;transition:border-color 0.15s;background:var(--bg);min-height:46px}
+    .ingredient-field:focus-within{border-color:var(--accent)}
+    .ingredient-tag{display:inline-flex;align-items:center;gap:5px;background:var(--accent-light);color:var(--accent);border-radius:6px;padding:3px 8px 3px 10px;font-size:13px;font-weight:500}
+    .ingredient-tag button{background:none;border:none;cursor:pointer;color:var(--accent);font-size:15px;line-height:1;padding:0;opacity:0.7}
+    #ingredient-input{border:none;outline:none;background:transparent;color:var(--fg);font-family:inherit;font-size:14px;min-width:100px;flex:1}
+    #ingredient-input::placeholder{color:var(--fg2)}
+    .input-hint{font-size:12px;color:var(--fg2);margin-top:6px}
+    .chips{display:flex;flex-wrap:wrap;gap:7px}
+    .chip{padding:6px 13px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--fg2);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s}
+    .chip:hover{border-color:var(--accent);color:var(--accent)}
+    .chip.active{background:var(--green);border-color:var(--green);color:#FAFAF5}
+    .btn-generate{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:16px;cursor:pointer;transition:background 0.15s,transform 0.1s}
+    .btn-generate:hover{background:var(--accent-dark)}
+    .btn-generate:active{transform:scale(0.98)}
+    .btn-generate:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+    .result-card{border:2px solid var(--accent);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);display:none}
+    .result-card.visible{display:block}
+    .result-header{background:var(--green);padding:16px 18px 12px}
+    .result-header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .result-meta-top{flex:1}
+    .result-region{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,245,0.55);margin-bottom:4px}
+    .result-title{font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:clamp(18px,4vw,24px);color:#FAFAF5;line-height:1.2}
+    .result-type{display:inline-block;margin-top:7px;padding:3px 9px;background:var(--accent);border-radius:4px;font-size:12px;font-weight:600;color:#fff}
+    .fav-btn{background:none;border:none;cursor:pointer;font-size:24px;padding:4px;color:rgba(250,250,245,0.35);transition:color 0.15s,transform 0.15s;flex-shrink:0;line-height:1}
+    .fav-btn:hover{color:rgba(250,250,245,0.75)}
+    .fav-btn.active{color:#F4A261;transform:scale(1.1)}
+    .share-bar{display:flex;gap:8px;padding:10px 18px;background:var(--green-mid);border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap}
+    .share-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;border:none;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s}
+    .share-copy{background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)}
+    .share-copy:hover{background:rgba(250,250,245,0.2)}
+    .share-wa{background:#25D366;color:#fff}
+    .share-wa:hover{background:#1da855}
+    .result-body{background:var(--card-bg);padding:18px;display:flex;flex-direction:column;gap:14px}
+    .result-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);margin-bottom:9px}
+    .ingredient-list{display:flex;flex-wrap:wrap;gap:5px}
+    .ingredient-pill{background:var(--green-light);color:var(--green);border-radius:6px;padding:4px 9px;font-size:13px;font-weight:500}
+    @media(prefers-color-scheme:dark){.ingredient-pill{color:#7DB8A0}}
+    .steps{display:flex;flex-direction:column}
+    .step{display:flex;gap:10px;align-items:flex-start;padding:10px 8px 10px 0;border-radius:10px;transition:background 0.2s;position:relative}
+    .step:not(:last-child)::after{content:"";position:absolute;left:17px;top:40px;width:2px;height:calc(100% - 28px);background:var(--border);border-radius:1px}
+    .step.step-active{background:var(--timer-bg)}
+    .step.step-done{background:var(--green-light)}
+    .step-icon-wrap{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:18px;position:relative;z-index:1;transition:background 0.3s}
+    .step.step-active .step-icon-wrap{background:var(--green)}
+    .step.step-done .step-icon-wrap{background:var(--timer-done)}
+    .step-num{position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:var(--fg2);color:#fff;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center}
+    .step.step-active .step-num{background:var(--accent)}
+    .step.step-done .step-num{background:var(--timer-done)}
+    .icon-mix{animation:spin-s 2s linear infinite}
+    .icon-fry{animation:flicker-s 0.6s ease-in-out infinite alternate}
+    .icon-cook{animation:bob-s 1.5s ease-in-out infinite}
+    .icon-oven{animation:pulse-s 2s ease-in-out infinite}
+    .icon-rest{animation:tick-s 2s ease-in-out infinite}
+    .step-done .step-icon-wrap span{animation:none !important}
+    @keyframes spin-s{to{transform:rotate(360deg)}}
+    @keyframes flicker-s{to{filter:brightness(1.5) saturate(1.4)}}
+    @keyframes bob-s{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+    @keyframes pulse-s{0%,100%{opacity:1}50%{opacity:0.55}}
+    @keyframes tick-s{0%,45%,55%,100%{transform:rotate(0)}50%{transform:rotate(14deg)}}
+    @media(prefers-reduced-motion:reduce){.step-icon-wrap span{animation:none !important}}
+    .step-content{flex:1;min-width:0}
+    .step-text{font-size:14px;color:var(--fg);line-height:1.55}
+    .step-timer{margin-top:7px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .timer-start-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;background:var(--timer-bg);border:1.5px solid var(--green-light);border-radius:20px;color:var(--green-mid);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s}
+    .timer-start-btn:hover{background:var(--green-light)}
+    .timer-display{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--green);letter-spacing:-0.5px;min-width:52px}
+    .timer-display.done{color:var(--timer-done);font-size:14px}
+    .timer-ctrl-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:var(--green);border:none;border-radius:50%;color:#fff;font-size:13px;cursor:pointer;transition:background 0.15s}
+    .timer-ctrl-btn:hover{background:var(--green-mid)}
+    .timer-ctrl-btn.restart{background:var(--accent)}
+    .timer-progress-wrap{width:100%;height:3px;background:var(--border);border-radius:2px;margin-top:5px;overflow:hidden}
+    .timer-progress{height:100%;background:var(--green);border-radius:2px;width:100%;transition:width 1s linear}
+    .step-done .timer-progress{background:var(--timer-done)}
+    .result-footer{display:flex;gap:14px;padding-top:10px;border-top:1px solid var(--border);flex-wrap:wrap}
+    .meta-item{display:flex;flex-direction:column;gap:2px}
+    .meta-label{font-size:11px;color:var(--fg2);text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+    .meta-value{font-size:14px;font-weight:600;color:var(--fg)}
+    .fav-panel{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow);display:none}
+    .fav-panel.visible{display:block}
+    .fav-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .fav-panel-title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:18px}
+    .fav-clear{background:none;border:none;cursor:pointer;color:var(--fg2);font-size:12px;text-decoration:underline}
+    .fav-list{display:flex;flex-direction:column;gap:8px}
+    .fav-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:var(--bg);border-radius:10px;border:1px solid var(--border)}
+    .fav-item-name{font-size:14px;font-weight:500}
+    .fav-item-region{font-size:12px;color:var(--fg2)}
+    .fav-cook-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0}
+    .fav-empty{text-align:center;color:var(--fg2);font-size:14px;padding:20px 0;line-height:1.7}
+    .loading-dots{display:inline-flex;gap:4px;align-items:center}
+    .loading-dots span{width:6px;height:6px;border-radius:50%;background:currentColor;animation:dot-b 0.9s infinite ease-in-out}
+    .loading-dots span:nth-child(2){animation-delay:0.15s}
+    .loading-dots span:nth-child(3){animation-delay:0.3s}
+    @keyframes dot-b{0%,80%,100%{transform:scale(0.6);opacity:0.5}40%{transform:scale(1);opacity:1}}
+
+
+    /* ===== REAL COOKING ANIMATIONS (CSS only) ===== */
+
+    /* -- FLAME (fry) -- */
+    .ca-fry{position:relative;width:28px;height:34px;display:flex;align-items:flex-end;justify-content:center}
+    .ca-fry-outer{position:absolute;bottom:0;width:22px;height:28px;background:linear-gradient(180deg,#FF4500 0%,#FF8C00 60%,#FFD700 100%);border-radius:50% 50% 35% 65% / 55% 45% 55% 45%;animation:flame-o 0.45s ease-in-out infinite alternate;transform-origin:bottom center}
+    .ca-fry-mid{position:absolute;bottom:3px;width:14px;height:18px;background:linear-gradient(180deg,#FF6347 0%,#FFA500 100%);border-radius:50% 50% 35% 65% / 55% 45% 55% 45%;animation:flame-m 0.35s ease-in-out infinite alternate;transform-origin:bottom center}
+    .ca-fry-inner{position:absolute;bottom:5px;width:8px;height:10px;background:linear-gradient(180deg,#FFD700 0%,#FFFF00 100%);border-radius:50% 50% 40% 60%;animation:flame-i 0.3s ease-in-out infinite alternate;transform-origin:bottom center}
+    @keyframes flame-o{from{transform:scaleX(0.9) skewX(-3deg)}to{transform:scaleX(1.12) skewX(4deg)}}
+    @keyframes flame-m{from{transform:scaleX(0.85) skewX(4deg)}to{transform:scaleX(1.15) skewX(-3deg)}}
+    @keyframes flame-i{from{transform:scaleX(0.9)}to{transform:scaleX(1.1)}}
+
+    /* -- BUBBLES (cook/simmer) -- */
+    .ca-cook{position:relative;width:30px;height:30px;overflow:hidden}
+    .ca-cook-line{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:26px;height:2px;background:var(--accent);border-radius:1px}
+    .ca-bubble{position:absolute;border-radius:50%;background:none;border:2px solid var(--green);opacity:0;animation:bubble-rise 1.8s ease-in infinite}
+    .ca-bubble:nth-child(1){width:7px;height:7px;left:3px;bottom:4px;animation-delay:0s}
+    .ca-bubble:nth-child(2){width:9px;height:9px;left:10px;bottom:4px;animation-delay:0.55s}
+    .ca-bubble:nth-child(3){width:6px;height:6px;left:19px;bottom:4px;animation-delay:1.1s}
+    @keyframes bubble-rise{0%{opacity:0;transform:translateY(0) scale(0.5)}20%{opacity:1}80%{opacity:0.6}100%{opacity:0;transform:translateY(-22px) scale(1.1)}}
+
+    /* -- MIXER/BLEND (mix) -- */
+    .ca-mix{position:relative;width:30px;height:30px}
+    .ca-mix-ring{position:absolute;inset:2px;border-radius:50%;border:2.5px solid var(--green);border-top-color:var(--accent);animation:spin-ring 0.9s linear infinite}
+    .ca-mix-ring2{position:absolute;inset:7px;border-radius:50%;border:2px solid rgba(212,112,10,0.4);border-bottom-color:var(--accent);animation:spin-ring 0.6s linear infinite reverse}
+    .ca-mix-dot{position:absolute;top:50%;left:50%;width:5px;height:5px;background:var(--green);border-radius:50%;transform:translate(-50%,-50%)}
+    @keyframes spin-ring{to{transform:rotate(360deg)}}
+
+    /* -- OVEN / HEAT (oven) -- */
+    .ca-oven{display:flex;flex-direction:column;gap:4px;justify-content:center;padding-top:2px}
+    .ca-heat{height:2.5px;border-radius:2px;background:linear-gradient(90deg,transparent,#FF6B35,transparent);animation:heat-wave 1.2s ease-in-out infinite;transform-origin:center}
+    .ca-heat:nth-child(1){width:22px;animation-delay:0s}
+    .ca-heat:nth-child(2){width:16px;align-self:center;animation-delay:0.3s}
+    .ca-heat:nth-child(3){width:20px;animation-delay:0.6s}
+    @keyframes heat-wave{0%,100%{transform:scaleX(0.7);opacity:0.5}50%{transform:scaleX(1);opacity:1}}
+
+    /* -- HOURGLASS / WAIT (rest) -- */
+    .ca-rest{position:relative;width:22px;height:30px;margin:auto}
+    .ca-hg-top,.ca-hg-bot{position:absolute;left:0;right:0;height:12px;border:2.5px solid var(--green);border-radius:1px}
+    .ca-hg-top{top:0;clip-path:polygon(0 0,100% 0,50% 100%)}
+    .ca-hg-bot{bottom:0;clip-path:polygon(50% 0,0 100%,100% 100%)}
+    .ca-hg-mid{position:absolute;top:50%;left:50%;width:2px;height:6px;background:var(--green);transform:translate(-50%,-50%)}
+    .ca-sand{position:absolute;bottom:3px;left:50%;width:6px;height:0;background:var(--accent);border-radius:50%;transform:translateX(-50%);animation:sand-fill 2s ease-in-out infinite}
+    @keyframes sand-fill{0%{height:0;opacity:0}40%{opacity:1}80%{height:5px;opacity:1}100%{height:0;opacity:0}}
+    .ca-rest-wrap{animation:hg-flip 4s ease-in-out infinite}
+    @keyframes hg-flip{0%,45%{transform:rotate(0deg)}50%,95%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}
+
+    /* -- KNIFE / CHOP (cut) -- */
+    .ca-cut{position:relative;width:30px;height:30px}
+    .ca-knife{position:absolute;top:4px;right:4px;width:18px;height:4px;background:linear-gradient(90deg,#888,#CCC);border-radius:0 2px 2px 0;transform-origin:right center;animation:chop 0.7s ease-in-out infinite}
+    .ca-knife::before{content:"";position:absolute;left:-5px;top:-1px;width:6px;height:6px;background:#555;border-radius:1px}
+    .ca-board{position:absolute;bottom:6px;left:4px;right:4px;height:2px;background:var(--accent);border-radius:1px}
+    @keyframes chop{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(15deg)}}
+
+    /* -- SERVE -- */
+    .ca-serve{position:relative;width:30px;height:30px;display:flex;align-items:center;justify-content:center}
+    .ca-plate{width:24px;height:24px;border-radius:50%;border:2.5px solid var(--green);display:flex;align-items:center;justify-content:center}
+    .ca-plate-inner{width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(30,64,53,0.3)}
+    .ca-cloche{position:absolute;top:3px;left:50%;transform:translateX(-50%);width:16px;height:9px;background:var(--green);border-radius:8px 8px 0 0;animation:cloche-lift 2s ease-in-out infinite}
+    @keyframes cloche-lift{0%,60%,100%{transform:translateX(-50%) translateY(0)}30%{transform:translateX(-50%) translateY(-5px)}}
+
+    /* Override: use .anim- prefix for step icons in both list and carousel */
+    .step-icon-wrap .ca-mix-ring,.step-icon-wrap .ca-mix-ring2,
+    .step-done .step-icon-wrap .ca-mix-ring{animation-play-state:inherit}
+    .step-done .step-icon-wrap .ca-fry-outer,
+    .step-done .step-icon-wrap .ca-fry-mid,
+    .step-done .step-icon-wrap .ca-fry-inner,
+    .step-done .step-icon-wrap .ca-bubble,
+    .step-done .step-icon-wrap .ca-heat,
+    .step-done .step-icon-wrap .ca-sand{animation:none;opacity:0.4}
+    @media(prefers-reduced-motion:reduce){
+      .ca-fry-outer,.ca-fry-mid,.ca-fry-inner,.ca-bubble,.ca-mix-ring,.ca-mix-ring2,
+      .ca-heat,.ca-rest-wrap,.ca-knife,.ca-cloche{animation:none}
+    }
+
+    /* COOKING MODE CAROUSEL */
+    .cook-mode{display:none;background:var(--card-bg);border:2px solid var(--green);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);margin-top:0}
+    .cook-mode.visible{display:block}
+    .cook-header{background:var(--green);padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+    .cook-header-title{font-family:"Fraunces",Georgia,serif;font-weight:700;color:#FAFAF5;font-size:16px}
+    .cook-progress-text{font-size:12px;font-weight:600;color:rgba(250,250,245,0.6)}
+    .cook-progress-bar{height:4px;background:rgba(255,255,255,0.15)}
+    .cook-progress-fill{height:100%;background:var(--accent);border-radius:0 2px 2px 0;transition:width 0.4s ease}
+    .cook-step-body{padding:28px 20px 20px;display:flex;flex-direction:column;align-items:center;gap:18px;min-height:220px;text-align:center}
+    .cook-icon-big{width:90px;height:90px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:40px;transition:background 0.3s;padding:6px}
+    .cook-icon-big.timer-running{background:var(--green-light)}
+    .cook-step-text{font-size:16px;color:var(--fg);line-height:1.6;max-width:440px}
+    .cook-timer-zone{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+    .cook-timer-display{font-size:48px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--green);letter-spacing:-2px;line-height:1}
+    .cook-timer-display.done{color:var(--timer-done);font-size:28px}
+    .cook-timer-btns{display:flex;gap:10px}
+    .cook-timer-start{display:flex;align-items:center;gap:8px;padding:10px 24px;background:var(--green);border:none;border-radius:24px;color:#fff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.15s}
+    .cook-timer-start:hover{background:var(--green-mid)}
+    .cook-timer-ctrl{width:44px;height:44px;border-radius:50%;background:var(--green);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s}
+    .cook-timer-ctrl:hover{background:var(--green-mid)}
+    .cook-timer-ctrl.restart{background:var(--accent)}
+    .cook-prog-ring{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+    .cook-prog-inner{height:100%;background:var(--green);border-radius:3px;width:100%;transition:width 1s linear}
+    .cook-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--border);gap:10px}
+    .cook-nav-btn{display:flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--fg);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s}
+    .cook-nav-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+    .cook-nav-btn:disabled{opacity:0.35;cursor:not-allowed}
+    .cook-nav-next{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .cook-nav-next:hover:not(:disabled){background:var(--accent-dark);border-color:var(--accent-dark);color:#fff}
+    .cook-dots{display:flex;gap:6px}
+    .cook-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all 0.2s}
+    .cook-dot.active{background:var(--accent);transform:scale(1.25)}
+    .cook-dot.done{background:var(--timer-done)}
+    /* READY SCREEN */
+    .cook-ready{display:none;flex-direction:column;align-items:center;gap:16px;padding:40px 20px;text-align:center}
+    .cook-ready.visible{display:flex}
+    .cook-ready-emoji{font-size:64px;animation:bounce-ready 0.6s ease}
+    @keyframes bounce-ready{0%{transform:scale(0.5)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+    .cook-ready-title{font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:28px;color:var(--green)}
+    .cook-ready-sub{font-size:15px;color:var(--fg2)}
+    .cook-ready-btn{padding:12px 28px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:15px;cursor:pointer}
+    /* START BUTTON */
+    .btn-start-cook{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:12px;font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:15px;cursor:pointer;transition:background 0.15s;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+    .btn-start-cook:hover{background:var(--green-mid)}
+    footer{text-align:center;padding:20px 16px;font-size:12px;color:var(--fg2)}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transition:all 0.3s;z-index:100;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   </style>
 </head>
 <body>
-<p class="p1"><span class="s1">Marm</span><span class="s2">i</span><span class="s1">to</span></p>
-<p class="p2"><span class="s3"></span><br></p>
-<p class="p3"><span class="s1">♡</span></p>
-<p class="p4"><span class="s3"></span><br></p>
-<h1 style="margin: 0.0px 0.0px 5.0px 0.0px; text-align: center; font: 26.0px 'Helvetica Neue'; color: #efefe2; -webkit-text-stroke: #efefe2"><span class="s3">Qu’est-ce qu’on cuisine ce soir ?</span></h1>
-<p class="p6"><span class="s3">Choisis ta cuisine — et cuisine avec le chrono intégré.</span></p>
-<p class="p7"><span class="s4">TES INGRÉDIENTS (optionnel)</span></p>
-<p class="p8"><span class="s3"></span><br></p>
-<p class="p9"><span class="s4">Appuie sur Entrée ou , pour ajouter.</span></p>
-<p class="p7"><span class="s4">TYPE DE CUISINE</span></p>
-<p class="p10"><span class="s3">Toutes</span></p>
-<p class="p11"><span class="s3">Afrique subsaharienne</span></p>
-<p class="p11"><span class="s3">Maghreb</span></p>
-<p class="p11"><span class="s3">Occidentale</span></p>
-<p class="p7"><span class="s4">TYPE DE REPAS</span></p>
-<p class="p10"><span class="s3">Plat principal</span></p>
-<p class="p11"><span class="s3">Dessert</span></p>
-<p class="p11"><span class="s3">Boisson</span></p>
-<p class="p11"><span class="s3">Tout</span></p>
-<p class="p12"><span class="s5">🍳</span><span class="s3"> Trouver une recette</span></p>
-<p class="p13"><span class="s3">Marmito 2026 · Cuisines du monde, une recette à la fois.</span></p>
+<header class="header">
+  <div class="logo">Marm<span>i</span>to</div>
+  <div class="header-actions">
+    <span class="recipe-count" id="rc"></span>
+    <button class="fav-toggle" id="fav-toggle" onclick="toggleFavPanel()" title="Mes favoris">&#9825;</button>
+  </div>
+</header>
+<div class="toast" id="toast"></div>
+<main class="main">
+  <div class="tagline">
+    <h1>Qu&rsquo;est-ce qu&rsquo;on cuisine ce soir&nbsp;?</h1>
+    <p>Choisis ta cuisine &mdash; et cuisine avec le chrono int&eacute;gr&eacute;.</p>
+  </div>
+  <div class="fav-panel" id="fav-panel">
+    <div class="fav-panel-header">
+      <div class="fav-panel-title">&#10084;&#65039; Mes favoris</div>
+      <button class="fav-clear" onclick="clearFavs()">Tout effacer</button>
+    </div>
+    <div class="fav-list" id="fav-list"></div>
+  </div>
+  <div class="card">
+    <div class="card-label">Tes ingr&eacute;dients <span style="font-weight:400;text-transform:none;letter-spacing:0">(optionnel)</span></div>
+    <div class="ingredient-field" id="ing-field">
+      <input id="ing-input" type="text" placeholder="Ajouter un ingr&eacute;dient..." autocomplete="off" autocorrect="off">
+    </div>
+    <p class="input-hint">Appuie sur <strong>Entr&eacute;e</strong> ou <strong>,</strong> pour ajouter.</p>
+  </div>
+  <div class="card">
+    <div class="card-label">Type de cuisine</div>
+    <div class="chips">
+      <button class="chip active" data-group="cuisine" onclick="selectChip(this)">Toutes</button>
+      <button class="chip" data-group="cuisine" onclick="selectChip(this)">Afrique subsaharienne</button>
+      <button class="chip" data-group="cuisine" onclick="selectChip(this)">Maghreb</button>
+      <button class="chip" data-group="cuisine" onclick="selectChip(this)">Occidentale</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">Type de repas</div>
+    <div class="chips">
+      <button class="chip active" data-group="type" onclick="selectChip(this)">Plat principal</button>
+      <button class="chip" data-group="type" onclick="selectChip(this)">Dessert</button>
+      <button class="chip" data-group="type" onclick="selectChip(this)">Boisson</button>
+      <button class="chip" data-group="type" onclick="selectChip(this)">Tout</button>
+    </div>
+  </div>
+  <button class="btn-generate" id="gen-btn" onclick="generateRecipe()">&#127859; Trouver une recette</button>
+  <!-- Freemium limit banner -->
+    <div class="limit-banner" id="limit-banner">
+      <h3>Limite atteinte</h3>
+      <p>Tu as genere tes 10 recettes gratuites du mois. Passe a Marmito Pro pour des recettes illimitees et toutes les regions.</p>
+      <button class="btn-upgrade-big" onclick="startUpgrade()">Passer a Pro — 4.99$/mois</button>
+    </div>
+
+<div class="result-card" id="result-card">
+    <div class="result-header">
+      <div class="result-header-top">
+        <div class="result-meta-top">
+          <div class="result-region" id="result-region"></div>
+          <div class="result-title" id="result-title"></div>
+          <span class="result-type" id="result-type"></span>
+        </div>
+        <button class="fav-btn" id="fav-btn" onclick="toggleFav()" title="Sauvegarder">&#9825;</button>
+      </div>
+    </div>
+    <div class="share-bar">
+      <button class="share-btn share-copy" onclick="copyRecipe()">&#128203; Copier</button>
+      <button class="share-btn share-wa" onclick="shareRecipe()">&#128279; Partager</button>
+    </div>
+    <div class="result-body">
+      <div>
+        <div class="result-section-title">Ingr&eacute;dients</div>
+        <div class="ingredient-list" id="result-ingredients"></div>
+      </div>
+      <div>
+        <div class="result-section-title">Pr&eacute;paration &mdash; Chrono int&eacute;gr&eacute;</div>
+        <div class="steps" id="result-steps"></div>
+      </div>
+        <button class="btn-start-cook" onclick="startCookMode()">&#127859; Commencer la pr&eacute;paration &rarr;</button>
+      <div class="result-footer">
+        <div class="meta-item"><span class="meta-label">Temps</span><span class="meta-value" id="r-time"></span></div>
+        <div class="meta-item"><span class="meta-label">Personnes</span><span class="meta-value" id="r-serves"></span></div>
+        <div class="meta-item"><span class="meta-label">Difficult&eacute;</span><span class="meta-value" id="r-diff"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COOKING MODE CAROUSEL -->
+  <div class="cook-mode" id="cook-mode">
+    <div class="cook-header">
+      <div class="cook-header-title" id="cook-recipe-name"></div>
+      <div class="cook-progress-text" id="cook-progress-text"></div>
+    </div>
+    <div class="cook-progress-bar"><div class="cook-progress-fill" id="cook-progress-fill"></div></div>
+    <!-- Step view -->
+    <div id="cook-step-view">
+      <div class="cook-step-body">
+        <div class="cook-icon-big" id="cook-icon-big"></div>
+        <div class="cook-step-text" id="cook-step-text"></div>
+        <div class="cook-timer-zone" id="cook-timer-zone" style="display:none">
+          <div class="cook-timer-display" id="cook-timer-disp"></div>
+          <div class="cook-timer-btns">
+            <button class="cook-timer-start" id="cook-timer-start" onclick="cookTimerStart()">&#9654; Lancer le minuteur</button>
+            <button class="cook-timer-ctrl" id="cook-timer-ctrl" hidden onclick="cookTimerCtrl()">&#9646;&#9646;</button>
+          </div>
+          <div class="cook-prog-ring"><div class="cook-prog-inner" id="cook-prog-inner"></div></div>
+        </div>
+      </div>
+      <div class="cook-nav">
+        <button class="cook-nav-btn" id="cook-prev" onclick="cookNav(-1)">&#8592; Pr&eacute;c&eacute;dente</button>
+        <div class="cook-dots" id="cook-dots"></div>
+        <button class="cook-nav-btn cook-nav-next" id="cook-next" onclick="cookNav(1)">Suivante &#8594;</button>
+      </div>
+    </div>
+    <!-- Ready screen -->
+    <div class="cook-ready" id="cook-ready">
+      <div class="cook-ready-emoji">&#127869;&#65039;</div>
+      <div class="cook-ready-title">C&rsquo;est pr&ecirc;t&nbsp;!</div>
+      <div class="cook-ready-sub">Bon app&eacute;tit&nbsp;!</div>
+      <button class="cook-ready-btn" onclick="closeCookMode()">&#10003; Termin&eacute;</button>
+    </div>
+  </div>
+</main>
+<footer>Marmito 2026 &middot; Cuisines du monde, une recette &agrave; la fois.</footer>
+<script>
+
+  // ===== SUPABASE AUTH =====
+  const SUPABASE_URL = 'https://kfaabpwvisormfrwceaa.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_n8HXWNlgaJ5Ck749-k8_XQ_HsZ7-BRX';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let currentUser = null;
+  let userPlan = 'free';
+  let recipeCount = 0;
+  const FREE_LIMIT = 10;
+  // Charge le compteur local pour les utilisateurs pas connectés
+  try { recipeCount = parseInt(localStorage.getItem('marmito-count') || '0'); } catch(e){}
+
+  async function initAuth() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      window.location.href = '/auth.html';
+      return;
+    }
+    currentUser = session.user;
+    await loadUserProfile();
+    document.getElementById('auth-loading').classList.add('hidden');
+    document.getElementById('user-bar').style.display = '';
+    updateUserBar();
+
+    // Handle ?upgraded=1 from Stripe success
+    if (new URLSearchParams(location.search).get('upgraded') === '1') {
+      await refreshPlan();
+      history.replaceState({}, '', '/');
+    }
+  }
+
+  async function loadUserProfile() {
+    const { data } = await sb.from('profiles').select('plan,recipe_count').eq('id', currentUser.id).single();
+    if (data) {
+      userPlan = data.plan || 'free';
+      recipeCount = data.recipe_count || 0;
+    } else {
+      // First time: create profile
+      await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email, plan: 'free', recipe_count: 0 });
+      userPlan = 'free'; recipeCount = 0;
+    }
+  }
+
+  async function refreshPlan() {
+    await loadUserProfile();
+    updateUserBar();
+  }
+
+  function updateUserBar() {
+    document.getElementById('user-email').textContent = currentUser.email;
+    const badge = document.getElementById('plan-badge');
+    const upgradeBtn = document.getElementById('btn-upgrade-top');
+    if (userPlan === 'pro') {
+      badge.textContent = 'PRO'; badge.className = 'plan-badge pro';
+      upgradeBtn.style.display = 'none';
+    } else {
+      badge.textContent = 'GRATUIT (' + recipeCount + '/' + FREE_LIMIT + ')';
+      badge.className = 'plan-badge free';
+      upgradeBtn.style.display = recipeCount >= FREE_LIMIT ? '' : 'none';
+    }
+    // Show limit banner if at limit
+    const banner = document.getElementById('limit-banner');
+    if (userPlan === 'free' && recipeCount >= FREE_LIMIT) {
+      banner.classList.add('show');
+    } else {
+      banner.classList.remove('show');
+    }
+  }
+
+  async function incrementRecipeCount() {
+    recipeCount++;
+    // Sauvegarde locale (même sans connexion)
+    try { localStorage.setItem('marmito-count', recipeCount); } catch(e){}
+    if (currentUser) {
+      await sb.from('profiles').update({ recipe_count: recipeCount }).eq('id', currentUser.id);
+      updateUserBar();
+    }
+  }
+
+  async function startUpgrade() {
+    if (!currentUser) return;
+    const btn = event.currentTarget;
+    const orig = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Chargement...';
+    try {
+      const res = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: currentUser.id, email: currentUser.email })
+      });
+      const { url, error } = await res.json();
+      if (error) throw new Error(error);
+      window.location.href = url;
+    } catch (e) {
+      alert('Erreur: ' + e.message);
+      btn.disabled = false; btn.textContent = orig;
+    }
+  }
+
+  async function doLogout() {
+    await sb.auth.signOut();
+    window.location.href = '/auth.html';
+  }
+
+  initAuth();
+
+const recipes=[// ===== AFRIQUE SUBSAHARIENNE - PLATS PRINCIPAUX =====
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Poulet Yassa",ingredients:["Poulet","Oignons","Citron","Moutarde","Ail","Huile","Sel","Poivre"],steps:[{text:"Mélanger oignons, jus de citron, moutarde et ail. Faire mariner le poulet 2h.",icon:"rest",time:0},{text:"Faire dorer le poulet dans l'huile chaude de chaque côté.",icon:"fry",time:600},{text:"Retirer le poulet. Faire compoter les oignons marinés dans la même poêle.",icon:"cook",time:1200},{text:"Remettre le poulet. Ajouter un peu d'eau. Couvrir et mijoter.",icon:"cook",time:1200},{text:"Servir avec du riz blanc.",icon:"serve"}],time:"45 min",serves:"4 pers.",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Riz Jollof pimenté",ingredients:["Riz long","Tomates","Poivrons","Oignons","Cube bouillon","Huile","Piment"],steps:[{text:"Mixer tomates, poivrons et oignons en purée.",icon:"mix"},{text:"Faire revenir la purée dans l'huile à feu moyen.",icon:"fry",time:900},{text:"Ajouter le cube de bouillon et le piment. Réduire.",icon:"cook",time:600},{text:"Ajouter le riz rincé et 1,5x son volume d'eau. Couvrir hermétiquement.",icon:"cook",time:1500},{text:"Cuire à feu très doux sans soulever le couvercle.",icon:"rest",time:900}],time:"40 min",serves:"4 pers.",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Thiéboudienne",ingredients:["Riz brisé","Poisson","Tomates","Poivrons","Oignons","Concentré tomate","Navet","Manioc","Ail","Piment","Huile"],steps:[{text:"Farcir le poisson avec ail-piment-persil. Faire frire dans l'huile chaude.",icon:"fry",time:600},{text:"Dans la même huile, faire revenir oignons et concentré de tomate.",icon:"fry",time:480},{text:"Ajouter tomates mixées, poivrons. Laisser mijoter.",icon:"cook",time:900},{text:"Ajouter les légumes (navet, manioc). Couvrir d'eau et cuire.",icon:"cook",time:1200},{text:"Retirer légumes et poisson. Plonger le riz dans le bouillon. Cuire à couvert.",icon:"cook",time:1200},{text:"Servir avec le poisson et les légumes par-dessus le riz.",icon:"serve"}],time:"1h30",serves:"6 pers.",diff:"Avancé"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Mafé (sauce arachide)",ingredients:["Poulet ou bœuf","Pâte d'arachide","Tomates","Oignons","Ail","Cube bouillon","Huile","Piment"],steps:[{text:"Faire dorer la viande dans l'huile chaude. Réserver.",icon:"fry",time:480},{text:"Faire revenir oignons et ail dans la même huile.",icon:"fry",time:300},{text:"Ajouter tomates mixées. Réduire.",icon:"cook",time:600},{text:"Délayer la pâte d'arachide dans 500ml d'eau. Verser.",icon:"mix"},{text:"Remettre la viande. Ajouter bouillon et piment. Mijoter à feu doux.",icon:"cook",time:2400},{text:"Servir avec du riz ou du foufou.",icon:"serve"}],time:"1h",serves:"4 pers.",diff:"Moyen"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Ndolé (Cameroun)",ingredients:["Feuilles de ndolé","Crevettes","Bœuf","Cacahuètes","Oignons","Ail","Huile de palme","Crevettes fumées"],steps:[{text:"Faire bouillir les feuilles de ndolé plusieurs fois pour enlever l'amertume.",icon:"cook",time:900},{text:"Mixer les cacahuètes grillées avec un peu d'eau en pâte.",icon:"mix"},{text:"Faire revenir oignons et ail. Ajouter la viande et les crevettes fraîches.",icon:"fry",time:600},{text:"Ajouter pâte de cacahuètes, feuilles et crevettes fumées. Bien mélanger.",icon:"mix"},{text:"Mijoter à feu doux en remuant souvent.",icon:"cook",time:1800},{text:"Servir avec du plantain bouilli.",icon:"serve"}],time:"1h15",serves:"4 pers.",diff:"Avancé"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Attiéké au poisson braisé",ingredients:["Attiéké","Poisson (tilapia)","Tomates","Oignons","Piment","Huile","Citron"],steps:[{text:"Mariner le poisson avec sel, citron et épices.",icon:"rest"},{text:"Griller le poisson au four à 220°C ou sur la braise.",icon:"oven",time:1200},{text:"Préparer la sauce tomate : mixer et faire revenir dans l'huile.",icon:"fry",time:600},{text:"Chauffer l'attiéké à la vapeur avec un peu d'eau.",icon:"cook",time:300},{text:"Dresser : attiéké + poisson grillé + sauce + oignons crus.",icon:"serve"}],time:"35 min",serves:"2 pers.",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Poulet DG (Cameroun)",ingredients:["Poulet","Bananes plantain","Poivrons","Tomates","Oignons","Ail","Gingembre","Huile","Piment"],steps:[{text:"Faire frire les rondelles de plantain jusqu'à dorure. Réserver.",icon:"fry",time:480},{text:"Faire revenir le poulet en morceaux dans l'huile.",icon:"fry",time:600},{text:"Ajouter oignons, ail, gingembre. Faire revenir ensemble.",icon:"fry",time:300},{text:"Ajouter tomates et poivrons mixés. Réduire.",icon:"cook",time:600},{text:"Ajouter un peu d'eau. Mijoter à couvert.",icon:"cook",time:1200},{text:"Ajouter les plantains frits en fin de cuisson.",icon:"mix",time:120}],time:"50 min",serves:"4 pers.",diff:"Moyen"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Sauce gombo au poulet",ingredients:["Gombos","Poulet","Tomates","Oignons","Huile de palme","Cube bouillon","Crevettes séchées","Piment"],steps:[{text:"Couper les gombos en rondelles. Faire revenir dans l'huile de palme.",icon:"fry",time:300},{text:"Faire dorer les morceaux de poulet. Réserver.",icon:"fry"},{text:"Faire revenir oignons et tomates dans la même casserole.",icon:"fry",time:480},{text:"Ajouter poulet, gombos, crevettes séchées et bouillon. Couvrir d'eau.",icon:"cook"},{text:"Mijoter à feu moyen.",icon:"cook",time:1800},{text:"Servir avec du riz ou du foufou.",icon:"serve"}],time:"45 min",serves:"4 pers.",diff:"Moyen"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Kedjenou de poulet",ingredients:["Poulet","Tomates","Oignons","Poivrons","Gingembre","Ail","Laurier","Piment"],steps:[{text:"Couper le poulet. Mélanger avec tous les légumes coupés et les épices.",icon:"mix"},{text:"Mettre dans une cocotte fermée hermétiquement sans eau ni huile.",icon:"rest"},{text:"Cuire à feu très doux. Secouer la cocotte de temps en temps sans ouvrir.",icon:"cook",time:3600},{text:"Vérifier que le poulet est tendre et baigné dans son jus.",icon:"cook"},{text:"Servir avec de l'attiéké ou du riz.",icon:"serve"}],time:"1h15",serves:"4 pers.",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Alloco et poisson frit",ingredients:["Bananes plantain mûres","Poisson","Huile de friture","Piment","Oignons","Sel"],steps:[{text:"Éplucher les plantains et les couper en diagonale.",icon:"cut"},{text:"Faire chauffer l'huile de friture à 170°C.",icon:"fry"},{text:"Frire les plantains jusqu'à dorure. Égoutter.",icon:"fry",time:480},{text:"Faire frire le poisson assaisonné dans la même huile.",icon:"fry",time:600},{text:"Préparer une sauce pimentée : piment mixé avec oignons et sel.",icon:"mix"},{text:"Servir alloco + poisson + sauce pimentée.",icon:"serve"}],time:"30 min",serves:"2 pers.",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Riz sauce tomate pimenté",ingredients:["Riz","Tomates","Oignons","Huile","Cube bouillon","Piment","Ail"],steps:[{text:"Mixer tomates, oignons et ail. Faire revenir dans l'huile chaude.",icon:"fry",time:600},{text:"Ajouter le cube de bouillon et le piment.",icon:"cook"},{text:"Ajouter le riz rincé et 2x son volume d'eau. Remuer.",icon:"mix"},{text:"Couvrir et cuire à feu doux sans soulever le couvercle.",icon:"cook",time:1200},{text:"Laisser reposer 5 min avant de servir.",icon:"rest",time:300}],time:"30 min",serves:"4 pers.",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Bœuf aux légumes africain",ingredients:["Bœuf","Aubergines","Poivrons","Tomates","Oignons","Ail","Gingembre","Huile","Piment"],steps:[{text:"Couper le bœuf en cubes. Faire dorer dans l'huile.",icon:"fry",time:600},{text:"Ajouter oignons, ail et gingembre. Faire revenir.",icon:"fry",time:300},{text:"Ajouter tomates mixées. Réduire.",icon:"cook",time:600},{text:"Ajouter poivrons et aubergines. Couvrir d'eau à mi-hauteur.",icon:"cook"},{text:"Mijoter à feu doux jusqu'à ce que la viande soit tendre.",icon:"cook",time:2400},{text:"Servir avec du riz.",icon:"serve"}],time:"1h",serves:"4 pers.",diff:"Moyen"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Moambe - Poulet sauce palme (Congo)",ingredients:["Poulet","Noix de palme ou huile de palme","Tomates","Oignons","Ail","Sel","Piment"],steps:[{text:"Faire dorer les morceaux de poulet dans un peu d'huile.",icon:"fry",time:600},{text:"Ajouter les noix de palme cuites et mixées (ou huile de palme directement).",icon:"mix"},{text:"Ajouter oignons, tomates, ail et piment. Mélanger.",icon:"mix"},{text:"Couvrir et mijoter à feu doux.",icon:"cook",time:2400},{text:"La sauce doit être épaisse et rouge-orangée. Servir avec du riz ou du foufou.",icon:"serve"}],time:"50 min",serves:"4 pers.",diff:"Moyen"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Soupe kandia",ingredients:["Gombo","Viande de bœuf","Huile de palme","Oignons","Tomates","Crevettes séchées","Sel","Piment"],steps:[{text:"Faire cuire la viande dans l'eau avec oignons et sel.",icon:"cook",time:1800},{text:"Mixer les gombos crus avec un peu d'eau.",icon:"mix"},{text:"Ajouter les gombos mixés, l'huile de palme et les crevettes séchées au bouillon.",icon:"mix"},{text:"Faire mijoter jusqu'à épaississement.",icon:"cook",time:1200},{text:"Rectifier l'assaisonnement. Servir avec du riz ou du foufou.",icon:"serve"}],time:"55 min",serves:"4 pers.",diff:"Moyen"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Suya de bœuf grillé (Nigeria)",ingredients:["Bœuf (faux-filet)","Cacahuètes grillées moulues","Paprika","Gingembre","Ail","Sel","Piment","Huile"],steps:[{text:"Mélanger cacahuètes moulues, paprika, gingembre, ail, sel et piment.",icon:"mix"},{text:"Couper le bœuf en fines lamelles. Enduire du mélange d'épices.",icon:"cut"},{text:"Laisser mariner 1h minimum.",icon:"rest",time:3600},{text:"Embrocher les lamelles. Griller sur la braise ou au gril du four.",icon:"fry",time:480},{text:"Servir chaud avec des oignons crus et des tomates en tranches.",icon:"serve"}],time:"30 min (+ 1h marinade)",serves:"4 pers.",diff:"Moyen"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Plantain farci à la viande",ingredients:["Bananes plantain mûres","Viande hachée","Oignons","Tomates","Huile","Sel","Piment"],steps:[{text:"Faire revenir la viande hachée avec oignons, tomates et piment.",icon:"fry",time:600},{text:"Éplucher les plantains. Couper en deux dans la longueur sans trancher complètement.",icon:"cut"},{text:"Farcir les plantains avec la viande. Ficeler si nécessaire.",icon:"rest"},{text:"Faire frire les plantains farcis dans l'huile chaude.",icon:"fry",time:600},{text:"Ou cuire au four à 200°C jusqu'à dorure.",icon:"oven",time:1200}],time:"40 min",serves:"2 pers.",diff:"Moyen"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Tilapia épicé frit",ingredients:["Tilapia entier","Ail","Gingembre","Piment","Citron","Huile de friture","Sel","Poivre"],steps:[{text:"Nettoyer le poisson. Inciser la chair des deux côtés.",icon:"cut"},{text:"Mélanger ail, gingembre, piment, citron et sel. Frotter dans les incisions.",icon:"mix"},{text:"Laisser mariner 30 min.",icon:"rest",time:1800},{text:"Faire chauffer l'huile de friture. Frire le tilapia entier jusqu'à croustillant.",icon:"fry",time:1200},{text:"Égoutter. Servir avec de la sauce tomate et du riz.",icon:"serve"}],time:"45 min",serves:"2 pers.",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Riz aux crevettes épicé",ingredients:["Riz","Crevettes","Poivrons","Tomates","Oignons","Ail","Huile","Cube bouillon","Piment","Curry"],steps:[{text:"Faire revenir oignons et ail dans l'huile.",icon:"fry",time:300},{text:"Ajouter poivrons et tomates. Cuire jusqu'à réduction.",icon:"cook",time:600},{text:"Ajouter les crevettes décortiquées. Assaisonner avec curry et piment.",icon:"fry",time:300},{text:"Ajouter le riz rincé et le bouillon dilué dans l'eau. Mélanger.",icon:"mix"},{text:"Couvrir et cuire à feu doux.",icon:"cook",time:1200}],time:"35 min",serves:"4 pers.",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Maafe végétarien aux légumes",ingredients:["Patates douces","Aubergines","Tomates","Oignons","Pâte d'arachide","Cube bouillon","Piment","Huile"],steps:[{text:"Faire revenir les oignons dans l'huile.",icon:"fry",time:300},{text:"Ajouter tomates et les légumes coupés en cubes.",icon:"cook",time:300},{text:"Délayer la pâte d'arachide dans 500ml d'eau. Verser.",icon:"mix"},{text:"Ajouter le bouillon et le piment. Couvrir.",icon:"cook"},{text:"Mijoter à feu doux jusqu'à ce que les légumes soient tendres.",icon:"cook",time:1800},{text:"Servir avec du riz.",icon:"serve"}],time:"40 min",serves:"4 pers.",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Egusi Soup (Nigeria)",ingredients:["Graines d'egusi (courge)","Poulet ou poisson fumé","Épinards","Oignons","Tomates","Huile de palme","Cube bouillon","Piment","Crevettes séchées"],steps:[{text:"Mixer les graines d'egusi avec un peu d'eau pour former une pâte épaisse.",icon:"mix"},{text:"Faire chauffer l'huile de palme. Y ajouter la pâte d'egusi. Faire frire en remuant.",icon:"fry",time:480},{text:"Ajouter tomates, oignons et piment. Mélanger.",icon:"mix",time:300},{text:"Ajouter le poulet ou poisson, les crevettes séchées et le bouillon. Couvrir d'eau.",icon:"cook"},{text:"Mijoter à feu moyen.",icon:"cook",time:1800},{text:"Ajouter les épinards en fin de cuisson. Cuire 5 min.",icon:"cook",time:300}],time:"55 min",serves:"4 pers.",diff:"Moyen"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Soupou yapp (soupe à la viande sénégalaise)",ingredients:["Viande de mouton ou bœuf","Patates douces","Carottes","Navets","Oignons","Tomates","Cube bouillon","Sel","Piment"],steps:[{text:"Faire revenir la viande dans un peu d'huile jusqu'à dorure.",icon:"fry",time:480},{text:"Ajouter oignons et tomates. Faire revenir.",icon:"fry",time:300},{text:"Couvrir d'eau. Ajouter le cube de bouillon et le piment.",icon:"cook"},{text:"Cuire jusqu'à ce que la viande soit à moitié cuite.",icon:"cook",time:1800},{text:"Ajouter les légumes coupés. Poursuivre la cuisson.",icon:"cook",time:1200},{text:"Servir chaud avec du riz blanc.",icon:"serve"}],time:"1h",serves:"4 pers.",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Aboboi (haricots et maïs)",ingredients:["Maïs frais ou en grains","Haricots blancs","Huile de palme","Oignons","Tomates","Piment","Sel","Cube bouillon"],steps:[{text:"Faire cuire les haricots et le maïs séparément jusqu'à tendreté.",icon:"cook",time:2400},{text:"Faire revenir oignons et tomates dans l'huile de palme.",icon:"fry",time:480},{text:"Ajouter haricots et maïs égouttés. Mélanger.",icon:"mix"},{text:"Assaisonner avec bouillon, piment et sel. Mijoter ensemble.",icon:"cook",time:600},{text:"Servir chaud.",icon:"serve"}],time:"1h",serves:"4 pers.",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Akara (beignets de haricots - Nigeria)",ingredients:["Haricots blancs","Oignons","Piment","Sel","Huile de friture"],steps:[{text:"Faire tremper les haricots une nuit. Enlever la peau en les frottant.",icon:"rest"},{text:"Mixer les haricots avec oignons, piment et sel pour obtenir une pâte épaisse.",icon:"mix"},{text:"Fouetter la pâte énergiquement pour l'aérer.",icon:"mix"},{text:"Faire chauffer l'huile à 170°C. Former des boules de pâte avec une cuillère.",icon:"fry"},{text:"Faire frire jusqu'à dorure des deux côtés.",icon:"fry",time:480},{text:"Égoutter. Servir chaud.",icon:"serve"}],time:"30 min (+ trempage)",serves:"20 beignets",diff:"Moyen"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Poulet aux épinards et arachides",ingredients:["Poulet","Épinards","Pâte d'arachide","Tomates","Oignons","Ail","Cube bouillon","Piment","Huile"],steps:[{text:"Faire dorer le poulet dans l'huile.",icon:"fry",time:480},{text:"Ajouter oignons, ail, tomates. Faire revenir.",icon:"fry",time:300},{text:"Ajouter la pâte d'arachide délayée dans l'eau.",icon:"mix"},{text:"Ajouter bouillon et piment. Mijoter.",icon:"cook",time:1500},{text:"Ajouter les épinards en fin de cuisson. Cuire encore 5 min.",icon:"cook",time:300},{text:"Servir avec du riz.",icon:"serve"}],time:"45 min",serves:"4 pers.",diff:"Facile"},
+
+// ===== MAGHREB - PLATS PRINCIPAUX =====
+{region:"Maghreb",type:"Plat principal",title:"Tajine de poulet aux olives et citron",ingredients:["Poulet","Olives vertes","Citron confit","Oignons","Ail","Gingembre","Curcuma","Huile d'olive","Coriandre"],steps:[{text:"Faire revenir oignons et ail dans l'huile d'olive.",icon:"fry",time:300},{text:"Ajouter curcuma, gingembre. Mettre le poulet et faire dorer.",icon:"fry",time:480},{text:"Ajouter citron confit et olives. Saler.",icon:"mix"},{text:"Ajouter un peu d'eau. Couvrir et cuire à feu doux.",icon:"cook",time:2400},{text:"Parsemer de coriandre. Servir avec du pain marocain.",icon:"serve"}],time:"55 min",serves:"4 pers.",diff:"Moyen"},
+{region:"Maghreb",type:"Plat principal",title:"Couscous au poulet et légumes",ingredients:["Semoule","Poulet","Courgettes","Carottes","Navets","Pois chiches","Tomates","Ras el hanout"],steps:[{text:"Faire revenir le poulet avec oignons et ras el hanout.",icon:"fry",time:480},{text:"Ajouter légumes coupés et tomates. Couvrir d'eau.",icon:"cook"},{text:"Cuire le bouillon à feu moyen.",icon:"cook",time:1800},{text:"Verser de l'eau bouillante salée sur la semoule. Couvrir 5 min. Égrener.",icon:"rest",time:300},{text:"Servir la semoule avec le poulet, les légumes et le bouillon.",icon:"serve"}],time:"1h",serves:"6 pers.",diff:"Moyen"},
+{region:"Maghreb",type:"Plat principal",title:"Harira (soupe marocaine)",ingredients:["Pois chiches","Lentilles","Tomates","Oignons","Céleri","Coriandre","Persil","Farine","Citron","Ras el hanout"],steps:[{text:"Faire revenir oignons et céleri dans l'huile.",icon:"fry",time:300},{text:"Ajouter tomates mixées, épices, pois chiches et lentilles. Couvrir d'eau.",icon:"cook"},{text:"Cuire jusqu'à ce que les légumineuses soient tendres.",icon:"cook",time:2700},{text:"Délayer 2 c.s. de farine dans de l'eau froide. Verser dans la soupe en remuant.",icon:"mix"},{text:"Cuire encore en remuant jusqu'à épaississement.",icon:"cook",time:600},{text:"Finir avec coriandre, persil et jus de citron.",icon:"serve"}],time:"1h",serves:"6 pers.",diff:"Facile"},
+{region:"Maghreb",type:"Plat principal",title:"Merguez et légumes grillés",ingredients:["Merguez","Poivrons","Courgettes","Oignons","Tomates","Huile d'olive","Cumin","Pain pita"],steps:[{text:"Couper les légumes en lamelles. Assaisonner avec huile et cumin.",icon:"cut"},{text:"Griller les légumes à la poêle ou au four à 200°C.",icon:"oven",time:900},{text:"Faire griller les merguez à la poêle en les retournant.",icon:"fry",time:480},{text:"Réchauffer le pain pita.",icon:"rest"},{text:"Servir merguez + légumes dans le pain avec de la harissa.",icon:"serve"}],time:"30 min",serves:"2 pers.",diff:"Facile"},
+{region:"Maghreb",type:"Plat principal",title:"Tajine d'agneau aux pruneaux",ingredients:["Agneau","Pruneaux","Oignons","Amandes","Miel","Cannelle","Gingembre","Safran","Huile","Sel"],steps:[{text:"Faire dorer les morceaux d'agneau dans l'huile chaude.",icon:"fry",time:600},{text:"Ajouter oignons, safran, gingembre. Couvrir d'eau. Mijoter.",icon:"cook",time:3600},{text:"Faire gonfler les pruneaux dans de l'eau tiède.",icon:"rest",time:600},{text:"Ajouter pruneaux, miel et cannelle à l'agneau. Poursuivre la cuisson.",icon:"cook",time:1200},{text:"Faire griller les amandes. Parsemer sur le tajine avant de servir.",icon:"fry",time:300}],time:"1h30",serves:"4 pers.",diff:"Moyen"},
+{region:"Maghreb",type:"Plat principal",title:"Chorba frik (soupe algérienne)",ingredients:["Blé concassé (frik)","Agneau ou poulet","Tomates","Oignons","Céleri","Coriandre","Curcuma","Sel","Citron"],steps:[{text:"Faire revenir la viande coupée en petits morceaux avec oignons et curcuma.",icon:"fry",time:480},{text:"Ajouter tomates, céleri et 1,5L d'eau.",icon:"cook"},{text:"Rincer le blé concassé. L'ajouter à la soupe.",icon:"mix"},{text:"Cuire à feu moyen en remuant de temps en temps.",icon:"cook",time:2400},{text:"Finir avec coriandre fraîche et jus de citron. Servir chaud.",icon:"serve"}],time:"50 min",serves:"6 pers.",diff:"Facile"},
+{region:"Maghreb",type:"Plat principal",title:"Zaalouk (caviar d'aubergines marocain)",ingredients:["Aubergines","Tomates","Ail","Huile d'olive","Cumin","Paprika","Coriandre","Citron","Sel"],steps:[{text:"Cuire les aubergines entières au four à 200°C jusqu'à ce qu'elles soient tendres.",icon:"oven",time:2400},{text:"Éplucher et écraser la chair des aubergines à la fourchette.",icon:"mix"},{text:"Mixer ou concasser les tomates. Les faire cuire dans l'huile avec l'ail.",icon:"fry",time:600},{text:"Ajouter la chair d'aubergine, cumin, paprika. Mélanger et cuire.",icon:"cook",time:900},{text:"Finir avec coriandre et citron. Servir tiède avec du pain.",icon:"serve"}],time:"50 min",serves:"4 pers.",diff:"Facile"},
+{region:"Maghreb",type:"Plat principal",title:"Loubia (haricots blancs en sauce tomate)",ingredients:["Haricots blancs","Tomates","Oignons","Ail","Cumin","Paprika","Huile d'olive","Persil","Sel","Piment"],steps:[{text:"Si haricots secs : faire tremper une nuit. Cuire jusqu'à tendreté.",icon:"rest"},{text:"Faire revenir oignons et ail dans l'huile d'olive.",icon:"fry",time:300},{text:"Ajouter tomates mixées, cumin et paprika. Réduire.",icon:"cook",time:600},{text:"Ajouter les haricots. Mélanger et mijoter ensemble.",icon:"cook",time:900},{text:"Parsemer de persil. Servir avec du pain.",icon:"serve"}],time:"40 min (+ trempage)",serves:"4 pers.",diff:"Facile"},
+{region:"Maghreb",type:"Plat principal",title:"Chermoula de poisson (Maroc)",ingredients:["Filets de poisson","Coriandre","Persil","Ail","Cumin","Paprika","Huile d'olive","Citron","Piment"],steps:[{text:"Préparer la chermoula : mixer coriandre, persil, ail, cumin, paprika, huile et citron.",icon:"mix"},{text:"Badigeonner généreusement les filets de poisson de chermoula.",icon:"rest"},{text:"Laisser mariner 30 min au frigo.",icon:"rest",time:1800},{text:"Cuire au four à 200°C ou à la poêle.",icon:"oven",time:1200},{text:"Servir avec des légumes grillés et du riz.",icon:"serve"}],time:"40 min",serves:"4 pers.",diff:"Facile"},
+{region:"Maghreb",type:"Plat principal",title:"Rechta au poulet (pâtes algériennes)",ingredients:["Pâtes rechta (ou tagliatelles fines)","Poulet","Pois chiches","Oignons","Beurre","Cannelle","Curcuma","Sel"],steps:[{text:"Cuire le poulet dans l'eau avec oignons, sel et épices.",icon:"cook",time:2400},{text:"Retirer le poulet. Désosser et effilocher.",icon:"cut"},{text:"Cuire les pâtes dans le bouillon du poulet.",icon:"cook",time:600},{text:"Faire revenir pois chiches et oignons dans le beurre avec la cannelle.",icon:"fry",time:300},{text:"Dresser les pâtes, le poulet effiloché et les pois chiches. Arroser du bouillon.",icon:"serve"}],time:"1h",serves:"4 pers.",diff:"Moyen"},
+{region:"Maghreb",type:"Plat principal",title:"Pastilla au poulet",ingredients:["Poulet","Feuilles de brick","Œufs","Oignons","Amandes","Sucre glace","Cannelle","Beurre","Persil","Safran"],steps:[{text:"Cuire le poulet avec oignons, safran, persil et eau.",icon:"cook",time:2400},{text:"Effilocher le poulet. Réduire le bouillon. Ajouter les œufs battus pour une farce sèche.",icon:"mix",time:600},{text:"Griller et concasser les amandes avec sucre glace et cannelle.",icon:"fry",time:300},{text:"Superposer des feuilles de brick beurrées dans un moule. Garnir de farce puis d'amandes.",icon:"rest"},{text:"Refermer avec des feuilles de brick. Cuire au four à 200°C.",icon:"oven",time:1200},{text:"Saupoudrer de sucre glace et cannelle. Servir chaud.",icon:"serve"}],time:"1h30",serves:"6 pers.",diff:"Avancé"},
+
+// ===== OCCIDENTALE - PLATS PRINCIPAUX =====
+{region:"Occidentale",type:"Plat principal",title:"Poulet rôti à la tomate",ingredients:["Poulet entier","Tomates","Oignons","Thym","Ail","Huile d'olive","Sel","Poivre"],steps:[{text:"Préchauffer le four à 200°C. Disposer le poulet sur les légumes dans un plat.",icon:"oven"},{text:"Arroser d'huile. Glisser thym et ail sous la peau. Saler, poivrer.",icon:"rest"},{text:"Enfourner et rôtir.",icon:"oven",time:3000},{text:"Arroser le poulet avec son jus à mi-cuisson.",icon:"rest"},{text:"Laisser reposer 10 min hors du four avant de découper.",icon:"rest",time:600}],time:"1h10",serves:"4 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Plat principal",title:"Gratin dauphinois",ingredients:["Pommes de terre","Crème fraîche","Lait","Ail","Beurre","Noix de muscade","Gruyère râpé"],steps:[{text:"Préchauffer le four à 180°C. Frotter le plat avec ail. Beurrer.",icon:"oven"},{text:"Trancher finement les pommes de terre. Mélanger crème, lait, ail, sel, poivre et muscade.",icon:"cut"},{text:"Disposer les pommes de terre en couches. Verser le mélange crème.",icon:"rest"},{text:"Parsemer de gruyère. Enfourner.",icon:"oven",time:5400},{text:"Piquer avec un couteau pour vérifier la cuisson. Servir chaud.",icon:"serve"}],time:"1h30",serves:"4 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Plat principal",title:"Quiche lorraine",ingredients:["Pâte brisée","Lardons","Œufs","Crème fraîche","Lait","Noix de muscade"],steps:[{text:"Préchauffer le four à 180°C. Étaler la pâte dans un moule.",icon:"oven"},{text:"Faire revenir les lardons à sec. Les répartir sur la pâte.",icon:"fry",time:300},{text:"Mélanger œufs, crème, lait, sel, poivre et muscade. Verser.",icon:"mix"},{text:"Enfourner jusqu'à dorure et prise complète.",icon:"oven",time:2400},{text:"Laisser tiédir avant de couper. Servir avec une salade.",icon:"serve"}],time:"45 min",serves:"4 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Plat principal",title:"Pâtes carbonara",ingredients:["Spaghetti","Lardons ou pancetta","Œufs","Parmesan râpé","Ail","Poivre noir"],steps:[{text:"Cuire les spaghetti dans de l'eau bouillante salée al dente.",icon:"cook",time:600},{text:"Faire revenir les lardons et l'ail à sec.",icon:"fry",time:480},{text:"Battre les œufs avec le parmesan et beaucoup de poivre.",icon:"mix"},{text:"Égoutter les pâtes en gardant une tasse d'eau de cuisson.",icon:"rest"},{text:"Hors du feu, mélanger pâtes + lardons + mélange œuf-parmesan. Ajouter un peu d'eau de cuisson.",icon:"mix"},{text:"Servir immédiatement avec du parmesan.",icon:"serve"}],time:"20 min",serves:"2 pers.",diff:"Moyen"},
+{region:"Occidentale",type:"Plat principal",title:"Ratatouille",ingredients:["Courgettes","Aubergines","Poivrons","Tomates","Oignons","Ail","Thym","Huile d'olive"],steps:[{text:"Couper tous les légumes en dés.",icon:"cut"},{text:"Faire revenir oignons et ail dans l'huile.",icon:"fry",time:300},{text:"Ajouter poivrons puis aubergines puis courgettes successivement.",icon:"fry",time:480},{text:"Ajouter tomates et thym. Saler, poivrer.",icon:"cook"},{text:"Mijoter à feu doux à couvert.",icon:"cook",time:1800},{text:"Servir chaud ou froid.",icon:"serve"}],time:"50 min",serves:"4 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Plat principal",title:"Tourtière québécoise",ingredients:["Porc haché","Bœuf haché","Oignons","Ail","Pommes de terre","Clou de girofle","Cannelle","Pâte brisée"],steps:[{text:"Faire revenir oignons et ail.",icon:"fry",time:300},{text:"Ajouter viandes hachées. Cuire en émiettant.",icon:"fry",time:600},{text:"Ajouter pommes de terre en petits dés, épices et sel. Couvrir d'eau.",icon:"cook"},{text:"Mijoter jusqu'à évaporation du liquide.",icon:"cook",time:1200},{text:"Garnir un moule de pâte. Verser la garniture. Couvrir d'une seconde pâte. Badigeonner.",icon:"rest"},{text:"Cuire au four à 190°C.",icon:"oven",time:2400}],time:"1h30",serves:"6 pers.",diff:"Moyen"},
+{region:"Occidentale",type:"Plat principal",title:"Soupe à l'oignon gratinée",ingredients:["Oignons","Bouillon de bœuf","Pain","Gruyère râpé","Beurre","Farine","Thym"],steps:[{text:"Faire fondre les oignons émincés dans le beurre à feu doux en remuant souvent.",icon:"cook",time:2400},{text:"Singer avec la farine. Remuer 2 min.",icon:"mix",time:120},{text:"Verser le bouillon chaud. Ajouter thym, sel, poivre. Mijoter.",icon:"cook",time:1200},{text:"Verser la soupe dans des bols allant au four.",icon:"rest"},{text:"Déposer une tranche de pain. Couvrir de gruyère.",icon:"rest"},{text:"Passer sous le gril jusqu'à gratinage.",icon:"oven",time:300}],time:"1h",serves:"4 pers.",diff:"Moyen"},
+{region:"Occidentale",type:"Plat principal",title:"Poutine québécoise",ingredients:["Pommes de terre","Sauce brune (gravy)","Fromage en grains (curd)","Huile de friture","Sel","Poivre"],steps:[{text:"Couper les pommes de terre en frites épaisses. Rincer et sécher.",icon:"cut"},{text:"Faire chauffer l'huile à 160°C. Faire une première friture des frites (précuisson).",icon:"fry",time:480},{text:"Monter la température à 190°C. Remettre les frites pour les dorer.",icon:"fry",time:300},{text:"Pendant ce temps, chauffer la sauce brune.",icon:"cook",time:180},{text:"Égoutter les frites. Mettre dans un bol. Ajouter le fromage en grains.",icon:"rest"},{text:"Verser la sauce brune chaude par-dessus. Servir immédiatement.",icon:"serve"}],time:"35 min",serves:"2 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Plat principal",title:"Soupe aux pois jaunes (Québec)",ingredients:["Pois jaunes cassés","Jambon ou lard salé","Oignons","Carottes","Céleri","Sarriette","Sel","Poivre"],steps:[{text:"Faire tremper les pois jaunes 4h minimum. Égoutter.",icon:"rest",time:0},{text:"Faire revenir oignons, carottes et céleri dans un peu de beurre.",icon:"fry",time:300},{text:"Ajouter les pois, le jambon et couvrir d'eau froide.",icon:"cook"},{text:"Porter à ébullition. Écumer si nécessaire.",icon:"cook",time:600},{text:"Ajouter la sarriette. Mijoter à feu doux.",icon:"cook",time:5400},{text:"Retirer le jambon. Mixer partiellement pour épaissir. Servir chaud.",icon:"serve"}],time:"2h30",serves:"6 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Plat principal",title:"Bœuf Bourguignon",ingredients:["Bœuf à braiser","Vin rouge","Lardons","Champignons","Oignons grelots","Ail","Carotte","Thym","Laurier","Farine"],steps:[{text:"Faire dorer le bœuf en cubes dans l'huile. Réserver.",icon:"fry",time:600},{text:"Faire revenir lardons et oignons dans la même cocotte.",icon:"fry",time:300},{text:"Singer avec la farine. Remuer.",icon:"mix"},{text:"Verser le vin rouge. Ajouter ail, thym, laurier. Remettre la viande.",icon:"cook"},{text:"Mijoter à feu très doux à couvert.",icon:"cook",time:7200},{text:"Ajouter les champignons en fin de cuisson. Cuire encore 30 min.",icon:"cook",time:1800}],time:"2h30",serves:"4 pers.",diff:"Moyen"},
+{region:"Occidentale",type:"Plat principal",title:"Lasagnes maison",ingredients:["Lasagnes fraîches","Viande hachée","Tomates concassées","Oignons","Béchamel","Parmesan","Ail","Huile"],steps:[{text:"Faire revenir oignons et ail. Ajouter la viande hachée. Cuire.",icon:"fry",time:600},{text:"Ajouter tomates et laisser mijoter pour la sauce bolognaise.",icon:"cook",time:1800},{text:"Préparer la béchamel : beurre + farine + lait. Fouetter jusqu'à épaississement.",icon:"mix",time:600},{text:"Préchauffer le four à 180°C. Dans un plat, alterner : pâtes, bolognaise, béchamel.",icon:"rest"},{text:"Terminer par la béchamel et le parmesan. Enfourner.",icon:"oven",time:2400},{text:"Laisser reposer 10 min avant de servir.",icon:"rest",time:600}],time:"1h30",serves:"6 pers.",diff:"Moyen"},
+{region:"Occidentale",type:"Plat principal",title:"Poulet à la crème et champignons",ingredients:["Poulet","Champignons","Crème fraîche","Oignons","Ail","Beurre","Persil","Sel","Poivre"],steps:[{text:"Faire dorer les morceaux de poulet dans le beurre.",icon:"fry",time:600},{text:"Retirer le poulet. Faire revenir oignons, ail et champignons dans le même beurre.",icon:"fry",time:480},{text:"Remettre le poulet. Ajouter la crème fraîche.",icon:"cook"},{text:"Mijoter à feu doux jusqu'à cuisson du poulet.",icon:"cook",time:1500},{text:"Parsemer de persil. Servir avec des pâtes ou du riz.",icon:"serve"}],time:"40 min",serves:"4 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Plat principal",title:"Saumon au four citron-aneth",ingredients:["Filet de saumon","Citron","Aneth frais","Ail","Huile d'olive","Sel","Poivre"],steps:[{text:"Préchauffer le four à 200°C. Tapisser un plat de papier sulfurisé.",icon:"oven"},{text:"Mélanger huile d'olive, ail émincé, jus de citron, sel et poivre.",icon:"mix"},{text:"Badigeonner le saumon du mélange. Déposer des rondelles de citron dessus.",icon:"rest"},{text:"Parsemer d'aneth frais. Enfourner.",icon:"oven",time:1200},{text:"Le saumon doit être légèrement rosé au centre. Servir avec du riz ou des légumes.",icon:"serve"}],time:"25 min",serves:"2 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Plat principal",title:"Tarte flambée (Flammekueche)",ingredients:["Pâte à pain fine","Crème fraîche","Lardons","Oignons","Sel","Poivre","Noix de muscade"],steps:[{text:"Préchauffer le four à 250°C (très chaud). Étirer la pâte très finement.",icon:"oven"},{text:"Étaler la crème fraîche assaisonnée de sel, poivre et muscade.",icon:"rest"},{text:"Répartir lardons et oignons émincés finement.",icon:"rest"},{text:"Enfourner sur la grille du bas pour 8-10 min jusqu'à bords croustillants.",icon:"oven",time:540},{text:"Servir immédiatement, très chaude.",icon:"serve"}],time:"20 min",serves:"2 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Plat principal",title:"Croque-monsieur gratiné",ingredients:["Pain de mie","Jambon","Fromage râpé","Béchamel","Beurre","Moutarde"],steps:[{text:"Préparer une béchamel légère : beurre, farine, lait, sel, noix de muscade.",icon:"cook",time:300},{text:"Beurrer et griller légèrement le pain de mie au four ou à la poêle.",icon:"fry",time:180},{text:"Tartiner l'intérieur d'un peu de moutarde. Garnir de jambon et fromage.",icon:"rest"},{text:"Napper généreusement le dessus de béchamel et saupoudrer de fromage râpé.",icon:"rest"},{text:"Passer sous le gril du four jusqu'à gratinage doré.",icon:"oven",time:300}],time:"20 min",serves:"2 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Plat principal",title:"Omelette aux champignons et fromage",ingredients:["Œufs","Champignons","Fromage râpé","Beurre","Ciboulette","Sel","Poivre"],steps:[{text:"Faire sauter les champignons émincés dans le beurre. Saler.",icon:"fry",time:300},{text:"Battre les œufs avec sel, poivre et ciboulette.",icon:"mix"},{text:"Dans une poêle beurrée chaude, verser les œufs. Secouer la poêle.",icon:"fry",time:120},{text:"Quand les bords sont cuits mais le centre encore baveux, ajouter champignons et fromage.",icon:"rest"},{text:"Plier l'omelette en deux. Servir immédiatement.",icon:"serve"}],time:"15 min",serves:"1 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Plat principal",title:"Galettes de pommes de terre (rösti)",ingredients:["Pommes de terre","Oignons","Œufs","Farine","Sel","Poivre","Huile"],steps:[{text:"Râper les pommes de terre. Presser dans un torchon pour éliminer l'eau.",icon:"mix"},{text:"Mélanger avec oignons râpés, œuf, farine, sel et poivre.",icon:"mix"},{text:"Faire chauffer l'huile dans une poêle.",icon:"fry"},{text:"Déposer des cuillerées de pâte. Aplatir en galettes.",icon:"fry",time:300},{text:"Cuire jusqu'à dorure des deux côtés.",icon:"fry",time:300},{text:"Égoutter. Servir avec crème fraîche ou saumon fumé.",icon:"serve"}],time:"30 min",serves:"4 pers.",diff:"Facile"},
+
+// ===== DESSERTS =====
+{region:"Maghreb",type:"Dessert",title:"Cornes de gazelle",ingredients:["Farine","Amandes moulues","Sucre glace","Eau de fleur d'oranger","Beurre","Cannelle"],steps:[{text:"Mélanger amandes, sucre glace, cannelle et eau de fleur d'oranger pour la farce.",icon:"mix"},{text:"Préparer la pâte : farine + beurre fondu + eau de fleur d'oranger. Pétrir.",icon:"mix",time:300},{text:"Réfrigérer la pâte 30 min.",icon:"rest",time:1800},{text:"Former des croissants : enrouler des boules de farce dans des bandes de pâte.",icon:"rest"},{text:"Cuire au four à 180°C.",icon:"oven",time:900},{text:"Refroidir. Saupoudrer de sucre glace.",icon:"rest",time:600}],time:"1h",serves:"20 pièces",diff:"Moyen"},
+{region:"Occidentale",type:"Dessert",title:"Crêpes moelleuses",ingredients:["Farine","Œufs","Lait","Beurre fondu","Sucre","Sel","Vanille"],steps:[{text:"Mélanger farine, sucre, sel. Ajouter les œufs et la moitié du lait. Fouetter.",icon:"mix"},{text:"Ajouter le reste du lait, beurre fondu et vanille. Laisser reposer.",icon:"rest",time:1800},{text:"Chauffer une poêle légèrement beurrée.",icon:"fry"},{text:"Verser une louche de pâte. Cuire 1 min de chaque côté.",icon:"fry",time:60},{text:"Servir avec sucre, confiture ou nutella.",icon:"serve"}],time:"45 min (+ repos)",serves:"10 crêpes",diff:"Facile"},
+{region:"Occidentale",type:"Dessert",title:"Mousse au chocolat",ingredients:["Chocolat noir","Œufs","Sucre","Beurre","Sel"],steps:[{text:"Faire fondre le chocolat avec le beurre au bain-marie.",icon:"cook",time:300},{text:"Fouetter les jaunes avec le sucre jusqu'à blanchiment.",icon:"mix"},{text:"Incorporer le chocolat fondu aux jaunes.",icon:"mix"},{text:"Monter les blancs en neige ferme avec une pincée de sel.",icon:"mix"},{text:"Incorporer délicatement les blancs au chocolat en soulevant la masse.",icon:"mix"},{text:"Répartir en verres. Réfrigérer au moins 2h.",icon:"rest",time:7200}],time:"20 min (+ 2h frigo)",serves:"4 pers.",diff:"Facile"},
+{region:"Maghreb",type:"Dessert",title:"Makroud aux dattes",ingredients:["Semoule fine","Beurre","Pâte de dattes","Cannelle","Eau de fleur d'oranger","Huile","Miel"],steps:[{text:"Mélanger semoule et beurre fondu. Ajouter eau tiède pour former une pâte.",icon:"mix"},{text:"Mélanger dattes, cannelle et eau de fleur d'oranger pour la farce.",icon:"mix"},{text:"Former des boudins de pâte. Creuser et farcir de dattes. Refermer.",icon:"rest"},{text:"Découper en losanges. Faire frire dans l'huile chaude.",icon:"fry",time:480},{text:"Tremper immédiatement dans le miel chaud.",icon:"rest"},{text:"Laisser refroidir sur une grille.",icon:"rest"}],time:"1h",serves:"20 pièces",diff:"Moyen"},
+{region:"Afrique subsaharienne",type:"Dessert",title:"Beignets de banane plantain",ingredients:["Bananes plantain très mûres","Farine","Sucre","Sel","Huile de friture","Cannelle"],steps:[{text:"Écraser les bananes en purée. Ajouter farine, sucre, sel et cannelle. Mélanger.",icon:"mix"},{text:"Chauffer l'huile de friture à 170°C.",icon:"fry"},{text:"Former des boules ou des galettes avec la pâte.",icon:"rest"},{text:"Faire frire jusqu'à dorure.",icon:"fry",time:480},{text:"Égoutter sur du papier absorbant. Servir chaud.",icon:"serve"}],time:"25 min",serves:"15 beignets",diff:"Facile"},
+{region:"Occidentale",type:"Dessert",title:"Gâteau au yaourt",ingredients:["Yaourt nature","Farine","Sucre","Œufs","Huile","Levure chimique","Zeste de citron"],steps:[{text:"Préchauffer le four à 180°C. Beurrer et fariner un moule.",icon:"oven"},{text:"Verser le yaourt. Ajouter 2 pots de sucre. Ajouter les œufs et 1 pot d'huile.",icon:"mix"},{text:"Ajouter 3 pots de farine et la levure. Mélanger.",icon:"mix"},{text:"Verser dans le moule. Enfourner.",icon:"oven",time:2100},{text:"Vérifier la cuisson avec un couteau. Laisser refroidir.",icon:"rest",time:600}],time:"45 min",serves:"6 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Dessert",title:"Tarte aux pommes alsacienne",ingredients:["Pommes","Pâte brisée","Œufs","Crème fraîche","Sucre","Cannelle","Beurre"],steps:[{text:"Préchauffer le four à 180°C. Étaler la pâte dans un moule à tarte.",icon:"oven"},{text:"Trancher finement les pommes. Les disposer sur la pâte.",icon:"cut"},{text:"Mélanger œufs, crème, sucre et cannelle. Verser sur les pommes.",icon:"mix"},{text:"Parsemer de petits morceaux de beurre. Enfourner.",icon:"oven",time:2400},{text:"Laisser tiédir avant de servir.",icon:"rest",time:900}],time:"50 min",serves:"6 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Dessert",title:"Tiramisu classique",ingredients:["Mascarpone","Œufs","Sucre","Biscuits boudoir","Café fort","Cacao en poudre","Amaretto"],steps:[{text:"Préparer un café fort. Laisser refroidir.",icon:"rest"},{text:"Fouetter jaunes + sucre jusqu'à blanchiment. Incorporer le mascarpone.",icon:"mix"},{text:"Monter les blancs en neige. Incorporer délicatement au mascarpone.",icon:"mix"},{text:"Tremper rapidement les biscuits dans le café. Les disposer en couche.",icon:"rest"},{text:"Étaler une couche de crème. Répéter. Saupoudrer de cacao.",icon:"rest"},{text:"Réfrigérer au moins 4h.",icon:"rest",time:14400}],time:"30 min (+ 4h)",serves:"6 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Dessert",title:"Gâteau fondant au chocolat",ingredients:["Chocolat noir","Beurre","Œufs","Sucre","Farine"],steps:[{text:"Préchauffer le four à 180°C. Faire fondre chocolat + beurre au bain-marie.",icon:"cook",time:300},{text:"Fouetter les œufs avec le sucre jusqu'à blanchiment.",icon:"mix"},{text:"Incorporer le chocolat fondu. Ajouter la farine. Mélanger.",icon:"mix"},{text:"Verser dans un moule beurré. Enfourner 12 min (fondant).",icon:"oven",time:720},{text:"L'intérieur doit rester coulant. Démouler tiède.",icon:"serve"}],time:"25 min",serves:"4 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Dessert",title:"Pain perdu brioché",ingredients:["Brioche ou pain rassis","Œufs","Lait","Sucre","Beurre","Vanille","Cannelle"],steps:[{text:"Battre les œufs avec le lait, le sucre, la vanille et la cannelle.",icon:"mix"},{text:"Tremper les tranches de pain dans ce mélange.",icon:"rest",time:60},{text:"Faire fondre du beurre dans une poêle à feu moyen.",icon:"fry"},{text:"Faire dorer les tranches des deux côtés.",icon:"fry",time:300},{text:"Servir chaud avec du sucre glace, du sirop d'érable ou de la confiture.",icon:"serve"}],time:"15 min",serves:"4 pers.",diff:"Très facile"},
+{region:"Occidentale",type:"Dessert",title:"Riz au lait à la vanille",ingredients:["Riz rond","Lait entier","Sucre","Vanille","Beurre","Sel"],steps:[{text:"Faire bouillir le lait avec la vanille et le sel.",icon:"cook",time:300},{text:"Ajouter le riz rincé. Baisser à feu doux.",icon:"cook"},{text:"Cuire en remuant régulièrement pour que le riz n'attache pas.",icon:"cook",time:1500},{text:"Ajouter le sucre et le beurre. Mélanger.",icon:"mix"},{text:"Servir tiède ou froid.",icon:"serve"}],time:"30 min",serves:"4 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Dessert",title:"Tarte tatin aux pommes",ingredients:["Pommes","Pâte feuilletée","Beurre","Sucre","Cannelle"],steps:[{text:"Faire fondre beurre + sucre dans une poêle allant au four. Caraméliser.",icon:"cook",time:300},{text:"Disposer les moitiés de pommes épluchées face bombée vers le bas.",icon:"rest"},{text:"Cuire les pommes dans le caramel à feu moyen.",icon:"cook",time:900},{text:"Recouvrir avec la pâte feuilletée. Rentrer les bords.",icon:"rest"},{text:"Cuire au four à 200°C.",icon:"oven",time:1500},{text:"Démouler immédiatement à la sortie du four. Servir tiède.",icon:"serve"}],time:"45 min",serves:"6 pers.",diff:"Moyen"},
+{region:"Occidentale",type:"Dessert",title:"Clafoutis aux cerises",ingredients:["Cerises","Farine","Œufs","Lait","Sucre","Beurre","Sel","Vanille"],steps:[{text:"Préchauffer le four à 180°C. Beurrer et sucrer un plat.",icon:"oven"},{text:"Disposer les cerises (non dénoyautées selon tradition) dans le plat.",icon:"rest"},{text:"Mélanger farine, œufs, lait, sucre, sel et vanille jusqu'à pâte lisse.",icon:"mix"},{text:"Verser la pâte sur les cerises.",icon:"rest"},{text:"Enfourner jusqu'à gonflement et dorure.",icon:"oven",time:2400},{text:"Servir tiède, saupoudré de sucre glace.",icon:"serve"}],time:"50 min",serves:"6 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Dessert",title:"Biscuits sablés au beurre",ingredients:["Farine","Beurre mou","Sucre","Œuf","Vanille","Sel"],steps:[{text:"Mélanger farine, sucre et sel. Sabler avec le beurre du bout des doigts.",icon:"mix"},{text:"Ajouter l'œuf et la vanille. Former une boule sans trop travailler.",icon:"mix"},{text:"Réfrigérer 30 min.",icon:"rest",time:1800},{text:"Préchauffer le four à 180°C. Étaler la pâte et découper avec des emporte-pièces.",icon:"cut"},{text:"Cuire sur une plaque au four.",icon:"oven",time:600},{text:"Laisser refroidir sur une grille avant de décorer.",icon:"rest",time:600}],time:"50 min",serves:"25 biscuits",diff:"Facile"},
+{region:"Maghreb",type:"Dessert",title:"Gâteau de semoule au citron",ingredients:["Semoule fine","Sucre","Beurre fondu","Yaourt","Œufs","Citron","Levure","Sirop de sucre"],steps:[{text:"Mélanger semoule, sucre, beurre fondu, yaourt, œufs et zeste de citron.",icon:"mix"},{text:"Ajouter la levure et le jus de citron. Mélanger.",icon:"mix"},{text:"Verser dans un moule beurré. Laisser reposer 15 min.",icon:"rest",time:900},{text:"Cuire au four à 180°C.",icon:"oven",time:1500},{text:"Verser du sirop de sucre aromatisé à la fleur d'oranger sur le gâteau chaud.",icon:"rest"},{text:"Couper en losanges. Laisser refroidir.",icon:"rest"}],time:"50 min",serves:"12 parts",diff:"Facile"},
+{region:"Occidentale",type:"Dessert",title:"Brownie au chocolat",ingredients:["Chocolat noir","Beurre","Œufs","Sucre","Farine","Noix (facultatif)"],steps:[{text:"Préchauffer le four à 180°C. Beurrer un moule carré.",icon:"oven"},{text:"Faire fondre chocolat + beurre au bain-marie.",icon:"cook",time:300},{text:"Fouetter œufs + sucre. Incorporer le chocolat. Ajouter la farine.",icon:"mix"},{text:"Ajouter les noix si désiré. Verser dans le moule.",icon:"mix"},{text:"Cuire au four. Le centre doit rester légèrement fondant.",icon:"oven",time:1200},{text:"Laisser refroidir complètement avant de couper en carrés.",icon:"rest",time:1800}],time:"35 min",serves:"12 carrés",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Dessert",title:"Beignets sucrés (Puff Puff - Nigeria)",ingredients:["Farine","Levure","Sucre","Sel","Eau tiède","Huile de friture","Noix de muscade"],steps:[{text:"Mélanger farine, levure, sucre, sel et muscade. Ajouter eau tiède progressivement.",icon:"mix"},{text:"Pétrir jusqu'à obtenir une pâte lisse et souple.",icon:"mix",time:300},{text:"Laisser lever 1h à couvert dans un endroit chaud.",icon:"rest",time:3600},{text:"Chauffer l'huile à 170°C. Façonner des boules de pâte.",icon:"fry"},{text:"Faire frire jusqu'à dorure en les retournant.",icon:"fry",time:300},{text:"Égoutter. Rouler dans le sucre. Servir chaud.",icon:"serve"}],time:"30 min (+ 1h levée)",serves:"20 beignets",diff:"Facile"},
+{region:"Occidentale",type:"Dessert",title:"Crumble aux fruits",ingredients:["Fruits (pommes ou poires)","Farine","Beurre","Sucre","Poudre d'amande","Cannelle"],steps:[{text:"Préchauffer le four à 180°C. Couper les fruits en morceaux. Mettre dans un plat.",icon:"cut"},{text:"Saupoudrer les fruits de sucre et cannelle.",icon:"rest"},{text:"Mélanger farine, poudre d'amande et sucre. Ajouter le beurre froid en dés. Sabler.",icon:"mix"},{text:"Répartir le crumble sur les fruits en couche épaisse.",icon:"rest"},{text:"Enfourner jusqu'à dorure du crumble.",icon:"oven",time:1800},{text:"Servir tiède avec de la glace vanille.",icon:"serve"}],time:"45 min",serves:"6 pers.",diff:"Très facile"},
+{region:"Occidentale",type:"Dessert",title:"Banana bread",ingredients:["Bananes très mûres","Farine","Sucre","Œufs","Beurre fondu","Levure","Sel","Cannelle","Noix (facultatif)"],steps:[{text:"Préchauffer le four à 175°C. Beurrer un moule à cake.",icon:"oven"},{text:"Écraser les bananes à la fourchette.",icon:"mix"},{text:"Mélanger beurre fondu, sucre, œufs et bananes. Bien mélanger.",icon:"mix"},{text:"Ajouter farine, levure, sel et cannelle. Mélanger sans trop insister.",icon:"mix"},{text:"Ajouter les noix. Verser dans le moule.",icon:"rest"},{text:"Cuire au four.",icon:"oven",time:3600},{text:"Vérifier la cuisson avec un couteau. Refroidir avant de trancher.",icon:"rest"}],time:"1h20",serves:"8 tranches",diff:"Facile"},
+
+// ===== BOISSONS =====
+{region:"Afrique subsaharienne",type:"Boisson",title:"Bissap glacé à la menthe",ingredients:["Fleurs d'hibiscus séchées","Eau","Sucre","Menthe fraîche","Gingembre"],steps:[{text:"Porter à ébullition l'eau avec les fleurs et le gingembre.",icon:"cook",time:480},{text:"Laisser infuser hors du feu.",icon:"rest",time:600},{text:"Filtrer. Ajouter le sucre chaud et mélanger.",icon:"mix"},{text:"Laisser refroidir puis réfrigérer.",icon:"rest",time:3600},{text:"Servir très froid avec des glaçons et de la menthe fraîche.",icon:"serve"}],time:"20 min (+ réfrigération)",serves:"6 verres",diff:"Très facile"},
+{region:"Maghreb",type:"Boisson",title:"Thé à la menthe marocain",ingredients:["Thé vert gunpowder","Menthe fraîche","Sucre","Eau bouillante"],steps:[{text:"Rincer le thé vert avec un peu d'eau bouillante. Jeter cette eau.",icon:"rest"},{text:"Verser l'eau bouillante. Ajouter la menthe fraîche.",icon:"cook"},{text:"Laisser infuser.",icon:"rest",time:180},{text:"Ajouter le sucre. Remuer.",icon:"mix"},{text:"Verser de haut pour aérer le thé. Servir dans des verres à thé.",icon:"serve"}],time:"10 min",serves:"4 verres",diff:"Très facile"},
+{region:"Afrique subsaharienne",type:"Boisson",title:"Jus de gingembre pimenté",ingredients:["Gingembre frais","Eau","Sucre","Citron","Piment"],steps:[{text:"Peler et râper le gingembre frais.",icon:"cut"},{text:"Faire bouillir avec l'eau et le piment.",icon:"cook",time:600},{text:"Laisser infuser hors du feu.",icon:"rest",time:900},{text:"Filtrer. Ajouter sucre et jus de citron. Mélanger.",icon:"mix"},{text:"Réfrigérer. Servir froid sur glace.",icon:"rest",time:1800}],time:"25 min",serves:"4 verres",diff:"Très facile"},
+{region:"Afrique subsaharienne",type:"Boisson",title:"Jus de tamarin",ingredients:["Pulpe de tamarin","Eau","Sucre","Gingembre","Sel"],steps:[{text:"Délayer la pulpe de tamarin dans 500ml d'eau tiède. Malaxer.",icon:"mix",time:300},{text:"Filtrer pour retirer fibres et graines.",icon:"rest"},{text:"Ajouter eau, sucre, gingembre râpé et une pincée de sel.",icon:"mix"},{text:"Bien mélanger. Ajuster le sucre.",icon:"mix"},{text:"Réfrigérer et servir très froid.",icon:"rest",time:3600}],time:"15 min",serves:"4 verres",diff:"Très facile"},
+{region:"Occidentale",type:"Boisson",title:"Chocolat chaud onctueux",ingredients:["Lait entier","Chocolat noir","Sucre","Crème fraîche","Cannelle","Vanille"],steps:[{text:"Faire chauffer le lait à feu doux.",icon:"cook",time:300},{text:"Ajouter le chocolat cassé en morceaux.",icon:"cook"},{text:"Fouetter constamment jusqu'à dissolution complète.",icon:"mix",time:300},{text:"Ajouter sucre, cannelle et vanille. Fouetter.",icon:"mix"},{text:"Verser dans des tasses. Garnir de crème fouettée.",icon:"serve"}],time:"10 min",serves:"2 tasses",diff:"Très facile"},
+{region:"Occidentale",type:"Boisson",title:"Limonade maison",ingredients:["Citrons","Eau","Sucre","Menthe","Glaçons"],steps:[{text:"Préparer le sirop : bouillir sucre + eau à parts égales.",icon:"cook",time:300},{text:"Laisser refroidir le sirop.",icon:"rest",time:600},{text:"Presser les citrons. Mélanger jus + sirop + eau fraîche.",icon:"mix"},{text:"Goûter et ajuster.",icon:"rest"},{text:"Servir avec des glaçons et de la menthe fraîche.",icon:"serve"}],time:"15 min",serves:"4 verres",diff:"Très facile"},
+{region:"Afrique subsaharienne",type:"Boisson",title:"Smoothie tropical africain",ingredients:["Mangue","Banane","Ananas","Lait de coco","Gingembre","Citron"],steps:[{text:"Couper les fruits en morceaux. Congeler banane et mangue 1h.",icon:"rest",time:3600},{text:"Mettre tous les fruits dans un blender.",icon:"mix"},{text:"Ajouter lait de coco, gingembre râpé et jus de citron.",icon:"mix"},{text:"Mixer jusqu'à consistance lisse.",icon:"mix",time:30},{text:"Servir immédiatement avec de la glace pilée.",icon:"serve"}],time:"10 min",serves:"2 verres",diff:"Très facile"},
+{region:"Afrique subsaharienne",type:"Boisson",title:"Dêgué (lait de mil fermenté)",ingredients:["Mil cuit ou couscous de mil","Lait","Yaourt nature","Sucre","Noix de coco râpée"],steps:[{text:"Cuire le mil dans de l'eau. Laisser refroidir.",icon:"cook",time:600},{text:"Mélanger mil cuit, yaourt, lait et sucre. Remuer.",icon:"mix"},{text:"Ajouter la noix de coco râpée. Mélanger.",icon:"mix"},{text:"Réfrigérer au moins 2h.",icon:"rest",time:7200},{text:"Servir très frais dans des bols.",icon:"serve"}],time:"20 min (+ 2h frigo)",serves:"4 portions",diff:"Très facile"},
+{region:"Occidentale",type:"Boisson",title:"Vin chaud épicé (hiver)",ingredients:["Vin rouge","Sucre","Cannelle","Clou de girofle","Anis étoilé","Orange","Citron","Vanille"],steps:[{text:"Verser le vin dans une casserole. Ne pas faire bouillir.",icon:"cook"},{text:"Ajouter sucre, épices, zeste d'orange et de citron.",icon:"mix"},{text:"Chauffer à feu doux en remuant jusqu'à dissolution du sucre.",icon:"cook",time:600},{text:"Laisser infuser à feu très doux sans ébullition.",icon:"rest",time:600},{text:"Filtrer et servir dans des mugs. Garnir d'une rondelle d'orange.",icon:"serve"}],time:"20 min",serves:"4 verres",diff:"Très facile"},
+{region:"Maghreb",type:"Boisson",title:"Karkadé chaud (hibiscus chaud)",ingredients:["Fleurs d'hibiscus séchées","Eau","Sucre","Gingembre","Cardamome"],steps:[{text:"Porter l'eau à ébullition.",icon:"cook",time:300},{text:"Ajouter les fleurs d'hibiscus, gingembre et cardamome.",icon:"mix"},{text:"Baisser le feu et infuser à feu doux.",icon:"cook",time:480},{text:"Filtrer. Ajouter le sucre. Remuer.",icon:"mix"},{text:"Servir chaud dans des tasses.",icon:"serve"}],time:"15 min",serves:"4 tasses",diff:"Très facile"},
+{region:"Afrique subsaharienne",type:"Boisson",title:"Punch tropical sans alcool",ingredients:["Jus de mangue","Jus d'ananas","Jus de fruit de la passion","Gingembre","Citron vert","Sucre de canne","Glaçons","Menthe"],steps:[{text:"Mélanger tous les jus de fruits dans un pichet.",icon:"mix"},{text:"Ajouter le gingembre râpé et le jus de citron vert.",icon:"mix"},{text:"Sucrer selon le goût. Mélanger.",icon:"mix"},{text:"Réfrigérer 1h.",icon:"rest",time:3600},{text:"Servir sur glace avec de la menthe fraîche.",icon:"serve"}],time:"10 min",serves:"6 verres",diff:"Très facile"},
+{region:"Occidentale",type:"Boisson",title:"Infusion citronnelle-gingembre",ingredients:["Citronnelle","Gingembre frais","Eau","Miel","Citron"],steps:[{text:"Porter l'eau à ébullition.",icon:"cook",time:300},{text:"Ajouter la citronnelle coupée et le gingembre tranché.",icon:"mix"},{text:"Infuser à feu très doux.",icon:"rest",time:600},{text:"Filtrer. Ajouter le miel et le jus de citron.",icon:"mix"},{text:"Servir chaud.",icon:"serve"}],time:"15 min",serves:"2 tasses",diff:"Très facile"},
+{region:"Afrique subsaharienne",type:"Boisson",title:"Lait de coco vanillé frappé",ingredients:["Lait de coco","Banane","Miel","Vanille","Glaçons"],steps:[{text:"Mettre tous les ingrédients dans un blender.",icon:"mix"},{text:"Mixer jusqu'à consistance lisse et mousseuse.",icon:"mix",time:30},{text:"Goûter et ajuster le miel.",icon:"rest"},{text:"Servir immédiatement bien frais.",icon:"serve"}],time:"5 min",serves:"2 verres",diff:"Très facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Foufou d'igname et sauce",ingredients:["Ignames","Eau","Sel","Sauce de votre choix"],steps:[{text:"Éplucher et couper les ignames en cubes. Cuire dans l'eau salée.",icon:"cook",time:1800},{text:"Égoutter. Écraser à chaud avec un pilon en ajoutant progressivement un peu d'eau.",icon:"mix",time:600},{text:"Travailler la pâte jusqu'à ce qu'elle soit lisse, élastique et non collante.",icon:"mix",time:300},{text:"Former des boules. Servir avec sauce gombo, mafé ou soupe de votre choix.",icon:"serve"}],time:"45 min",serves:"4 pers.",diff:"Moyen"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Poisson en sauce coco épicée",ingredients:["Filet de poisson","Lait de coco","Tomates","Oignons","Ail","Gingembre","Piment","Huile"],steps:[{text:"Faire revenir oignons, ail et gingembre dans l'huile.",icon:"fry",time:300},{text:"Ajouter tomates mixées et piment. Cuire.",icon:"cook",time:480},{text:"Verser le lait de coco. Mélanger.",icon:"mix"},{text:"Ajouter les filets de poisson. Cuire doucement sans écraser.",icon:"cook",time:600},{text:"Servir avec du riz blanc.",icon:"serve"}],time:"30 min",serves:"4 pers.",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Sauce gombo végétarienne",ingredients:["Gombos","Tomates","Oignons","Poivrons","Huile de palme","Cube bouillon","Piment","Épinards"],steps:[{text:"Mixer les gombos crus avec un peu d'eau.",icon:"mix"},{text:"Faire revenir oignons et poivrons dans l'huile de palme.",icon:"fry",time:300},{text:"Ajouter tomates, bouillon et piment. Cuire.",icon:"cook",time:480},{text:"Ajouter les gombos mixés. Mélanger et laisser épaissir.",icon:"cook",time:600},{text:"Ajouter les épinards. Cuire encore 5 min.",icon:"cook",time:300},{text:"Servir avec du riz ou du foufou.",icon:"serve"}],time:"30 min",serves:"4 pers.",diff:"Facile"},
+{region:"Afrique subsaharienne",type:"Plat principal",title:"Tilapia en sauce tomate africaine",ingredients:["Tilapia","Tomates","Oignons","Ail","Piment","Poivrons","Huile","Cube bouillon","Sel"],steps:[{text:"Assaisonner le tilapia avec sel, ail et citron.",icon:"rest"},{text:"Faire frire brièvement le poisson des deux côtés. Réserver.",icon:"fry",time:360},{text:"Faire revenir oignons et poivrons dans la même huile.",icon:"fry",time:300},{text:"Ajouter tomates mixées, piment et bouillon. Réduire.",icon:"cook",time:600},{text:"Glisser le poisson dans la sauce. Finir la cuisson à feu doux.",icon:"cook",time:600},{text:"Servir avec du riz ou du pain.",icon:"serve"}],time:"35 min",serves:"4 pers.",diff:"Facile"},
+{region:"Maghreb",type:"Plat principal",title:"Brik à l'œuf (Tunisie)",ingredients:["Feuilles de brick","Œufs","Thon en boîte","Câpres","Persil","Harissa","Huile de friture"],steps:[{text:"Égoutter et émietter le thon. Mélanger avec câpres, persil et harissa.",icon:"mix"},{text:"Placer une feuille de brick dans la poêle avec un peu d'huile.",icon:"fry"},{text:"Déposer la farce au tiers de la feuille. Casser un œuf dessus.",icon:"rest"},{text:"Replier la feuille en triangle sans piquer le jaune.",icon:"rest"},{text:"Faire frire des deux côtés jusqu'à dorure en maintenant le jaune coulant.",icon:"fry",time:120},{text:"Servir immédiatement avec du citron.",icon:"serve"}],time:"20 min",serves:"4 pers.",diff:"Moyen"},
+{region:"Maghreb",type:"Plat principal",title:"Salade méchouia (Tunisie)",ingredients:["Poivrons rouges","Tomates","Piment","Ail","Huile d'olive","Citron","Sel","Thon ou œufs durs"],steps:[{text:"Griller les poivrons et les tomates entiers au four à 220°C ou au gaz.",icon:"oven",time:1800},{text:"Mettre dans un sac plastique 10 min pour faciliter l'épluchage.",icon:"rest",time:600},{text:"Éplucher et épépiner. Écraser grossièrement à la fourchette.",icon:"mix"},{text:"Assaisonner avec ail écrasé, huile d'olive, citron et sel.",icon:"mix"},{text:"Servir avec du thon émietté et des œufs durs. Accompagner de pain.",icon:"serve"}],time:"40 min",serves:"4 pers.",diff:"Facile"},
+{region:"Maghreb",type:"Plat principal",title:"Bourek au fromage et herbes",ingredients:["Feuilles de brick","Fromage frais","Œufs","Persil","Menthe","Beurre fondu","Sel","Poivre"],steps:[{text:"Mélanger fromage frais, œuf, persil, menthe, sel et poivre.",icon:"mix"},{text:"Badigeonner une feuille de brick de beurre fondu.",icon:"rest"},{text:"Déposer une bande de farce. Rouler en cigare.",icon:"rest"},{text:"Faire frire dans l'huile chaude jusqu'à dorure.",icon:"fry",time:300},{text:"Égoutter. Servir chaud en entrée.",icon:"serve"}],time:"25 min",serves:"10 boureks",diff:"Facile"},
+{region:"Maghreb",type:"Dessert",title:"Sellou (Maroc)",ingredients:["Semoule grillée","Amandes grillées","Graines de sésame","Miel","Beurre fondu","Cannelle","Anis moulu","Noix de muscade"],steps:[{text:"Griller la semoule à sec dans une poêle à feu moyen jusqu'à dorure. Laisser refroidir.",icon:"fry",time:600},{text:"Griller les amandes. Mixer grossièrement avec les graines de sésame.",icon:"mix"},{text:"Mélanger semoule grillée, amandes, sésame et toutes les épices.",icon:"mix"},{text:"Ajouter le miel et le beurre fondu. Mélanger jusqu'à obtenir une pâte compacte.",icon:"mix"},{text:"Façonner en pyramide ou en boules. Décorer d'amandes entières.",icon:"rest"}],time:"30 min",serves:"8 parts",diff:"Facile"},
+{region:"Occidentale",type:"Plat principal",title:"Soupe de légumes maison",ingredients:["Carottes","Navets","Pommes de terre","Poireaux","Courgettes","Cube bouillon","Beurre","Sel","Poivre","Persil"],steps:[{text:"Éplucher et couper tous les légumes en morceaux.",icon:"cut"},{text:"Faire revenir les poireaux dans le beurre.",icon:"fry",time:300},{text:"Ajouter le reste des légumes. Couvrir d'eau avec le cube de bouillon.",icon:"cook"},{text:"Cuire à feu moyen jusqu'à tendreté des légumes.",icon:"cook",time:1800},{text:"Servir tel quel ou mixer pour un velouté. Parsemer de persil.",icon:"serve"}],time:"40 min",serves:"6 pers.",diff:"Très facile"},
+{region:"Occidentale",type:"Plat principal",title:"Velouté de potiron",ingredients:["Potiron ou courge butternut","Oignons","Ail","Crème fraîche","Cube bouillon","Beurre","Noix de muscade","Sel","Poivre"],steps:[{text:"Faire revenir oignons et ail dans le beurre.",icon:"fry",time:300},{text:"Ajouter le potiron épluché et coupé en dés.",icon:"cook"},{text:"Couvrir de bouillon. Cuire jusqu'à tendreté.",icon:"cook",time:1200},{text:"Mixer finement. Remettre sur le feu.",icon:"mix"},{text:"Ajouter la crème fraîche et la noix de muscade. Rectifier l'assaisonnement.",icon:"mix"},{text:"Servir avec une touche de crème et du pain grillé.",icon:"serve"}],time:"35 min",serves:"4 pers.",diff:"Très facile"},
+{region:"Occidentale",type:"Plat principal",title:"Quiche aux légumes et chèvre",ingredients:["Pâte brisée","Courgettes","Tomates cerises","Fromage de chèvre","Œufs","Crème fraîche","Lait","Herbes de Provence"],steps:[{text:"Préchauffer le four à 180°C. Étaler la pâte dans un moule.",icon:"oven"},{text:"Faire revenir les courgettes coupées en rondelles dans l'huile d'olive.",icon:"fry",time:480},{text:"Disposer courgettes, tomates cerises et chèvre émietté sur la pâte.",icon:"rest"},{text:"Battre œufs, crème, lait, sel, poivre et herbes. Verser.",icon:"mix"},{text:"Enfourner jusqu'à prise et légère dorure.",icon:"oven",time:2100}],time:"45 min",serves:"4 pers.",diff:"Facile"},
+{region:"Occidentale",type:"Plat principal",title:"Gratin de courgettes",ingredients:["Courgettes","Crème fraîche","Gruyère râpé","Œufs","Ail","Sel","Poivre","Huile d'olive"],steps:[{text:"Préchauffer le four à 180°C. Couper les courgettes en rondelles.",icon:"cut"},{text:"Faire revenir les courgettes avec l'ail dans l'huile d'olive. Saler.",icon:"fry",time:480},{text:"Battre œufs et crème. Assaisonner.",icon:"mix"},{text:"Disposer les courgettes dans un plat. Verser la crème.",icon:"rest"},{text:"Parsemer de gruyère. Enfourner.",icon:"oven",time:1800}],time:"40 min",serves:"4 pers.",diff:"Très facile"},
+{region:"Occidentale",type:"Boisson",title:"Café glacé maison",ingredients:["Café fort","Lait","Sucre","Glaçons","Vanille"],steps:[{text:"Préparer un café fort (expresso ou filtre). Laisser refroidir.",icon:"cook",time:300},{text:"Sucrer le café chaud. Mélanger.",icon:"mix"},{text:"Laisser refroidir complètement ou passer au frigo.",icon:"rest",time:1800},{text:"Verser dans un verre avec des glaçons.",icon:"rest"},{text:"Ajouter du lait froid et une goutte de vanille. Mélanger.",icon:"mix"}],time:"10 min (+ refroidissement)",serves:"2 verres",diff:"Très facile"},
+{region:"Occidentale",type:"Boisson",title:"Jus d'orange frais",ingredients:["Oranges","Eau","Sucre (facultatif)","Glaçons"],steps:[{text:"Presser les oranges. Filtrer si désiré.",icon:"mix"},{text:"Ajouter un peu d'eau si le jus est trop concentré.",icon:"mix"},{text:"Sucrer selon le goût.",icon:"mix"},{text:"Servir immédiatement avec des glaçons.",icon:"serve"}],time:"5 min",serves:"2 verres",diff:"Très facile"},
+{region:"Afrique subsaharienne",type:"Boisson",title:"Jus de pastèque et menthe",ingredients:["Pastèque","Menthe fraîche","Citron vert","Sucre","Glaçons"],steps:[{text:"Couper la pastèque en morceaux. Retirer les graines.",icon:"cut"},{text:"Mixer avec les feuilles de menthe.",icon:"mix",time:30},{text:"Filtrer pour retirer les fibres.",icon:"rest"},{text:"Ajouter jus de citron vert et sucre selon goût.",icon:"mix"},{text:"Servir immédiatement avec des glaçons.",icon:"serve"}],time:"10 min",serves:"4 verres",diff:"Très facile"},
+{region:"Occidentale",type:"Boisson",title:"Infusion verveine-citron",ingredients:["Verveine fraîche ou séchée","Eau","Citron","Miel"],steps:[{text:"Porter l'eau à frémissement (pas à ébullition complète).",icon:"cook",time:240},{text:"Verser sur les feuilles de verveine.",icon:"rest"},{text:"Infuser à couvert.",icon:"rest",time:300},{text:"Filtrer. Ajouter miel et jus de citron.",icon:"mix"},{text:"Servir chaud ou froid.",icon:"serve"}],time:"10 min",serves:"2 tasses",diff:"Très facile"}
+];
+
+const ICONS={mix:"🌀",fry:"🔥",cook:"♨️",oven:"🥘",cut:"🔪",rest:"⏳",serve:"🍽️"};
+function getIcon(s){
+  const k=s.icon||"";
+  const t=(s.text||"").toLowerCase();
+  let type="default";
+  if(k==="mix"||/m.lang|fouett|remuan|battre|p.trir|mixer|malax|sabler/.test(t)) type="mix";
+  else if(k==="fry"||/faire revenir|faire dorer|faire frire|frire|griller|dorer|revenir|poele/.test(t)) type="fry";
+  else if(k==="cook"||/cuire|mijoter|bouillir|infuser|chauffer/.test(t)) type="cook";
+  else if(k==="oven"||/pr.chauffer|four|enfourner|gril/.test(t)) type="oven";
+  else if(k==="cut"||/couper|.mincer|hacher|trancher|d.couper|.plucher/.test(t)) type="cut";
+  else if(k==="rest"||/reposer|r.frig.r|mariner|refroidir|lever|tremper/.test(t)) type="rest";
+  else if(k==="serve"||/servir|dresser/.test(t)) type="serve";
+  const anims={
+    mix:'<div class="ca-mix"><div class="ca-mix-ring"></div><div class="ca-mix-ring2"></div><div class="ca-mix-dot"></div></div>',
+    fry:'<div class="ca-fry"><div class="ca-fry-outer"></div><div class="ca-fry-mid"></div><div class="ca-fry-inner"></div></div>',
+    cook:'<div class="ca-cook"><div class="ca-cook-line"></div><div class="ca-bubble"></div><div class="ca-bubble"></div><div class="ca-bubble"></div></div>',
+    oven:'<div class="ca-oven"><div class="ca-heat"></div><div class="ca-heat"></div><div class="ca-heat"></div></div>',
+    cut:'<div class="ca-cut"><div class="ca-knife"></div><div class="ca-board"></div></div>',
+    rest:'<div class="ca-rest-wrap"><div class="ca-rest"><div class="ca-hg-top"></div><div class="ca-hg-mid"></div><div class="ca-hg-bot"></div><div class="ca-sand"></div></div></div>',
+    serve:'<div class="ca-serve"><div class="ca-plate"><div class="ca-plate-inner"></div></div><div class="ca-cloche"></div></div>',
+    default:'<span style="font-size:18px">&#128104;&#8205;&#127859;</span>'
+  };
+  return{html:anims[type]||anims.default,type};
+}
+
+
+
+// Ingredient tags
+const iInp=document.getElementById("ing-input");
+const iField=document.getElementById("ing-field");
+iField.addEventListener("click",()=>iInp.focus());
+iInp.addEventListener("keydown",e=>{
+  if((e.key==="Enter"||e.key===",")&&iInp.value.trim()){
+    e.preventDefault();addTag(iInp.value.trim().replace(/,$/,""));iInp.value="";
+  }
+  if(e.key==="Backspace"&&!iInp.value){
+    const tags=iField.querySelectorAll(".ingredient-tag");
+    if(tags.length)tags[tags.length-1].remove();
+  }
+});
+function addTag(text){
+  if(!text)return;
+  const t=document.createElement("span");
+  t.className="ingredient-tag";
+  const lbl=document.createTextNode(text);
+  const btn=document.createElement("button");
+  btn.textContent="x";
+  btn.setAttribute("aria-label","Retirer");
+  btn.onclick=function(){this.parentNode.remove();};
+  t.appendChild(lbl);t.appendChild(btn);
+  iField.insertBefore(t,iInp);
+}
+
+function selectChip(c){
+  document.querySelectorAll(".chip[data-group='"+c.dataset.group+"']").forEach(x=>x.classList.remove("active"));
+  c.classList.add("active");
+}
+
+// Timer
+let timers={};
+function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+function startTimer(i){
+  const el=document.getElementById("s"+i);if(!el)return;
+  const d=el.querySelector(".td"),p=el.querySelector(".tp"),sb=el.querySelector(".tsb"),cb=el.querySelector(".tcb");
+  const total=+el.dataset.t;
+  if(timers[i])return;
+  el.classList.add("step-active");sb.hidden=true;d.hidden=false;cb.hidden=false;
+  let rem=total;d.textContent=fmt(rem);
+  timers[i]={rem,paused:false,total,iv:setInterval(()=>{
+    if(timers[i]&&!timers[i].paused){
+      rem--;timers[i].rem=rem;d.textContent=fmt(rem);p.style.width=(rem/total*100)+"%";
+      if(rem<=0){
+        clearInterval(timers[i].iv);delete timers[i];
+        d.textContent="Pret !";d.classList.add("done");
+        el.classList.remove("step-active");el.classList.add("step-done");
+        cb.textContent="R";cb.classList.add("restart");cb.onclick=()=>resetTimer(i);p.style.width="0%";
+        showToast("Etape "+(+i+1)+" terminee !");
+      }
+    }
+  },1000)};
+}
+function togglePause(i){
+  if(!timers[i])return;
+  const el=document.getElementById("s"+i);
+  const cb=el.querySelector(".tcb");
+  timers[i].paused=!timers[i].paused;
+  cb.textContent=timers[i].paused?"Play":"Pause";
+}
+function resetTimer(i){
+  const el=document.getElementById("s"+i);if(!el)return;
+  const d=el.querySelector(".td"),p=el.querySelector(".tp"),sb=el.querySelector(".tsb"),cb=el.querySelector(".tcb");
+  const total=+el.dataset.t;
+  if(timers[i]){clearInterval(timers[i].iv);delete timers[i];}
+  el.classList.remove("step-done","step-active");
+  d.hidden=true;d.classList.remove("done");cb.hidden=true;
+  cb.textContent="Pause";cb.classList.remove("restart");cb.onclick=()=>togglePause(i);
+  sb.hidden=false;p.style.width="100%";
+}
+
+// Favorites
+let favs=[];let cur=null;
+try{favs=JSON.parse(localStorage.getItem("marmito-favs")||"[]");}catch(e){}
+function saveFavs(){try{localStorage.setItem("marmito-favs",JSON.stringify(favs));}catch(e){}}
+function toggleFav(){
+  if(!cur)return;
+  const fb=document.getElementById("fav-btn");
+  const idx=favs.findIndex(f=>f.title===cur.title);
+  if(idx>=0){favs.splice(idx,1);fb.textContent="♡";fb.classList.remove("active");showToast("Retire des favoris");}
+  else{favs.push({title:cur.title,region:cur.region,type:cur.type});fb.textContent="❤️";fb.classList.add("active");showToast("Ajoute aux favoris !");}
+  saveFavs();updateFavBtn();
+  if(document.getElementById("fav-panel").classList.contains("visible"))renderFavs();
+}
+function updateFavBtn(){
+  const t=document.getElementById("fav-toggle");
+  t.textContent=favs.length?"❤️":"♡";
+  favs.length?t.classList.add("has-favs"):t.classList.remove("has-favs");
+}
+function clearFavs(){favs=[];saveFavs();renderFavs();updateFavBtn();}
+function toggleFavPanel(){
+  const p=document.getElementById("fav-panel");p.classList.toggle("visible");
+  if(p.classList.contains("visible"))renderFavs();
+}
+function renderFavs(){
+  const l=document.getElementById("fav-list");
+  if(!favs.length){l.innerHTML="<div class=\"fav-empty\">Aucun favori. Clique sur le coeur d une recette.</div>";return;}
+  l.innerHTML=favs.map(f=>"<div class=\"fav-item\"><div><div class=\"fav-item-name\">"+f.title+"</div><div class=\"fav-item-region\">"+f.region+" · "+f.type+"</div></div><button class=\"fav-cook-btn\" onclick=\"cookFav("+JSON.stringify(f.title)+")\" >Cuisiner</button></div>").join("");
+}
+function cookFav(t){
+  const r=recipes.find(r=>r.title===t);
+  if(r){document.getElementById("fav-panel").classList.remove("visible");show(r);}
+}
+updateFavBtn();renderFavs();
+
+// Share
+function rTxt(r){return "Recette: "+r.title+"\n\nIngredients:\n"+r.ingredients.map(i=>"- "+i).join("\n")+"\n\nPreparation:\n"+r.steps.map((s,i)=>(i+1)+". "+(s.text||s)).join("\n")+"\n\nTemps: "+r.time+" | "+r.serves+"\n\nVia Marmito";}
+function copyRecipe(){
+  if(!cur)return;
+  const txt=rTxt(cur);
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(()=>showToast("Recette copiee !")).catch(()=>copyFallback(txt));
+  } else { copyFallback(txt); }
+}
+function copyFallback(txt){
+  const el=document.createElement('textarea');
+  el.value=txt; el.style.position='fixed'; el.style.opacity='0';
+  document.body.appendChild(el); el.focus(); el.select();
+  try{document.execCommand('copy');showToast("Recette copiee !");}
+  catch(e){showToast("Appuyez sur Cmd+C pour copier");}
+  document.body.removeChild(el);
+}
+async function shareRecipe(){
+  if(!cur)return;
+  const txt=rTxt(cur);
+  // Partage natif (iOS/Android) — ouvre le menu de partage du telephone
+  if(navigator.share){
+    try{
+      await navigator.share({title:'Marmito — '+cur.title, text:txt});
+      return;
+    }catch(e){ if(e.name==='AbortError')return; }
+  }
+  // Fallback desktop : affiche le menu de partage custom
+  toggleShareMenu();
+}
+function toggleShareMenu(){
+  let menu=document.getElementById('share-menu');
+  if(menu){ menu.remove(); return; }
+  const txt=rTxt(cur);
+  const enc=encodeURIComponent(txt);
+  menu=document.createElement('div');
+  menu.id='share-menu';
+  menu.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--card-bg);border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.2);padding:8px;z-index:999;min-width:220px;';
+  const options=[
+    {label:'📋 Copier le texte', fn:`copyRecipe();document.getElementById('share-menu').remove()`},
+    {label:'💬 WhatsApp', url:'https://wa.me/?text='+enc},
+    {label:'✉️ Email', url:'mailto:?subject='+encodeURIComponent('Recette: '+cur.title)+'&body='+enc},
+    {label:'𝕏 Twitter/X', url:'https://twitter.com/intent/tweet?text='+encodeURIComponent(cur.title+' via @Marmito\n\n'+txt.slice(0,200)+'...')},
+    {label:'📘 Facebook', url:'https://www.facebook.com/sharer/sharer.php?u=https://marmito-one.vercel.app'},
+  ];
+  options.forEach(o=>{
+    const btn=document.createElement('button');
+    btn.textContent=o.label;
+    btn.style.cssText='display:block;width:100%;text-align:left;padding:10px 14px;background:none;border:none;cursor:pointer;font-family:inherit;font-size:0.9rem;color:var(--fg);border-radius:8px;';
+    btn.onmouseover=()=>btn.style.background='var(--green-light)';
+    btn.onmouseout=()=>btn.style.background='none';
+    if(o.url) btn.onclick=()=>{window.open(o.url,'_blank');menu.remove();}
+    else btn.onclick=()=>eval(o.fn);
+    menu.appendChild(btn);
+  });
+  document.body.appendChild(menu);
+  // Ferme si on clique ailleurs
+  setTimeout(()=>document.addEventListener('click',function h(e){if(!menu.contains(e.target)){menu.remove();document.removeEventListener('click',h);}},true),100);
+}
+
+// Toast
+function showToast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500);}
+
+// Generate
+function generateRecipe(){
+    // Freemium check
+    if(userPlan==='free' && recipeCount>=FREE_LIMIT){
+      document.getElementById('limit-banner').classList.add('show');
+      document.getElementById('limit-banner').scrollIntoView({behavior:'smooth',block:'center'});
+      return;
+    }
+  Object.values(timers).forEach(t=>{if(t.iv)clearInterval(t.iv);});timers={};
+  const btn=document.getElementById("gen-btn");
+  btn.disabled=true;btn.innerHTML="<span class=\"loading-dots\"><span></span><span></span><span></span></span>";
+  document.getElementById("result-card").classList.remove("visible");
+  setTimeout(()=>{
+    const cu=document.querySelector(".chip[data-group=\"cuisine\"].active");
+    const ty=document.querySelector(".chip[data-group=\"type\"].active");
+    const cuisine=cu?cu.textContent:"Toutes";
+    const type=ty?ty.textContent:"Plat principal";
+    const userIngs=[...document.querySelectorAll(".ingredient-tag")].map(t=>t.childNodes[0].textContent.trim().toLowerCase());
+    let pool=recipes;
+    if(cuisine!=="Toutes")pool=pool.filter(r=>r.region===cuisine);
+    if(type!=="Tout")pool=pool.filter(r=>r.type===type);
+    if(!pool.length)pool=recipes;
+    let chosen;
+    if(userIngs.length){
+      const sc=pool.map(r=>({r,s:r.ingredients.filter(i=>userIngs.some(u=>i.toLowerCase().includes(u)||u.includes(i.toLowerCase()))).length}));
+      sc.sort((a,b)=>b.s-a.s);
+      const best=sc.filter(x=>x.s===sc[0].s);
+      chosen=best[Math.floor(Math.random()*best.length)].r;
+    } else {
+      chosen=pool[Math.floor(Math.random()*pool.length)];
+    }
+    show(chosen);
+    incrementRecipeCount(); // ← incrémente et sauvegarde le compteur
+    btn.disabled=false;btn.textContent="Trouver une autre recette";
+  },1000);
+}
+
+function show(recipe){
+  cur=recipe;
+  document.getElementById("result-region").textContent=recipe.region;
+  document.getElementById("result-title").textContent=recipe.title;
+  document.getElementById("result-type").textContent=recipe.type;
+  document.getElementById("r-time").textContent=recipe.time;
+  document.getElementById("r-serves").textContent=recipe.serves;
+  document.getElementById("r-diff").textContent=recipe.diff;
+  const fb=document.getElementById("fav-btn");
+  const isFav=favs.some(f=>f.title===recipe.title);
+  fb.textContent=isFav?"❤️":"♡";
+  isFav?fb.classList.add("active"):fb.classList.remove("active");
+  document.getElementById("result-ingredients").innerHTML=recipe.ingredients.map(i=>"<span class=\"ingredient-pill\">"+i+"</span>").join("");
+  document.getElementById("result-steps").innerHTML=recipe.steps.map((step,i)=>{
+    const text=typeof step==="string"?step:step.text;
+    const time=(typeof step==="object"&&step.time>0)?step.time:0;
+    const{html:iconHtml}=getIcon(step);
+    const timer=time>0?"<div class=\"step-timer\"><button class=\"tsb\" onclick=\"startTimer("+i+")\">⏱ "+Math.round(time/60)+" min</button><span class=\"td\" hidden>"+fmt(time)+"</span><button class=\"tcb\" hidden onclick=\"togglePause("+i+")\" style=\"font-size:11px;padding:0 8px;border-radius:12px;height:28px;background:var(--green);border:none;color:#fff;cursor:pointer\">Pause</button></div><div class=\"timer-progress-wrap\"><div class=\"tp\" style=\"height:100%;background:var(--green);border-radius:2px;width:100%;transition:width 1s linear\"></div></div>":"";
+    return "<div class=\"step\" id=\"s"+i+"\"" +(time>0?" data-t=\""+time+"\"":"")+"><div class=\"step-icon-wrap\">"+iconHtml+"<span class=\"step-num\">"+(i+1)+"</span></div><div class=\"step-content\"><div class=\"step-text\">"+text+"</div>"+timer+"</div></div>";
+  }).join("");
+  document.getElementById("result-card").classList.add("visible");
+  setTimeout(()=>document.getElementById("result-card").scrollIntoView({behavior:"smooth",block:"start"}),80);
+}
+
+// ===== COOKING MODE CAROUSEL =====
+let cookSteps=[], cookIdx=0, cookTimer=null;
+
+function startCookMode(){
+  if(!cur)return;
+  cookSteps=cur.steps;cookIdx=0;
+  // Clear any active timers
+  if(cookTimer){clearInterval(cookTimer.iv);cookTimer=null;}
+  document.getElementById("cook-recipe-name").textContent=cur.title;
+  document.getElementById("cook-mode").classList.add("visible");
+  document.getElementById("cook-ready").classList.remove("visible");
+  document.getElementById("cook-step-view").style.display="";
+  buildDots();renderCookStep();
+  document.getElementById("cook-mode").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function closeCookMode(){
+  if(cookTimer){clearInterval(cookTimer.iv);cookTimer=null;}
+  document.getElementById("cook-mode").classList.remove("visible");
+}
+function buildDots(){
+  const d=document.getElementById("cook-dots");
+  const max=Math.min(cookSteps.length,10);
+  d.innerHTML=cookSteps.slice(0,max).map((_,i)=>"<div class=\"cook-dot\" id=\"cd"+i+"\"></div>").join("");
+}
+function updateDots(){
+  const max=Math.min(cookSteps.length,10);
+  for(let i=0;i<max;i++){
+    const el=document.getElementById("cd"+i);if(!el)continue;
+    el.className="cook-dot"+(i<cookIdx?" done":i===cookIdx?" active":"");
+  }
+}
+function renderCookStep(){
+  if(cookTimer){clearInterval(cookTimer.iv);cookTimer=null;}
+  const step=cookSteps[cookIdx];
+  const total=cookSteps.length;
+  const text=typeof step==="string"?step:step.text;
+  const time=(typeof step==="object"&&step.time>0)?step.time:0;
+  const{html:iconHtml}=getIcon(step);
+  // Progress
+  document.getElementById("cook-progress-text").textContent="Etape "+(cookIdx+1)+" sur "+total;
+  document.getElementById("cook-progress-fill").style.width=(((cookIdx+1)/total)*100)+"%";
+  // Icon
+  document.getElementById("cook-icon-big").innerHTML=iconHtml;
+  document.getElementById("cook-icon-big").classList.remove("timer-running");
+  // Text
+  document.getElementById("cook-step-text").textContent=text;
+  // Timer
+  const tz=document.getElementById("cook-timer-zone");
+  if(time>0){
+    tz.style.display="";
+    const disp=document.getElementById("cook-timer-disp");
+    disp.textContent=fmt(time);disp.classList.remove("done");
+    document.getElementById("cook-timer-start").hidden=false;
+    document.getElementById("cook-timer-ctrl").hidden=true;
+    document.getElementById("cook-timer-ctrl").classList.remove("restart");
+    document.getElementById("cook-timer-ctrl").textContent="⏸";
+    document.getElementById("cook-prog-inner").style.width="100%";
+    cookTimer={total:time,rem:time,paused:false,iv:null};
+  } else {
+    tz.style.display="none";cookTimer=null;
+  }
+  // Nav buttons
+  document.getElementById("cook-prev").disabled=(cookIdx===0);
+  const nextBtn=document.getElementById("cook-next");
+  if(cookIdx===total-1){nextBtn.innerHTML="C&rsquo;est pr&ecirc;t ! &#127869;&#65039;";nextBtn.style.background="var(--timer-done)";}
+  else{nextBtn.innerHTML="Suivante &#8594;";nextBtn.style.background="";}
+  updateDots();
+}
+function cookNav(dir){
+  if(cookTimer){clearInterval(cookTimer.iv);cookTimer=null;}
+  const next=cookIdx+dir;
+  if(next<0)return;
+  if(next>=cookSteps.length){
+    // Show ready screen
+    document.getElementById("cook-step-view").style.display="none";
+    document.getElementById("cook-ready").classList.add("visible");
+    document.getElementById("cook-progress-fill").style.width="100%";
+    document.getElementById("cook-progress-text").textContent="Termine !";
+    showToast("Bon appetit !");
+    return;
+  }
+  cookIdx=next;renderCookStep();
+}
+function cookTimerStart(){
+  if(!cookTimer||cookTimer.iv)return;
+  const disp=document.getElementById("cook-timer-disp");
+  const prog=document.getElementById("cook-prog-inner");
+  const startBtn=document.getElementById("cook-timer-start");
+  const ctrlBtn=document.getElementById("cook-timer-ctrl");
+  document.getElementById("cook-icon-big").classList.add("timer-running");
+  startBtn.hidden=true;ctrlBtn.hidden=false;
+  let rem=cookTimer.rem;
+  cookTimer.iv=setInterval(()=>{
+    if(!cookTimer||cookTimer.paused)return;
+    rem--;if(cookTimer)cookTimer.rem=rem;
+    disp.textContent=fmt(rem);
+    prog.style.width=(rem/cookTimer.total*100)+"%";
+    if(rem<=0){
+      clearInterval(cookTimer.iv);cookTimer=null;
+      disp.textContent="Pret !";disp.classList.add("done");
+      ctrlBtn.textContent="R";ctrlBtn.classList.add("restart");
+      ctrlBtn.onclick=cookTimerReset;
+      document.getElementById("cook-icon-big").classList.remove("timer-running");
+      showToast("Etape "+(cookIdx+1)+" terminee !");
+    }
+  },1000);
+}
+function cookTimerCtrl(){
+  const cb=document.getElementById("cook-timer-ctrl");
+  if(cb.classList.contains("restart")){cookTimerReset();return;}
+  if(!cookTimer)return;
+  cookTimer.paused=!cookTimer.paused;
+  cb.textContent=cookTimer.paused?"▶":"⏸";
+}
+function cookTimerReset(){
+  if(cookTimer&&cookTimer.iv){clearInterval(cookTimer.iv);}
+  const step=cookSteps[cookIdx];
+  const time=(typeof step==="object"&&step.time>0)?step.time:0;
+  if(!time)return;
+  const disp=document.getElementById("cook-timer-disp");
+  const prog=document.getElementById("cook-prog-inner");
+  const startBtn=document.getElementById("cook-timer-start");
+  const ctrlBtn=document.getElementById("cook-timer-ctrl");
+  cookTimer={total:time,rem:time,paused:false,iv:null};
+  disp.textContent=fmt(time);disp.classList.remove("done");
+  startBtn.hidden=false;ctrlBtn.hidden=true;ctrlBtn.classList.remove("restart");
+  ctrlBtn.textContent="⏸";ctrlBtn.onclick=cookTimerCtrl;
+  prog.style.width="100%";
+  document.getElementById("cook-icon-big").classList.remove("timer-running");
+}
+
+document.getElementById("rc").textContent=recipes.length+" recettes";
+</script>
 </body>
 </html>
