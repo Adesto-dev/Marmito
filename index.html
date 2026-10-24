@@ -339,9 +339,14 @@
     /* PROFILE MODAL */
     .profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
     .profile-overlay.open{display:flex}
-    .profile-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;padding:24px 20px 40px}
-    .profile-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
-    .profile-title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:20px;margin-bottom:20px}
+    .profile-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;height:90vh;display:flex;flex-direction:column}
+    .profile-sheet-head{padding:20px 20px 0;flex-shrink:0}
+    .profile-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 20px 40px;flex:1;min-height:0}
+    .profile-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
+    .profile-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .profile-title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:20px}
+    .sheet-close-x{background:none;border:none;cursor:pointer;color:var(--fg2);font-size:22px;padding:4px 6px;line-height:1;border-radius:8px;flex-shrink:0;transition:background 0.15s}
+    .sheet-close-x:hover{background:var(--bg);color:var(--fg)}
     .profile-info{background:var(--bg);border-radius:12px;padding:16px;margin-bottom:16px}
     .profile-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px}
     .profile-row:last-child{border-bottom:none}
@@ -407,9 +412,12 @@
     /* ===== ABOUT MODAL ===== */
     .about-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;display:none;align-items:flex-end;justify-content:center}
     .about-overlay.open{display:flex}
-    .about-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;max-height:88vh;overflow-y:auto;padding:28px 22px 44px}
-    .about-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 22px}
-    .about-logo{font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:26px;color:var(--green);letter-spacing:-0.5px;margin-bottom:4px}
+    .about-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;height:88vh;display:flex;flex-direction:column}
+    .about-sheet-head{padding:24px 22px 0;flex-shrink:0}
+    .about-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 22px 44px;flex:1;min-height:0}
+    .about-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
+    .about-logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+    .about-logo{font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:26px;color:var(--green);letter-spacing:-0.5px}
     .about-logo span{color:var(--accent)}
     .about-tagline{font-size:13px;color:var(--fg2);margin-bottom:24px}
     .about-section{margin-bottom:22px}
@@ -443,9 +451,10 @@
   <button class="btn-hamburger" onclick="openDrawer()" title="Menu" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
-  <div class="logo">Marm<span>i</span>to</div>
+  <button class="logo-btn" onclick="goHome()" style="background:none;border:none;cursor:pointer;padding:0"><div class="logo">Marm<span>i</span>to</div></button>
   <div class="header-actions">
     <span class="recipe-count" id="rc"></span>
+    <button id="lang-btn" onclick="toggleLang()" style="background:none;border:1px solid rgba(250,250,245,0.3);border-radius:6px;color:rgba(250,250,245,0.8);font-size:11px;font-weight:700;padding:3px 7px;cursor:pointer;letter-spacing:0.05em">EN</button>
     <button class="fav-toggle" id="fav-toggle" onclick="toggleFavPanel()" title="Mes favoris"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
   </div>
 </header>
@@ -463,73 +472,76 @@
   </div>
 
   <div class="drawer-nav">
-    <div class="drawer-section-label">Navigation</div>
-    <button class="drawer-item" onclick="drawerAction('home')">Accueil</button>
-    <button class="drawer-item" onclick="drawerAction('favs')">Mes favoris</button>
-    <button class="drawer-item" onclick="drawerAction('history')">Mon historique</button>
-    <button class="drawer-item" onclick="drawerAction('profile')">Mon profil</button>
+    <div class="drawer-section-label" data-i18n="section-nav">Navigation</div>
+    <button class="drawer-item" onclick="drawerAction('home')" data-i18n="nav-home">Accueil</button>
+    <button class="drawer-item" onclick="drawerAction('favs')" data-i18n="nav-favs">Mes favoris</button>
+    <button class="drawer-item" onclick="drawerAction('history')" data-i18n="nav-history">Mon historique</button>
+    <button class="drawer-item" onclick="drawerAction('profile')" data-i18n="nav-profile">Mon profil</button>
 
     <div class="drawer-divider"></div>
-    <div class="drawer-section-label">Abonnement</div>
+    <div class="drawer-section-label" data-i18n="section-sub">Abonnement</div>
     <div id="drawer-sub-cta"></div>
 
     <div class="drawer-divider"></div>
-    <div class="drawer-section-label">Aide</div>
-    <button class="drawer-item" onclick="drawerAction('contact')">Nous contacter</button>
-    <button class="drawer-item" onclick="drawerAction('about')">&#192; propos de Marmito</button>
+    <div class="drawer-section-label" data-i18n="section-help">Aide</div>
+    <button class="drawer-item" onclick="drawerAction('contact')" data-i18n="nav-contact">Nous contacter</button>
+    <button class="drawer-item" onclick="drawerAction('about')" data-i18n="nav-about">&#192; propos de Marmito</button>
   </div>
 
   <div class="drawer-bottom" id="drawer-bottom">
-    <button class="drawer-item danger" onclick="drawerAction('logout')">Se d&#233;connecter</button>
+    <button class="drawer-item danger" onclick="drawerAction('logout')" data-i18n="nav-logout">Se d&#233;connecter</button>
   </div>
 </nav>
 <div class="toast" id="toast"></div>
 <main class="main">
   <div class="tagline">
-    <h1>Qu&rsquo;est-ce qu&rsquo;on cuisine ce soir&nbsp;?</h1>
-    <p>Choisis ta cuisine et cuisine avec le chrono int&eacute;gr&eacute;.</p>
+    <h1 data-i18n="tagline-h1">Qu&rsquo;est-ce qu&rsquo;on cuisine ce soir&nbsp;?</h1>
+    <p data-i18n="tagline-p">Choisis ta cuisine et cuisine avec le chrono int&eacute;gr&eacute;.</p>
   </div>
   <div class="fav-panel" id="fav-panel">
     <div class="fav-panel-header">
-      <div class="fav-panel-title">Mes favoris</div>
-      <button class="fav-clear" onclick="clearFavs()">Tout effacer</button>
+      <div class="fav-panel-title" data-i18n="fav-title">Mes favoris</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="fav-clear" onclick="clearFavs()" data-i18n="fav-clear">Tout effacer</button>
+        <button class="sheet-close-x" onclick="toggleFavPanel()" style="font-size:18px;padding:2px 5px">&#10005;</button>
+      </div>
     </div>
     <div class="fav-list" id="fav-list"></div>
   </div>
   <div class="card">
-    <div class="card-label">Tes ingr&eacute;dients <span style="font-weight:400;text-transform:none;letter-spacing:0">(optionnel)</span></div>
+    <div class="card-label"><span data-i18n="card-ing">Tes ingr&eacute;dients</span> <span style="font-weight:400;text-transform:none;letter-spacing:0" data-i18n="card-ing-opt">(optionnel)</span></div>
     <div class="ing-autocomplete-wrap">
       <div class="ingredient-field" id="ing-field">
-        <input id="ing-input" type="text" placeholder="Ajouter un ingr&eacute;dient..." autocomplete="off" autocorrect="off" spellcheck="false">
+        <input id="ing-input" type="text" placeholder="Ajouter un ingr&eacute;dient..." autocomplete="off" autocorrect="off" spellcheck="false" data-i18n-placeholder="ing-placeholder">
       </div>
       <div class="ing-dropdown" id="ing-dropdown"></div>
     </div>
-    <p class="input-hint">Tape ou choisis dans la liste, puis <strong>Entr&eacute;e</strong> pour ajouter.</p>
+    <p class="input-hint" data-i18n="ing-hint">Tape ou choisis dans la liste, puis <strong>Entr&eacute;e</strong> pour ajouter.</p>
   </div>
   <div class="card">
-    <div class="card-label">Type de cuisine</div>
+    <div class="card-label" data-i18n="card-cuisine">Type de cuisine</div>
     <div class="chips">
-      <button class="chip active" data-group="cuisine" onclick="selectChip(this)">Toutes</button>
+      <button class="chip active" data-group="cuisine" onclick="selectChip(this)" data-i18n="chip-cuisine-all">Toutes</button>
       <button class="chip" data-group="cuisine" onclick="selectChip(this)">Afrique subsaharienne</button>
       <button class="chip" data-group="cuisine" onclick="selectChip(this)">Maghreb</button>
-      <button class="chip" data-group="cuisine" onclick="selectChip(this)">Occidentale</button>
+      <button class="chip" data-group="cuisine" onclick="selectChip(this)" data-i18n="chip-cuisine-western">Occidentale</button>
     </div>
   </div>
   <div class="card">
-    <div class="card-label">Type de repas</div>
+    <div class="card-label" data-i18n="card-type">Type de repas</div>
     <div class="chips">
-      <button class="chip active" data-group="type" onclick="selectChip(this)">Plat principal</button>
-      <button class="chip" data-group="type" onclick="selectChip(this)">Dessert</button>
-      <button class="chip" data-group="type" onclick="selectChip(this)">Boisson</button>
-      <button class="chip" data-group="type" onclick="selectChip(this)">Tout</button>
+      <button class="chip active" data-group="type" onclick="selectChip(this)" data-i18n="chip-main">Plat principal</button>
+      <button class="chip" data-group="type" onclick="selectChip(this)" data-i18n="chip-dessert">Dessert</button>
+      <button class="chip" data-group="type" onclick="selectChip(this)" data-i18n="chip-drink">Boisson</button>
+      <button class="chip" data-group="type" onclick="selectChip(this)" data-i18n="chip-all">Tout</button>
     </div>
   </div>
-  <button class="btn-generate" id="gen-btn" onclick="generateRecipe()">&#127859; Trouver une recette</button>
+  <button class="btn-generate" id="gen-btn" onclick="generateRecipe()" data-i18n="btn-gen">&#127859; Trouver une recette</button>
   <!-- Freemium limit banner -->
     <div class="limit-banner" id="limit-banner">
-      <h3>Limite atteinte</h3>
-      <p>Tu as genere tes 10 recettes gratuites du mois. Passe a Marmito Pro pour des recettes illimitees et toutes les regions.</p>
-      <button class="btn-upgrade-big" onclick="startUpgrade(this)">Passer a Pro — 4.99$/mois</button>
+      <h3 data-i18n="limit-title">Limite atteinte</h3>
+      <p data-i18n="limit-text">Tu as genere tes 10 recettes gratuites du mois. Passe a Marmito Pro pour des recettes illimitees et toutes les regions.</p>
+      <button class="btn-upgrade-big" onclick="startUpgrade(this)" data-i18n="btn-upgrade">Passer a Pro — 4.99$/mois</button>
     </div>
 
 <div class="result-card" id="result-card">
@@ -544,23 +556,23 @@
       </div>
     </div>
     <div class="share-bar">
-      <button class="share-btn share-copy" onclick="copyRecipe()">&#128203; Copier</button>
-      <button class="share-btn share-wa" onclick="shareRecipe()">&#128279; Partager</button>
+      <button class="share-btn share-copy" onclick="copyRecipe()" data-i18n="btn-copy">&#128203; Copier</button>
+      <button class="share-btn share-wa" onclick="shareRecipe()" data-i18n="btn-share">&#128279; Partager</button>
     </div>
     <div class="result-body">
       <div>
-        <div class="result-section-title">Ingr&eacute;dients</div>
+        <div class="result-section-title" data-i18n="sec-ingredients">Ingr&eacute;dients</div>
         <div class="ingredient-list" id="result-ingredients"></div>
       </div>
       <div>
-        <div class="result-section-title">Pr&eacute;paration &mdash; Chrono int&eacute;gr&eacute;</div>
+        <div class="result-section-title" data-i18n="sec-preparation">Pr&eacute;paration &mdash; Chrono int&eacute;gr&eacute;</div>
         <div class="steps" id="result-steps"></div>
       </div>
-        <button class="btn-start-cook" onclick="startCookMode()">&#127859; Commencer la pr&eacute;paration &rarr;</button>
+        <button class="btn-start-cook" onclick="startCookMode()" data-i18n="btn-start-cook">&#127859; Commencer la pr&eacute;paration &rarr;</button>
       <div class="result-footer">
-        <div class="meta-item"><span class="meta-label">Temps</span><span class="meta-value" id="r-time"></span></div>
-        <div class="meta-item"><span class="meta-label">Personnes</span><span class="meta-value" id="r-serves"></span></div>
-        <div class="meta-item"><span class="meta-label">Difficult&eacute;</span><span class="meta-value" id="r-diff"></span></div>
+        <div class="meta-item"><span class="meta-label" data-i18n="meta-time">Temps</span><span class="meta-value" id="r-time"></span></div>
+        <div class="meta-item"><span class="meta-label" data-i18n="meta-serves">Personnes</span><span class="meta-value" id="r-serves"></span></div>
+        <div class="meta-item"><span class="meta-label" data-i18n="meta-diff">Difficult&eacute;</span><span class="meta-value" id="r-diff"></span></div>
       </div>
     </div>
   </div>
@@ -580,24 +592,24 @@
         <div class="cook-timer-zone" id="cook-timer-zone" style="display:none">
           <div class="cook-timer-display" id="cook-timer-disp"></div>
           <div class="cook-timer-btns">
-            <button class="cook-timer-start" id="cook-timer-start" onclick="cookTimerStart()">&#9654; Lancer le minuteur</button>
+            <button class="cook-timer-start" id="cook-timer-start" onclick="cookTimerStart()" data-i18n="btn-timer">&#9654; Lancer le minuteur</button>
             <button class="cook-timer-ctrl" id="cook-timer-ctrl" hidden onclick="cookTimerCtrl()">&#9646;&#9646;</button>
           </div>
           <div class="cook-prog-ring"><div class="cook-prog-inner" id="cook-prog-inner"></div></div>
         </div>
       </div>
       <div class="cook-nav">
-        <button class="cook-nav-btn" id="cook-prev" onclick="cookNav(-1)">&#8592; Pr&eacute;c&eacute;dente</button>
+        <button class="cook-nav-btn" id="cook-prev" onclick="cookNav(-1)" data-i18n="btn-prev">&#8592; Pr&eacute;c&eacute;dente</button>
         <div class="cook-dots" id="cook-dots"></div>
-        <button class="cook-nav-btn cook-nav-next" id="cook-next" onclick="cookNav(1)">Suivante &#8594;</button>
+        <button class="cook-nav-btn cook-nav-next" id="cook-next" onclick="cookNav(1)" data-i18n="btn-next">Suivante &#8594;</button>
       </div>
     </div>
     <!-- Ready screen -->
     <div class="cook-ready" id="cook-ready">
       <div class="cook-ready-emoji">&#127869;&#65039;</div>
-      <div class="cook-ready-title">C&rsquo;est pr&ecirc;t&nbsp;!</div>
-      <div class="cook-ready-sub">Bon app&eacute;tit&nbsp;!</div>
-      <button class="cook-ready-btn" onclick="closeCookMode()">&#10003; Termin&eacute;</button>
+      <div class="cook-ready-title" data-i18n="cook-ready-title">C&rsquo;est pr&ecirc;t&nbsp;!</div>
+      <div class="cook-ready-sub" data-i18n="cook-ready-sub">Bon app&eacute;tit&nbsp;!</div>
+      <button class="cook-ready-btn" onclick="closeCookMode()" data-i18n="btn-done">&#10003; Termin&eacute;</button>
     </div>
   </div>
 </main>
@@ -606,37 +618,49 @@
 <!-- PROFILE MODAL -->
 <div class="profile-overlay" id="profile-overlay" onclick="closeProfileIfOutside(event)">
   <div class="profile-sheet" id="profile-sheet">
-    <div class="profile-handle"></div>
-    <div class="profile-title">&#128100; Mon profil</div>
-    <div class="profile-info">
-      <div class="profile-row">
-        <span class="profile-row-label">Courriel</span>
-        <span class="profile-row-value" id="p-email"></span>
-      </div>
-      <div class="profile-row">
-        <span class="profile-row-label">Plan</span>
-        <span class="profile-row-value" id="p-plan"></span>
-      </div>
-      <div class="profile-row">
-        <span class="profile-row-label">Recettes generees</span>
-        <span class="profile-row-value" id="p-count"></span>
+    <div class="profile-sheet-head">
+      <div class="profile-handle"></div>
+      <div class="profile-title-row">
+        <div class="profile-title" data-i18n="profile-title">&#128100; Mon profil</div>
+        <button class="sheet-close-x" onclick="closeProfile()">&#10005;</button>
       </div>
     </div>
-    <div class="profile-history">
-      <div class="profile-history-title">Historique</div>
-      <div id="p-history-list"></div>
+    <div class="profile-sheet-body">
+      <div class="profile-info">
+        <div class="profile-row">
+          <span class="profile-row-label" data-i18n="p-email-label">Courriel</span>
+          <span class="profile-row-value" id="p-email"></span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-row-label" data-i18n="p-plan-label">Plan</span>
+          <span class="profile-row-value" id="p-plan"></span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-row-label" data-i18n="p-count-label">Recettes generees</span>
+          <span class="profile-row-value" id="p-count"></span>
+        </div>
+      </div>
+      <div class="profile-history">
+        <div class="profile-history-title" data-i18n="p-history-title">Historique</div>
+        <div id="p-history-list"></div>
+      </div>
+      <div class="profile-actions" id="p-actions"></div>
     </div>
-    <div class="profile-actions" id="p-actions"></div>
-    <button class="btn-profile-close" onclick="closeProfile()">Fermer</button>
   </div>
 </div>
 
 <!-- ABOUT MODAL -->
 <div class="about-overlay" id="about-overlay" onclick="if(event.target===this)closeAbout()">
   <div class="about-sheet">
-    <div class="about-handle"></div>
-    <div class="about-logo">Marm<span>i</span>to</div>
-    <div class="about-tagline">Des recettes vraies, un chrono int&eacute;gr&eacute;, z&eacute;ro pub.</div>
+    <div class="about-sheet-head">
+      <div class="about-handle"></div>
+      <div class="about-logo-row">
+        <div class="about-logo">Marm<span>i</span>to</div>
+        <button class="sheet-close-x" onclick="closeAbout()">&#10005;</button>
+      </div>
+      <div class="about-tagline">Des recettes vraies, un chrono int&eacute;gr&eacute;, z&eacute;ro pub.</div>
+    </div>
+    <div class="about-sheet-body">
 
     <div class="about-section">
       <div class="about-section-title">C&rsquo;est quoi</div>
@@ -703,7 +727,7 @@
       </form>
     </div>
 
-    <button class="about-close" onclick="closeAbout()">Fermer</button>
+    </div>
   </div>
 </div>
 
@@ -1351,6 +1375,153 @@ function toggleShareMenu(){
   setTimeout(()=>document.addEventListener('click',function h(e){if(!menu.contains(e.target)){menu.remove();document.removeEventListener('click',h);}},true),100);
 }
 
+// ===== i18n LANGUAGE TOGGLE =====
+let currentLang = 'fr';
+const i18n = {
+  fr: {
+    'tagline-h1': 'Qu’est-ce qu’on cuisine ce soir ?',
+    'tagline-p': 'Choisis ta cuisine et cuisine avec le chrono intégré.',
+    'section-nav': 'Navigation',
+    'nav-home': 'Accueil',
+    'nav-favs': 'Mes favoris',
+    'nav-history': 'Mon historique',
+    'nav-profile': 'Mon profil',
+    'section-sub': 'Abonnement',
+    'section-help': 'Aide',
+    'nav-contact': 'Nous contacter',
+    'nav-about': 'À propos de Marmito',
+    'nav-logout': 'Se déconnecter',
+    'fav-title': 'Mes favoris',
+    'fav-clear': 'Tout effacer',
+    'card-ing': 'Tes ingrédients',
+    'card-ing-opt': '(optionnel)',
+    'ing-placeholder': 'Ajouter un ingrédient...',
+    'ing-hint': 'Tape ou choisis dans la liste, puis <strong>Entrée</strong> pour ajouter.',
+    'card-cuisine': 'Type de cuisine',
+    'chip-cuisine-all': 'Toutes',
+    'chip-cuisine-western': 'Occidentale',
+    'card-type': 'Type de repas',
+    'chip-main': 'Plat principal',
+    'chip-dessert': 'Dessert',
+    'chip-drink': 'Boisson',
+    'chip-all': 'Tout',
+    'btn-gen': '🍳 Trouver une recette',
+    'limit-title': 'Limite atteinte',
+    'limit-text': 'Tu as généré tes 10 recettes gratuites du mois. Passe à Marmito Pro pour des recettes illimitées et toutes les régions.',
+    'btn-upgrade': 'Passer à Pro — 4.99$/mois',
+    'btn-copy': '📋 Copier',
+    'btn-share': '🔗 Partager',
+    'sec-ingredients': 'Ingrédients',
+    'sec-preparation': 'Préparation — Chrono intégré',
+    'btn-start-cook': '🍳 Commencer la préparation →',
+    'meta-time': 'Temps',
+    'meta-serves': 'Personnes',
+    'meta-diff': 'Difficulté',
+    'btn-timer': '▶ Lancer le minuteur',
+    'btn-prev': '← Précédente',
+    'btn-next': 'Suivante →',
+    'cook-ready-title': 'C’est prêt !',
+    'cook-ready-sub': 'Bon appétit !',
+    'btn-done': '✓ Terminé',
+    'profile-title': '👤 Mon profil',
+    'p-email-label': 'Courriel',
+    'p-plan-label': 'Plan',
+    'p-count-label': 'Recettes générées',
+    'p-history-title': 'Historique',
+  },
+  en: {
+    'tagline-h1': 'What are we cooking tonight?',
+    'tagline-p': 'Pick your cuisine and cook with the built-in timer.',
+    'section-nav': 'Navigation',
+    'nav-home': 'Home',
+    'nav-favs': 'My favorites',
+    'nav-history': 'My history',
+    'nav-profile': 'My profile',
+    'section-sub': 'Subscription',
+    'section-help': 'Help',
+    'nav-contact': 'Contact us',
+    'nav-about': 'About Marmito',
+    'nav-logout': 'Sign out',
+    'fav-title': 'My favorites',
+    'fav-clear': 'Clear all',
+    'card-ing': 'Your ingredients',
+    'card-ing-opt': '(optional)',
+    'ing-placeholder': 'Add an ingredient...',
+    'ing-hint': 'Type or choose from the list, then press <strong>Enter</strong> to add.',
+    'card-cuisine': 'Cuisine type',
+    'chip-cuisine-all': 'All',
+    'chip-cuisine-western': 'Western',
+    'card-type': 'Meal type',
+    'chip-main': 'Main dish',
+    'chip-dessert': 'Dessert',
+    'chip-drink': 'Drink',
+    'chip-all': 'All',
+    'btn-gen': '🍳 Find a recipe',
+    'limit-title': 'Limit reached',
+    'limit-text': 'You’ve used your 10 free recipes this month. Upgrade to Marmito Pro for unlimited recipes and all regions.',
+    'btn-upgrade': 'Upgrade to Pro — $4.99/month',
+    'btn-copy': '📋 Copy',
+    'btn-share': '🔗 Share',
+    'sec-ingredients': 'Ingredients',
+    'sec-preparation': 'Preparation — Built-in timer',
+    'btn-start-cook': '🍳 Start cooking →',
+    'meta-time': 'Time',
+    'meta-serves': 'Serves',
+    'meta-diff': 'Difficulty',
+    'btn-timer': '▶ Start timer',
+    'btn-prev': '← Previous',
+    'btn-next': 'Next →',
+    'cook-ready-title': 'Ready!',
+    'cook-ready-sub': 'Enjoy your meal!',
+    'btn-done': '✓ Done',
+    'profile-title': '👤 My profile',
+    'p-email-label': 'Email',
+    'p-plan-label': 'Plan',
+    'p-count-label': 'Recipes generated',
+    'p-history-title': 'History',
+  }
+};
+
+function applyLang() {
+  const t = i18n[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (t[key] !== undefined) el.placeholder = t[key];
+  });
+  const langBtn = document.getElementById('lang-btn');
+  if (langBtn) langBtn.textContent = currentLang === 'fr' ? 'EN' : 'FR';
+  document.documentElement.lang = currentLang;
+}
+
+function toggleLang() {
+  currentLang = currentLang === 'fr' ? 'en' : 'fr';
+  try { localStorage.setItem('marmito-lang', currentLang); } catch(e) {}
+  applyLang();
+}
+
+function goHome() {
+  document.getElementById('fav-panel').classList.remove('visible');
+  document.getElementById('result-card').classList.remove('visible');
+  const cookMode = document.getElementById('cook-mode');
+  if (cookMode) cookMode.classList.remove('visible');
+  const profileOverlay = document.getElementById('profile-overlay');
+  if (profileOverlay) profileOverlay.classList.remove('open');
+  const aboutOverlay = document.getElementById('about-overlay');
+  if (aboutOverlay) aboutOverlay.classList.remove('open');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// Restore saved language preference
+try {
+  const savedLang = localStorage.getItem('marmito-lang');
+  if (savedLang === 'en') { currentLang = 'en'; }
+} catch(e) {}
+applyLang();
+
 // Toast
 function showToast(m,type){const t=document.getElementById("toast");t.textContent=m;t.style.background=type==='error'?'#C0392B':'';t.classList.add("show");setTimeout(()=>{t.classList.remove("show");t.style.background='';},type==='error'?4000:2500);}
 
@@ -1548,6 +1719,7 @@ function cookTimerReset(){
 }
 
 document.getElementById("rc").textContent=recipes.length+" recettes";
+applyLang();
 </script>
 </body>
 </html>
