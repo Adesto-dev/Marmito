@@ -354,7 +354,8 @@
     .profile-row-value{font-weight:600}
     .profile-history{margin-top:16px}
     .profile-history-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--fg2);margin-bottom:10px}
-    .history-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;border:1px solid var(--border);margin-bottom:6px;background:var(--bg)}
+    .history-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;border:1px solid var(--border);margin-bottom:6px;background:var(--bg);transition:background 0.15s,border-color 0.15s}
+    .history-item:hover,.history-item:active{background:var(--accent-light);border-color:var(--accent)}
     .history-item-name{font-size:14px;font-weight:500}
     .history-item-date{font-size:12px;color:var(--fg2)}
     .history-empty{text-align:center;color:var(--fg2);font-size:14px;padding:20px 0}
@@ -865,13 +866,23 @@
       hist.innerHTML = data.map(r => {
         const d = new Date(r.created_at);
         const date = d.toLocaleDateString('fr-CA', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-        return '<div class="history-item"><span class="history-item-name">' + r.title + (r.region ? ' <span style="color:var(--fg2);font-weight:400;font-size:12px">· ' + r.region + '</span>' : '') + '</span><span class="history-item-date">' + date + '</span></div>';
+        return '<div class="history-item" style="cursor:pointer" onclick="openHistoryRecipe(' + JSON.stringify(r.title) + ')" title="Revoir la recette"><span class="history-item-name">' + r.title + (r.region ? ' <span style="color:var(--fg2);font-weight:400;font-size:12px">· ' + r.region + '</span>' : '') + '</span><span class="history-item-date">' + date + ' ›</span></div>';
       }).join('');
     }
   }
 
   function closeProfile() {
     document.getElementById('profile-overlay').classList.remove('open');
+  }
+
+  function openHistoryRecipe(title) {
+    const recipe = recipes.find(r => r.title === title);
+    if (recipe) {
+      closeProfile();
+      setTimeout(() => show(recipe), 200);
+    } else {
+      showToast('Recette introuvable dans la base locale.');
+    }
   }
 
   function closeProfileIfOutside(e) {
