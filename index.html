@@ -393,6 +393,12 @@
     .profile-actions{display:flex;flex-direction:column;gap:10px;margin-top:20px}
     .btn-profile-upgrade{padding:13px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:15px;cursor:pointer}
     .btn-profile-manage{padding:12px;background:var(--bg);color:var(--fg);border:1.5px solid var(--border);border-radius:12px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+    .pro-status-card{background:linear-gradient(135deg,#1a472a 0%,#2d6a4f 100%);border-radius:14px;padding:16px;margin-bottom:12px;color:#fff}
+    .pro-status-card .pro-status-label{font-size:11px;font-weight:700;letter-spacing:0.08em;opacity:0.75;text-transform:uppercase;margin-bottom:4px}
+    .pro-status-card .pro-status-title{font-size:18px;font-weight:700;font-family:"Fraunces",Georgia,serif;margin-bottom:2px}
+    .pro-status-card .pro-status-sub{font-size:12px;opacity:0.8}
+    .btn-manage-portal{width:100%;padding:13px;background:var(--bg);color:var(--fg);border:1.5px solid var(--border);border-radius:12px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+    .btn-cancel-sub{width:100%;padding:10px;background:none;color:var(--fg2);border:none;font-family:inherit;font-size:13px;cursor:pointer;text-decoration:underline}
     .btn-profile-close{padding:12px;background:none;color:var(--fg2);border:none;font-family:inherit;font-size:14px;cursor:pointer;text-decoration:underline}
     .btn-profile-icon{background:none;border:none;cursor:pointer;color:rgba(250,250,245,0.75);font-size:18px;padding:4px;line-height:1}
     .btn-profile-icon:hover{color:#fff}
@@ -911,7 +917,7 @@
     if (userPlan === 'free') {
       act.innerHTML = '<button class="btn-profile-upgrade" onclick="startUpgrade(this)">Passer a Pro — 4.99$/mois</button>';
     } else {
-      act.innerHTML = '<button class="btn-profile-manage" onclick="manageSubscription()">Gerer mon abonnement</button>';
+      act.innerHTML = '<div class="pro-status-card"><div class="pro-status-label">Abonnement actif</div><div class="pro-status-title">⭐ Marmito PRO</div><div class="pro-status-sub">Recettes illimitees · Plan de repas 7 jours</div></div><button class="btn-manage-portal" onclick="manageSubscription()">⚙️ Gérer mon abonnement</button><button class="btn-cancel-sub" onclick="manageSubscription()">Annuler l\'abonnement</button>';
     }
     // History
     const hist = document.getElementById('p-history-list');
