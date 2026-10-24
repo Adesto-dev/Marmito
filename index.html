@@ -632,7 +632,7 @@
     </div>
   </div>
   <button class="btn-generate" id="gen-btn" onclick="generateRecipe()" data-i18n="btn-gen">&#127859; Trouver une recette</button>
-  <button class="btn-plan" onclick="openPlanRepas()">&#128197; Plan de repas 7 jours</button>
+  <button class="btn-plan" data-i18n="btn-plan" onclick="openPlanRepas()">&#128197; Plan de repas 7 jours</button>
   <!-- Freemium limit banner -->
     <div class="limit-banner" id="limit-banner">
       <h3 data-i18n="limit-title">Limite atteinte</h3>
@@ -720,7 +720,7 @@
     <div class="plan-sheet-head">
       <div class="plan-handle" style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px"></div>
       <div class="plan-title-row">
-        <div class="plan-title">&#128197; Plan 7 jours</div>
+        <div class="plan-title" data-i18n="plan-title">&#128197; Plan 7 jours</div>
         <button class="sheet-close-x" onclick="closePlanRepas()">&#10005;</button>
       </div>
     </div>
@@ -1675,7 +1675,7 @@ function openDailyRecipe() {
 }
 
 // ===== PLAN DE REPAS 7 JOURS =====
-const JOURS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+const JOURS_KEYS = ['plan-lbl-mon','plan-lbl-tue','plan-lbl-wed','plan-lbl-thu','plan-lbl-fri','plan-lbl-sat','plan-lbl-sun'];
 
 function getWeekSeed() {
   const d = new Date();
@@ -1708,7 +1708,7 @@ function openPlanRepas() {
   sheet.style.maxHeight = Math.round(vh * 0.88) + 'px';
 
   if (userPlan !== 'pro') {
-    body.innerHTML = '<div class="plan-pro-lock"><div style="font-size:48px;margin-bottom:12px">🔒</div><h3>Fonctionnalité Pro</h3><p>Le plan de repas 7 jours est réservé aux abonnés Marmito Pro.</p><button class="btn-generate" onclick="closePlanRepas();startUpgrade()" style="margin-top:16px">Passer à Pro — 4.99$/mois</button></div>';
+    body.innerHTML = '<div class="plan-pro-lock"><div style="font-size:48px;margin-bottom:12px">🔒</div><h3>' + t('plan-pro-title') + '</h3><p>' + t('plan-pro-text') + '</p><button class="btn-generate" onclick="closePlanRepas();startUpgrade()" style="margin-top:16px">' + t('plan-pro-btn') + '</button></div>';
     overlay.classList.add('open');
     return;
   }
@@ -1718,8 +1718,8 @@ function openPlanRepas() {
   const mainRecipes = recipes.filter(r => r.type === 'Plat principal');
   // Mélange déterministe : même résultat toute la semaine, différent chaque semaine
   const shuffled = seededShuffle(mainRecipes, weekSeed);
-  const plan = JOURS.map((jour, i) => ({
-    jour,
+  const plan = JOURS_KEYS.map((jourKey, i) => ({
+    jour: t(jourKey),
     recipe: shuffled[i % shuffled.length]
   }));
 
@@ -1733,7 +1733,7 @@ function openPlanRepas() {
     '<div class="plan-day" onclick="closePlanRepas();setTimeout(()=>show(recipes.find(x=>x.title===\'' + (r ? r.title.replace(/'/g,"\\'") : '') + '\')),200)">' +
     '<div><div class="plan-day-label">' + jour + '</div>' +
     '<div class="plan-day-name">' + (r ? r.title : '—') + '</div>' +
-    '<div class="plan-day-region">' + (r ? r.region + ' · ' + r.time : '') + '</div></div>' +
+    '<div class="plan-day-region">' + (r ? translateMeta('region', r.region) + ' · ' + r.time : '') + '</div></div>' +
     '<span style="color:var(--fg2);font-size:18px">›</span></div>'
   ).join('') + buildGroceryHTML(allIngs);
 
@@ -1883,6 +1883,11 @@ const i18n = {
     'cook-of': 'sur',
     'cook-timer-lbl': 'Chrono',
     'cook-finish': 'Étape terminée !',
+    'btn-plan': '&#128197; Plan de repas 7 jours',
+    'plan-title': '&#128197; Plan 7 jours',
+    'plan-pro-title': 'Fonctionnalit&eacute; Pro',
+    'plan-pro-text': 'Le plan de repas 7 jours est r&eacute;serv&eacute; aux abonn&eacute;s Marmito Pro.',
+    'plan-pro-btn': 'Passer &agrave; Pro &mdash; 4.99$/mois',
     'plan-lbl-mon': 'Lundi',
     'plan-lbl-tue': 'Mardi',
     'plan-lbl-wed': 'Mercredi',
@@ -1984,6 +1989,11 @@ const i18n = {
     'cook-of': 'of',
     'cook-timer-lbl': 'Timer',
     'cook-finish': 'Step complete!',
+    'btn-plan': '&#128197; 7-day meal plan',
+    'plan-title': '&#128197; 7-day plan',
+    'plan-pro-title': 'Pro feature',
+    'plan-pro-text': 'The 7-day meal plan is reserved for Marmito Pro subscribers.',
+    'plan-pro-btn': 'Upgrade to Pro &mdash; $4.99/month',
     'plan-lbl-mon': 'Monday',
     'plan-lbl-tue': 'Tuesday',
     'plan-lbl-wed': 'Wednesday',
@@ -2052,6 +2062,11 @@ function toggleLang() {
         translateRecipeSteps(cur.steps);
       }
     }
+  }
+  // Refresh plan if it's currently open (re-renders day names + regions in current lang)
+  const planOverlay = document.getElementById('plan-overlay');
+  if (planOverlay && planOverlay.classList.contains('open')) {
+    openPlanRepas();
   }
 }
 
