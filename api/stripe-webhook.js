@@ -28,24 +28,35 @@ module.exports = async (req, res) => {
   }
 
   const userId = event.data.object.metadata?.supabase_user_id;
+  console.log('[Webhook] event type:', event.type, '| userId:', userId);
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     if (userId) {
-      await supabase.from('profiles').upsert({
+      const { error } = await supabase.from('profiles').upsert({
         id: userId,
         plan: 'pro',
         stripe_customer_id: session.customer,
         stripe_subscription_id: session.subscription,
       });
+      if (error) {
+        console.error('[Webhook] Supabase upsert error:', JSON.stringify(error));
+      } else {
+        console.log('[Webhook] Supabase updated to PRO for user:', userId);
+      }
+    } else {
+      console.error('[Webhook] userId manquant dans metadata!');
     }
   }
 
   if (event.type === 'customer.subscription.deleted') {
     const sub = event.data.object;
-    const { data } = await supabase.from('profiles').select('id').eq('stripe_subscription_id', sub.id).single();
+    const { data, error: selectError } = await supabase.from('profiles').select('id').eq('stripe_subscription_id', sub.id).single();
+    if (selectError) console.error('[Webhook] Select error:', JSON.stringify(selectError));
     if (data) {
-      await supabase.from('profiles').update({ plan: 'free' }).eq('id', data.id);
+      const { error: updateError } = await supabase.from('profiles').update({ plan: 'free' }).eq('id', data.id);
+      if (updateError) console.error('[Webhook] Update error:', JSON.stringify(updateError));
+      else console.log('[Webhook] Supabase updated to FREE for user:', data.id);
     }
   }
 
