@@ -587,11 +587,11 @@
   <!-- RECETTE DU JOUR -->
   <div class="daily-card" id="daily-card" onclick="openDailyRecipe()">
     <div>
-      <div class="daily-label">&#127774; Recette du jour</div>
+      <div class="daily-label" data-i18n="daily-label">&#127774; Recette du jour</div>
       <div class="daily-title" id="daily-title">Chargement...</div>
       <div class="daily-sub" id="daily-sub"></div>
     </div>
-    <button class="daily-btn" onclick="event.stopPropagation();openDailyRecipe()">Voir &#8594;</button>
+    <button class="daily-btn" data-i18n="daily-btn" onclick="event.stopPropagation();openDailyRecipe()">Voir &#8594;</button>
   </div>
   <div class="fav-panel" id="fav-panel">
     <div class="fav-panel-header">
@@ -827,13 +827,13 @@
         <div class="about-logo">Marm<span>i</span>to</div>
         <button class="sheet-close-x" onclick="closeAbout()">&#10005;</button>
       </div>
-      <div class="about-tagline">Des recettes vraies, un chrono int&eacute;gr&eacute;, z&eacute;ro pub.</div>
+      <div class="about-tagline" data-i18n="about-tagline">Des recettes vraies, un chrono int&eacute;gr&eacute;, z&eacute;ro pub.</div>
     </div>
     <div class="about-sheet-body">
 
     <div class="about-section">
-      <div class="about-section-title">C&rsquo;est quoi</div>
-      <div class="about-text">
+      <div class="about-section-title" data-i18n="about-title-what">C&rsquo;est quoi</div>
+      <div class="about-text" data-i18n="about-text-what">
         Un g&eacute;n&eacute;rateur de recettes fait pour les cuisines qu&rsquo;on voit rarement dans les apps habituelles.
         Tu choisis ce que t&rsquo;as dans le frigo ou le type de repas que tu veux, Marmito te sort une recette avec les quantit&eacute;s
         et un chrono &eacute;tape par &eacute;tape. Pas de scroll infini, pas de blog &agrave; lire avant d&rsquo;arriver aux ingr&eacute;dients.
@@ -841,38 +841,38 @@
     </div>
 
     <div class="about-section">
-      <div class="about-section-title">Ce qu&rsquo;on couvre</div>
+      <div class="about-section-title" data-i18n="about-title-covers">Ce qu&rsquo;on couvre</div>
       <div class="about-regions">
         <div class="about-region-item">
           <div class="about-region-flag">🌍</div>
           <div class="about-region-body">
-            <div class="about-region-name">Afrique subsaharienne</div>
-            <div class="about-region-desc">S&eacute;n&eacute;gal, Cameroun, C&ocirc;te d&rsquo;Ivoire, Nigeria, Congo, Mali&hellip;</div>
+            <div class="about-region-name" data-i18n="about-region-africa-name">Afrique subsaharienne</div>
+            <div class="about-region-desc" data-i18n="about-region-africa-desc">S&eacute;n&eacute;gal, Cameroun, C&ocirc;te d&rsquo;Ivoire, Nigeria, Congo, Mali&hellip;</div>
           </div>
         </div>
         <div class="about-region-item">
           <div class="about-region-flag">🇲🇦</div>
           <div class="about-region-body">
-            <div class="about-region-name">Maghreb</div>
-            <div class="about-region-desc">Maroc, Alg&eacute;rie, Tunisie : couscous, tajines, chorba&hellip;</div>
+            <div class="about-region-name" data-i18n="about-region-maghreb-name">Maghreb</div>
+            <div class="about-region-desc" data-i18n="about-region-maghreb-desc">Maroc, Alg&eacute;rie, Tunisie : couscous, tajines, chorba&hellip;</div>
           </div>
         </div>
         <div class="about-region-item">
           <div class="about-region-flag">🍁</div>
           <div class="about-region-body">
-            <div class="about-region-name">Qu&eacute;bec &amp; international</div>
-            <div class="about-region-desc">Les classiques d&rsquo;ici et quelques recettes du reste du monde.</div>
+            <div class="about-region-name" data-i18n="about-region-qc-name">Qu&eacute;bec &amp; international</div>
+            <div class="about-region-desc" data-i18n="about-region-qc-desc">Les classiques d&rsquo;ici et quelques recettes du reste du monde.</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="about-section">
-      <div class="about-section-title">Comment &ccedil;a marche</div>
+      <div class="about-section-title" data-i18n="about-title-how">Comment &ccedil;a marche</div>
       <div class="about-steps">
-        <div class="about-step"><div class="about-step-num">1</div>Tu entres tes ingr&eacute;dients ou tu choisis un type de repas.</div>
-        <div class="about-step"><div class="about-step-num">2</div>Marmito te g&eacute;n&egrave;re une recette avec quantit&eacute;s et &eacute;tapes.</div>
-        <div class="about-step"><div class="about-step-num">3</div>Tu lances le chrono directement depuis l&rsquo;&eacute;cran, pas besoin de regarder ta montre.</div>
+        <div class="about-step" data-i18n="about-step-1"><div class="about-step-num">1</div>Tu entres tes ingr&eacute;dients ou tu choisis un type de repas.</div>
+        <div class="about-step" data-i18n="about-step-2"><div class="about-step-num">2</div>Marmito te g&eacute;n&egrave;re une recette avec quantit&eacute;s et &eacute;tapes.</div>
+        <div class="about-step" data-i18n="about-step-3"><div class="about-step-num">3</div>Tu lances le chrono directement depuis l&rsquo;&eacute;cran, pas besoin de regarder ta montre.</div>
       </div>
     </div>
 
@@ -1666,7 +1666,8 @@ function getDailyRecipe() {
 function initDailyRecipe() {
   const r = getDailyRecipe();
   document.getElementById('daily-title').textContent = r.title;
-  document.getElementById('daily-sub').textContent = r.region + ' · ' + r.time;
+  const regionTr = translateMeta('region', r.region);
+  document.getElementById('daily-sub').textContent = regionTr + ' · ' + r.time;
 }
 function openDailyRecipe() {
   show(getDailyRecipe());
@@ -1889,6 +1890,22 @@ const i18n = {
     'plan-lbl-fri': 'Vendredi',
     'plan-lbl-sat': 'Samedi',
     'plan-lbl-sun': 'Dimanche',
+    'daily-label': '&#127774; Recette du jour',
+    'daily-btn': 'Voir →',
+    'about-tagline': 'Des recettes vraies, un chrono int&eacute;gr&eacute;, z&eacute;ro pub.',
+    'about-title-what': 'C&rsquo;est quoi',
+    'about-text-what': 'Un g&eacute;n&eacute;rateur de recettes fait pour les cuisines qu&rsquo;on voit rarement dans les apps habituelles. Tu choisis ce que t&rsquo;as dans le frigo ou le type de repas que tu veux, Marmito te sort une recette avec les quantit&eacute;s et un chrono &eacute;tape par &eacute;tape. Pas de scroll infini, pas de blog &agrave; lire avant d&rsquo;arriver aux ingr&eacute;dients.',
+    'about-title-covers': 'Ce qu&rsquo;on couvre',
+    'about-region-africa-name': 'Afrique subsaharienne',
+    'about-region-africa-desc': 'S&eacute;n&eacute;gal, Cameroun, C&ocirc;te d&rsquo;Ivoire, Nigeria, Congo, Mali&hellip;',
+    'about-region-maghreb-name': 'Maghreb',
+    'about-region-maghreb-desc': 'Maroc, Alg&eacute;rie, Tunisie&nbsp;: couscous, tajines, chorba&hellip;',
+    'about-region-qc-name': 'Qu&eacute;bec &amp; international',
+    'about-region-qc-desc': 'Les classiques d&rsquo;ici et quelques recettes du reste du monde.',
+    'about-title-how': 'Comment &ccedil;a marche',
+    'about-step-1': '<div class="about-step-num">1</div>Tu entres tes ingr&eacute;dients ou tu choisis un type de repas.',
+    'about-step-2': '<div class="about-step-num">2</div>Marmito te g&eacute;n&egrave;re une recette avec quantit&eacute;s et &eacute;tapes.',
+    'about-step-3': '<div class="about-step-num">3</div>Tu lances le chrono directement depuis l&rsquo;&eacute;cran, pas besoin de regarder ta montre.',
   },
   en: {
     'tagline-h1': 'What are we cooking tonight?',
@@ -1974,6 +1991,22 @@ const i18n = {
     'plan-lbl-fri': 'Friday',
     'plan-lbl-sat': 'Saturday',
     'plan-lbl-sun': 'Sunday',
+    'daily-label': '&#127774; Recipe of the day',
+    'daily-btn': 'See →',
+    'about-tagline': 'Real recipes, built-in timer, zero ads.',
+    'about-title-what': 'What is it',
+    'about-text-what': 'A recipe generator built for cuisines you rarely see in mainstream apps. Pick what&rsquo;s in your fridge or choose a meal type, and Marmito gives you a recipe with quantities and a step-by-step timer. No endless scrolling, no blog post to read before you get to the ingredients.',
+    'about-title-covers': 'What we cover',
+    'about-region-africa-name': 'Sub-Saharan Africa',
+    'about-region-africa-desc': 'Senegal, Cameroon, C&ocirc;te d&rsquo;Ivoire, Nigeria, Congo, Mali&hellip;',
+    'about-region-maghreb-name': 'Maghreb',
+    'about-region-maghreb-desc': 'Morocco, Algeria, Tunisia: couscous, tagines, chorba&hellip;',
+    'about-region-qc-name': 'Qu&eacute;bec &amp; international',
+    'about-region-qc-desc': 'Local classics and a selection of recipes from around the world.',
+    'about-title-how': 'How it works',
+    'about-step-1': '<div class="about-step-num">1</div>Enter your ingredients or choose a meal type.',
+    'about-step-2': '<div class="about-step-num">2</div>Marmito generates a recipe with quantities and steps.',
+    'about-step-3': '<div class="about-step-num">3</div>Start the timer right from the screen &mdash; no need to watch the clock.',
   }
 };
 
@@ -2002,6 +2035,24 @@ function toggleLang() {
   currentLang = currentLang === 'fr' ? 'en' : 'fr';
   try { localStorage.setItem('marmito-lang', currentLang); } catch(e) {}
   applyLang();
+  initDailyRecipe();
+  // Refresh step texts in recipe card if one is currently shown
+  if (cur) {
+    const stepsEl = document.getElementById('result-steps');
+    if (stepsEl) {
+      const stepDivs = stepsEl.querySelectorAll('.step-text');
+      if (currentLang === 'fr') {
+        // Restore original French texts
+        stepDivs.forEach((el, i) => {
+          const step = cur.steps[i];
+          if (step) el.textContent = typeof step === 'string' ? step : step.text;
+        });
+      } else {
+        // Re-run translation (uses cache, instant on second visit)
+        translateRecipeSteps(cur.steps);
+      }
+    }
+  }
 }
 
 function goHome() {
