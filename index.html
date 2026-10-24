@@ -866,7 +866,7 @@
       hist.innerHTML = data.map(r => {
         const d = new Date(r.created_at);
         const date = d.toLocaleDateString('fr-CA', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-        return '<div class="history-item" style="cursor:pointer" onclick="openHistoryRecipe(' + JSON.stringify(r.title) + ')" title="Revoir la recette"><span class="history-item-name">' + r.title + (r.region ? ' <span style="color:var(--fg2);font-weight:400;font-size:12px">· ' + r.region + '</span>' : '') + '</span><span class="history-item-date">' + date + ' ›</span></div>';
+        return '<div class="history-item" style="cursor:pointer" data-title="' + r.title.replace(/"/g,'&quot;') + '" onclick="openHistoryRecipe(this.dataset.title)" title="Revoir la recette"><span class="history-item-name">' + r.title + (r.region ? ' <span style="color:var(--fg2);font-weight:400;font-size:12px">· ' + r.region + '</span>' : '') + '</span><span class="history-item-date">' + date + ' ›</span></div>';
       }).join('');
     }
   }
