@@ -178,8 +178,18 @@
     .plan-day-region{font-size:12px;color:var(--fg2)}
     .plan-grocery{margin-top:20px}
     .plan-grocery-title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:16px;margin-bottom:10px}
-    .plan-grocery-list{display:flex;flex-wrap:wrap;gap:6px}
+    .plan-grocery-list{display:flex;flex-direction:column;gap:2px}
     .plan-grocery-tag{background:var(--accent-light);color:var(--accent);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:500}
+    .plan-grocery-item{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;background:var(--bg);border:1px solid var(--border);transition:background 0.15s}
+    .plan-grocery-item:has(input:checked){background:var(--accent-light);border-color:var(--accent)}
+    .plan-grocery-item input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+    .plan-grocery-item label{font-size:13px;cursor:pointer;flex:1;line-height:1.3;transition:text-decoration 0.15s}
+    .plan-grocery-item:has(input:checked) label{text-decoration:line-through;color:var(--fg2)}
+    .plan-grocery-copy{display:flex;align-items:center;gap:8px;margin-top:12px;margin-bottom:4px}
+    .btn-grocery-copy{flex:1;padding:9px 14px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:background 0.15s}
+    .btn-grocery-copy:hover{background:var(--green-dark,#1a7a40)}
+    .btn-grocery-uncheck{padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-size:12px;cursor:pointer;color:var(--fg2);transition:background 0.15s}
+    .btn-grocery-uncheck:hover{background:var(--accent-light)}
     .plan-pro-lock{text-align:center;padding:30px 20px;color:var(--fg2)}
     .plan-pro-lock h3{font-family:"Fraunces",Georgia,serif;font-size:18px;color:var(--fg);margin-bottom:8px}
     .btn-plan{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:12px;font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:15px;cursor:pointer;transition:background 0.15s;margin-top:12px}
@@ -845,6 +855,7 @@
   let currentUser = null;
   let userPlan = 'free';
   let recipeCount = 0;
+  let authReady = false;
   const FREE_LIMIT = 5;
   // Charge le compteur local pour les utilisateurs pas connectés
   try { recipeCount = parseInt(localStorage.getItem('marmito-count') || '0'); } catch(e){}
@@ -857,6 +868,7 @@
     }
     currentUser = session.user;
     await loadUserProfile();
+    authReady = true;
     document.getElementById('auth-loading').classList.add('hidden');
     document.getElementById('user-bar').style.display = '';
     updateUserBar();
@@ -948,7 +960,17 @@
   }
 
   async function openProfile() {
-    if (!currentUser) return;
+    if (!authReady) {
+      // Auth still loading — retry in 600ms once session is confirmed
+      showToast(currentLang === 'en' ? 'Loading...' : 'Chargement...');
+      setTimeout(() => openProfile(), 600);
+      return;
+    }
+    if (!currentUser) {
+      // Auth done but no session — redirect to login
+      window.location.href = '/auth.html';
+      return;
+    }
     document.getElementById('p-email').textContent = currentUser.email;
     document.getElementById('p-plan').textContent = userPlan === 'pro' ? 'Marmito PRO' : 'Gratuit';
     document.getElementById('p-count').textContent = userPlan === 'free' ? recipeCount + ' / ' + FREE_LIMIT : recipeCount + ' (illimite)';
@@ -1109,12 +1131,12 @@
       } else {
         btn.disabled = false;
         btn.textContent = 'Envoyer';
-        showToast('Erreur — réessaie dans un moment.');
+        showToast(t('toast-error-retry'), 'error');
       }
     } catch(err) {
       btn.disabled = false;
       btn.textContent = 'Envoyer';
-      showToast('Erreur réseau.');
+      showToast(t('toast-network'), 'error');
     }
   }
 
@@ -1133,11 +1155,11 @@
 
   async function manageSubscription() {
     const { data } = await sb.from('profiles').select('stripe_customer_id').eq('id', currentUser.id).single();
-    if (!data || !data.stripe_customer_id) { showToast('Aucun abonnement actif.'); return; }
+    if (!data || !data.stripe_customer_id) { showToast(t('toast-no-sub')); return; }
     const r = await fetch('/api/create-portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customerId: data.stripe_customer_id }) });
     const json = await r.json();
     if (json.url) window.location.href = json.url;
-    else showToast('Erreur portail Stripe.');
+    else showToast(t('toast-error-retry'), 'error');
   }
 
   async function startUpgrade(btnEl) {
@@ -1465,8 +1487,8 @@ function toggleFav(){
   if(!cur)return;
   const fb=document.getElementById("fav-btn");
   const idx=favs.findIndex(f=>f.title===cur.title);
-  if(idx>=0){favs.splice(idx,1);fb.textContent="♡";fb.classList.remove("active");showToast("Retire des favoris");}
-  else{favs.push({title:cur.title,region:cur.region,type:cur.type});fb.textContent="❤️";fb.classList.add("active");showToast("Ajoute aux favoris !");}
+  if(idx>=0){favs.splice(idx,1);fb.textContent="♡";fb.classList.remove("active");showToast(t('toast-fav-remove'));}
+  else{favs.push({title:cur.title,region:cur.region,type:cur.type});fb.textContent="❤️";fb.classList.add("active");showToast(t('toast-fav-add'));}
   saveFavs();updateFavBtn();
   if(document.getElementById("fav-panel").classList.contains("visible"))renderFavs();
 }
@@ -1497,15 +1519,15 @@ function copyRecipe(){
   if(!cur)return;
   const txt=rTxt(cur);
   if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(txt).then(()=>showToast("Recette copiee !")).catch(()=>copyFallback(txt));
+    navigator.clipboard.writeText(txt).then(()=>showToast(t('toast-copy'))).catch(()=>copyFallback(txt));
   } else { copyFallback(txt); }
 }
 function copyFallback(txt){
   const el=document.createElement('textarea');
   el.value=txt; el.style.position='fixed'; el.style.opacity='0';
   document.body.appendChild(el); el.focus(); el.select();
-  try{document.execCommand('copy');showToast("Recette copiee !");}
-  catch(e){showToast("Appuyez sur Cmd+C pour copier");}
+  try{document.execCommand('copy');showToast(t('toast-copy'));}
+  catch(e){showToast(currentLang==='en'?'Press Cmd+C to copy':'Appuyez sur Cmd+C pour copier');}
   document.body.removeChild(el);
 }
 async function shareRecipe(){
@@ -1561,11 +1583,11 @@ function shareRecipeLink() {
   if (!cur) return;
   const url = window.location.origin + window.location.pathname + '#r/' + slugify(cur.title);
   if (navigator.share) {
-    navigator.share({ title: cur.title, text: 'Recette : ' + cur.title, url });
+    navigator.share({ title: cur.title, text: (currentLang==='en'?'Recipe: ':'Recette : ') + cur.title, url });
   } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => showToast('Lien copié !'));
+    navigator.clipboard.writeText(url).then(() => showToast(t('toast-link')));
   } else {
-    prompt('Copie ce lien :', url);
+    prompt(currentLang==='en'?'Copy this link:':'Copie ce lien :', url);
   }
 }
 // Vérifier si l'URL contient un lien direct vers une recette
@@ -1656,12 +1678,41 @@ function openPlanRepas() {
     '<div class="plan-day-name">' + (r ? r.title : '—') + '</div>' +
     '<div class="plan-day-region">' + (r ? r.region + ' · ' + r.time : '') + '</div></div>' +
     '<span style="color:var(--fg2);font-size:18px">›</span></div>'
-  ).join('') +
-  '<div class="plan-grocery"><div class="plan-grocery-title">🛒 Liste d\'épicerie</div><div class="plan-grocery-list">' +
-  Object.keys(allIngs).map(i => '<span class="plan-grocery-tag">' + i + '</span>').join('') +
-  '</div></div>';
+  ).join('') + buildGroceryHTML(allIngs);
 
   overlay.classList.add('open');
+}
+function buildGroceryHTML(allIngs) {
+  const ings = Object.keys(allIngs);
+  const title = currentLang === 'en' ? '🛒 Grocery list' : '🛒 Liste d\'épicerie';
+  const copyBtn = currentLang === 'en' ? '📋 Copy list' : '📋 Copier la liste';
+  const uncheckBtn = currentLang === 'en' ? 'Uncheck all' : 'Tout décocher';
+  return '<div class="plan-grocery"><div class="plan-grocery-title">' + title + '</div>' +
+    '<div class="plan-grocery-list" id="grocery-checklist">' +
+    ings.map((ing, idx) =>
+      '<div class="plan-grocery-item">' +
+      '<input type="checkbox" id="gi' + idx + '">' +
+      '<label for="gi' + idx + '">' + ing + '</label>' +
+      '</div>'
+    ).join('') +
+    '</div>' +
+    '<div class="plan-grocery-copy">' +
+    '<button class="btn-grocery-copy" onclick="copyGroceryList()">' + copyBtn + '</button>' +
+    '<button class="btn-grocery-uncheck" onclick="uncheckGrocery()">' + uncheckBtn + '</button>' +
+    '</div></div>';
+}
+function updateGroceryItem(cb) { /* visual handled by CSS :has */ }
+function uncheckGrocery() {
+  document.querySelectorAll('#grocery-checklist input[type=checkbox]').forEach(cb => cb.checked = false);
+}
+function copyGroceryList() {
+  const items = Array.from(document.querySelectorAll('#grocery-checklist .plan-grocery-item label')).map(l => '• ' + l.textContent.trim());
+  const header = currentLang === 'en' ? 'Grocery list — Marmito week plan\n\n' : 'Liste d\'épicerie — Plan Marmito\n\n';
+  const txt = header + items.join('\n');
+  navigator.clipboard.writeText(txt).then(() => showToast(currentLang === 'en' ? 'List copied!' : 'Liste copiée !')).catch(() => {
+    const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    showToast(currentLang === 'en' ? 'List copied!' : 'Liste copiée !');
+  });
 }
 function closePlanRepas() {
   document.getElementById('plan-overlay').classList.remove('open');
@@ -1760,6 +1811,27 @@ const i18n = {
     'contact-ph-msg': 'Une question, un bug, une recette à ajouter...',
     'contact-send': 'Envoyer',
     'contact-success': '✓ Message envoyé ! On te répond bientôt.',
+    // Chaînes dynamiques
+    'toast-fav-add': 'Ajouté aux favoris !',
+    'toast-fav-remove': 'Retiré des favoris',
+    'toast-copy': 'Recette copiée !',
+    'toast-link': 'Lien copié !',
+    'toast-step-done': 'Étape terminée !',
+    'toast-bon-appetit': 'Bon appétit !',
+    'toast-error-retry': 'Erreur — réessaie dans un moment',
+    'toast-network': 'Erreur réseau',
+    'toast-no-sub': 'Aucun abonnement actif.',
+    'cook-step': 'Étape',
+    'cook-of': 'sur',
+    'cook-timer-lbl': 'Chrono',
+    'cook-finish': 'Étape terminée !',
+    'plan-lbl-mon': 'Lundi',
+    'plan-lbl-tue': 'Mardi',
+    'plan-lbl-wed': 'Mercredi',
+    'plan-lbl-thu': 'Jeudi',
+    'plan-lbl-fri': 'Vendredi',
+    'plan-lbl-sat': 'Samedi',
+    'plan-lbl-sun': 'Dimanche',
   },
   en: {
     'tagline-h1': 'What are we cooking tonight?',
@@ -1823,18 +1895,45 @@ const i18n = {
     'contact-ph-msg': 'A question, a bug, a recipe to add...',
     'contact-send': 'Send',
     'contact-success': '✓ Message sent! We\'ll get back to you soon.',
+    // Dynamic strings
+    'toast-fav-add': 'Added to favorites!',
+    'toast-fav-remove': 'Removed from favorites',
+    'toast-copy': 'Recipe copied!',
+    'toast-link': 'Link copied!',
+    'toast-step-done': 'Step done!',
+    'toast-bon-appetit': 'Enjoy your meal!',
+    'toast-error-retry': 'Error — please try again',
+    'toast-network': 'Network error',
+    'toast-no-sub': 'No active subscription.',
+    'cook-step': 'Step',
+    'cook-of': 'of',
+    'cook-timer-lbl': 'Timer',
+    'cook-finish': 'Step complete!',
+    'plan-lbl-mon': 'Monday',
+    'plan-lbl-tue': 'Tuesday',
+    'plan-lbl-wed': 'Wednesday',
+    'plan-lbl-thu': 'Thursday',
+    'plan-lbl-fri': 'Friday',
+    'plan-lbl-sat': 'Saturday',
+    'plan-lbl-sun': 'Sunday',
   }
 };
 
+// t() — translate a dynamic string key, falls back to key itself
+function t(key) {
+  const dict = i18n[currentLang];
+  return (dict && dict[key] !== undefined) ? dict[key] : key;
+}
+
 function applyLang() {
-  const t = i18n[currentLang];
+  const dict = i18n[currentLang];
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (t[key] !== undefined) el.innerHTML = t[key];
+    if (dict[key] !== undefined) el.innerHTML = dict[key];
   });
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     const key = el.getAttribute('data-i18n-placeholder');
-    if (t[key] !== undefined) el.placeholder = t[key];
+    if (dict[key] !== undefined) el.placeholder = dict[key];
   });
   const langBtn = document.getElementById('lang-btn');
   if (langBtn) langBtn.textContent = currentLang === 'fr' ? 'EN' : 'FR';
@@ -1848,14 +1947,19 @@ function toggleLang() {
 }
 
 function goHome() {
-  document.getElementById('fav-panel').classList.remove('visible');
-  document.getElementById('result-card').classList.remove('visible');
-  const cookMode = document.getElementById('cook-mode');
-  if (cookMode) cookMode.classList.remove('visible');
-  const profileOverlay = document.getElementById('profile-overlay');
-  if (profileOverlay) profileOverlay.classList.remove('open');
-  const aboutOverlay = document.getElementById('about-overlay');
-  if (aboutOverlay) aboutOverlay.classList.remove('open');
+  const ids = ['fav-panel','result-card'];
+  ids.forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('visible'); });
+  const overlays = ['cook-mode','profile-overlay','about-overlay','plan-overlay','auth-overlay'];
+  overlays.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('visible','open');
+  });
+  // Close drawer (safe call in case it's scoped)
+  const drawer = document.getElementById('drawer');
+  const drawerOverlay = document.getElementById('drawer-overlay');
+  if (drawer) drawer.classList.remove('open');
+  if (drawerOverlay) drawerOverlay.classList.remove('open');
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
@@ -2026,8 +2130,8 @@ function cookNav(dir){
     document.getElementById("cook-step-view").style.display="none";
     document.getElementById("cook-ready").classList.add("visible");
     document.getElementById("cook-progress-fill").style.width="100%";
-    document.getElementById("cook-progress-text").textContent="Termine !";
-    showToast("Bon appetit !");
+    document.getElementById("cook-progress-text").textContent=currentLang==='en'?'Done!':'Terminé !';
+    showToast(t('toast-bon-appetit'));
     return;
   }
   cookIdx=next;renderCookStep();
@@ -2048,11 +2152,11 @@ function cookTimerStart(){
     prog.style.width=(rem/cookTimer.total*100)+"%";
     if(rem<=0){
       clearInterval(cookTimer.iv);cookTimer=null;
-      disp.textContent="Pret !";disp.classList.add("done");
+      disp.textContent=currentLang==='en'?'Done!':'Prêt !';disp.classList.add("done");
       ctrlBtn.textContent="R";ctrlBtn.classList.add("restart");
       ctrlBtn.onclick=cookTimerReset;
       document.getElementById("cook-icon-big").classList.remove("timer-running");
-      showToast("Etape "+(cookIdx+1)+" terminee !");
+      showToast(t('toast-step-done'));
     }
   },1000);
 }
