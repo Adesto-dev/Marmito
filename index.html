@@ -368,7 +368,7 @@
     .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transition:all 0.3s;z-index:100;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     /* PROFILE MODAL */
-    .profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:flex-end;justify-content:center;overflow:hidden}
+    .profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:350;display:none;align-items:flex-end;justify-content:center;overflow:hidden}
     .profile-overlay.open{display:flex}
     .profile-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;height:90vh;height:90dvh;display:flex;flex-direction:column;max-height:90vh;max-height:90dvh}
     .profile-sheet-head{padding:20px 20px 0;flex-shrink:0}
@@ -483,7 +483,7 @@
     .about-success.show{display:block}
     .about-close{margin-top:22px;padding:12px;background:none;color:var(--fg2);border:none;font-family:inherit;font-size:14px;cursor:pointer;text-decoration:underline;width:100%}
     /* ===== HISTORY SHEET ===== */
-    .history-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;display:none;align-items:flex-end;justify-content:center;overflow:hidden}
+    .history-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:350;display:none;align-items:flex-end;justify-content:center;overflow:hidden}
     .history-overlay.open{display:flex}
     .history-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;height:80vh;height:80dvh;display:flex;flex-direction:column;max-height:80vh;max-height:80dvh}
     .history-sheet-head{padding:20px 20px 0;flex-shrink:0}
@@ -1115,15 +1115,15 @@
 
   function drawerAction(action) {
     closeDrawer();
-    if (action === 'home') { window.scrollTo({top:0,behavior:'smooth'}); }
-    else if (action === 'favs') { setTimeout(()=>toggleFavPanel(), 200); }
-    else if (action === 'history') { setTimeout(()=>openHistory(), 200); }
-    else if (action === 'profile') { setTimeout(()=>openProfile(), 200); }
-    else if (action === 'upgrade') { setTimeout(()=>startUpgrade(), 200); }
-    else if (action === 'manage') { setTimeout(()=>manageSubscription(), 200); }
+    if (action === 'home') { setTimeout(()=>goHome(), 320); }
+    else if (action === 'favs') { setTimeout(()=>toggleFavPanel(), 320); }
+    else if (action === 'history') { setTimeout(()=>openHistory(), 320); }
+    else if (action === 'profile') { setTimeout(()=>openProfile(), 320); }
+    else if (action === 'upgrade') { setTimeout(()=>startUpgrade(), 320); }
+    else if (action === 'manage') { setTimeout(()=>manageSubscription(), 320); }
     else if (action === 'logout') { if(confirm('Se déconnecter ?')) { sb.auth.signOut().then(()=>location.reload()); } }
-    else if (action === 'about') { setTimeout(()=>openAbout(), 200); }
-    else if (action === 'contact') { setTimeout(()=>openContact(), 200); }
+    else if (action === 'about') { setTimeout(()=>openAbout(), 320); }
+    else if (action === 'contact') { setTimeout(()=>openContact(), 320); }
   }
 
   async function manageSubscription() {
@@ -1662,6 +1662,34 @@ function closePlanRepas() {
   document.getElementById('plan-overlay').classList.remove('open');
 }
 
+// ===== RECIPE METADATA TRANSLATION =====
+const recipeMetaEN = {
+  region: {
+    'Afrique subsaharienne': 'Sub-Saharan Africa',
+    'Maghreb': 'Maghreb',
+    'Occidentale': 'Western'
+  },
+  type: {
+    'Plat principal': 'Main dish',
+    'Dessert': 'Dessert',
+    'Boisson': 'Drink'
+  },
+  diff: {
+    'Facile': 'Easy',
+    'Moyen': 'Medium',
+    'Avancé': 'Advanced'
+  }
+};
+function translateMeta(key, val) {
+  if (currentLang !== 'en') return val;
+  const map = recipeMetaEN[key];
+  return (map && map[val]) ? map[val] : val;
+}
+function translateServes(val) {
+  if (currentLang !== 'en') return val;
+  return val.replace('pers.', 'servings');
+}
+
 // ===== i18n LANGUAGE TOGGLE =====
 let currentLang = 'fr';
 const i18n = {
@@ -1876,12 +1904,12 @@ function generateRecipe(){
 
 function show(recipe){
   cur=recipe;
-  document.getElementById("result-region").textContent=recipe.region;
+  document.getElementById("result-region").textContent=translateMeta('region',recipe.region);
   document.getElementById("result-title").textContent=recipe.title;
-  document.getElementById("result-type").textContent=recipe.type;
+  document.getElementById("result-type").textContent=translateMeta('type',recipe.type);
   document.getElementById("r-time").textContent=recipe.time;
-  document.getElementById("r-serves").textContent=recipe.serves;
-  document.getElementById("r-diff").textContent=recipe.diff;
+  document.getElementById("r-serves").textContent=translateServes(recipe.serves);
+  document.getElementById("r-diff").textContent=translateMeta('diff',recipe.diff);
   const fb=document.getElementById("fav-btn");
   const isFav=favs.some(f=>f.title===recipe.title);
   fb.textContent=isFav?"❤️":"♡";
@@ -1937,7 +1965,9 @@ function renderCookStep(){
   const time=(typeof step==="object"&&step.time>0)?step.time:0;
   const{html:iconHtml}=getIcon(step);
   // Progress
-  document.getElementById("cook-progress-text").textContent="Etape "+(cookIdx+1)+" sur "+total;
+  const t=i18n[currentLang];
+  const stepLabel=currentLang==='en'?("Step "+(cookIdx+1)+" of "+total):("Étape "+(cookIdx+1)+" sur "+total);
+  document.getElementById("cook-progress-text").textContent=stepLabel;
   document.getElementById("cook-progress-fill").style.width=(((cookIdx+1)/total)*100)+"%";
   // Icon
   document.getElementById("cook-icon-big").innerHTML=iconHtml;
