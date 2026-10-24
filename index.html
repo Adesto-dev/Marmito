@@ -41,7 +41,7 @@
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "CAD",
-      "description": "Accès gratuit à 10 recettes par mois"
+      "description": "Accès gratuit à 5 recettes par mois"
     },
     "author": {
       "@type": "Organization",
@@ -799,7 +799,7 @@
   let currentUser = null;
   let userPlan = 'free';
   let recipeCount = 0;
-  const FREE_LIMIT = 10;
+  const FREE_LIMIT = 5;
   // Charge le compteur local pour les utilisateurs pas connectés
   try { recipeCount = parseInt(localStorage.getItem('marmito-count') || '0'); } catch(e){}
 
@@ -823,16 +823,25 @@
   }
 
   async function loadUserProfile() {
-    const { data, error } = await sb.from('profiles').select('plan,recipe_count').eq('id', currentUser.id).single();
+    const currentMonth = new Date().toISOString().slice(0, 7); // "2026-10"
+    const { data, error } = await sb.from('profiles').select('plan,recipe_count,reset_month').eq('id', currentUser.id).single();
     if (error) console.error('[Marmito] loadProfile erreur:', error.message, error.code);
     if (data) {
       userPlan = data.plan || 'free';
-      // Prendre le max entre DB et localStorage pour eviter reset a 0 si update a echoue
-      const localCount = parseInt(localStorage.getItem('marmito-count') || '0');
-      recipeCount = Math.max(data.recipe_count || 0, localCount);
+      // Reset mensuel : si le mois a change, on repart a 0
+      if (data.reset_month !== currentMonth) {
+        recipeCount = 0;
+        try { localStorage.setItem('marmito-count', '0'); } catch(e){}
+        await sb.from('profiles').update({ recipe_count: 0, reset_month: currentMonth }).eq('id', currentUser.id);
+        console.log('[Marmito] Reset mensuel effectue pour', currentMonth);
+      } else {
+        // Prendre le max entre DB et localStorage pour eviter reset a 0 si update a echoue
+        const localCount = parseInt(localStorage.getItem('marmito-count') || '0');
+        recipeCount = Math.max(data.recipe_count || 0, localCount);
+      }
     } else {
       // First time: create profile
-      await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email, plan: 'free', recipe_count: 0 });
+      await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email, plan: 'free', recipe_count: 0, reset_month: currentMonth });
       userPlan = 'free'; recipeCount = 0;
     }
   }
