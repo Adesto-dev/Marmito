@@ -151,6 +151,37 @@
     .share-copy:hover{background:rgba(250,250,245,0.2)}
     .share-wa{background:#25D366;color:#fff}
     .share-wa:hover{background:#1da855}
+    .share-link{background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)}
+    .share-link:hover{background:rgba(250,250,245,0.2)}
+    /* Recette du jour */
+    .daily-card{background:linear-gradient(135deg,var(--accent) 0%,var(--accent-dark) 100%);border-radius:14px;padding:16px 18px;margin-bottom:16px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 4px 16px rgba(43,113,75,0.25)}
+    .daily-card:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(43,113,75,0.35)}
+    .daily-label{font-size:10px;font-weight:700;letter-spacing:0.1em;opacity:0.8;text-transform:uppercase;margin-bottom:4px}
+    .daily-title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:17px;line-height:1.2}
+    .daily-sub{font-size:12px;opacity:0.75;margin-top:3px}
+    .daily-btn{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);color:#fff;border-radius:8px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background 0.15s}
+    .daily-btn:hover{background:rgba(255,255,255,0.35)}
+    /* Plan de repas */
+    .plan-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:300;display:none;align-items:flex-end;justify-content:center;overflow:hidden}
+    .plan-overlay.open{display:flex}
+    .plan-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;display:flex;flex-direction:column}
+    .plan-sheet-head{padding:20px 20px 0;flex-shrink:0}
+    .plan-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 20px 40px;flex:1;min-height:0}
+    .plan-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .plan-title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:20px}
+    .plan-day{background:var(--bg);border-radius:10px;padding:11px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--border);cursor:pointer;transition:background 0.15s,border-color 0.15s}
+    .plan-day:hover{background:var(--accent-light);border-color:var(--accent)}
+    .plan-day-label{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px}
+    .plan-day-name{font-size:14px;font-weight:600}
+    .plan-day-region{font-size:12px;color:var(--fg2)}
+    .plan-grocery{margin-top:20px}
+    .plan-grocery-title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:16px;margin-bottom:10px}
+    .plan-grocery-list{display:flex;flex-wrap:wrap;gap:6px}
+    .plan-grocery-tag{background:var(--accent-light);color:var(--accent);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:500}
+    .plan-pro-lock{text-align:center;padding:30px 20px;color:var(--fg2)}
+    .plan-pro-lock h3{font-family:"Fraunces",Georgia,serif;font-size:18px;color:var(--fg);margin-bottom:8px}
+    .btn-plan{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:12px;font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:15px;cursor:pointer;transition:background 0.15s;margin-top:12px}
+    .btn-plan:hover{background:var(--green-dark,#1a7a40)}
     .result-body{background:var(--card-bg);padding:18px;display:flex;flex-direction:column;gap:14px}
     .result-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);margin-bottom:9px}
     .ingredient-list{display:flex;flex-wrap:wrap;gap:5px}
@@ -499,6 +530,15 @@
     <h1 data-i18n="tagline-h1">Qu&rsquo;est-ce qu&rsquo;on cuisine ce soir&nbsp;?</h1>
     <p data-i18n="tagline-p">Choisis ta cuisine et cuisine avec le chrono int&eacute;gr&eacute;.</p>
   </div>
+  <!-- RECETTE DU JOUR -->
+  <div class="daily-card" id="daily-card" onclick="openDailyRecipe()">
+    <div>
+      <div class="daily-label">&#127774; Recette du jour</div>
+      <div class="daily-title" id="daily-title">Chargement...</div>
+      <div class="daily-sub" id="daily-sub"></div>
+    </div>
+    <button class="daily-btn" onclick="event.stopPropagation();openDailyRecipe()">Voir &#8594;</button>
+  </div>
   <div class="fav-panel" id="fav-panel">
     <div class="fav-panel-header">
       <div class="fav-panel-title" data-i18n="fav-title">Mes favoris</div>
@@ -538,6 +578,7 @@
     </div>
   </div>
   <button class="btn-generate" id="gen-btn" onclick="generateRecipe()" data-i18n="btn-gen">&#127859; Trouver une recette</button>
+  <button class="btn-plan" onclick="openPlanRepas()">&#128197; Plan de repas 7 jours</button>
   <!-- Freemium limit banner -->
     <div class="limit-banner" id="limit-banner">
       <h3 data-i18n="limit-title">Limite atteinte</h3>
@@ -558,7 +599,8 @@
     </div>
     <div class="share-bar">
       <button class="share-btn share-copy" onclick="copyRecipe()" data-i18n="btn-copy">&#128203; Copier</button>
-      <button class="share-btn share-wa" onclick="shareRecipe()" data-i18n="btn-share">&#128279; Partager</button>
+      <button class="share-btn share-link" onclick="shareRecipeLink()">&#128279; Lien direct</button>
+      <button class="share-btn share-wa" onclick="shareRecipe()" data-i18n="btn-share">&#10548; Partager</button>
     </div>
     <div class="result-body">
       <div>
@@ -614,6 +656,21 @@
     </div>
   </div>
 </main>
+
+<!-- PLAN DE REPAS MODAL -->
+<div class="plan-overlay" id="plan-overlay" onclick="if(event.target===this)closePlanRepas()">
+  <div class="plan-sheet" id="plan-sheet">
+    <div class="plan-sheet-head">
+      <div class="plan-handle" style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px"></div>
+      <div class="plan-title-row">
+        <div class="plan-title">&#128197; Plan 7 jours</div>
+        <button class="sheet-close-x" onclick="closePlanRepas()">&#10005;</button>
+      </div>
+    </div>
+    <div class="plan-sheet-body" id="plan-body"></div>
+  </div>
+</div>
+
 <footer>Marmito 2026 &middot; Cuisines du monde, une recette &agrave; la fois.</footer>
 
 <!-- PROFILE MODAL -->
@@ -1395,6 +1452,98 @@ function toggleShareMenu(){
   setTimeout(()=>document.addEventListener('click',function h(e){if(!menu.contains(e.target)){menu.remove();document.removeEventListener('click',h);}},true),100);
 }
 
+// ===== SLUGIFY / PARTAGE PAR LIEN =====
+function slugify(str) {
+  return str.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+function shareRecipeLink() {
+  if (!cur) return;
+  const url = window.location.origin + window.location.pathname + '#r/' + slugify(cur.title);
+  if (navigator.share) {
+    navigator.share({ title: cur.title, text: 'Recette : ' + cur.title, url });
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => showToast('Lien copié !'));
+  } else {
+    prompt('Copie ce lien :', url);
+  }
+}
+// Vérifier si l'URL contient un lien direct vers une recette
+function checkDirectLink() {
+  const hash = window.location.hash;
+  if (!hash.startsWith('#r/')) return;
+  const slug = hash.slice(3);
+  const recipe = recipes.find(r => slugify(r.title) === slug);
+  if (recipe) {
+    setTimeout(() => show(recipe), 300);
+    history.replaceState(null, '', window.location.pathname);
+  }
+}
+
+// ===== RECETTE DU JOUR =====
+function getDailyRecipe() {
+  const dayIndex = Math.floor(Date.now() / 86400000);
+  return recipes[dayIndex % recipes.length];
+}
+function initDailyRecipe() {
+  const r = getDailyRecipe();
+  document.getElementById('daily-title').textContent = r.title;
+  document.getElementById('daily-sub').textContent = r.region + ' · ' + r.time;
+}
+function openDailyRecipe() {
+  show(getDailyRecipe());
+  window.scrollTo({ top: document.getElementById('result-card').offsetTop - 20, behavior: 'smooth' });
+}
+
+// ===== PLAN DE REPAS 7 JOURS =====
+const JOURS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+function openPlanRepas() {
+  const overlay = document.getElementById('plan-overlay');
+  const sheet = document.getElementById('plan-sheet');
+  const body = document.getElementById('plan-body');
+  const vh = window.innerHeight;
+  sheet.style.height = Math.round(vh * 0.88) + 'px';
+  sheet.style.maxHeight = Math.round(vh * 0.88) + 'px';
+
+  if (userPlan !== 'pro') {
+    body.innerHTML = '<div class="plan-pro-lock"><div style="font-size:48px;margin-bottom:12px">🔒</div><h3>Fonctionnalité Pro</h3><p>Le plan de repas 7 jours est réservé aux abonnés Marmito Pro.</p><button class="btn-generate" onclick="closePlanRepas();startUpgrade()" style="margin-top:16px">Passer à Pro — 4.99$/mois</button></div>';
+    overlay.classList.add('open');
+    return;
+  }
+
+  // Générer 7 recettes variées (une par jour, différentes régions)
+  const seed = Math.floor(Date.now() / (86400000 * 7)); // Change chaque semaine
+  const regions = ['Afrique subsaharienne','Maghreb','Occidentale'];
+  const plan = JOURS.map((jour, i) => {
+    const regionPool = recipes.filter(r => r.type === 'Plat principal' && r.region === regions[(i + seed) % 3]);
+    const pool = regionPool.length ? regionPool : recipes.filter(r => r.type === 'Plat principal');
+    return { jour, recipe: pool[(seed * 7 + i * 13) % pool.length] };
+  });
+
+  // Liste d'épicerie fusionnée
+  const allIngs = {};
+  plan.forEach(({ recipe: r }) => {
+    if (r && r.ingredients) r.ingredients.forEach(ing => { allIngs[ing] = true; });
+  });
+
+  body.innerHTML = plan.map(({ jour, recipe: r }) =>
+    '<div class="plan-day" onclick="closePlanRepas();setTimeout(()=>show(recipes.find(x=>x.title===\'' + (r ? r.title.replace(/'/g,"\\'") : '') + '\')),200)">' +
+    '<div><div class="plan-day-label">' + jour + '</div>' +
+    '<div class="plan-day-name">' + (r ? r.title : '—') + '</div>' +
+    '<div class="plan-day-region">' + (r ? r.region + ' · ' + r.time : '') + '</div></div>' +
+    '<span style="color:var(--fg2);font-size:18px">›</span></div>'
+  ).join('') +
+  '<div class="plan-grocery"><div class="plan-grocery-title">🛒 Liste d\'épicerie</div><div class="plan-grocery-list">' +
+  Object.keys(allIngs).map(i => '<span class="plan-grocery-tag">' + i + '</span>').join('') +
+  '</div></div>';
+
+  overlay.classList.add('open');
+}
+function closePlanRepas() {
+  document.getElementById('plan-overlay').classList.remove('open');
+}
+
 // ===== i18n LANGUAGE TOGGLE =====
 let currentLang = 'fr';
 const i18n = {
@@ -1739,6 +1888,8 @@ function cookTimerReset(){
 }
 
 document.getElementById("rc").textContent=recipes.length+" recettes";
+initDailyRecipe();
+checkDirectLink();
 applyLang();
 </script>
 </body>
