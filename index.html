@@ -2163,13 +2163,16 @@ function show(recipe){
 }
 
 // ===== RECIPE STEP TRANSLATION (FR→EN via Google Translate) =====
+// Separator that won't appear in French recipe text
+const STEP_SEP = ' ⟦|||⟧ ';
+
 async function translateRecipeSteps(steps) {
   translatedStepTexts = [];
   const stepsEl = document.getElementById('result-steps');
   if (!stepsEl) return;
   const stepDivs = stepsEl.querySelectorAll('.step-text');
   if (!stepDivs.length) return;
-  const cacheKey = 'marmito-tr-' + (cur ? encodeURIComponent(cur.title) : 'r');
+  const cacheKey = 'marmito-tr2-' + (cur ? encodeURIComponent(cur.title) : 'r');
   // Try cache first (instant)
   try {
     const cached = localStorage.getItem(cacheKey);
@@ -2180,26 +2183,25 @@ async function translateRecipeSteps(steps) {
       return;
     }
   } catch(e) {}
-  // No cache — dim steps to signal translation in progress
+  // No cache — dim all steps, translate in ONE batch call
   stepDivs.forEach(el => { el.style.opacity = '0.45'; el.style.transition = 'opacity 0.3s'; });
-  const texts = [];
-  for (let i = 0; i < steps.length; i++) {
-    const raw = typeof steps[i] === 'string' ? steps[i] : steps[i].text;
-    try {
-      const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=' + encodeURIComponent(raw);
-      const resp = await fetch(url);
-      const json = await resp.json();
-      const translated = json[0].map(seg => seg[0]).join('');
-      texts.push(translated);
-      translatedStepTexts[i] = translated;
-      if (stepDivs[i]) { stepDivs[i].textContent = translated; stepDivs[i].style.opacity = '1'; }
-    } catch(e) {
-      texts.push(raw);
-      translatedStepTexts[i] = raw;
-      if (stepDivs[i]) stepDivs[i].style.opacity = '1';
-    }
+  const raws = steps.map(s => typeof s === 'string' ? s : s.text);
+  const joined = raws.join(STEP_SEP);
+  try {
+    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=' + encodeURIComponent(joined);
+    const resp = await fetch(url);
+    const json = await resp.json();
+    const fullTranslated = json[0].map(seg => seg[0]).join('');
+    // Split back — tolerate small spacing variations around separator
+    const parts = fullTranslated.split(/\s*⟦\|\|\|⟧\s*/);
+    const texts = raws.map((raw, i) => (parts[i] && parts[i].trim()) ? parts[i].trim() : raw);
+    translatedStepTexts = texts;
+    stepDivs.forEach((el, i) => { el.textContent = texts[i]; el.style.opacity = '1'; });
+    try { localStorage.setItem(cacheKey, JSON.stringify(texts)); } catch(e) {}
+  } catch(e) {
+    // API failed — restore French text with full opacity
+    stepDivs.forEach((el, i) => { el.textContent = raws[i]; el.style.opacity = '1'; translatedStepTexts[i] = raws[i]; });
   }
-  try { localStorage.setItem(cacheKey, JSON.stringify(texts)); } catch(e) {}
 }
 
 // ===== COOKING MODE CAROUSEL =====
