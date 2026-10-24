@@ -1665,9 +1665,16 @@ function getDailyRecipe() {
 }
 function initDailyRecipe() {
   const r = getDailyRecipe();
-  document.getElementById('daily-title').textContent = r.title;
   const regionTr = translateMeta('region', r.region);
   document.getElementById('daily-sub').textContent = regionTr + ' · ' + r.time;
+  if (currentLang === 'en') {
+    document.getElementById('daily-title').textContent = r.title;
+    translateTitles([r.title]).then(trs => {
+      document.getElementById('daily-title').textContent = trs[0] || r.title;
+    });
+  } else {
+    document.getElementById('daily-title').textContent = r.title;
+  }
 }
 function openDailyRecipe() {
   show(getDailyRecipe());
@@ -1729,15 +1736,28 @@ function openPlanRepas() {
     if (r && r.ingredients) r.ingredients.forEach(ing => { allIngs[ing] = true; });
   });
 
-  body.innerHTML = plan.map(({ jour, recipe: r }) =>
-    '<div class="plan-day" onclick="closePlanRepas();setTimeout(()=>show(recipes.find(x=>x.title===\'' + (r ? r.title.replace(/'/g,"\\'") : '') + '\')),200)">' +
-    '<div><div class="plan-day-label">' + jour + '</div>' +
-    '<div class="plan-day-name">' + (r ? r.title : '—') + '</div>' +
-    '<div class="plan-day-region">' + (r ? translateMeta('region', r.region) + ' · ' + r.time : '') + '</div></div>' +
-    '<span style="color:var(--fg2);font-size:18px">›</span></div>'
-  ).join('') + buildGroceryHTML(allIngs);
+  function renderPlanBody(displayTitles) {
+    body.innerHTML = plan.map(({ jour, recipe: r }, i) =>
+      '<div class="plan-day" onclick="closePlanRepas();setTimeout(()=>show(recipes.find(x=>x.title===\'' + (r ? r.title.replace(/'/g,"\\'") : '') + '\')),200)">' +
+      '<div><div class="plan-day-label">' + jour + '</div>' +
+      '<div class="plan-day-name">' + (r ? (displayTitles[i] || r.title) : '—') + '</div>' +
+      '<div class="plan-day-region">' + (r ? translateMeta('region', r.region) + ' · ' + r.time : '') + '</div></div>' +
+      '<span style="color:var(--fg2);font-size:18px">›</span></div>'
+    ).join('') + buildGroceryHTML(allIngs);
+  }
 
+  const frTitles = plan.map(({ recipe: r }) => r ? r.title : '—');
+  renderPlanBody(frTitles);
   overlay.classList.add('open');
+
+  if (currentLang === 'en') {
+    const toTranslate = frTitles.filter(t => t !== '—');
+    translateTitles(toTranslate).then(translated => {
+      let ti = 0;
+      const enTitles = frTitles.map(t => t === '—' ? '—' : (translated[ti++] || t));
+      renderPlanBody(enTitles);
+    });
+  }
 }
 function buildGroceryHTML(allIngs) {
   const ings = Object.keys(allIngs);
@@ -2046,19 +2066,52 @@ function toggleLang() {
   try { localStorage.setItem('marmito-lang', currentLang); } catch(e) {}
   applyLang();
   initDailyRecipe();
-  // Refresh step texts in recipe card if one is currently shown
+  // Refresh recipe card if one is currently shown
   if (cur) {
+    // Update title
+    const titleEl = document.getElementById('result-title');
+    if (titleEl) {
+      if (currentLang === 'fr') {
+        titleEl.textContent = cur.title;
+        translatedTitle = null;
+      } else {
+        translateTitles([cur.title]).then(trs => {
+          translatedTitle = trs[0] || cur.title;
+          titleEl.textContent = translatedTitle;
+        });
+      }
+    }
+    // Update ingredients
+    const ingEl = document.getElementById('result-ingredients');
+    if (ingEl && cur.ingredients) {
+      function _renderIngs(displayNames, origNames) {
+        const orig = origNames || displayNames;
+        ingEl.innerHTML = displayNames.map((name,idx)=>{const q=qtyMap[orig[idx]];return "<span class=\"ingredient-pill\">"+(q?"<span class=\"ing-qty\">"+q+"</span>":"")+name+"</span>";}).join("");
+      }
+      if (currentLang === 'fr') {
+        _renderIngs(cur.ingredients);
+        cur._ingEN = null;
+      } else {
+        if (cur._ingEN) {
+          _renderIngs(cur._ingEN, cur.ingredients);
+        } else {
+          translateTitles(cur.ingredients).then(trs => {
+            cur._ingEN = trs;
+            _renderIngs(trs, cur.ingredients);
+          });
+        }
+      }
+    }
+    // Update step texts
     const stepsEl = document.getElementById('result-steps');
     if (stepsEl) {
       const stepDivs = stepsEl.querySelectorAll('.step-text');
       if (currentLang === 'fr') {
-        // Restore original French texts
         stepDivs.forEach((el, i) => {
           const step = cur.steps[i];
           if (step) el.textContent = typeof step === 'string' ? step : step.text;
         });
       } else {
-        // Re-run translation (uses cache, instant on second visit)
         translateRecipeSteps(cur.steps);
       }
     }
@@ -2155,7 +2208,14 @@ function show(recipe){
   if(hdr){hdr.style.background=bg;}
 
   document.getElementById("result-region").textContent=translateMeta('region',recipe.region);
+  translatedTitle = null;
   document.getElementById("result-title").textContent=recipe.title;
+  if (currentLang === 'en') {
+    translateTitles([recipe.title]).then(trs => {
+      translatedTitle = trs[0] || recipe.title;
+      document.getElementById("result-title").textContent = translatedTitle;
+    });
+  }
   document.getElementById("result-type").textContent=translateMeta('type',recipe.type);
   document.getElementById("r-time").textContent=recipe.time;
   document.getElementById("r-serves").textContent=translateServes(recipe.serves);
@@ -2164,7 +2224,17 @@ function show(recipe){
   const isFav=favs.some(f=>f.title===recipe.title);
   fb.innerHTML=isFav?FAV_SVG_FILLED:FAV_SVG_EMPTY;
   isFav?fb.classList.add("active"):fb.classList.remove("active");
-  document.getElementById("result-ingredients").innerHTML=recipe.ingredients.map(i=>{const q=qtyMap[i];return "<span class=\"ingredient-pill\">"+(q?"<span class=\"ing-qty\">"+q+"</span>":"")+i+"</span>";}).join("");
+  function renderIngredients(displayNames, origNames) {
+    const orig = origNames || displayNames;
+    document.getElementById("result-ingredients").innerHTML=displayNames.map((name,idx)=>{const q=qtyMap[orig[idx]];return "<span class=\"ingredient-pill\">"+(q?"<span class=\"ing-qty\">"+q+"</span>":"")+name+"</span>";}).join("");
+  }
+  renderIngredients(recipe.ingredients);
+  if (currentLang === 'en') {
+    translateTitles(recipe.ingredients).then(trs => {
+      recipe._ingEN = trs;
+      renderIngredients(trs, recipe.ingredients);
+    });
+  }
   document.getElementById("result-steps").innerHTML=recipe.steps.map((step,i)=>{
     const text=typeof step==="string"?step:step.text;
     const time=(typeof step==="object"&&step.time>0)?step.time:0;
@@ -2222,6 +2292,30 @@ async function translateRecipeSteps(steps) {
 // ===== COOKING MODE CAROUSEL =====
 let cookSteps=[], cookIdx=0, cookTimer=null;
 let translatedStepTexts=[];
+let translatedTitle = null;
+
+// ===== TITLE TRANSLATION (FR→EN) =====
+const TITLE_SEP = ' ⟦|||⟧ ';
+
+async function translateTitles(frTitles) {
+  // Returns array of translated titles (or originals on error)
+  const cacheKey = 'marmito-titles-' + frTitles.map(t => encodeURIComponent(t)).join('|').slice(0,80);
+  try {
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) return JSON.parse(cached);
+  } catch(e) {}
+  try {
+    const joined = frTitles.join(TITLE_SEP);
+    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=' + encodeURIComponent(joined);
+    const resp = await fetch(url);
+    const json = await resp.json();
+    const full = json[0].map(seg => seg[0]).join('');
+    const parts = full.split(/\s*⟦\|\|\|⟧\s*/);
+    const results = frTitles.map((fr, i) => (parts[i] && parts[i].trim()) ? parts[i].trim() : fr);
+    try { localStorage.setItem(cacheKey, JSON.stringify(results)); } catch(e) {}
+    return results;
+  } catch(e) { return frTitles; }
+}
 
 function startCookMode(){
   if(!cur)return;
