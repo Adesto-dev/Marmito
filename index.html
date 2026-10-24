@@ -741,10 +741,13 @@
   }
 
   async function loadUserProfile() {
-    const { data } = await sb.from('profiles').select('plan,recipe_count').eq('id', currentUser.id).single();
+    const { data, error } = await sb.from('profiles').select('plan,recipe_count').eq('id', currentUser.id).single();
+    if (error) console.error('[Marmito] loadProfile erreur:', error.message, error.code);
     if (data) {
       userPlan = data.plan || 'free';
-      recipeCount = data.recipe_count || 0;
+      // Prendre le max entre DB et localStorage pour eviter reset a 0 si update a echoue
+      const localCount = parseInt(localStorage.getItem('marmito-count') || '0');
+      recipeCount = Math.max(data.recipe_count || 0, localCount);
     } else {
       // First time: create profile
       await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email, plan: 'free', recipe_count: 0 });
@@ -782,7 +785,8 @@
     recipeCount++;
     try { localStorage.setItem('marmito-count', recipeCount); } catch(e){}
     if (currentUser) {
-      await sb.from('profiles').update({ recipe_count: recipeCount }).eq('id', currentUser.id);
+      const { error } = await sb.from('profiles').update({ recipe_count: recipeCount }).eq('id', currentUser.id);
+      if (error) console.error('[Marmito] incrementCount erreur:', error.message, error.code);
       updateUserBar();
     }
   }
