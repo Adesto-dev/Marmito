@@ -236,6 +236,23 @@
     .meta-item{display:flex;flex-direction:column;gap:2px}
     .meta-label{font-size:11px;color:var(--fg2);text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
     .meta-value{font-size:14px;font-weight:600;color:var(--fg)}
+    /* === SEARCH BAR === */
+    .search-wrap{position:relative;margin-bottom:12px}
+    .search-input{width:100%;padding:13px 16px 13px 42px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;background:var(--card-bg);color:var(--fg);outline:none;box-sizing:border-box;font-family:inherit}
+    .search-input:focus{border-color:var(--accent)}
+    .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none}
+    .search-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;z-index:200;max-height:260px;overflow-y:auto;display:none;box-shadow:var(--shadow)}
+    .search-dropdown.open{display:block}
+    .search-item{padding:11px 16px;cursor:pointer;border-bottom:1px solid var(--border);font-size:14px;color:var(--fg)}
+    .search-item:last-child{border-bottom:none}
+    .search-item:hover{background:var(--accent-light)}
+    .search-item-region{font-size:11px;color:var(--fg2);margin-top:2px}
+    /* === PORTIONS SLIDER === */
+    .portions-row{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--accent-light);border-radius:10px;margin-bottom:12px}
+    .portions-label{font-size:13px;font-weight:600;color:var(--fg);white-space:nowrap}
+    .portions-slider{flex:1;accent-color:var(--accent);height:4px;cursor:pointer}
+    .portions-val{font-size:13px;font-weight:700;color:var(--accent);white-space:nowrap;min-width:55px;text-align:right}
+    /* === end === */
     .fav-panel{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow);display:none}
     .fav-panel.visible{display:block}
     .fav-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -605,6 +622,11 @@
     </div>
     <div class="fav-list" id="fav-list"></div>
   </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="recipe-search" type="text" placeholder="Chercher une recette..." autocomplete="off" autocorrect="off" spellcheck="false" oninput="onSearchInput(this.value)" onblur="setTimeout(closeSearch,200)">
+    <div class="search-dropdown" id="search-dropdown"></div>
+  </div>
   <div class="card">
     <div class="card-label"><span data-i18n="card-ing">Tes ingr&eacute;dients</span> <span style="font-weight:400;text-transform:none;letter-spacing:0" data-i18n="card-ing-opt">(optionnel)</span></div>
     <div class="ing-autocomplete-wrap">
@@ -663,7 +685,12 @@
     </div>
     <div class="result-body">
       <div>
-        <div class="result-section-title" data-i18n="sec-ingredients">Ingr&eacute;dients</div>
+        <div class="portions-row" id="portions-row">
+        <span class="portions-label" data-i18n="portions-label">Portions :</span>
+        <input class="portions-slider" id="portions-slider" type="range" min="1" max="12" value="4" oninput="onPortions(this.value)">
+        <span class="portions-val" id="portions-val">4 pers.</span>
+      </div>
+      <div class="result-section-title" data-i18n="sec-ingredients">Ingr&eacute;dients</div>
         <div class="ingredient-list" id="result-ingredients"></div>
       </div>
       <div>
@@ -1252,6 +1279,84 @@
     window.location.href = '/auth.html';
   }
 
+  // === SEARCH ===
+  function onSearchInput(val) {
+    const q = val.trim().toLowerCase();
+    const drop = document.getElementById('search-dropdown');
+    if (!q) { drop.classList.remove('open'); drop.innerHTML=''; return; }
+    const matches = recipes.filter(r => r.title.toLowerCase().includes(q)).slice(0, 8);
+    if (!matches.length) { drop.classList.remove('open'); drop.innerHTML=''; return; }
+    drop.innerHTML = matches.map(r =>
+      `<div class="search-item" onmousedown="pickSearch(event,'${r.title.replace(/'/g,"\'")}')">
+        ${r.title}
+        <div class="search-item-region">${r.region} · ${r.type} · ${r.time}</div>
+      </div>`
+    ).join('');
+    drop.classList.add('open');
+  }
+  function closeSearch() {
+    const drop = document.getElementById('search-dropdown');
+    drop.classList.remove('open');
+    drop.innerHTML='';
+  }
+  function pickSearch(e, title) {
+    e.preventDefault();
+    document.getElementById('recipe-search').value = '';
+    closeSearch();
+    const r = recipes.find(x => x.title === title);
+    if (r) show(r);
+  }
+
+  // === SURPRISE ===
+  function surpriseMe() {
+    const r = recipes[Math.floor(Math.random() * recipes.length)];
+    show(r);
+  }
+
+  // === PORTIONS ===
+  let portionsBase = 4;
+  let portionsMultiplier = 1;
+
+  function scaleQty(qtyStr, ratio) {
+    if (!qtyStr || ratio === 1) return qtyStr;
+    return qtyStr.replace(/^(\d+(?:[.,]\d+)?)/, (match, num) => {
+      const n = parseFloat(num.replace(',','.')) * ratio;
+      const r = n % 1 === 0 ? n : Math.round(n * 10) / 10;
+      return String(r).replace('.',',');
+    });
+  }
+
+  function onPortions(val) {
+    const newVal = parseInt(val);
+    portionsMultiplier = portionsBase > 0 ? newVal / portionsBase : 1;
+    document.getElementById('portions-val').textContent = newVal + ' pers.';
+    // Re-render ingredients with scaled qtys
+    if (cur && cur.ingredients) {
+      const displayNames = (currentLang === 'en' && cur._ingEN) ? cur._ingEN : cur.ingredients;
+      const origNames = cur.ingredients;
+      const ingEl = document.getElementById('result-ingredients');
+      if (ingEl) {
+        ingEl.innerHTML = displayNames.map((name, idx) => {
+          const origName = origNames[idx];
+          const rawQty = qtyMap[origName];
+          const scaledQty = scaleQty(rawQty, portionsMultiplier);
+          return `<span class="ingredient-pill">${scaledQty ? `<span class="ing-qty">${scaledQty}</span>` : ''}${name}</span>`;
+        }).join('');
+      }
+    }
+  }
+
+  function initPortions(recipe) {
+    portionsMultiplier = 1;
+    // Parse base serves from recipe.serves e.g. "4 pers." → 4
+    const match = recipe.serves ? recipe.serves.match(/(\d+)/) : null;
+    portionsBase = match ? parseInt(match[1]) : 4;
+    const slider = document.getElementById('portions-slider');
+    const val = document.getElementById('portions-val');
+    if (slider) { slider.value = portionsBase; slider.min = 1; slider.max = Math.max(12, portionsBase * 3); }
+    if (val) val.textContent = portionsBase + ' pers.';
+  }
+
   initAuth();
 
 const qtyMap={
@@ -1452,9 +1557,41 @@ const allIngredients=[...new Set([
   ...recipes.flatMap(r=>r.ingredients||[])
 ])].sort((a,b)=>a.localeCompare(b,'fr'));
 
+let allIngredientsEN = null; // cache FR→EN map
+
+async function getIngListEN() {
+  if (allIngredientsEN) return allIngredientsEN;
+  // Translate in chunks of 80 to avoid URL length limits
+  const chunk = 80;
+  const result = {};
+  for (let i = 0; i < allIngredients.length; i += chunk) {
+    const slice = allIngredients.slice(i, i + chunk);
+    try {
+      const trs = await translateTitles(slice);
+      slice.forEach((fr, j) => { result[fr] = trs[j] || fr; });
+    } catch(e) { slice.forEach(fr => { result[fr] = fr; }); }
+  }
+  allIngredientsEN = result;
+  return allIngredientsEN;
+}
+
 function showDrop(q){
   const val=q.trim().toLowerCase();
   if(!val){closeDrop();return;}
+  if (currentLang === 'en') {
+    getIngListEN().then(enMap => {
+      const enList = allIngredients.map(fr => ({fr, en: enMap[fr]||fr}));
+      const matches = enList.filter(x => x.en.toLowerCase().includes(val)).slice(0,10);
+      if(!matches.length){closeDrop();return;}
+      dropIdx=-1;
+      iDrop.innerHTML=matches.map(x=>`<div class="ing-drop-item" data-fr="${x.fr.replace(/"/g,'&quot;')}">${x.en}</div>`).join("");
+      iDrop.querySelectorAll(".ing-drop-item").forEach(el=>{
+        el.addEventListener("mousedown",e=>{e.preventDefault();addTag(el.textContent,el.dataset.fr);iInp.value="";closeDrop();iInp.focus();});
+      });
+      iDrop.classList.add("open");
+    });
+    return;
+  }
   const matches=allIngredients.filter(i=>i.toLowerCase().includes(val)).slice(0,10);
   if(!matches.length){closeDrop();return;}
   dropIdx=-1;
@@ -1485,10 +1622,11 @@ iInp.addEventListener("keydown",e=>{
     if(tags.length)tags[tags.length-1].remove();
   }
 });
-function addTag(text){
+function addTag(text, frName){
   if(!text)return;
   const t=document.createElement("span");
   t.className="ingredient-tag";
+  if(frName) t.dataset.fr=frName;
   const lbl=document.createTextNode(text);
   const btn=document.createElement("button");
   btn.textContent="x";
@@ -1844,6 +1982,8 @@ const i18n = {
     'nav-favs': 'Mes favoris',
     'nav-history': 'Mon historique',
     'nav-plan': 'Plan 7 jours',
+    'btn-surprise': '🎲 Recette surprise — tous styles confondus',
+    'portions-label': 'Portions :',
     'plan-pro-title': 'Fonctionnalité Pro',
     'plan-pro-desc': 'Le plan 7 jours est réservé aux abonnés Pro. Passez à Pro pour débloquer.',
     'plan-pro-btn': 'Passer à Pro →',
@@ -1954,6 +2094,8 @@ const i18n = {
     'nav-favs': 'My favorites',
     'nav-history': 'My history',
     'nav-plan': '7-Day Plan',
+    'btn-surprise': '🎲 Surprise me — any style',
+    'portions-label': 'Servings:',
     'plan-pro-title': 'Pro Feature',
     'plan-pro-desc': 'The 7-day meal plan is reserved for Pro subscribers. Upgrade to Pro to unlock.',
     'plan-pro-btn': 'Upgrade to Pro →',
@@ -2185,7 +2327,7 @@ function generateRecipe(){
     const ty=document.querySelector(".chip[data-group=\"type\"].active");
     const cuisine=cu?cu.textContent:"Toutes";
     const type=ty?ty.textContent:"Plat principal";
-    const userIngs=[...document.querySelectorAll(".ingredient-tag")].map(t=>t.childNodes[0].textContent.trim().toLowerCase());
+    const userIngs=[...document.querySelectorAll(".ingredient-tag")].map(t=>(t.dataset.fr||t.childNodes[0].textContent).trim().toLowerCase());
     let pool=recipes;
     if(cuisine!=="Toutes")pool=pool.filter(r=>r.region===cuisine);
     if(type!=="Tout")pool=pool.filter(r=>r.type===type);
@@ -2237,6 +2379,7 @@ function show(recipe){
   document.getElementById("result-type").textContent=translateMeta('type',recipe.type);
   document.getElementById("r-time").textContent=recipe.time;
   document.getElementById("r-serves").textContent=translateServes(recipe.serves);
+  initPortions(recipe);
   document.getElementById("r-diff").textContent=translateMeta('diff',recipe.diff);
   const fb=document.getElementById("fav-btn");
   const isFav=favs.some(f=>f.title===recipe.title);
