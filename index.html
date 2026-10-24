@@ -482,6 +482,18 @@
     .about-success{text-align:center;padding:18px;background:var(--green-light);border-radius:12px;color:var(--green);font-weight:600;font-size:14px;display:none}
     .about-success.show{display:block}
     .about-close{margin-top:22px;padding:12px;background:none;color:var(--fg2);border:none;font-family:inherit;font-size:14px;cursor:pointer;text-decoration:underline;width:100%}
+    /* ===== HISTORY SHEET ===== */
+    .history-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;display:none;align-items:flex-end;justify-content:center;overflow:hidden}
+    .history-overlay.open{display:flex}
+    .history-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;height:80vh;height:80dvh;display:flex;flex-direction:column;max-height:80vh;max-height:80dvh}
+    .history-sheet-head{padding:20px 20px 0;flex-shrink:0}
+    .history-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 20px 40px;flex:1;min-height:0}
+    /* ===== CONTACT SHEET ===== */
+    .contact-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;display:none;align-items:flex-end;justify-content:center;overflow:hidden}
+    .contact-overlay.open{display:flex}
+    .contact-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;height:85vh;height:85dvh;display:flex;flex-direction:column;max-height:85vh;max-height:85dvh}
+    .contact-sheet-head{padding:20px 20px 0;flex-shrink:0}
+    .contact-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 20px 40px;flex:1;min-height:0}
   </style>
 </head>
 <body>
@@ -704,11 +716,54 @@
           <span class="profile-row-value" id="p-count"></span>
         </div>
       </div>
-      <div class="profile-history">
-        <div class="profile-history-title" data-i18n="p-history-title">Historique</div>
-        <div id="p-history-list"></div>
-      </div>
       <div class="profile-actions" id="p-actions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY SHEET -->
+<div class="history-overlay" id="history-overlay" onclick="if(event.target===this)closeHistory()">
+  <div class="history-sheet">
+    <div class="history-sheet-head">
+      <div class="profile-handle"></div>
+      <div class="profile-title-row">
+        <div class="profile-title" data-i18n="history-title">📋 Mon historique</div>
+        <button class="sheet-close-x" onclick="closeHistory()">&#10005;</button>
+      </div>
+    </div>
+    <div class="history-sheet-body">
+      <div id="h-history-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT SHEET -->
+<div class="contact-overlay" id="contact-overlay" onclick="if(event.target===this)closeContact()">
+  <div class="contact-sheet">
+    <div class="contact-sheet-head">
+      <div class="profile-handle"></div>
+      <div class="profile-title-row">
+        <div class="profile-title" data-i18n="contact-title">✉️ Nous contacter</div>
+        <button class="sheet-close-x" onclick="closeContact()">&#10005;</button>
+      </div>
+    </div>
+    <div class="contact-sheet-body">
+      <div class="about-success" id="contact-success-2" data-i18n="contact-success">&#10003;&nbsp; Message envoy&eacute;&nbsp;! On te r&eacute;pond bient&ocirc;t.</div>
+      <form class="about-contact-form" id="contact-form-2" onsubmit="submitContact2(event)">
+        <div class="about-field">
+          <label data-i18n="contact-name">Ton nom</label>
+          <input type="text" name="name" data-i18n-placeholder="contact-ph-name" placeholder="Marie Tremblay" required>
+        </div>
+        <div class="about-field">
+          <label data-i18n="contact-email">Ton courriel</label>
+          <input type="email" name="email" data-i18n-placeholder="contact-ph-email" placeholder="marie@exemple.com" required>
+        </div>
+        <div class="about-field">
+          <label data-i18n="contact-message">Message</label>
+          <textarea name="message" data-i18n-placeholder="contact-ph-msg" placeholder="Une question, un bug, une recette à ajouter..." required></textarea>
+        </div>
+        <button type="submit" class="about-submit" id="contact-btn-2" data-i18n="contact-send">Envoyer</button>
+      </form>
     </div>
   </div>
 </div>
@@ -769,26 +824,6 @@
         <div class="about-step"><div class="about-step-num">2</div>Marmito te g&eacute;n&egrave;re une recette avec quantit&eacute;s et &eacute;tapes.</div>
         <div class="about-step"><div class="about-step-num">3</div>Tu lances le chrono directement depuis l&rsquo;&eacute;cran, pas besoin de regarder ta montre.</div>
       </div>
-    </div>
-
-    <div class="about-section">
-      <div class="about-section-title">Nous &eacute;crire</div>
-      <div class="about-success" id="contact-success">&#10003;&nbsp; Message envoy&eacute;&nbsp;! On te r&eacute;pond bient&ocirc;t.</div>
-      <form class="about-contact-form" id="contact-form" onsubmit="submitContact(event)">
-        <div class="about-field">
-          <label>Ton nom</label>
-          <input type="text" name="name" placeholder="Marie Tremblay" required>
-        </div>
-        <div class="about-field">
-          <label>Ton courriel</label>
-          <input type="email" name="email" placeholder="marie@exemple.com" required>
-        </div>
-        <div class="about-field">
-          <label>Message</label>
-          <textarea name="message" placeholder="Une question, un bug, une recette &agrave; ajouter..." required></textarea>
-        </div>
-        <button type="submit" class="about-submit" id="contact-btn">Envoyer</button>
-      </form>
     </div>
 
     </div>
@@ -996,6 +1031,50 @@
     document.getElementById('drawer-overlay').classList.remove('open');
   }
 
+  async function openHistory() {
+    if (!currentUser) return;
+    const list = document.getElementById('h-history-list');
+    const t = i18n[currentLang];
+    list.innerHTML = '<div style="color:var(--fg2);font-size:13px;padding:8px 0">' + (t['history-loading'] || 'Chargement...') + '</div>';
+    document.getElementById('history-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    const { data } = await sb.from('recipes').select('title,region,created_at').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(10);
+    if (!data || data.length === 0) {
+      list.innerHTML = '<div style="color:var(--fg2);font-size:14px;padding:16px 0;text-align:center">' + (t['history-empty'] || 'Aucune recette dans l\'historique.') + '</div>';
+      return;
+    }
+    list.innerHTML = data.map(r => {
+      const date = new Date(r.created_at).toLocaleDateString('fr-CA', { day:'numeric', month:'short' });
+      return '<div class="history-item" style="cursor:pointer" onclick="closeHistory();openHistoryRecipe(\'' + r.title.replace(/'/g,"\\'") + '\')" title="Revoir la recette"><span class="history-item-name">' + r.title + (r.region ? ' <span style="color:var(--fg2);font-weight:400;font-size:12px">· ' + r.region + '</span>' : '') + '</span><span class="history-item-date">' + date + ' ›</span></div>';
+    }).join('');
+  }
+  function closeHistory() {
+    document.getElementById('history-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function openContact() {
+    document.getElementById('contact-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeContact() {
+    document.getElementById('contact-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  async function submitContact2(e) {
+    e.preventDefault();
+    const btn = document.getElementById('contact-btn-2');
+    btn.disabled = true; btn.textContent = 'Envoi...';
+    const form = document.getElementById('contact-form-2');
+    const fd = new FormData(form);
+    try {
+      await fetch('https://formspree.io/f/xeaaojol', { method:'POST', body: fd, headers:{ Accept:'application/json' } });
+      document.getElementById('contact-success-2').classList.add('show');
+      form.reset();
+    } catch(err) { btn.textContent = 'Erreur, réessaie'; }
+    finally { btn.disabled = false; if (!document.getElementById('contact-success-2').classList.contains('show')) btn.textContent = 'Envoyer'; }
+  }
+
   function openAbout() {
     const sheet = document.querySelector('.about-sheet');
     const vh = window.innerHeight;
@@ -1038,13 +1117,13 @@
     closeDrawer();
     if (action === 'home') { window.scrollTo({top:0,behavior:'smooth'}); }
     else if (action === 'favs') { setTimeout(()=>toggleFavPanel(), 200); }
-    else if (action === 'history') { setTimeout(()=>openProfile(), 200); }
+    else if (action === 'history') { setTimeout(()=>openHistory(), 200); }
     else if (action === 'profile') { setTimeout(()=>openProfile(), 200); }
     else if (action === 'upgrade') { setTimeout(()=>startUpgrade(), 200); }
     else if (action === 'manage') { setTimeout(()=>manageSubscription(), 200); }
     else if (action === 'logout') { if(confirm('Se déconnecter ?')) { sb.auth.signOut().then(()=>location.reload()); } }
     else if (action === 'about') { setTimeout(()=>openAbout(), 200); }
-    else if (action === 'contact') { setTimeout(()=>{ openAbout(); setTimeout(()=>{ document.getElementById('contact-form').scrollIntoView({behavior:'smooth'}); }, 300); }, 200); }
+    else if (action === 'contact') { setTimeout(()=>openContact(), 200); }
   }
 
   async function manageSubscription() {
@@ -1513,6 +1592,29 @@ function openDailyRecipe() {
 
 // ===== PLAN DE REPAS 7 JOURS =====
 const JOURS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+
+function getWeekSeed() {
+  const d = new Date();
+  // Numéro de semaine ISO × année → seed unique par semaine
+  const dayOfYear = Math.floor((d - new Date(d.getFullYear(), 0, 1)) / 86400000);
+  return d.getFullYear() * 53 + Math.floor(dayOfYear / 7);
+}
+
+function seededRandom(seed) {
+  // LCG simple — donne un float entre 0 et 1 déterministe
+  const x = Math.sin(seed * 9301 + 49297) * 233280;
+  return x - Math.floor(x);
+}
+
+function seededShuffle(arr, seed) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(seededRandom(seed + i) * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function openPlanRepas() {
   const overlay = document.getElementById('plan-overlay');
   const sheet = document.getElementById('plan-sheet');
@@ -1527,14 +1629,15 @@ function openPlanRepas() {
     return;
   }
 
-  // Générer 7 recettes variées (une par jour, différentes régions)
-  const seed = Math.floor(Date.now() / (86400000 * 7)); // Change chaque semaine
-  const regions = ['Afrique subsaharienne','Maghreb','Occidentale'];
-  const plan = JOURS.map((jour, i) => {
-    const regionPool = recipes.filter(r => r.type === 'Plat principal' && r.region === regions[(i + seed) % 3]);
-    const pool = regionPool.length ? regionPool : recipes.filter(r => r.type === 'Plat principal');
-    return { jour, recipe: pool[(seed * 7 + i * 13) % pool.length] };
-  });
+  // Seed unique par semaine → rotation hebdomadaire, stable sur 7 jours
+  const weekSeed = getWeekSeed();
+  const mainRecipes = recipes.filter(r => r.type === 'Plat principal');
+  // Mélange déterministe : même résultat toute la semaine, différent chaque semaine
+  const shuffled = seededShuffle(mainRecipes, weekSeed);
+  const plan = JOURS.map((jour, i) => ({
+    jour,
+    recipe: shuffled[i % shuffled.length]
+  }));
 
   // Liste d'épicerie fusionnée
   const allIngs = {};
@@ -1612,6 +1715,18 @@ const i18n = {
     'p-plan-label': 'Plan',
     'p-count-label': 'Recettes générées',
     'p-history-title': 'Historique',
+    'history-title': '📋 Mon historique',
+    'history-loading': 'Chargement...',
+    'history-empty': 'Aucune recette dans l\'historique.',
+    'contact-title': '✉️ Nous contacter',
+    'contact-name': 'Ton nom',
+    'contact-ph-name': 'Marie Tremblay',
+    'contact-email': 'Ton courriel',
+    'contact-ph-email': 'marie@exemple.com',
+    'contact-message': 'Message',
+    'contact-ph-msg': 'Une question, un bug, une recette à ajouter...',
+    'contact-send': 'Envoyer',
+    'contact-success': '✓ Message envoyé ! On te répond bientôt.',
   },
   en: {
     'tagline-h1': 'What are we cooking tonight?',
@@ -1663,6 +1778,18 @@ const i18n = {
     'p-plan-label': 'Plan',
     'p-count-label': 'Recipes generated',
     'p-history-title': 'History',
+    'history-title': '📋 My history',
+    'history-loading': 'Loading...',
+    'history-empty': 'No recipes in your history.',
+    'contact-title': '✉️ Contact us',
+    'contact-name': 'Your name',
+    'contact-ph-name': 'John Smith',
+    'contact-email': 'Your email',
+    'contact-ph-email': 'john@example.com',
+    'contact-message': 'Message',
+    'contact-ph-msg': 'A question, a bug, a recipe to add...',
+    'contact-send': 'Send',
+    'contact-success': '✓ Message sent! We\'ll get back to you soon.',
   }
 };
 
