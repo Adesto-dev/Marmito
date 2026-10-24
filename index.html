@@ -144,9 +144,11 @@
     .result-region{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,245,0.55);margin-bottom:4px}
     .result-title{font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:clamp(18px,4vw,24px);color:#FAFAF5;line-height:1.2}
     .result-type{display:inline-block;margin-top:7px;padding:3px 9px;background:var(--accent);border-radius:4px;font-size:12px;font-weight:600;color:#fff}
-    .fav-btn{background:none;border:none;cursor:pointer;font-size:24px;padding:4px;color:rgba(250,250,245,0.35);transition:color 0.15s,transform 0.15s;flex-shrink:0;line-height:1}
+    .fav-btn{background:none;border:none;cursor:pointer;padding:4px;color:rgba(250,250,245,0.35);transition:color 0.15s,transform 0.15s;flex-shrink:0;line-height:0;display:flex;align-items:center}
     .fav-btn:hover{color:rgba(250,250,245,0.75)}
     .fav-btn.active{color:#F4A261;transform:scale(1.1)}
+    .fav-toggle.has-favs svg{fill:currentColor}
+    .fav-toggle svg{transition:fill 0.2s}
     .share-bar{display:flex;gap:8px;padding:10px 18px;background:var(--green-mid);border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap}
     .share-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;border:none;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s}
     .share-copy{background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)}
@@ -414,6 +416,28 @@
     .btn-profile-close{padding:12px;background:none;color:var(--fg2);border:none;font-family:inherit;font-size:14px;cursor:pointer;text-decoration:underline}
     .btn-profile-icon{background:none;border:none;cursor:pointer;color:rgba(250,250,245,0.75);font-size:18px;padding:4px;line-height:1}
     .btn-profile-icon:hover{color:#fff}
+    /* ===== PROFILE REDESIGN ===== */
+    .profile-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+    .profile-avatar-row{display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+    .profile-avatar{width:52px;height:52px;border-radius:50%;background:var(--green);color:#fff;font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:-0.5px}
+    .profile-avatar-info{flex:1;min-width:0}
+    .profile-avatar-email{font-size:14px;font-weight:600;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .profile-avatar-since{font-size:12px;color:var(--fg2);margin-top:3px}
+    .profile-plan-card{border-radius:14px;padding:16px;margin-bottom:16px;border:1.5px solid var(--border)}
+    .profile-plan-card.plan-card-pro{background:linear-gradient(135deg,#1a472a 0%,#2d6a4f 100%);border-color:transparent;color:#fff}
+    .profile-plan-card.plan-card-free{background:var(--bg);color:var(--fg)}
+    .profile-plan-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .profile-plan-badge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:0.04em}
+    .profile-plan-badge.badge-pro{background:rgba(255,255,255,0.2);color:#fff}
+    .profile-plan-badge.badge-free{background:var(--accent-light);color:var(--accent)}
+    .profile-plan-count{font-size:12px;opacity:0.8}
+    .profile-plan-bar-wrap{height:6px;background:rgba(0,0,0,0.12);border-radius:3px;overflow:hidden;margin-bottom:6px}
+    .plan-card-free .profile-plan-bar-wrap{background:var(--border)}
+    .profile-plan-bar{height:100%;border-radius:3px;transition:width 0.6s ease}
+    .profile-plan-bar-label{font-size:12px;opacity:0.75}
+    .btn-profile-logout{width:100%;padding:12px;background:none;color:#C0392B;border:1.5px solid rgba(192,57,43,0.25);border-radius:12px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;transition:background 0.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+    .btn-profile-logout:hover{background:rgba(192,57,43,0.07)}
+    @media(prefers-color-scheme:dark){.btn-profile-logout{color:#e55;border-color:rgba(220,50,50,0.3)}.btn-profile-logout:hover{background:rgba(200,50,50,0.1)}}
 
     /* ===== HAMBURGER BUTTON ===== */
     .btn-hamburger{background:none;border:none;cursor:pointer;color:rgba(250,250,245,0.85);padding:6px;display:flex;flex-direction:column;gap:5px;justify-content:center;align-items:center;border-radius:8px;transition:background 0.15s}
@@ -626,7 +650,7 @@
             <div class="result-title" id="result-title"></div>
             <span class="result-type" id="result-type"></span>
           </div>
-          <button class="fav-btn" id="fav-btn" onclick="toggleFav()" title="Sauvegarder">&#9825;</button>
+          <button class="fav-btn" id="fav-btn" onclick="toggleFav()" title="Sauvegarder"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
         </div>
       </div>
     </div>
@@ -717,21 +741,32 @@
       </div>
     </div>
     <div class="profile-sheet-body">
-      <div class="profile-info">
-        <div class="profile-row">
-          <span class="profile-row-label" data-i18n="p-email-label">Courriel</span>
-          <span class="profile-row-value" id="p-email"></span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-row-label" data-i18n="p-plan-label">Plan</span>
-          <span class="profile-row-value" id="p-plan"></span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-row-label" data-i18n="p-count-label">Recettes generees</span>
-          <span class="profile-row-value" id="p-count"></span>
+      <!-- Avatar + email + membre depuis -->
+      <div class="profile-avatar-row">
+        <div class="profile-avatar" id="p-avatar">?</div>
+        <div class="profile-avatar-info">
+          <div class="profile-avatar-email" id="p-email">&#8212;</div>
+          <div class="profile-avatar-since" id="p-since">&#8212;</div>
         </div>
       </div>
+      <!-- Plan card with progress bar -->
+      <div class="profile-plan-card plan-card-free" id="p-plan-card">
+        <div class="profile-plan-top">
+          <span class="profile-plan-badge badge-free" id="p-plan-badge">Gratuit</span>
+          <span class="profile-plan-count" id="p-plan-count">0 recettes</span>
+        </div>
+        <div class="profile-plan-bar-wrap">
+          <div class="profile-plan-bar" id="p-plan-bar" style="width:0%"></div>
+        </div>
+        <div class="profile-plan-bar-label" id="p-plan-bar-label">0 / 5</div>
+      </div>
+      <!-- Action buttons (upgrade or manage) -->
       <div class="profile-actions" id="p-actions"></div>
+      <!-- Logout -->
+      <button class="btn-profile-logout" onclick="signOut()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span data-i18n="sign-out">D&#233;connexion</span>
+      </button>
     </div>
   </div>
 </div>
@@ -961,48 +996,62 @@
 
   async function openProfile() {
     if (!authReady) {
-      // Auth still loading — retry in 600ms once session is confirmed
       showToast(currentLang === 'en' ? 'Loading...' : 'Chargement...');
       setTimeout(() => openProfile(), 600);
       return;
     }
     if (!currentUser) {
-      // Auth done but no session — redirect to login
       window.location.href = '/auth.html';
       return;
     }
-    document.getElementById('p-email').textContent = currentUser.email;
-    document.getElementById('p-plan').textContent = userPlan === 'pro' ? 'Marmito PRO' : 'Gratuit';
-    document.getElementById('p-count').textContent = userPlan === 'free' ? recipeCount + ' / ' + FREE_LIMIT : recipeCount + ' (illimite)';
+    // Avatar initials
+    const email = currentUser.email || '';
+    const initials = email.substring(0, 2).toUpperCase();
+    document.getElementById('p-avatar').textContent = initials;
+    document.getElementById('p-email').textContent = email;
+
+    // Member since
+    const since = new Date(currentUser.created_at);
+    const locale = currentLang === 'en' ? 'en-CA' : 'fr-CA';
+    const sinceStr = since.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('p-since').textContent = (currentLang === 'en' ? 'Member since ' : 'Membre depuis ') + sinceStr;
+
+    // Plan card
+    const isPro = userPlan === 'pro';
+    const badge = document.getElementById('p-plan-badge');
+    badge.textContent = isPro ? '⭐ Marmito PRO' : (currentLang === 'en' ? '🆓 Free plan' : '🆓 Plan gratuit');
+    badge.className = 'profile-plan-badge ' + (isPro ? 'badge-pro' : 'badge-free');
+    document.getElementById('p-plan-card').className = 'profile-plan-card ' + (isPro ? 'plan-card-pro' : 'plan-card-free');
+
+    // Progress bar
+    const pct = isPro ? 100 : Math.min(100, Math.round(recipeCount / FREE_LIMIT * 100));
+    const bar = document.getElementById('p-plan-bar');
+    bar.style.width = pct + '%';
+    bar.style.background = isPro ? 'rgba(255,255,255,0.7)' : (pct >= 80 ? '#e67e22' : 'var(--green)');
+    document.getElementById('p-plan-count').textContent = isPro
+      ? recipeCount + (currentLang === 'en' ? ' recipes generated' : ' recettes générées')
+      : recipeCount + ' / ' + FREE_LIMIT + (currentLang === 'en' ? ' recipes this month' : ' recettes ce mois');
+    document.getElementById('p-plan-bar-label').textContent = isPro
+      ? (currentLang === 'en' ? '✨ Unlimited recipes' : '✨ Recettes illimitées')
+      : pct + '% ' + (currentLang === 'en' ? 'used' : 'utilisé');
+
     // Actions
     const act = document.getElementById('p-actions');
-    if (userPlan === 'free') {
-      act.innerHTML = '<button class="btn-profile-upgrade" onclick="startUpgrade(this)">Passer a Pro — 4.99$/mois</button>';
+    if (!isPro) {
+      act.innerHTML = '<button class="btn-profile-upgrade" onclick="startUpgrade(this)">' +
+        (currentLang === 'en' ? '⭐ Upgrade to PRO — $4.99/month' : '⭐ Passer à PRO — 4,99$/mois') + '</button>';
     } else {
-      act.innerHTML = '<div class="pro-status-card"><div class="pro-status-label">Abonnement actif</div><div class="pro-status-title">⭐ Marmito PRO</div><div class="pro-status-sub">Recettes illimitees · Plan de repas 7 jours</div></div><button class="btn-manage-portal" onclick="manageSubscription()">⚙️ Gérer mon abonnement</button><button class="btn-cancel-sub" onclick="manageSubscription()">Annuler l\'abonnement</button>';
+      act.innerHTML = '<button class="btn-manage-portal" onclick="manageSubscription()">⚙️ ' +
+        (currentLang === 'en' ? 'Manage subscription' : 'Gérer mon abonnement') + '</button>';
     }
-    // History
-    const hist = document.getElementById('p-history-list');
-    hist.innerHTML = '<div class="history-empty">Chargement...</div>';
+
+    // Open overlay
     const overlay = document.getElementById('profile-overlay');
     const sheet = document.getElementById('profile-sheet');
     const vh = window.innerHeight;
-    sheet.style.height = Math.round(vh * 0.9) + 'px';
-    sheet.style.maxHeight = Math.round(vh * 0.9) + 'px';
+    sheet.style.height = Math.round(vh * 0.72) + 'px';
+    sheet.style.maxHeight = Math.round(vh * 0.72) + 'px';
     overlay.classList.add('open');
-    const { data, error } = await sb.from('recipes').select('title,region,created_at').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(20);
-    if (error) {
-      console.error('[Marmito] loadHistory erreur:', error.message, '| code:', error.code, '| hint:', error.hint);
-      hist.innerHTML = '<div class="history-empty" style="color:#C0392B">Erreur: ' + error.message + '</div>';
-    } else if (!data || data.length === 0) {
-      hist.innerHTML = '<div class="history-empty">Aucune recette generee encore.</div>';
-    } else {
-      hist.innerHTML = data.map(r => {
-        const d = new Date(r.created_at);
-        const date = d.toLocaleDateString('fr-CA', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-        return '<div class="history-item" style="cursor:pointer" data-title="' + r.title.replace(/"/g,'&quot;') + '" onclick="openHistoryRecipe(this.dataset.title)" title="Revoir la recette"><span class="history-item-name">' + r.title + (r.region ? ' <span style="color:var(--fg2);font-weight:400;font-size:12px">· ' + r.region + '</span>' : '') + '</span><span class="history-item-date">' + date + ' ›</span></div>';
-      }).join('');
-    }
   }
 
   function closeProfile() {
@@ -1021,6 +1070,12 @@
 
   function closeProfileIfOutside(e) {
     if (e.target === document.getElementById('profile-overlay')) closeProfile();
+  }
+
+  function signOut() {
+    if (confirm(currentLang === 'en' ? 'Sign out?' : 'Se déconnecter ?')) {
+      sb.auth.signOut().then(() => location.reload());
+    }
   }
 
   // ===== DRAWER MENU =====
@@ -1480,22 +1535,23 @@ function resetTimer(i){
 }
 
 // Favorites
-let favs=[];let cur=null;
+const FAV_SVG_EMPTY='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+  const FAV_SVG_FILLED='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+  let favs=[];let cur=null;
 try{favs=JSON.parse(localStorage.getItem("marmito-favs")||"[]");}catch(e){}
 function saveFavs(){try{localStorage.setItem("marmito-favs",JSON.stringify(favs));}catch(e){}}
 function toggleFav(){
   if(!cur)return;
   const fb=document.getElementById("fav-btn");
   const idx=favs.findIndex(f=>f.title===cur.title);
-  if(idx>=0){favs.splice(idx,1);fb.textContent="♡";fb.classList.remove("active");showToast(t('toast-fav-remove'));}
-  else{favs.push({title:cur.title,region:cur.region,type:cur.type});fb.textContent="❤️";fb.classList.add("active");showToast(t('toast-fav-add'));}
+  if(idx>=0){favs.splice(idx,1);fb.innerHTML=FAV_SVG_EMPTY;fb.classList.remove("active");showToast(t('toast-fav-remove'));}
+  else{favs.push({title:cur.title,region:cur.region,type:cur.type});fb.innerHTML=FAV_SVG_FILLED;fb.classList.add("active");showToast(t('toast-fav-add'));}
   saveFavs();updateFavBtn();
   if(document.getElementById("fav-panel").classList.contains("visible"))renderFavs();
 }
 function updateFavBtn(){
-  const t=document.getElementById("fav-toggle");
-  t.textContent=favs.length?"❤️":"♡";
-  favs.length?t.classList.add("has-favs"):t.classList.remove("has-favs");
+  const tog=document.getElementById("fav-toggle");
+  favs.length?tog.classList.add("has-favs"):tog.classList.remove("has-favs");
 }
 function clearFavs(){favs=[];saveFavs();renderFavs();updateFavBtn();}
 function toggleFavPanel(){
@@ -1794,6 +1850,7 @@ const i18n = {
     'cook-ready-title': 'C’est prêt !',
     'cook-ready-sub': 'Bon appétit !',
     'btn-done': '✓ Terminé',
+    'sign-out': 'Déconnexion',
     'profile-title': '👤 Mon profil',
     'p-email-label': 'Courriel',
     'p-plan-label': 'Plan',
@@ -1878,6 +1935,7 @@ const i18n = {
     'cook-ready-title': 'Ready!',
     'cook-ready-sub': 'Enjoy your meal!',
     'btn-done': '✓ Done',
+    'sign-out': 'Sign out',
     'profile-title': '👤 My profile',
     'p-email-label': 'Email',
     'p-plan-label': 'Plan',
@@ -2037,7 +2095,7 @@ function show(recipe){
   document.getElementById("r-diff").textContent=translateMeta('diff',recipe.diff);
   const fb=document.getElementById("fav-btn");
   const isFav=favs.some(f=>f.title===recipe.title);
-  fb.textContent=isFav?"❤️":"♡";
+  fb.innerHTML=isFav?FAV_SVG_FILLED:FAV_SVG_EMPTY;
   isFav?fb.classList.add("active"):fb.classList.remove("active");
   document.getElementById("result-ingredients").innerHTML=recipe.ingredients.map(i=>{const q=qtyMap[i];return "<span class=\"ingredient-pill\">"+(q?"<span class=\"ing-qty\">"+q+"</span>":"")+i+"</span>";}).join("");
   document.getElementById("result-steps").innerHTML=recipe.steps.map((step,i)=>{
@@ -2049,6 +2107,37 @@ function show(recipe){
   }).join("");
   document.getElementById("result-card").classList.add("visible");
   setTimeout(()=>document.getElementById("result-card").scrollIntoView({behavior:"smooth",block:"start"}),80);
+  if(currentLang==="en") translateRecipeSteps(recipe.steps);
+}
+
+// ===== RECIPE STEP TRANSLATION (FR→EN via Google Translate) =====
+async function translateRecipeSteps(steps) {
+  const stepsEl = document.getElementById('result-steps');
+  if (!stepsEl) return;
+  const stepDivs = stepsEl.querySelectorAll('.step-text');
+  if (!stepDivs.length) return;
+  const cacheKey = 'marmito-tr-' + (cur ? encodeURIComponent(cur.title) : 'r');
+  try {
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      const texts = JSON.parse(cached);
+      stepDivs.forEach((el, i) => { if (texts[i]) el.textContent = texts[i]; });
+      return;
+    }
+  } catch(e) {}
+  const texts = [];
+  for (let i = 0; i < steps.length; i++) {
+    const raw = typeof steps[i] === 'string' ? steps[i] : steps[i].text;
+    try {
+      const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=' + encodeURIComponent(raw);
+      const resp = await fetch(url);
+      const json = await resp.json();
+      const translated = json[0].map(seg => seg[0]).join('');
+      texts.push(translated);
+      if (stepDivs[i]) stepDivs[i].textContent = translated;
+    } catch(e) { texts.push(raw); }
+  }
+  try { localStorage.setItem(cacheKey, JSON.stringify(texts)); } catch(e) {}
 }
 
 // ===== COOKING MODE CAROUSEL =====
