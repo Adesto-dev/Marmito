@@ -2071,6 +2071,7 @@ function generateRecipe(){
 
 function show(recipe){
   cur=recipe;
+  translatedStepTexts=[];
   // Visual banner: emoji + gradient
   const gradientMap={
     "Afrique subsaharienne":"linear-gradient(135deg,#C85A00 0%,#7A2800 100%)",
@@ -2112,19 +2113,24 @@ function show(recipe){
 
 // ===== RECIPE STEP TRANSLATION (FR→EN via Google Translate) =====
 async function translateRecipeSteps(steps) {
+  translatedStepTexts = [];
   const stepsEl = document.getElementById('result-steps');
   if (!stepsEl) return;
   const stepDivs = stepsEl.querySelectorAll('.step-text');
   if (!stepDivs.length) return;
   const cacheKey = 'marmito-tr-' + (cur ? encodeURIComponent(cur.title) : 'r');
+  // Try cache first (instant)
   try {
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
       const texts = JSON.parse(cached);
+      translatedStepTexts = texts;
       stepDivs.forEach((el, i) => { if (texts[i]) el.textContent = texts[i]; });
       return;
     }
   } catch(e) {}
+  // No cache — dim steps to signal translation in progress
+  stepDivs.forEach(el => { el.style.opacity = '0.45'; el.style.transition = 'opacity 0.3s'; });
   const texts = [];
   for (let i = 0; i < steps.length; i++) {
     const raw = typeof steps[i] === 'string' ? steps[i] : steps[i].text;
@@ -2134,14 +2140,20 @@ async function translateRecipeSteps(steps) {
       const json = await resp.json();
       const translated = json[0].map(seg => seg[0]).join('');
       texts.push(translated);
-      if (stepDivs[i]) stepDivs[i].textContent = translated;
-    } catch(e) { texts.push(raw); }
+      translatedStepTexts[i] = translated;
+      if (stepDivs[i]) { stepDivs[i].textContent = translated; stepDivs[i].style.opacity = '1'; }
+    } catch(e) {
+      texts.push(raw);
+      translatedStepTexts[i] = raw;
+      if (stepDivs[i]) stepDivs[i].style.opacity = '1';
+    }
   }
   try { localStorage.setItem(cacheKey, JSON.stringify(texts)); } catch(e) {}
 }
 
 // ===== COOKING MODE CAROUSEL =====
 let cookSteps=[], cookIdx=0, cookTimer=null;
+let translatedStepTexts=[];
 
 function startCookMode(){
   if(!cur)return;
@@ -2186,8 +2198,9 @@ function renderCookStep(){
   // Icon
   document.getElementById("cook-icon-big").innerHTML=iconHtml;
   document.getElementById("cook-icon-big").classList.remove("timer-running");
-  // Text
-  document.getElementById("cook-step-text").textContent=text;
+  // Text — use cached translation if available
+  const displayText = (currentLang==='en' && translatedStepTexts[cookIdx]) ? translatedStepTexts[cookIdx] : text;
+  document.getElementById("cook-step-text").textContent=displayText;
   // Timer
   const tz=document.getElementById("cook-timer-zone");
   if(time>0){
@@ -2206,8 +2219,8 @@ function renderCookStep(){
   // Nav buttons
   document.getElementById("cook-prev").disabled=(cookIdx===0);
   const nextBtn=document.getElementById("cook-next");
-  if(cookIdx===total-1){nextBtn.innerHTML="C&rsquo;est pr&ecirc;t ! &#127869;&#65039;";nextBtn.style.background="var(--timer-done)";}
-  else{nextBtn.innerHTML="Suivante &#8594;";nextBtn.style.background="";}
+  if(cookIdx===total-1){nextBtn.innerHTML=(currentLang==='en'?"Done! &#127869;&#65039;":"C&rsquo;est pr&ecirc;t ! &#127869;&#65039;");nextBtn.style.background="var(--timer-done)";}
+  else{nextBtn.innerHTML=(currentLang==='en'?"Next &#8594;":"Suivante &#8594;");nextBtn.style.background="";}
   updateDots();
 }
 function cookNav(dir){
