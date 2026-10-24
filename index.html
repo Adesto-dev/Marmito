@@ -337,11 +337,11 @@
     .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transition:all 0.3s;z-index:100;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     /* PROFILE MODAL */
-    .profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
+    .profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:flex-end;justify-content:center;overflow:hidden}
     .profile-overlay.open{display:flex}
-    .profile-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;height:90vh;display:flex;flex-direction:column}
+    .profile-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;height:90vh;height:90dvh;display:flex;flex-direction:column;max-height:90vh;max-height:90dvh}
     .profile-sheet-head{padding:20px 20px 0;flex-shrink:0}
-    .profile-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 20px 40px;flex:1;min-height:0}
+    .profile-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 20px 40px;flex:1;min-height:0}
     .profile-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
     .profile-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
     .profile-title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:20px}
@@ -410,11 +410,11 @@
     }
 
     /* ===== ABOUT MODAL ===== */
-    .about-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;display:none;align-items:flex-end;justify-content:center}
+    .about-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;display:none;align-items:flex-end;justify-content:center;overflow:hidden}
     .about-overlay.open{display:flex}
-    .about-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;height:88vh;display:flex;flex-direction:column}
+    .about-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;height:88vh;height:88dvh;display:flex;flex-direction:column;max-height:88vh;max-height:88dvh}
     .about-sheet-head{padding:24px 22px 0;flex-shrink:0}
-    .about-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 22px 44px;flex:1;min-height:0}
+    .about-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 22px 44px;flex:1;min-height:0}
     .about-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
     .about-logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
     .about-logo{font-family:"Fraunces",Georgia,serif;font-weight:900;font-size:26px;color:var(--green);letter-spacing:-0.5px}
@@ -849,7 +849,12 @@
     // History
     const hist = document.getElementById('p-history-list');
     hist.innerHTML = '<div class="history-empty">Chargement...</div>';
-    document.getElementById('profile-overlay').classList.add('open');
+    const overlay = document.getElementById('profile-overlay');
+    const sheet = document.getElementById('profile-sheet');
+    const vh = window.innerHeight;
+    sheet.style.height = Math.round(vh * 0.9) + 'px';
+    sheet.style.maxHeight = Math.round(vh * 0.9) + 'px';
+    overlay.classList.add('open');
     const { data, error } = await sb.from('recipes').select('title,region,created_at').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(20);
     if (error) {
       console.error('[Marmito] loadHistory erreur:', error.message, '| code:', error.code, '| hint:', error.hint);
@@ -909,6 +914,10 @@
   }
 
   function openAbout() {
+    const sheet = document.querySelector('.about-sheet');
+    const vh = window.innerHeight;
+    sheet.style.height = Math.round(vh * 0.88) + 'px';
+    sheet.style.maxHeight = Math.round(vh * 0.88) + 'px';
     document.getElementById('about-overlay').classList.add('open');
   }
   function closeAbout() {
