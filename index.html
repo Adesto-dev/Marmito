@@ -790,9 +790,19 @@
   async function saveRecipeToHistory(title, region) {
     if (!currentUser) { console.warn('[Marmito] saveRecipe: pas de currentUser'); return; }
     try {
-      const { data, error } = await sb.from('recipes').insert({ user_id: currentUser.id, title, region: region || '' });
-      if (error) console.error('[Marmito] saveRecipe erreur:', error.message, error.details, error.hint);
-      else console.log('[Marmito] saveRecipe OK:', title);
+      console.log('[Marmito] saveRecipe: tentative INSERT pour', currentUser.id, '|', title);
+      const { data, error } = await sb.from('recipes').insert({
+        user_id: currentUser.id,
+        title,
+        region: region || '',
+        created_at: new Date().toISOString()
+      });
+      if (error) {
+        console.error('[Marmito] saveRecipe erreur:', error.message, '| code:', error.code, '| hint:', error.hint, '| details:', error.details);
+        showToast('Erreur sauvegarde: ' + error.message, 'error');
+      } else {
+        console.log('[Marmito] saveRecipe OK:', title);
+      }
     } catch(e) { console.error('[Marmito] saveRecipe exception:', e); }
   }
 
@@ -813,7 +823,10 @@
     hist.innerHTML = '<div class="history-empty">Chargement...</div>';
     document.getElementById('profile-overlay').classList.add('open');
     const { data, error } = await sb.from('recipes').select('title,region,created_at').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(20);
-    if (!data || data.length === 0) {
+    if (error) {
+      console.error('[Marmito] loadHistory erreur:', error.message, '| code:', error.code, '| hint:', error.hint);
+      hist.innerHTML = '<div class="history-empty" style="color:#C0392B">Erreur: ' + error.message + '</div>';
+    } else if (!data || data.length === 0) {
       hist.innerHTML = '<div class="history-empty">Aucune recette generee encore.</div>';
     } else {
       hist.innerHTML = data.map(r => {
@@ -1335,7 +1348,7 @@ function toggleShareMenu(){
 }
 
 // Toast
-function showToast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500);}
+function showToast(m,type){const t=document.getElementById("toast");t.textContent=m;t.style.background=type==='error'?'#C0392B':'';t.classList.add("show");setTimeout(()=>{t.classList.remove("show");t.style.background='';},type==='error'?4000:2500);}
 
 // Generate
 function generateRecipe(){
