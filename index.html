@@ -653,6 +653,7 @@
     <div class="card-label" data-i18n="card-cuisine">Type de cuisine</div>
     <div class="chips">
       <button class="chip active" data-group="cuisine" onclick="selectChip(this)" data-i18n="chip-cuisine-all">Toutes</button>
+      <button class="chip" data-group="cuisine" onclick="selectChip(this)">Antilles</button>
       <button class="chip" data-group="cuisine" onclick="selectChip(this)">Afrique subsaharienne</button>
       <button class="chip" data-group="cuisine" onclick="selectChip(this)">Maghreb</button>
       <button class="chip" data-group="cuisine" onclick="selectChip(this)" data-i18n="chip-cuisine-western">Occidentale</button>
@@ -3778,6 +3779,7 @@ function closePlanRepas() {
 // ===== RECIPE METADATA TRANSLATION =====
 const recipeMetaEN = {
   region: {
+    'Antilles': 'Caribbean',
     'Afrique subsaharienne': 'Sub-Saharan Africa',
     'Maghreb': 'Maghreb',
     'Occidentale': 'Western'
