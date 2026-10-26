@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${process.env.SITE_URL || 'https://marmito-one.vercel.app'}/?upgraded=1`,
       cancel_url: `${process.env.SITE_URL || 'https://marmito-one.vercel.app'}/?cancelled=1`,
-      metadata: { supabase_user_id: userId },
+      metadata: { supabase_user_id: userId, plan: plan || 'saveur' },
     });
 
     res.status(200).json({ url: session.url });
