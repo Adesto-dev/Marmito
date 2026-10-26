@@ -3738,7 +3738,7 @@ function openPlanRepas() {
   sheet.style.height = Math.round(vh * 0.88) + 'px';
   sheet.style.maxHeight = Math.round(vh * 0.88) + 'px';
 
-  if (userPlan !== 'pro') {
+  if (userPlan !== 'saveur' && userPlan !== 'chef') {
     body.innerHTML = '<div class="plan-pro-lock"><div style="font-size:48px;margin-bottom:12px">🔒</div><h3>' + t('plan-pro-title') + '</h3><p>' + t('plan-pro-text') + '</p><button class="btn-generate" onclick="closePlanRepas();startUpgrade()" style="margin-top:16px">' + t('plan-pro-btn') + '</button></div>';
     overlay.classList.add('open');
     return;
