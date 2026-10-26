@@ -128,6 +128,12 @@
     .btn-generate:hover{filter:brightness(1.08)}
     .btn-generate:active{transform:scale(0.98)}
     .btn-generate:disabled{opacity:0.5;cursor:not-allowed;transform:none;filter:none}
+    .btn-row{display:flex;gap:10px;margin-top:0}
+    .btn-row .btn-generate{flex:1;font-size:14px;padding:13px 8px}
+    .btn-filter{flex:1;padding:13px 8px;background:var(--card-bg);color:var(--accent-dark);border:2px solid var(--accent);border-radius:12px;font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:14px;cursor:pointer;transition:filter 0.15s,transform 0.1s;box-shadow:0 2px 8px rgba(184,76,16,0.12)}
+    .btn-filter:hover{background:var(--accent-light)}
+    .btn-filter:active{transform:scale(0.98)}
+    .btn-filter:disabled{opacity:0.5;cursor:not-allowed;transform:none}
     .result-card{border:2px solid var(--accent);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);display:none}
     .result-card.visible{display:block}
     .result-header{background:var(--green);padding:0}
@@ -661,7 +667,10 @@
       <button class="chip" data-group="type" onclick="selectChip(this)" data-i18n="chip-all">Tout</button>
     </div>
   </div>
-  <button class="btn-generate" id="gen-btn" onclick="generateRecipe()" data-i18n="btn-gen">&#127922; Surprends-moi</button>
+  <div class="btn-row">
+    <button class="btn-generate" id="gen-btn" onclick="generateRecipe()" data-i18n="btn-gen">&#127922; Surprends-moi</button>
+    <button class="btn-filter" id="filter-btn" onclick="generateWithFilters()" data-i18n="btn-filter">&#127859; Selon mes filtres</button>
+  </div>
   <button class="btn-plan" data-i18n="btn-plan" onclick="openPlanRepas()">&#128197; Plan de repas 7 jours</button>
   <div class="home-pro-banner">
     <span class="home-pro-icon">&#128081;</span>
@@ -2014,6 +2023,7 @@ const i18n = {
     'chip-drink': 'Boisson',
     'chip-all': 'Tout',
     'btn-gen': '🎲 Surprends-moi',
+    'btn-filter': '🍳 Selon mes filtres',
     'limit-title': 'Limite atteinte',
     'limit-text': 'Tu as généré tes 10 recettes gratuites du mois. Passe à Marmito Pro pour des recettes illimitées et toutes les régions.',
     'btn-upgrade': 'Passer à Pro — 4.99$/mois',
@@ -2126,6 +2136,7 @@ const i18n = {
     'chip-drink': 'Drink',
     'chip-all': 'All',
     'btn-gen': '🎲 Surprise me',
+    'btn-filter': '🍳 By my filters',
     'limit-title': 'Limit reached',
     'limit-text': 'You’ve used your 10 free recipes this month. Upgrade to Marmito Pro for unlimited recipes and all regions.',
     'btn-upgrade': 'Upgrade to Pro — $4.99/month',
@@ -2317,6 +2328,69 @@ applyLang();
 function showToast(m,type){const t=document.getElementById("toast");t.textContent=m;t.style.background=type==='error'?'#C0392B':'';t.classList.add("show");setTimeout(()=>{t.classList.remove("show");t.style.background='';},type==='error'?4000:2500);}
 
 // Generate
+function generateWithFilters(){
+  // Respecte les filtres région + type actifs
+  const cu=document.querySelector(".chip[data-group=\"cuisine\"].active");
+  const ty=document.querySelector(".chip[data-group=\"type\"].active");
+  const cuisine=cu?cu.textContent:"Toutes";
+  const type=ty?ty.textContent:"Plat principal";
+  const userIngs=[...document.querySelectorAll(".ingredient-tag")].map(t=>(t.dataset.fr||t.childNodes[0].textContent).trim().toLowerCase());
+  if(cuisine==="Toutes" && type==="Tout" && userIngs.length===0){
+    // Aucun filtre actif, on informe l'utilisateur
+    const btn=document.getElementById("filter-btn");
+    const orig=btn.innerHTML;
+    btn.innerHTML="⚠️ Choisis un filtre d'abord";
+    setTimeout(()=>{btn.innerHTML=orig;},2000);
+    return;
+  }
+  // Réutilise la logique de generateRecipe avec filtres
+  const btn=document.getElementById("filter-btn");
+  btn.disabled=true;btn.innerHTML="<span class=\"loading-dots\"><span></span><span></span><span></span></span>";
+  document.getElementById("result-card").classList.remove("visible");
+  setTimeout(()=>{
+    if(userPlan==='free' && recipeCount>=FREE_LIMIT){
+      document.getElementById('limit-banner').classList.add('show');
+      document.getElementById('limit-banner').scrollIntoView({behavior:'smooth',block:'center'});
+      btn.disabled=false;btn.innerHTML=currentLang==='en'?'&#127859; By my filters':'&#127859; Selon mes filtres';
+      return;
+    }
+    Object.values(timers).forEach(t=>{if(t.iv)clearInterval(t.iv);});timers={};
+    let pool=recipes;
+    if(cuisine!=="Toutes")pool=pool.filter(r=>r.region===cuisine);
+    if(type!=="Tout")pool=pool.filter(r=>r.type===type);
+    if(!pool.length)pool=recipes;
+    const filterKey='F|'+(cuisine||'Toutes')+'|'+(type||'Tout');
+    let chosen;
+    if(userIngs.length){
+      const sc=pool.map(r=>({r,s:r.ingredients.filter(i=>userIngs.some(u=>i.toLowerCase().includes(u)||u.includes(i.toLowerCase()))).length}));
+      sc.sort((a,b)=>b.s-a.s);
+      const best=sc.filter(x=>x.s===sc[0].s);
+      chosen=pickNoRepeat(best.map(x=>x.r),'F|ing|'+filterKey+'|'+userIngs.join(','));
+    } else {
+      chosen=pickNoRepeat(pool,filterKey);
+    }
+    show(chosen);
+    incrementRecipeCount();
+    saveRecipeToHistory(chosen.title, chosen.region);
+    btn.disabled=false;btn.innerHTML=currentLang==='en'?'&#127859; By my filters':'&#127859; Selon mes filtres';
+  },800);
+}
+
+// Shuffle sans répétition — clé par filtre actif
+const _seenMap = {};
+function pickNoRepeat(pool, key) {
+  if (!_seenMap[key] || _seenMap[key].length === 0) {
+    // On a tout vu (ou premier appel) : on mélange tout et on repart
+    const arr = pool.slice().sort(() => Math.random() - 0.5);
+    _seenMap[key] = arr.map(r => r.title);
+  }
+  // Prend le premier de la file et le remet à la fin
+  const nextTitle = _seenMap[key].shift();
+  const found = pool.find(r => r.title === nextTitle);
+  if (!found) return pickNoRepeat(pool, key); // sécurité si recette absente
+  return found;
+}
+
 function generateRecipe(){
     // Freemium check
     if(userPlan==='free' && recipeCount>=FREE_LIMIT){
@@ -2338,14 +2412,17 @@ function generateRecipe(){
     if(cuisine!=="Toutes")pool=pool.filter(r=>r.region===cuisine);
     if(type!=="Tout")pool=pool.filter(r=>r.type===type);
     if(!pool.length)pool=recipes;
+    const filterKey=(cuisine||'Toutes')+'|'+(type||'Tout');
     let chosen;
     if(userIngs.length){
       const sc=pool.map(r=>({r,s:r.ingredients.filter(i=>userIngs.some(u=>i.toLowerCase().includes(u)||u.includes(i.toLowerCase()))).length}));
       sc.sort((a,b)=>b.s-a.s);
       const best=sc.filter(x=>x.s===sc[0].s);
-      chosen=best[Math.floor(Math.random()*best.length)].r;
+      // Parmi les meilleurs matches, évite aussi les répétitions
+      const ingKey=filterKey+'|'+userIngs.join(',');
+      chosen=pickNoRepeat(best.map(x=>x.r), ingKey);
     } else {
-      chosen=pool[Math.floor(Math.random()*pool.length)];
+      chosen=pickNoRepeat(pool, filterKey);
     }
     show(chosen);
     incrementRecipeCount();
@@ -2615,7 +2692,7 @@ function cookTimerReset(){
   document.getElementById("cook-icon-big").classList.remove("timer-running");
 }
 
-document.getElementById("rc").textContent=recipes.length+" recettes";
+document.getElementById("rc").textContent="295+ recettes";
 initDailyRecipe();
 checkDirectLink();
 applyLang();
