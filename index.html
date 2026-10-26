@@ -975,7 +975,9 @@
   let userPlan = 'free';
   let recipeCount = 0;
   let authReady = false;
-  const FREE_LIMIT = 5;
+  const PLAN_LIMITS = { free: 20, saveur: 100, chef: 300 };
+  function getPlanLimit() { return PLAN_LIMITS[userPlan] || 20; }
+  const FREE_LIMIT = 20; // garde pour compatibilité
   // Charge le compteur local pour les utilisateurs pas connectés
   try { recipeCount = parseInt(localStorage.getItem('marmito-count') || '0'); } catch(e){}
 
@@ -1032,17 +1034,18 @@
     document.getElementById('user-email').textContent = currentUser.email;
     const badge = document.getElementById('plan-badge');
     const upgradeBtn = document.getElementById('btn-upgrade-top');
-    if (userPlan === 'pro') {
-      badge.textContent = 'PRO'; badge.className = 'plan-badge pro';
+    if (userPlan === 'saveur' || userPlan === 'chef') {
+      const planLabel = userPlan === 'chef' ? '👨‍🍳 Chef' : '🍽️ Saveur';
+      badge.textContent = planLabel; badge.className = 'plan-badge pro';
       upgradeBtn.style.display = 'none';
     } else {
-      badge.textContent = 'GRATUIT (' + recipeCount + '/' + FREE_LIMIT + ')';
+      badge.textContent = 'GRATUIT (' + recipeCount + '/' + getPlanLimit() + ')';
       badge.className = 'plan-badge free';
-      upgradeBtn.style.display = recipeCount >= FREE_LIMIT ? '' : 'none';
+      upgradeBtn.style.display = recipeCount >= getPlanLimit() ? '' : 'none';
     }
     // Show limit banner if at limit
     const banner = document.getElementById('limit-banner');
-    if (userPlan === 'free' && recipeCount >= FREE_LIMIT) {
+    if (userPlan === 'free' && recipeCount >= getPlanLimit()) {
       banner.classList.add('show');
     } else {
       banner.classList.remove('show');
@@ -1101,29 +1104,27 @@
     document.getElementById('p-since').textContent = (currentLang === 'en' ? 'Member since ' : 'Membre depuis ') + sinceStr;
 
     // Plan card
-    const isPro = userPlan === 'pro';
+    const isPaid = userPlan === 'saveur' || userPlan === 'chef';
+    const planLabel = userPlan === 'chef' ? '👨‍🍳 Chef' : userPlan === 'saveur' ? '🍽️ Saveur' : (currentLang === 'en' ? '🆓 Free plan' : '🆓 Plan gratuit');
     const badge = document.getElementById('p-plan-badge');
-    badge.textContent = isPro ? '⭐ Marmito PRO' : (currentLang === 'en' ? '🆓 Free plan' : '🆓 Plan gratuit');
-    badge.className = 'profile-plan-badge ' + (isPro ? 'badge-pro' : 'badge-free');
-    document.getElementById('p-plan-card').className = 'profile-plan-card ' + (isPro ? 'plan-card-pro' : 'plan-card-free');
+    badge.textContent = isPaid ? ('⭐ Marmito ' + (userPlan === 'chef' ? 'Chef' : 'Saveur')) : planLabel;
+    badge.className = 'profile-plan-badge ' + (isPaid ? 'badge-pro' : 'badge-free');
+    document.getElementById('p-plan-card').className = 'profile-plan-card ' + (isPaid ? 'plan-card-pro' : 'plan-card-free');
 
     // Progress bar
-    const pct = isPro ? 100 : Math.min(100, Math.round(recipeCount / FREE_LIMIT * 100));
+    const limit = getPlanLimit();
+    const pct = isPaid ? Math.min(100, Math.round(recipeCount / limit * 100)) : Math.min(100, Math.round(recipeCount / limit * 100));
     const bar = document.getElementById('p-plan-bar');
     bar.style.width = pct + '%';
-    bar.style.background = isPro ? 'rgba(255,255,255,0.7)' : (pct >= 80 ? '#e67e22' : 'var(--green)');
-    document.getElementById('p-plan-count').textContent = isPro
-      ? recipeCount + (currentLang === 'en' ? ' recipes generated' : ' recettes générées')
-      : recipeCount + ' / ' + FREE_LIMIT + (currentLang === 'en' ? ' recipes this month' : ' recettes ce mois');
-    document.getElementById('p-plan-bar-label').textContent = isPro
-      ? (currentLang === 'en' ? '✨ Unlimited recipes' : '✨ Recettes illimitées')
-      : pct + '% ' + (currentLang === 'en' ? 'used' : 'utilisé');
+    bar.style.background = isPaid ? 'rgba(255,255,255,0.7)' : (pct >= 80 ? '#e67e22' : 'var(--green)');
+    document.getElementById('p-plan-count').textContent = recipeCount + ' / ' + limit + (currentLang === 'en' ? ' recipes this month' : ' recettes ce mois');
+    document.getElementById('p-plan-bar-label').textContent = pct + '% ' + (currentLang === 'en' ? 'used' : 'utilisé');
 
     // Actions
     const act = document.getElementById('p-actions');
-    if (!isPro) {
+    if (!isPaid) {
       act.innerHTML = '<button class="btn-profile-upgrade" onclick="startUpgrade(this)">' +
-        (currentLang === 'en' ? '⭐ Upgrade to PRO — $4.99/month' : '⭐ Passer à PRO — 4,99$/mois') + '</button>';
+        (currentLang === 'en' ? '⭐ Upgrade — from $4.99/month' : '⭐ Passer à Pro — dès 4,99$/mois') + '</button>';
     } else {
       act.innerHTML = '<button class="btn-manage-portal" onclick="manageSubscription()">⚙️ ' +
         (currentLang === 'en' ? 'Manage subscription' : 'Gérer mon abonnement') + '</button>';
@@ -1172,15 +1173,14 @@
       userEl.classList.add('show');
       document.getElementById('drawer-email').textContent = currentUser.email;
       const badge = document.getElementById('drawer-plan-badge');
-      badge.textContent = userPlan === 'pro' ? 'Marmito PRO' : 'Gratuit';
-      badge.className = 'drawer-user-plan ' + userPlan;
-      document.getElementById('drawer-count').textContent = userPlan === 'free'
-        ? recipeCount + ' / ' + FREE_LIMIT + ' recettes utilisées'
-        : recipeCount + ' recettes générées';
+      const drawerPlanLabel = userPlan === 'chef' ? '👨‍🍳 Chef' : userPlan === 'saveur' ? '🍽️ Saveur' : 'Gratuit';
+      badge.textContent = drawerPlanLabel;
+      badge.className = 'drawer-user-plan ' + (userPlan === 'free' ? 'free' : 'pro');
+      document.getElementById('drawer-count').textContent = recipeCount + ' / ' + getPlanLimit() + ' recettes utilisées';
       // Bouton abonnement
       const cta = document.getElementById('drawer-sub-cta');
       if (userPlan === 'free') {
-        cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Pro — 4.99$/mois</button>';
+        cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Pro — dès 4.99$/mois</button>';
       } else {
         cta.innerHTML = '<button class="drawer-item manage-cta" onclick="drawerAction(\'manage\')"><span class="drawer-item-icon">⚙️</span><span class="drawer-item-text">Gérer mon abonnement</span></button>';
       }
@@ -4210,7 +4210,7 @@ function generateWithFilters(){
   btn.disabled=true;btn.innerHTML="<span class=\"loading-dots\"><span></span><span></span><span></span></span>";
   document.getElementById("result-card").classList.remove("visible");
   setTimeout(()=>{
-    if(userPlan==='free' && recipeCount>=FREE_LIMIT){
+    if(recipeCount>=getPlanLimit()){
       document.getElementById('limit-banner').classList.add('show');
       document.getElementById('limit-banner').scrollIntoView({behavior:'smooth',block:'center'});
       btn.disabled=false;btn.innerHTML=currentLang==='en'?'&#127859; By my filters':'&#127859; Selon mes filtres';
@@ -4255,7 +4255,7 @@ function pickNoRepeat(pool, key) {
 
 function generateRecipe(){
     // Freemium check
-    if(userPlan==='free' && recipeCount>=FREE_LIMIT){
+    if(recipeCount>=getPlanLimit()){
       document.getElementById('limit-banner').classList.add('show');
       document.getElementById('limit-banner').scrollIntoView({behavior:'smooth',block:'center'});
       return;
