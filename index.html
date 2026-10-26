@@ -739,16 +739,16 @@
   <div class="home-pro-banner">
     <span class="home-pro-icon">&#128081;</span>
     <div class="home-pro-text">
-      <span class="home-pro-label" data-i18n="plan-pro-title">Fonctionnalité Pro</span>
-      <span class="home-pro-desc" data-i18n="plan-pro-desc">Le plan 7 jours est réservé aux abonnés Pro. Passez à Pro pour débloquer.</span>
+      <span class="home-pro-label" data-i18n="plan-pro-title">Fonctionnalité Saveur/Chef</span>
+      <span class="home-pro-desc" data-i18n="plan-pro-desc">Le plan 7 jours est réservé aux abonnés Saveur et Chef. Passez à Saveur pour débloquer.</span>
     </div>
-    <button class="home-pro-btn" onclick="drawerAction('upgrade')" data-i18n="plan-pro-btn">Passer à Pro</button>
+    <button class="home-pro-btn" onclick="drawerAction('upgrade')" data-i18n="plan-pro-btn">Passer à Saveur</button>
   </div>
   <!-- Freemium limit banner -->
     <div class="limit-banner" id="limit-banner">
       <h3 data-i18n="limit-title">Limite atteinte</h3>
-      <p data-i18n="limit-text">Tu as genere tes 20 recettes gratuites du mois. Passe a Marmito Pro pour des recettes illimitees et toutes les regions.</p>
-      <button class="btn-upgrade-big" onclick="startUpgrade(this)" data-i18n="btn-upgrade">Passer a Pro — dès 4,99$/mois</button>
+      <p data-i18n="limit-text">Tu as genere tes 20 recettes gratuites du mois. Passe à Saveur ou Chef pour plus de recettes et toutes les régions.</p>
+      <button class="btn-upgrade-big" onclick="startUpgrade(this)" data-i18n="btn-upgrade">Passer à Saveur — dès 4,99$/mois</button>
     </div>
 
 <div class="result-card" id="result-card">
@@ -1020,7 +1020,7 @@
   let userPlan = 'free';
   let recipeCount = 0;
   let authReady = false;
-  const PLAN_LIMITS = { free: 20, saveur: 130, chef: 300 };
+  const PLAN_LIMITS = { free: 20, saveur: 130, chef: 342 };
   function getPlanLimit() { return PLAN_LIMITS[userPlan] || 20; }
   const FREE_LIMIT = 20; // garde pour compatibilité
   // Charge le compteur local pour les utilisateurs pas connectés
@@ -1171,7 +1171,7 @@
     const act = document.getElementById('p-actions');
     if (!isPaid) {
       act.innerHTML = '<button class="btn-profile-upgrade" onclick="startUpgrade(this)">' +
-        (currentLang === 'en' ? '⭐ Upgrade — from $4.99/month' : '⭐ Passer à Pro — dès 4,99$/mois') + '</button>';
+        (currentLang === 'en' ? '⭐ Upgrade — from $4.99/month' : '⭐ Passer à Saveur — dès 4,99$/mois') + '</button>';
     } else {
       act.innerHTML = '<button class="btn-manage-portal" onclick="manageSubscription()">⚙️ ' +
         (currentLang === 'en' ? 'Manage subscription' : 'Gérer mon abonnement') + '</button>';
@@ -1227,14 +1227,14 @@
       // Bouton abonnement
       const cta = document.getElementById('drawer-sub-cta');
       if (userPlan === 'free') {
-        cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Pro — dès 4,99$/mois</button>';
+        cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Saveur — dès 4,99$/mois</button>';
       } else {
         cta.innerHTML = '<button class="drawer-item manage-cta" onclick="drawerAction(\'manage\')"><span class="drawer-item-icon">⚙️</span><span class="drawer-item-text">Gérer mon abonnement</span></button>';
       }
       document.getElementById('drawer-bottom').style.display = 'block';
     } else {
       userEl.classList.remove('show');
-      document.getElementById('drawer-sub-cta').innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Pro — dès 4,99$/mois</button>';
+      document.getElementById('drawer-sub-cta').innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Saveur — dès 4,99$/mois</button>';
       document.getElementById('drawer-bottom').style.display = 'none';
     }
   }
@@ -11080,7 +11080,7 @@ const i18n = {
     'nav-plan': 'Plan 7 jours',
     'btn-surprise': '🎲 Recette surprise — tous styles confondus',
     'portions-label': 'Portions :',
-    'plan-pro-desc': 'Le plan 7 jours est réservé aux abonnés Pro. Passez à Pro pour débloquer.',
+    'plan-pro-desc': 'Le plan 7 jours est réservé aux abonnés Saveur et Chef. Passez à Saveur pour débloquer.',
     'nav-profile': 'Mon profil',
     'section-sub': 'Abonnement',
     'section-help': 'Aide',
@@ -11104,8 +11104,8 @@ const i18n = {
     'btn-gen': '🎲 Surprends-moi',
     'btn-filter': '🍳 Selon mes filtres',
     'limit-title': 'Limite atteinte',
-    'limit-text': 'Tu as généré tes 20 recettes gratuites du mois. Passe à Marmito Pro pour des recettes illimitées et toutes les régions.',
-    'btn-upgrade': 'Passer à Pro — dès 4,99$/mois',
+    'limit-text': 'Tu as généré tes 20 recettes gratuites du mois. Passe à Saveur ou Chef pour plus de recettes et toutes les régions.',
+    'btn-upgrade': 'Passer à Saveur — dès 4,99$/mois',
     'btn-copy': '📋 Copier',
     'btn-share': '🔗 Partager',
     'sec-ingredients': 'Ingrédients',
@@ -11161,9 +11161,9 @@ const i18n = {
     'cook-finish': 'Étape terminée !',
     'btn-plan': '&#128197; Plan de repas 7 jours',
     'plan-title': '&#128197; Plan 7 jours',
-    'plan-pro-title': 'Fonctionnalit&eacute; Pro',
-    'plan-pro-text': 'Le plan de repas 7 jours est r&eacute;serv&eacute; aux abonn&eacute;s Marmito Pro.',
-    'plan-pro-btn': 'Passer &agrave; Pro &mdash; d&egrave;s 4,99$/mois',
+    'plan-pro-title': 'Fonctionnalit&eacute; Saveur/Chef',
+    'plan-pro-text': 'Le plan de repas 7 jours est r&eacute;serv&eacute; aux abonn&eacute;s Marmito Saveur/Chef.',
+    'plan-pro-btn': 'Passer &agrave; Saveur &mdash; d&egrave;s 4,99$/mois',
     'plan-lbl-mon': 'Lundi',
     'plan-lbl-tue': 'Mardi',
     'plan-lbl-wed': 'Mercredi',
@@ -11200,7 +11200,7 @@ const i18n = {
     'nav-plan': '7-Day Plan',
     'btn-surprise': '🎲 Surprise me — any style',
     'portions-label': 'Servings:',
-    'plan-pro-desc': 'The 7-day meal plan is reserved for Pro subscribers. Upgrade to Pro to unlock.',
+    'plan-pro-desc': 'The 7-day meal plan is reserved for Saveur and Chef subscribers. Upgrade to unlock.',
     'nav-profile': 'My profile',
     'section-sub': 'Subscription',
     'section-help': 'Help',
@@ -11224,7 +11224,7 @@ const i18n = {
     'btn-gen': '🎲 Surprise me',
     'btn-filter': '🍳 By my filters',
     'limit-title': 'Limit reached',
-    'limit-text': 'You’ve used your 20 free recipes this month. Upgrade to Marmito Pro for unlimited recipes and all regions.',
+    'limit-text': 'You’ve used your 20 free recipes this month. Upgrade to Saveur or Chef for more recipes and all regions.',
     'btn-upgrade': 'Upgrade — from $4.99/month',
     'btn-copy': '📋 Copy',
     'btn-share': '🔗 Share',
@@ -11275,7 +11275,7 @@ const i18n = {
     'btn-plan': '&#128197; 7-day meal plan',
     'plan-title': '&#128197; 7-day plan',
     'plan-pro-title': 'Pro feature',
-    'plan-pro-text': 'The 7-day meal plan is reserved for Marmito Pro subscribers.',
+    'plan-pro-text': 'The 7-day meal plan is reserved for Saveur and Chef subscribers.',
     'plan-pro-btn': 'Upgrade &mdash; from $4.99/month',
     'plan-lbl-mon': 'Monday',
     'plan-lbl-tue': 'Tuesday',
@@ -11960,12 +11960,12 @@ applyLang();
             <div class="plan-price">4.99$<span>/mois</span></div>
           </div>
           <ul class="plan-features">
-            <li>100 recettes accessibles</li>
+            <li>130 recettes accessibles</li>
             <li>Recherche par région et type</li>
             <li>Mode cuisine guidé</li>
             <li>Plan de repas 7 jours</li>
             <li>Historique de recettes cuisinées</li>
-            <li class="muted">342 recettes (bientôt)</li>
+            <li class="muted">342 recettes (plan Chef)</li>
           </ul>
           <button class="plan-btn pro-btn" id="btn-saveur" onclick="startCheckout('saveur',this)">Choisir Saveur →</button>
         </div>
@@ -11983,6 +11983,7 @@ applyLang();
             <li>Plan de repas 7 jours</li>
             <li>Historique de recettes cuisinées</li>
             <li>Nouvelles fonctionnalités en avant-première</li>
+            <li>💡 Conseils & astuces pour chaque recette</li>
           </ul>
           <button class="plan-btn pro-btn" id="btn-chef" onclick="startCheckout('chef',this)">Choisir Chef →</button>
         </div>
