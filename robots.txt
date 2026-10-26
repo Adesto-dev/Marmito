@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://marmito-one.vercel.app/sitemap.xml
