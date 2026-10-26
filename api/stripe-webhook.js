@@ -32,17 +32,18 @@ module.exports = async (req, res) => {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
+    const subscribedPlan = session.metadata?.plan || 'saveur';
     if (userId) {
       const { error } = await supabase.from('profiles').upsert({
         id: userId,
-        plan: 'pro',
+        plan: subscribedPlan,
         stripe_customer_id: session.customer,
         stripe_subscription_id: session.subscription,
       });
       if (error) {
         console.error('[Webhook] Supabase upsert error:', JSON.stringify(error));
       } else {
-        console.log('[Webhook] Supabase updated to PRO for user:', userId);
+        console.log('[Webhook] Supabase updated to', subscribedPlan, 'for user:', userId);
       }
     } else {
       console.error('[Webhook] userId manquant dans metadata!');
