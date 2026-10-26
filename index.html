@@ -747,8 +747,8 @@
   <!-- Freemium limit banner -->
     <div class="limit-banner" id="limit-banner">
       <h3 data-i18n="limit-title">Limite atteinte</h3>
-      <p data-i18n="limit-text">Tu as genere tes 10 recettes gratuites du mois. Passe a Marmito Pro pour des recettes illimitees et toutes les regions.</p>
-      <button class="btn-upgrade-big" onclick="startUpgrade(this)" data-i18n="btn-upgrade">Passer a Pro — 4.99$/mois</button>
+      <p data-i18n="limit-text">Tu as genere tes 20 recettes gratuites du mois. Passe a Marmito Pro pour des recettes illimitees et toutes les regions.</p>
+      <button class="btn-upgrade-big" onclick="startUpgrade(this)" data-i18n="btn-upgrade">Passer a Pro — dès 4,99$/mois</button>
     </div>
 
 <div class="result-card" id="result-card">
@@ -1227,14 +1227,14 @@
       // Bouton abonnement
       const cta = document.getElementById('drawer-sub-cta');
       if (userPlan === 'free') {
-        cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Pro — dès 4.99$/mois</button>';
+        cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Pro — dès 4,99$/mois</button>';
       } else {
         cta.innerHTML = '<button class="drawer-item manage-cta" onclick="drawerAction(\'manage\')"><span class="drawer-item-icon">⚙️</span><span class="drawer-item-text">Gérer mon abonnement</span></button>';
       }
       document.getElementById('drawer-bottom').style.display = 'block';
     } else {
       userEl.classList.remove('show');
-      document.getElementById('drawer-sub-cta').innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Pro — 4.99$/mois</button>';
+      document.getElementById('drawer-sub-cta').innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Pro — dès 4,99$/mois</button>';
       document.getElementById('drawer-bottom').style.display = 'none';
     }
   }
@@ -11104,8 +11104,8 @@ const i18n = {
     'btn-gen': '🎲 Surprends-moi',
     'btn-filter': '🍳 Selon mes filtres',
     'limit-title': 'Limite atteinte',
-    'limit-text': 'Tu as généré tes 10 recettes gratuites du mois. Passe à Marmito Pro pour des recettes illimitées et toutes les régions.',
-    'btn-upgrade': 'Passer à Pro — 4.99$/mois',
+    'limit-text': 'Tu as généré tes 20 recettes gratuites du mois. Passe à Marmito Pro pour des recettes illimitées et toutes les régions.',
+    'btn-upgrade': 'Passer à Pro — dès 4,99$/mois',
     'btn-copy': '📋 Copier',
     'btn-share': '🔗 Partager',
     'sec-ingredients': 'Ingrédients',
@@ -11163,7 +11163,7 @@ const i18n = {
     'plan-title': '&#128197; Plan 7 jours',
     'plan-pro-title': 'Fonctionnalit&eacute; Pro',
     'plan-pro-text': 'Le plan de repas 7 jours est r&eacute;serv&eacute; aux abonn&eacute;s Marmito Pro.',
-    'plan-pro-btn': 'Passer &agrave; Pro &mdash; 4.99$/mois',
+    'plan-pro-btn': 'Passer &agrave; Pro &mdash; d&egrave;s 4,99$/mois',
     'plan-lbl-mon': 'Lundi',
     'plan-lbl-tue': 'Mardi',
     'plan-lbl-wed': 'Mercredi',
@@ -11224,8 +11224,8 @@ const i18n = {
     'btn-gen': '🎲 Surprise me',
     'btn-filter': '🍳 By my filters',
     'limit-title': 'Limit reached',
-    'limit-text': 'You’ve used your 10 free recipes this month. Upgrade to Marmito Pro for unlimited recipes and all regions.',
-    'btn-upgrade': 'Upgrade to Pro — $4.99/month',
+    'limit-text': 'You’ve used your 20 free recipes this month. Upgrade to Marmito Pro for unlimited recipes and all regions.',
+    'btn-upgrade': 'Upgrade — from $4.99/month',
     'btn-copy': '📋 Copy',
     'btn-share': '🔗 Share',
     'sec-ingredients': 'Ingredients',
@@ -11276,7 +11276,7 @@ const i18n = {
     'plan-title': '&#128197; 7-day plan',
     'plan-pro-title': 'Pro feature',
     'plan-pro-text': 'The 7-day meal plan is reserved for Marmito Pro subscribers.',
-    'plan-pro-btn': 'Upgrade to Pro &mdash; $4.99/month',
+    'plan-pro-btn': 'Upgrade &mdash; from $4.99/month',
     'plan-lbl-mon': 'Monday',
     'plan-lbl-tue': 'Tuesday',
     'plan-lbl-wed': 'Wednesday',
@@ -11948,7 +11948,7 @@ applyLang();
             <li>Recherche par région et type</li>
             <li>Mode cuisine guidé</li>
             <li class="muted">Plan de repas 7 jours</li>
-            <li class="muted">300 recettes complètes</li>
+            <li class="muted">342 recettes complètes</li>
           </ul>
           <button class="plan-btn free-btn" disabled>Ton plan actuel</button>
         </div>
@@ -11965,7 +11965,7 @@ applyLang();
             <li>Mode cuisine guidé</li>
             <li>Plan de repas 7 jours</li>
             <li>Historique de recettes cuisinées</li>
-            <li class="muted">300 recettes (bientôt)</li>
+            <li class="muted">342 recettes (bientôt)</li>
           </ul>
           <button class="plan-btn pro-btn" id="btn-saveur" onclick="startCheckout('saveur',this)">Choisir Saveur →</button>
         </div>
@@ -11977,7 +11977,7 @@ applyLang();
             <div class="plan-price">8.99$<span>/mois</span></div>
           </div>
           <ul class="plan-features">
-            <li>300 recettes accessibles</li>
+            <li>342 recettes accessibles</li>
             <li>Recherche par région et type</li>
             <li>Mode cuisine guidé</li>
             <li>Plan de repas 7 jours</li>
