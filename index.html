@@ -420,6 +420,20 @@
     .profile-title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:20px}
     .sheet-close-x{background:none;border:none;cursor:pointer;color:var(--fg2);font-size:22px;padding:4px 6px;line-height:1;border-radius:8px;flex-shrink:0;transition:background 0.15s}
     .sheet-close-x:hover{background:var(--bg);color:var(--fg)}
+
+    /* ── Tips overlay (plein écran) ─────────────────── */
+    .tips-overlay{position:fixed;inset:0;z-index:400;display:none;overflow:hidden}
+    .tips-overlay.open{display:block}
+    .tips-sheet{background:var(--bg);width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;animation:pageSlideIn 0.22s cubic-bezier(.4,0,.2,1)}
+    .tips-sheet-head{flex-shrink:0}
+    .tips-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 20px 44px;flex:1;min-height:0}
+    .tips-section{margin-bottom:28px}
+    .tips-section-title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:16px;color:var(--brown);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .tips-list{display:flex;flex-direction:column;gap:10px}
+    .tip-card{background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;font-size:14px;color:var(--fg);line-height:1.55}
+    .tip-card strong{color:var(--brown);font-weight:600}
+    .tip-card .tip-tag{display:inline-block;background:var(--accent-light);color:var(--accent-dark);font-size:11px;font-weight:600;border-radius:5px;padding:1px 7px;margin-bottom:6px}
+
     /* ── Full-page navigation header ───────────────── */
     @keyframes pageSlideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
     .page-nav-header{background:var(--grad-dark);padding:env(safe-area-inset-top,0) 0 0;flex-shrink:0}
@@ -639,6 +653,7 @@
     <div class="drawer-divider"></div>
     <div class="drawer-section-label" data-i18n="section-help">Aide</div>
     <button class="drawer-item" onclick="drawerAction('contact')" data-i18n="nav-contact">Nous contacter</button>
+    <button class="drawer-item" onclick="drawerAction('tips')" data-i18n="nav-tips">&#128161; Conseils &amp; Astuces</button>
     <button class="drawer-item" onclick="drawerAction('about')" data-i18n="nav-about">&#192; propos de Marmito</button>
   </div>
 
@@ -1024,7 +1039,9 @@
   }
 
   async function loadUserProfile() {
-    const currentMonth = new Date().toISOString().slice(0, 7); // "2026-10"
+    // Heure locale (pas UTC) pour eviter un reset premature en soiree a Montreal
+    const _now = new Date();
+    const currentMonth = _now.getFullYear() + '-' + String(_now.getMonth() + 1).padStart(2, '0');
     const { data, error } = await sb.from('profiles').select('plan,recipe_count,reset_month').eq('id', currentUser.id).single();
     if (error) console.error('[Marmito] loadProfile erreur:', error.message, error.code);
     if (data) {
@@ -1263,15 +1280,22 @@
     finally { btn.disabled = false; if (!document.getElementById('contact-success-2').classList.contains('show')) btn.textContent = 'Envoyer'; }
   }
 
+
+  function openTips() {
+    document.getElementById('tips-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeTips() {
+    document.getElementById('tips-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
   function openAbout() {
-    const sheet = document.querySelector('.about-sheet');
-    const vh = window.innerHeight;
-    sheet.style.height = Math.round(vh * 0.88) + 'px';
-    sheet.style.maxHeight = Math.round(vh * 0.88) + 'px';
     document.getElementById('about-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
   function closeAbout() {
     document.getElementById('about-overlay').classList.remove('open');
+    document.body.style.overflow = '';
   }
 
   async function submitContact(e) {
@@ -1311,6 +1335,7 @@
     else if (action === 'manage') { setTimeout(()=>manageSubscription(), 320); }
     else if (action === 'logout') { if(confirm('Se déconnecter ?')) { sb.auth.signOut().then(()=>location.reload()); } }
     else if (action === 'about') { setTimeout(()=>openAbout(), 320); }
+    else if (action === 'tips') { setTimeout(()=>openTips(), 320); }
     else if (action === 'contact') { setTimeout(()=>openContact(), 320); }
   }
 
@@ -1410,7 +1435,7 @@
   function onPortions(val) {
     const newVal = parseInt(val);
     portionsMultiplier = portionsBase > 0 ? newVal / portionsBase : 1;
-    document.getElementById('portions-val').textContent = newVal + ' pers.';
+    document.getElementById('portions-val').textContent = translateServes(newVal + ' pers.');
     const servesEl = document.getElementById('r-serves');
     if (servesEl) servesEl.textContent = translateServes(newVal + ' pers.');
     // Re-render ingredients with scaled qtys
@@ -1437,7 +1462,7 @@
     const slider = document.getElementById('portions-slider');
     const val = document.getElementById('portions-val');
     if (slider) { slider.value = portionsBase; slider.min = 1; slider.max = Math.max(12, portionsBase * 3); }
-    if (val) val.textContent = portionsBase + ' pers.';
+    if (val) val.textContent = translateServes(portionsBase + ' pers.');
   }
 
   initAuth();
@@ -3885,9 +3910,7 @@ const i18n = {
     'nav-plan': 'Plan 7 jours',
     'btn-surprise': '🎲 Recette surprise — tous styles confondus',
     'portions-label': 'Portions :',
-    'plan-pro-title': 'Fonctionnalité Pro',
     'plan-pro-desc': 'Le plan 7 jours est réservé aux abonnés Pro. Passez à Pro pour débloquer.',
-    'plan-pro-btn': 'Passer à Pro →',
     'nav-profile': 'Mon profil',
     'section-sub': 'Abonnement',
     'section-help': 'Aide',
@@ -3945,6 +3968,13 @@ const i18n = {
     'contact-ph-msg': 'Une question, un bug, une recette à ajouter...',
     'contact-send': 'Envoyer',
     'contact-success': '✓ Message envoyé ! On te répond bientôt.',
+    'nav-tips': '&#128161; Conseils & Astuces',
+    'tips-title': '&#128161; Conseils & Astuces',
+    'tips-s1': 'Épices de base',
+    'tips-s2': 'Conservation',
+    'tips-s3': 'Substitutions',
+    'tips-s4': 'Astuces de cuisson',
+    'tips-s5': 'Utiliser Marmito',
     // Chaînes dynamiques
     'toast-fav-add': 'Ajouté aux favoris !',
     'toast-fav-remove': 'Retiré des favoris',
@@ -4000,9 +4030,7 @@ const i18n = {
     'nav-plan': '7-Day Plan',
     'btn-surprise': '🎲 Surprise me — any style',
     'portions-label': 'Servings:',
-    'plan-pro-title': 'Pro Feature',
     'plan-pro-desc': 'The 7-day meal plan is reserved for Pro subscribers. Upgrade to Pro to unlock.',
-    'plan-pro-btn': 'Upgrade to Pro →',
     'nav-profile': 'My profile',
     'section-sub': 'Subscription',
     'section-help': 'Help',
@@ -4103,7 +4131,14 @@ const i18n = {
     'about-title-how': 'How it works',
     'about-step-1': '<div class="about-step-num">1</div>Enter your ingredients or choose a meal type.',
     'about-step-2': '<div class="about-step-num">2</div>Marmito generates a recipe with quantities and steps.',
-    'about-step-3': '<div class="about-step-num">3</div>Start the timer right from the screen &mdash; no need to watch the clock.',
+    'about-step-3': '<div class="about-step-num">3</div>Start the timer right from the screen. No need to watch the clock.',
+    'nav-tips': '&#128161; Tips & Tricks',
+    'tips-title': '&#128161; Tips & Tricks',
+    'tips-s1': 'Key Spices',
+    'tips-s2': 'Storage',
+    'tips-s3': 'Substitutions',
+    'tips-s4': 'Cooking Tips',
+    'tips-s5': 'Using Marmito',
   }
 };
 
@@ -4178,10 +4213,25 @@ function toggleLang() {
           const step = cur.steps[i];
           if (step) el.textContent = typeof step === 'string' ? step : step.text;
         });
+        translatedStepTexts = [];
+        const _cm = document.getElementById('cook-mode');
+        if (_cm && _cm.classList.contains('open')) renderCookStep();
       } else {
-        translateRecipeSteps(cur.steps);
+        translateRecipeSteps(cur.steps).then(() => {
+          const _cm = document.getElementById('cook-mode');
+          if (_cm && _cm.classList.contains('open')) renderCookStep();
+        });
       }
     }
+    // Mettre a jour section meta (portions, diff)
+    const _slider = document.getElementById('portions-slider');
+    const _curP = _slider ? parseInt(_slider.value) : portionsBase;
+    const _pval = document.getElementById('portions-val');
+    if (_pval) _pval.textContent = translateServes(_curP + ' pers.');
+    const _rserves = document.getElementById('r-serves');
+    if (_rserves) _rserves.textContent = translateServes(_curP + ' pers.');
+    const _rdiff = document.getElementById('r-diff');
+    if (_rdiff && cur.diff) _rdiff.textContent = translateMeta('diff', cur.diff);
   }
   // Refresh plan if it's currently open (re-renders day names + regions in current lang)
   const planOverlay = document.getElementById('plan-overlay');
@@ -4588,6 +4638,119 @@ initDailyRecipe();
 checkDirectLink();
 applyLang();
 </script>
+
+
+<!-- TIPS PAGE -->
+<div class="tips-overlay" id="tips-overlay">
+  <div class="tips-sheet">
+    <div class="tips-sheet-head">
+      <div class="page-nav-header">
+        <div class="page-nav-inner">
+          <button class="page-back-btn" onclick="closeTips()" aria-label="Retour">&#8592;</button>
+          <div class="page-nav-title" data-i18n="tips-title">&#128161; Conseils &amp; Astuces</div>
+        </div>
+      </div>
+    </div>
+    <div class="tips-sheet-body">
+
+      <div style="padding:18px 0 8px">
+
+        <!-- Section 1: Épices de base -->
+        <div class="tips-section">
+          <div class="tips-section-title">&#127798; Épices de base</div>
+          <div class="tips-list">
+            <div class="tip-card">
+              <span class="tip-tag">Africaine</span><br>
+              <strong>Poivre de Selim</strong> (kani), <strong>dattes de Poivre</strong> et <strong>gingembre frais</strong> sont les trois que tu veux toujours avoir pour les sauces africaines de base.
+            </div>
+            <div class="tip-card">
+              <span class="tip-tag">Maghreb</span><br>
+              <strong>Ras el hanout</strong>, <strong>cumin moulu</strong> et <strong>cannelle</strong> donnent le fond de presque tous les tajines et couscous.
+            </div>
+            <div class="tip-card">
+              <span class="tip-tag">Antilles</span><br>
+              <strong>Piment bonda man jak</strong>, <strong>thym frais</strong> et <strong>cive</strong> (ciboulette créole) sont la base du colombo et du bouyon.
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Conservation -->
+        <div class="tips-section">
+          <div class="tips-section-title">&#10052;&#65039; Conservation</div>
+          <div class="tips-list">
+            <div class="tip-card">
+              <strong>Gingembre frais</strong> — congèle-le entier et râpe-le directement congelé. Tient 3 mois et se râpe encore mieux.
+            </div>
+            <div class="tip-card">
+              <strong>Herbes fraîches</strong> (persil, coriandre, cive) — lave, sèche, hache et congèle dans un sac. Prêt à utiliser directement dans la casserole.
+            </div>
+            <div class="tip-card">
+              <strong>Piment frais</strong> — conserve dans un bocal avec un peu d'huile au réfrigérateur. Se garde 2 semaines.
+            </div>
+            <div class="tip-card">
+              <strong>Sauce tomate maison</strong> — divise en portions dans des sacs de congélation à plat. Facile à casser et à sortir selon les besoins.
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Substitutions -->
+        <div class="tips-section">
+          <div class="tips-section-title">&#x1F504; Substitutions courantes</div>
+          <div class="tips-list">
+            <div class="tip-card">
+              <strong>Pas de ras el hanout ?</strong> Mélange cumin + coriandre + cannelle + poivre + une pincée de cardamome. Ça approche.
+            </div>
+            <div class="tip-card">
+              <strong>Pas de feuilles de manioc fraîches ?</strong> Les feuilles d'épinard congelées en font un substitut acceptable pour le pondu ou le saka saka.
+            </div>
+            <div class="tip-card">
+              <strong>Pas de lait de coco en boîte ?</strong> Mélange 200 ml de crème 15% + 50 ml d'eau + 1 c. à thé d'huile de coco. Pas identique mais ça donne la rondeur cherchée.
+            </div>
+            <div class="tip-card">
+              <strong>Assaisonnement</strong> — utilise sel, poivre et herbes fraîches ou séchées plutôt que les cubes du commerce. Plus de contrôle sur le goût.
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Astuces de cuisson -->
+        <div class="tips-section">
+          <div class="tips-section-title">&#128293; Astuces de cuisson</div>
+          <div class="tips-list">
+            <div class="tip-card">
+              <strong>Oignons bien fondus</strong> — la plupart des sauces africaines demandent des oignons vraiment fondus (10-15 min à feu moyen). Pas sautés, fondus. Ça change tout.
+            </div>
+            <div class="tip-card">
+              <strong>Piment</strong> — ajoute-le entier dans la sauce et retire avant de servir si tu veux du goût sans trop de piquant. Coupe-le pour que ça pique vraiment.
+            </div>
+            <div class="tip-card">
+              <strong>Riz parfait</strong> — rince jusqu'à ce que l'eau soit claire, puis laisse reposer 5 min après cuisson à couvert sans ouvrir le couvercle.
+            </div>
+            <div class="tip-card">
+              <strong>Viande tendre</strong> — pour les ragoûts africains, saisis d'abord à feu vif 2-3 min, puis mijote à feu doux longtemps. La patience est la vraie épice.
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: Utiliser Marmito -->
+        <div class="tips-section">
+          <div class="tips-section-title">&#127859; Utiliser Marmito</div>
+          <div class="tips-list">
+            <div class="tip-card">
+              <strong>Ingrédients optionnels</strong> — tu n'as pas besoin d'en mettre. Laisse le champ vide et choisis juste la région pour une vraie surprise.
+            </div>
+            <div class="tip-card">
+              <strong>Ajuste les portions</strong> — utilise le curseur sous la recette pour adapter les quantités. Idéal si tu cuisines pour une seule personne ou pour 8.
+            </div>
+            <div class="tip-card">
+              <strong>Mode cuisine</strong> — appuie sur "Commencer la préparation" pour avoir le chrono intégré étape par étape. Ton téléphone reste allumé, plus besoin de regarder ta montre.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- PRICING MODAL -->
 <div class="pricing-overlay" id="pricing-overlay">
