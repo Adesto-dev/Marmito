@@ -5,54 +5,131 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Marmito — Connexion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 <style>
 :root{
-  --bg:#FAFAF5;--fg:#1C1C18;--fg2:#5A5A50;
-  --accent:#D4700A;--accent-light:#FDF0E0;
-  --green:#1E4035;--green-light:#E4EDE9;
-  --border:#DDDDD0;--card-bg:#FFFFFF;
-  --shadow:0 4px 24px rgba(30,64,53,0.12);
-}
-@media(prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#141410;--fg:#F0F0E8;--fg2:#9A9A8A;
-    --accent:#E8820F;--accent-light:#2A1F0A;
-    --green:#2A5444;--green-light:#1A2E25;
-    --border:#2E2E28;--card-bg:#1E1E1A;
-  }
+  --bg:#F5E6CC;--fg:#2A1800;--fg2:#A08060;
+  --accent:#D46820;--accent-light:#FDEBD4;--accent-dark:#B04A08;
+  --brown:#5C3010;--brown-mid:#7A4820;
+  --border:#E8D5B4;--card-bg:#FDF4E3;
+  --shadow:0 2px 16px rgba(40,20,4,0.10);
+  --grad-dark:linear-gradient(135deg,#7A4820 0%,#A06030 55%,#C07840 100%);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px}
-.logo{font-family:'Fraunces',serif;font-size:2rem;color:var(--green);margin-bottom:8px;text-align:center}
-.logo span{color:var(--accent)}
-.tagline{color:var(--fg2);font-size:0.9rem;text-align:center;margin-bottom:32px}
-.card{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:420px;box-shadow:var(--shadow)}
-.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:24px}
-.tab{flex:1;padding:10px;text-align:center;font-size:0.95rem;font-weight:600;cursor:pointer;color:var(--fg2);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s}
-.tab.active{color:var(--green);border-bottom-color:var(--green)}
-.field{margin-bottom:16px}
-.field label{display:block;font-size:0.85rem;font-weight:500;color:var(--fg2);margin-bottom:6px}
-.field input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit;background:var(--bg);color:var(--fg);outline:none;transition:border-color 0.2s}
-.field input:focus{border-color:var(--green)}
-.btn-primary{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:600;font-family:inherit;cursor:pointer;transition:background 0.2s;margin-top:4px}
-.btn-primary:hover{background:#2A5444}
-.btn-primary:disabled{opacity:0.6;cursor:not-allowed}
-.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--fg2);font-size:0.85rem}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--fg);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+
+/* Logo + tagline */
+.auth-logo{
+  font-family:'Fraunces',Georgia,serif;
+  font-weight:900;
+  font-size:2.2rem;
+  color:#FAFAF5;
+  letter-spacing:-0.5px;
+  text-align:center;
+  margin-bottom:4px;
+  background:var(--grad-dark);
+  padding:18px 36px 14px;
+  border-radius:20px 20px 0 0;
+  width:100%;
+  max-width:420px;
+}
+.auth-logo span{color:#F5C080}
+.tagline{
+  color:#FAFAF5;
+  font-size:0.82rem;
+  text-align:center;
+  background:var(--grad-dark);
+  padding:0 36px 18px;
+  width:100%;
+  max-width:420px;
+  opacity:0.85;
+  border-radius:0;
+}
+
+/* Card */
+.card{
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:0 0 18px 18px;
+  padding:28px 28px 24px;
+  width:100%;
+  max-width:420px;
+  box-shadow:var(--shadow);
+}
+
+/* Tabs */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:22px}
+.tab{
+  flex:1;padding:9px;text-align:center;
+  font-size:0.93rem;font-weight:600;cursor:pointer;
+  color:var(--fg2);border-bottom:2.5px solid transparent;
+  margin-bottom:-2px;transition:all 0.18s;
+}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* Fields */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:0.83rem;font-weight:500;color:var(--fg2);margin-bottom:5px}
+.field input{
+  width:100%;padding:11px 13px;
+  border:1.5px solid var(--border);border-radius:10px;
+  font-size:0.95rem;font-family:inherit;
+  background:#FFFAF4;color:var(--fg);
+  outline:none;transition:border-color 0.18s;
+}
+.field input:focus{border-color:var(--accent)}
+
+/* Buttons */
+.btn-primary{
+  width:100%;padding:13px;
+  background:var(--accent);color:#fff;
+  border:none;border-radius:10px;
+  font-size:1rem;font-weight:700;font-family:'Fraunces',Georgia,serif;
+  cursor:pointer;transition:background 0.18s,filter 0.18s;
+  margin-top:4px;letter-spacing:0.01em;
+  box-shadow:0 2px 8px rgba(184,76,16,0.20);
+}
+.btn-primary:hover{background:var(--accent-dark)}
+.btn-primary:disabled{opacity:0.55;cursor:not-allowed}
+
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--fg2);font-size:0.83rem}
 .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--border)}
-.btn-google{width:100%;padding:12px;background:var(--card-bg);border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-weight:500;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--fg);transition:border-color 0.2s}
-.btn-google:hover{border-color:var(--green)}
+
+.btn-google{
+  width:100%;padding:11px;
+  background:var(--card-bg);
+  border:1.5px solid var(--border);border-radius:10px;
+  font-size:0.93rem;font-weight:500;font-family:inherit;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  color:var(--fg);transition:border-color 0.18s,background 0.18s;
+}
+.btn-google:hover{border-color:var(--accent);background:var(--accent-light)}
 .btn-google svg{width:20px;height:20px;flex-shrink:0}
-.msg{padding:10px 14px;border-radius:8px;font-size:0.9rem;margin-bottom:16px;display:none}
-.msg.error{background:#FEE;color:#C00;display:block}
-.msg.success{background:#E8F5E9;color:#2D7A4E;display:block}
-.footer-note{text-align:center;font-size:0.8rem;color:var(--fg2);margin-top:20px}
+
+/* Messages */
+.msg{padding:10px 13px;border-radius:8px;font-size:0.88rem;margin-bottom:14px;display:none}
+.msg.error{background:#FEE8E0;color:#B03000;border:1px solid #F0C0A0;display:block}
+.msg.success{background:#E8F5E9;color:#2D7A4E;border:1px solid #B8DFC4;display:block}
+
+/* Footer */
+.footer-note{text-align:center;font-size:0.78rem;color:var(--fg2);margin-top:16px;max-width:420px}
 .footer-note a{color:var(--accent);text-decoration:none}
 </style>
 </head>
 <body>
-<div class="logo">Marmi<span>to</span></div>
+
+<div class="auth-logo">Marmi<span>to</span></div>
 <p class="tagline">Cuisines du monde, une recette a la fois</p>
 
 <div class="card">
@@ -107,7 +184,6 @@ const SUPABASE_URL = 'https://kfaabpwvisormfrwceaa.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_n8HXWNlgaJ5Ck749-k8_XQ_HsZ7-BRX';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Already logged in? Go to app
 sb.auth.getSession().then(({data:{session}})=>{
   if(session) window.location.href='/';
 });
@@ -121,13 +197,11 @@ function switchTab(tab){
 
 function showMsg(text,type){
   const el=document.getElementById('msg');
-  el.textContent=text;
-  el.className='msg '+type;
+  el.textContent=text;el.className='msg '+type;
 }
 function clearMsg(){
   const el=document.getElementById('msg');
-  el.className='msg';
-  el.textContent='';
+  el.className='msg';el.textContent='';
 }
 
 async function doLogin(){
@@ -150,7 +224,7 @@ async function doSignup(){
   btn.disabled=true;btn.textContent='Creation...';
   const{error}=await sb.auth.signUp({email,password:pass});
   if(error){showMsg(error.message,'error');btn.disabled=false;btn.textContent='Creer mon compte';}
-  else showMsg('Compte cree! Verifiez votre courriel pour confirmer.','success');
+  else showMsg('Compte cree ! Verifiez votre courriel pour confirmer.','success');
 }
 
 async function doGoogle(){
@@ -161,7 +235,6 @@ async function doGoogle(){
   if(error)showMsg(error.message,'error');
 }
 
-// Enter key support
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter')return;
   const loginVisible=document.getElementById('login-form').style.display!=='none';
