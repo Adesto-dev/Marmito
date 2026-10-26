@@ -557,6 +557,37 @@
     .contact-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;height:85vh;height:85dvh;display:flex;flex-direction:column;max-height:85vh;max-height:85dvh}
     .contact-sheet-head{padding:20px 20px 0;flex-shrink:0}
     .contact-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 20px 40px;flex:1;min-height:0}
+    /* ===== PRICING OVERLAY ===== */
+    .pricing-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:450;display:none;align-items:flex-end;justify-content:center;overflow:hidden}
+    .pricing-overlay.open{display:flex}
+    .pricing-sheet{background:var(--card-bg);border-radius:20px 20px 0 0;width:100%;max-width:640px;display:flex;flex-direction:column;max-height:92vh;max-height:92dvh}
+    .pricing-sheet-head{padding:20px 20px 12px;flex-shrink:0}
+    .pricing-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 16px 36px;flex:1;min-height:0}
+    .pricing-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+    .pricing-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+    .pricing-title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:21px}
+    .pricing-subtitle{color:var(--text-secondary);font-size:13px;margin-bottom:20px}
+    .plan-cards{display:flex;flex-direction:column;gap:12px}
+    .plan-card{border-radius:14px;border:1.5px solid var(--border);padding:18px 16px;cursor:pointer;transition:border-color 0.18s,box-shadow 0.18s;position:relative;background:var(--bg)}
+    .plan-card:hover{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,107,0,0.12)}
+    .plan-card.featured{border-color:var(--accent);background:linear-gradient(135deg,rgba(255,107,0,0.08) 0%,rgba(255,107,0,0.03) 100%)}
+    .plan-card.featured::before{content:"⭐ Populaire";position:absolute;top:-11px;left:16px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.3px}
+    .plan-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+    .plan-name{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:18px}
+    .plan-price{font-size:22px;font-weight:800;color:var(--accent)}
+    .plan-price span{font-size:13px;font-weight:400;color:var(--text-secondary)}
+    .plan-price.free{color:var(--text-secondary);font-size:16px;font-weight:600}
+    .plan-features{list-style:none;padding:0;margin:0 0 14px;display:flex;flex-direction:column;gap:6px}
+    .plan-features li{font-size:13.5px;color:var(--text-secondary);padding-left:22px;position:relative}
+    .plan-features li::before{content:"✓";position:absolute;left:0;color:var(--accent);font-weight:700}
+    .plan-features li.muted::before{content:"–";color:var(--border)}
+    .plan-features li.muted{opacity:0.5}
+    .plan-btn{width:100%;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:opacity 0.15s}
+    .plan-btn.free-btn{background:var(--border);color:var(--text-secondary);cursor:default}
+    .plan-btn.pro-btn{background:var(--accent);color:#fff}
+    .plan-btn.pro-btn:hover{opacity:0.88}
+    .plan-btn:disabled{opacity:0.5;cursor:not-allowed}
+    .pricing-footer{text-align:center;font-size:12px;color:var(--text-secondary);margin-top:16px;padding:0 8px}
   </style>
 </head>
 <body>
@@ -1254,7 +1285,7 @@
     else if (action === 'favs') { setTimeout(()=>toggleFavPanel(), 320); }
     else if (action === 'history') { setTimeout(()=>openHistory(), 320); }
     else if (action === 'profile') { setTimeout(()=>openProfile(), 320); }
-    else if (action === 'upgrade') { setTimeout(()=>startUpgrade(), 320); }
+    else if (action === 'upgrade') { setTimeout(()=>openPricing(), 320); }
     else if (action === 'manage') { setTimeout(()=>manageSubscription(), 320); }
     else if (action === 'logout') { if(confirm('Se déconnecter ?')) { sb.auth.signOut().then(()=>location.reload()); } }
     else if (action === 'about') { setTimeout(()=>openAbout(), 320); }
@@ -1270,23 +1301,35 @@
     else showToast(t('toast-error-retry'), 'error');
   }
 
-  async function startUpgrade(btnEl) {
+  function startUpgrade(btnEl) {
+    if (!currentUser) { return; }
+    openPricing();
+  }
+
+  function openPricing() {
+    document.getElementById('pricing-overlay').classList.add('open');
+  }
+
+  function closePricing() {
+    document.getElementById('pricing-overlay').classList.remove('open');
+  }
+
+  async function startCheckout(plan, btnEl) {
     if (!currentUser) return;
-    const btn = btnEl || (typeof event !== 'undefined' && event && event.currentTarget) || null;
-    const orig = btn ? btn.textContent : '';
-    if (btn) { btn.disabled = true; btn.textContent = 'Chargement...'; }
+    const orig = btnEl ? btnEl.textContent : '';
+    if (btnEl) { btnEl.disabled = true; btnEl.textContent = 'Chargement...'; }
     try {
       const res = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id, email: currentUser.email })
+        body: JSON.stringify({ userId: currentUser.id, email: currentUser.email, plan })
       });
       const { url, error } = await res.json();
       if (error) throw new Error(error);
       window.location.href = url;
     } catch (e) {
       alert('Erreur: ' + e.message);
-      if (btn) { btn.disabled = false; btn.textContent = orig; }
+      if (btnEl) { btnEl.disabled = false; btnEl.textContent = orig; }
     }
   }
 
@@ -4122,7 +4165,7 @@ function toggleLang() {
 function goHome() {
   const ids = ['fav-panel','result-card'];
   ids.forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('visible'); });
-  const overlays = ['cook-mode','profile-overlay','about-overlay','plan-overlay','auth-overlay'];
+  const overlays = ['cook-mode','profile-overlay','about-overlay','plan-overlay','auth-overlay','pricing-overlay'];
   overlays.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -4516,5 +4559,76 @@ initDailyRecipe();
 checkDirectLink();
 applyLang();
 </script>
+
+<!-- PRICING MODAL -->
+<div class="pricing-overlay" id="pricing-overlay" onclick="if(event.target===this)closePricing()">
+  <div class="pricing-sheet">
+    <div class="pricing-sheet-head">
+      <div class="pricing-handle"></div>
+      <div class="pricing-title-row">
+        <div class="pricing-title">Choisir un abonnement</div>
+        <button class="sheet-close-x" onclick="closePricing()">&#10005;</button>
+      </div>
+      <div class="pricing-subtitle">Accède à plus de recettes et de fonctionnalités</div>
+    </div>
+    <div class="pricing-sheet-body">
+      <div class="plan-cards">
+
+        <!-- Découverte (Free) -->
+        <div class="plan-card">
+          <div class="plan-card-top">
+            <div class="plan-name">🌿 Découverte</div>
+            <div class="plan-price free">Gratuit</div>
+          </div>
+          <ul class="plan-features">
+            <li>20 recettes accessibles</li>
+            <li>Recherche par région et type</li>
+            <li>Mode cuisine guidé</li>
+            <li class="muted">Plan de repas 7 jours</li>
+            <li class="muted">300 recettes complètes</li>
+          </ul>
+          <button class="plan-btn free-btn" disabled>Ton plan actuel</button>
+        </div>
+
+        <!-- Saveur (4.99/mois) -->
+        <div class="plan-card featured">
+          <div class="plan-card-top">
+            <div class="plan-name">🍽️ Saveur</div>
+            <div class="plan-price">4.99$<span>/mois</span></div>
+          </div>
+          <ul class="plan-features">
+            <li>100 recettes accessibles</li>
+            <li>Recherche par région et type</li>
+            <li>Mode cuisine guidé</li>
+            <li>Plan de repas 7 jours</li>
+            <li>Historique de recettes cuisinées</li>
+            <li class="muted">300 recettes (bientôt)</li>
+          </ul>
+          <button class="plan-btn pro-btn" id="btn-saveur" onclick="startCheckout('saveur',this)">Choisir Saveur →</button>
+        </div>
+
+        <!-- Chef (8.99/mois) -->
+        <div class="plan-card">
+          <div class="plan-card-top">
+            <div class="plan-name">👨‍🍳 Chef</div>
+            <div class="plan-price">8.99$<span>/mois</span></div>
+          </div>
+          <ul class="plan-features">
+            <li>300 recettes accessibles</li>
+            <li>Recherche par région et type</li>
+            <li>Mode cuisine guidé</li>
+            <li>Plan de repas 7 jours</li>
+            <li>Historique de recettes cuisinées</li>
+            <li>Nouvelles fonctionnalités en avant-première</li>
+          </ul>
+          <button class="plan-btn pro-btn" id="btn-chef" onclick="startCheckout('chef',this)">Choisir Chef →</button>
+        </div>
+
+      </div>
+      <div class="pricing-footer">Résiliation possible à tout moment · Paiement sécurisé via Stripe</div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
