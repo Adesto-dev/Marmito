@@ -188,6 +188,10 @@ sb.auth.getSession().then(({data:{session}})=>{
   if(session) window.location.href='/';
 });
 
+sb.auth.onAuthStateChange((event, session)=>{
+  if(session) window.location.href='/';
+});
+
 function switchTab(tab){
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===(tab==='login'?0:1)));
   document.getElementById('login-form').style.display=tab==='login'?'':'none';
