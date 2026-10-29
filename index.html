@@ -11219,19 +11219,13 @@ function parseDurationMin(t){
 function generateSameRegion(){
   if(!cur)return;
   const region=cur.region;
-  const btn=document.getElementById("same-region-btn");
-  if(btn){btn.disabled=true;btn.textContent="Chargement...";}
-  document.getElementById("result-card").classList.remove("visible");
-  setTimeout(()=>{
-    let pool=recipes.filter(r=>r.region===region&&r.title!==cur.title);
-    if(!pool.length)pool=recipes.filter(r=>r.region===region);
-    if(!pool.length)pool=recipes;
-    const chosen=pickNoRepeat(pool,"region|"+region);
-    show(chosen);
-    incrementRecipeCount();
-    saveRecipeToHistory(chosen.title, chosen.region);
-    if(btn){btn.disabled=false;}
-  },600);
+  let pool=recipes.filter(r=>r.region===region&&r.title!==cur.title);
+  if(!pool.length)pool=recipes.filter(r=>r.region===region);
+  if(!pool.length)pool=recipes;
+  const chosen=pickNoRepeat(pool,"region|"+region);
+  show(chosen);
+  incrementRecipeCount();
+  saveRecipeToHistory(chosen.title,chosen.region);
 }
 
 // ===== BADGE CUISINÉ =====
