@@ -675,7 +675,6 @@
     <div class="drawer-section-label" data-i18n="section-nav">Navigation</div>
     <button class="drawer-item" onclick="drawerAction('home')" data-i18n="nav-home">Accueil</button>
     <button class="drawer-item" onclick="drawerAction('favs')" data-i18n="nav-favs">Mes favoris</button>
-    <button class="drawer-item" onclick="drawerAction('history')" data-i18n="nav-history">Mon historique</button>
     <button class="drawer-item drawer-item-plan" onclick="closeDrawer();setTimeout(openPlanRepas,200)" data-i18n="nav-plan">Plan 7 jours <span class="pro-chip">PRO</span></button>
     <button class="drawer-item" onclick="drawerAction('profile')" data-i18n="nav-profile">Mon profil</button>
 
@@ -1133,7 +1132,7 @@
     <div class="about-section">
       <div class="about-section-title">&Agrave; venir</div>
       <div class="about-text">
-        Nouvelles cuisines (Persane, &Eacute;thiopienne, Brésilienne), mode photo pour identifier les ingr&eacute;dients, partage de recettes, et d&rsquo;autres am&eacute;liorations ba&eacute;ses sur vos retours.
+        Nouvelles cuisines (Persane, &Eacute;thiopienne, Brésilienne), mode photo pour identifier les ingr&eacute;dients, partage de recettes, et d&rsquo;autres am&eacute;liorations bas&eacute;es sur vos retours.
       </div>
       <div class="about-text" style="margin-top:10px">
         Une question ou une suggestion ? Passe par <strong>Contact</strong> dans le menu.
@@ -1593,8 +1592,8 @@
   function drawerAction(action) {
     closeDrawer();
     if (action === 'home') { setTimeout(()=>goHome(), 320); }
-    else if (action === 'favs') { setTimeout(()=>toggleFavPanel(), 320); }
-    else if (action === 'history') { setTimeout(()=>openHistory(), 320); }
+    else if (action === 'favs') { setTimeout(()=>{ openProfile(); setTimeout(()=>switchProfileTab('favs'),100); }, 320); }
+    else if (action === 'history') { setTimeout(()=>{ openProfile(); setTimeout(()=>switchProfileTab('history'),100); }, 320); }
     else if (action === 'profile') { setTimeout(()=>openProfile(), 320); }
     else if (action === 'upgrade') { setTimeout(()=>openPricing(), 320); }
     else if (action === 'manage') { setTimeout(()=>manageSubscription(), 320); }
