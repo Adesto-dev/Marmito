@@ -1485,6 +1485,11 @@
 
 
   function openTips() {
+    if (userPlan !== 'chef') {
+      showToast('Conseils & Astuces est réservé au plan Chef.');
+      setTimeout(() => drawerAction('upgrade'), 800);
+      return;
+    }
     document.getElementById('tips-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
