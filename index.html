@@ -1477,70 +1477,70 @@
   function openTipsCategory(cat) {
     const TIPS_DATA = {
       conservation: {
-        title: '🧊 Conservation',
+        title: "🧊 Conservation",
         tips: [
-          { head: 'Gingembre frais', body: 'Congèle-le entier et râpe-le directement congelé. Ça tient 3 mois et ça râpe bien mieux congelé que frais, sans perdre son jus.' },
-          { head: 'Herbes fraîches', body: 'Persil, coriandre, cive : lave, sèche, hache grossièrement et congèle dans un sac à plat. Tu en prends ce qu'il te faut directement dans la casserole, sans décongeler.' },
-          { head: 'Piment frais', body: 'Conserve dans un petit bocal fermé avec un filet d'huile au réfrigérateur. Se garde facilement 2 à 3 semaines sans moisir.' },
-          { head: 'Sauce tomate maison', body: 'Divise en portions dans des sacs de congélation posés à plat. Tu casses la quantité exacte dont tu as besoin sans sortir tout le lot.' },
+          { head: "Gingembre frais", body: "Congele-le entier et rape-le directement congele. Ca tient 3 mois et ca rape bien mieux congele que frais, sans perdre son jus." },
+          { head: "Herbes fraîches", body: "Persil, coriandre, cive : lave, seche, hache grossierement et congele dans un sac a plat. Tu en prends ce qu'il te faut directement dans la casserole, sans decongeler." },
+          { head: "Piment frais", body: "Conserve dans un petit bocal ferme avec un filet d'huile au refrigerateur. Se garde facilement 2 a 3 semaines sans moisir." },
+          { head: "Sauce tomate maison", body: "Divise en portions dans des sacs de congelation poses a plat. Tu casses la quantite exacte dont tu as besoin sans sortir tout le lot." },
         ]
       },
       cuisson: {
-        title: '🔥 Astuces de cuisson',
+        title: "🔥 Astuces de cuisson",
         tips: [
-          { head: 'Oignons vraiment fondus', body: 'La plupart des sauces africaines et maghrébines commencent par des oignons qui fondent à feu moyen pendant 10 à 15 minutes. Pas sautés, fondus. C'est là que la base de goût se construit.' },
-          { head: 'Riz parfait', body: 'Rince jusqu'à ce que l'eau soit claire, puis cuis à feu très doux avec le couvercle. À la fin, éteins et laisse reposer 5 minutes sans soulever le couvercle. L'humidité finit le travail.' },
-          { head: 'Viande tendre en ragoût', body: 'Pour les ragoûts africains et les tajines, saisis d'abord à feu vif 2 à 3 minutes pour colorer, puis ajoute le liquide et laisse mijoter à feu très doux. Plus tu prends ton temps, meilleure est la viande.' },
-          { head: 'Piment : goût sans bruler', body: 'Ajoute le piment entier dans la sauce en cours de cuisson et retire-le avant de servir. Tu obtiens le parfum et la chaleur de fond sans que ça brûle. Coupe-le seulement si tu veux vraiment que ça pique.' },
-          { head: 'Lait de coco : ne pas faire bouillir', body: 'Ajoute le lait de coco en fin de cuisson à feu doux. À gros bouillons, il se sépare et perd sa texture crémeuse. Un frémissement suffit.' },
+          { head: "Oignons vraiment fondus", body: "La plupart des sauces africaines et maghrebines commencent par des oignons qui fondent a feu moyen pendant 10 a 15 minutes. Pas sautes, fondus. C'est la que la base de gout se construit." },
+          { head: "Riz parfait", body: "Rince jusqu'a ce que l'eau soit claire, puis cuis a feu tres doux avec le couvercle. A la fin, eteins et laisse reposer 5 minutes sans soulever le couvercle." },
+          { head: "Viande tendre en ragout", body: "Pour les ragouts africains et les tajines, saisis d'abord a feu vif 2 a 3 minutes pour colorer, puis ajoute le liquide et laisse mijoter a feu tres doux." },
+          { head: "Piment : gout sans bruler", body: "Ajoute le piment entier dans la sauce en cours de cuisson et retire-le avant de servir. Tu obtiens le parfum et la chaleur de fond sans que ca brule." },
+          { head: "Lait de coco : ne pas faire bouillir", body: "Ajoute le lait de coco en fin de cuisson a feu doux. A gros bouillons, il se separe et perd sa texture cremeuse. Un fremissement suffit." },
         ]
       },
       epices: {
-        title: '🌶️ Épices par cuisine',
+        title: "🌶️ Épices par cuisine",
         tips: [
-          { head: 'Cuisine africaine', tag: 'Afrique', body: 'Gingembre frais, ail, oignon et piment forment la base de presque toutes les sauces. Le poivre de Selim (kani) et la tomate concentrée complètent le profil. Fais revenir le gingembre et l'ail dès le début pour développer les arômes.' },
-          { head: 'Maghreb', tag: 'Maghreb', body: 'Ras el hanout, cumin moulu et cannelle sont au cœur des tajines et couscous. Pense aussi à la coriandre fraîche et au citron confit en finition — ils relèvent tout sans couvrir.' },
-          { head: 'Antilles & Caraïbes', tag: 'Antilles', body: 'Thym frais, cive (ciboulette créole), ail et piment bonda man jak ou scotch bonnet. Pour le colombo, le mélange de colombo sec s'utilise en début de cuisson avec les matières grasses.' },
-          { head: 'Cuisines asiatiques', tag: 'Asie', body: 'Sauce soja, gingembre, sésame et ail pour les sauces de base. Pour les plats indiens, fais revenir les épices sèches (cumin entier, moutarde) dans l'huile chaude avant d'ajouter l'oignon : ça libère 3 fois plus de saveur.' },
-          { head: 'Mélanges faits maison', body: 'Ras el hanout rapide : cumin + coriandre + cannelle + poivre + cardamome + paprika. Épices créoles : thym séché + ail en poudre + piment doux + origan + sel. Ça remplace les mélanges du commerce en dépannage.' },
+          { head: "Cuisine africaine", tag: "Afrique", body: "Gingembre frais, ail, oignon et piment forment la base de presque toutes les sauces. Fais revenir le gingembre et l'ail des le debut pour developper les aromes." },
+          { head: "Maghreb", tag: "Maghreb", body: "Ras el hanout, cumin moulu et cannelle sont au coeur des tajines et couscous. Pense aussi a la coriandre fraiche et au citron confit en finition." },
+          { head: "Antilles & Caraïbes", tag: "Antilles", body: "Thym frais, cive (ciboulette creole), ail et piment scotch bonnet. Pour le colombo, le melange sec s'utilise en debut de cuisson avec les matieres grasses." },
+          { head: "Cuisines asiatiques", tag: "Asie", body: "Sauce soja, gingembre, sesame et ail pour les sauces de base. Pour les plats indiens, fais revenir les epices seches dans l'huile chaude avant d'ajouter l'oignon." },
+          { head: "Melanges faits maison", body: "Ras el hanout rapide : cumin + coriandre + cannelle + poivre + cardamome + paprika. Epices creoles : thym sece + ail en poudre + piment doux + origan + sel." },
         ]
       },
       substitutions: {
-        title: '🔄 Substitutions',
+        title: "🔄 Substitutions",
         tips: [
-          { head: 'Pas de ras el hanout ?', body: 'Mélange cumin + coriandre + cannelle + poivre + une pincée de cardamome. Pas identique, mais ça fait le travail dans un tajine ou un couscous.' },
-          { head: 'Pas de feuilles de manioc fraîches ?', body: 'Les épinards congelés font un remplacement correct pour le pondu ou le saka saka. Texture légèrement différente mais les saveurs de la sauce restent là.' },
-          { head: 'Pas de lait de coco en boîte ?', body: '200 ml de crème 15% + 50 ml d'eau + 1 c. à thé d'huile de coco fondue. Ce n'est pas pareil, mais ça donne la texture crémeuse qu'on cherche dans un curry ou un bouyon.' },
-          { head: 'Pas de colombo en poudre ?', body: 'Cumin + curcuma + coriandre + piment doux + un peu de fenouil. C'est la base du mélange. Fais revenir dans l'huile avant d'ajouter la viande.' },
+          { head: "Pas de ras el hanout ?", body: "Melange cumin + coriandre + cannelle + poivre + une pincee de cardamome. Pas identique, mais ca fait le travail dans un tajine ou un couscous." },
+          { head: "Pas de feuilles de manioc fraiches ?", body: "Les epinards congeles font un remplacement correct pour le pondu ou le saka saka. Texture legerement differente mais les saveurs de la sauce restent la." },
+          { head: "Pas de lait de coco en boite ?", body: "200 ml de creme 15% + 50 ml d'eau + 1 c. a the d'huile de coco fondue. Ce n'est pas pareil, mais ca donne la texture cremeuse qu'on cherche." },
+          { head: "Pas de colombo en poudre ?", body: "Cumin + curcuma + coriandre + piment doux + un peu de fenouil. C'est la base du melange. Fais revenir dans l'huile avant d'ajouter la viande." },
         ]
       },
       marmito: {
-        title: '📱 Utiliser Marmito',
+        title: "📱 Utiliser Marmito",
         tips: [
-          { head: 'Ingrédients : optionnels', body: 'Tu n'as pas besoin de remplir le champ ingrédients. Choisis juste la cuisine et appuie sur "Selon mes filtres". Marmito trouve une recette qui convient même sans liste.' },
-          { head: 'Ajuste les portions', body: 'Le curseur sous la recette adapte toutes les quantités en temps réel. De 1 à 8 personnes, chaque gramme est recalculé. Pratique si vous êtes plus que prévu.' },
-          { head: 'Mode cuisine', body: 'Appuie sur "Commencer la préparation" pour lancer le mode étape par étape avec chrono intégré. L'écran reste allumé tant que tu cuisines. Tu n'as pas besoin de chronométrer ailleurs.' },
-          { head: 'Favoris & historique', body: 'Sauvegarde jusqu'à 10 recettes dans les favoris via le ❤️ en haut à droite. Retrouve les 30 dernières recettes générées dans l'onglet Historique de ton profil.' },
+          { head: "Ingrédients : optionnels", body: "Tu n'as pas besoin de remplir le champ ingredients. Choisis juste la cuisine et appuie sur Selon mes filtres. Marmito trouve une recette meme sans liste." },
+          { head: "Ajuste les portions", body: "Le curseur sous la recette adapte toutes les quantites en temps reel. De 1 a 8 personnes, chaque gramme est recalcule." },
+          { head: "Mode cuisine", body: "Appuie sur Commencer la preparation pour lancer le mode etape par etape avec chrono integre. L'ecran reste allume tant que tu cuisines." },
+          { head: "Favoris & historique", body: "Sauvegarde jusqu'a 10 recettes dans les favoris via le coeur en haut a droite. Retrouve les 30 dernieres recettes generees dans l'onglet Historique de ton profil." },
         ]
       },
       hygiene: {
-        title: '🧼 Hygiène & Sécurité',
+        title: "🧼 Hygiène & Sécurité",
         tips: [
-          { head: 'Décongélation correcte', body: 'Décongèle toujours la viande et le poisson au réfrigérateur, pas sur le comptoir. Si tu es pressé, utilise l'eau froide courante dans un sac fermé. Ne recongèle jamais un aliment décongelé à température ambiante.' },
-          { head: 'Viande hachée et volaille', body: 'Le poulet et la viande hachée doivent être cuits à cœur. Pas de rose, pas de jus rose. Pour les ragoûts avec morceaux entiers de bœuf, un peu de rose en surface après saisie, c'est normal — ce qui compte c'est que l'intérieur soit chaud.' },
-          { head: 'Légumes et herbes', body: 'Lave toujours les légumes et herbes fraîches à l'eau froide avant de les utiliser, même si tu les épluches après. La coriandre et la cive en particulier accumulent de la terre entre les feuilles.' },
-          { head: 'Restes et conservation', body: 'Mets les restes au réfrigérateur dans les 2 heures qui suivent la cuisson. Un plat chaud qui reste sur le comptoir toute une nuit, c'est un risque inutile. La plupart des plats mijotés sont meilleurs réchauffés le lendemain de toute façon.' },
+          { head: "Decongelation correcte", body: "Decongele toujours la viande et le poisson au refrigerateur, pas sur le comptoir. Si tu es presse, utilise l'eau froide courante dans un sac ferme." },
+          { head: "Viande hachee et volaille", body: "Le poulet et la viande hachee doivent etre cuits a coeur. Pas de rose, pas de jus rose. Pour les ragouts avec morceaux entiers de boeuf, un peu de rose en surface apres saisie est normal." },
+          { head: "Legumes et herbes", body: "Lave toujours les legumes et herbes fraiches a l'eau froide avant de les utiliser, meme si tu les epluches apres. La coriandre et la cive accumulent de la terre entre les feuilles." },
+          { head: "Restes et conservation", body: "Mets les restes au refrigerateur dans les 2 heures qui suivent la cuisson. La plupart des plats mijotes sont meilleurs rechauffes le lendemain." },
         ]
       }
     };
     const data = TIPS_DATA[cat];
     if (!data) return;
     document.getElementById('tips-detail-title').textContent = data.title;
-    document.getElementById('tips-detail-body').innerHTML = data.tips.map(t =>
-      '<div class="tip-card" style="margin-bottom:12px">' +
-      (t.tag ? '<span class="tip-tag">'+t.tag+'</span><br>' : '') +
-      '<strong>'+t.head+'</strong><br><span style="line-height:1.6">'+t.body+'</span></div>'
-    ).join('');
+    document.getElementById('tips-detail-body').innerHTML = data.tips.map(function(t) {
+      return '<div class="tip-card" style="margin-bottom:12px">' +
+        (t.tag ? '<span class="tip-tag">'+t.tag+'</span><br>' : '') +
+        '<strong>'+t.head+'</strong><br><span style="line-height:1.6">'+t.body+'</span></div>';
+    }).join('');
     const dv = document.getElementById('tips-detail-view');
     dv.className = 'tips-detail-view open';
   }
