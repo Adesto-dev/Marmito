@@ -11218,17 +11218,20 @@ function parseDurationMin(t){
 // ===== MÊME RÉGION =====
 function generateSameRegion(){
   if(!cur)return;
-  // Active le bon chip cuisine
-  document.querySelectorAll(".chip[data-group='cuisine']").forEach(c=>{
-    c.classList.remove("active");
-    if(c.textContent.trim()===cur.region)c.classList.add("active");
-  });
-  selectCuisineDropdown(cur.region);
-  // Active "Tout" pour le type
-  document.querySelectorAll(".chip[data-group='type']").forEach(c=>c.classList.remove("active"));
-  const allChip=document.querySelector(".chip[data-group='type'][data-i18n='chip-all']");
-  if(allChip)allChip.classList.add("active");
-  generateWithFilters();
+  const region=cur.region;
+  const btn=document.getElementById("same-region-btn");
+  if(btn){btn.disabled=true;btn.textContent="Chargement...";}
+  document.getElementById("result-card").classList.remove("visible");
+  setTimeout(()=>{
+    let pool=recipes.filter(r=>r.region===region&&r.title!==cur.title);
+    if(!pool.length)pool=recipes.filter(r=>r.region===region);
+    if(!pool.length)pool=recipes;
+    const chosen=pickNoRepeat(pool,"region|"+region);
+    show(chosen);
+    incrementRecipeCount();
+    saveRecipeToHistory(chosen.title, chosen.region);
+    if(btn){btn.disabled=false;}
+  },600);
 }
 
 // ===== BADGE CUISINÉ =====
