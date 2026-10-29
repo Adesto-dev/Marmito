@@ -1185,9 +1185,12 @@
     const _now = new Date();
     const currentMonth = _now.getFullYear() + '-' + String(_now.getMonth() + 1).padStart(2, '0');
     const { data, error } = await sb.from('profiles').select('plan,recipe_count,reset_month').eq('id', currentUser.id).single();
-    if (error) console.error('[Marmito] loadProfile erreur:', error.message, error.code);
+
     if (data) {
+      // Succes : on charge le profil
       userPlan = data.plan || 'free';
+      // Cache le plan en localStorage pour resilience offline/erreur reseau
+      try { localStorage.setItem('marmito-plan', userPlan); } catch(e){}
       // Reset mensuel : si le mois a change, on repart a 0
       if (data.reset_month !== currentMonth) {
         recipeCount = 0;
@@ -1195,14 +1198,23 @@
         await sb.from('profiles').update({ recipe_count: 0, reset_month: currentMonth }).eq('id', currentUser.id);
         console.log('[Marmito] Reset mensuel effectue pour', currentMonth);
       } else {
-        // Prendre le max entre DB et localStorage pour eviter reset a 0 si update a echoue
         const localCount = parseInt(localStorage.getItem('marmito-count') || '0');
         recipeCount = Math.max(data.recipe_count || 0, localCount);
       }
-    } else {
-      // First time: create profile
+    } else if (error && error.code === 'PGRST116') {
+      // Aucun profil trouve (premiere connexion) - on cree le profil
       await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email, plan: 'free', recipe_count: 0, reset_month: currentMonth });
       userPlan = 'free'; recipeCount = 0;
+      try { localStorage.setItem('marmito-plan', 'free'); } catch(e){}
+    } else {
+      // Erreur reseau ou Supabase indisponible : on utilise le cache local
+      // NE PAS ecraser le plan avec 'free' - utiliser la derniere valeur connue
+      console.warn('[Marmito] loadProfile erreur:', error ? error.message : 'no data', '- utilisation du cache local');
+      try {
+        const cachedPlan = localStorage.getItem('marmito-plan');
+        if (cachedPlan) userPlan = cachedPlan;
+        // sinon userPlan reste 'free' par defaut
+      } catch(e){}
     }
   }
 
@@ -11018,12 +11030,17 @@ function renderProfileFavs(){
   if(!favs.length){l.innerHTML='<div class="fav-empty">Aucun favori. Clique sur ❤️ dans une recette.</div>';return;}
   l.innerHTML=favs.map(f=>'<div class="fav-item"><div><div class="fav-item-name">'+f.title+'</div><div class="fav-item-region">'+f.region+' · '+f.type+'</div></div><button class="fav-cook-btn" onclick="closeProfile();setTimeout(()=>cookFav('+JSON.stringify(f.title)+'),200)">Cuisiner</button></div>').join("");
 }
-function renderProfileHistory(){
+async function renderProfileHistory(){
   const l=document.getElementById("profile-history-list");
   if(!l)return;
-  let hist=[];try{hist=JSON.parse(localStorage.getItem("marmito-history")||"[]");}catch(e){}
-  if(!hist.length){l.innerHTML='<div class="fav-empty">Aucune recette dans l\'historique.</div>';return;}
-  l.innerHTML=hist.slice(0,30).map(h=>'<div class="fav-item"><div><div class="fav-item-name">'+h.title+'</div><div class="fav-item-region">'+h.region+' · '+(h.date||'')+'</div></div><button class="fav-cook-btn" onclick="closeProfile();setTimeout(()=>openHistoryRecipe('+JSON.stringify(h.title)+'),200)">Voir</button></div>').join("");
+  l.innerHTML='<div class="fav-empty" style="color:var(--fg2)">Chargement...</div>';
+  if(!currentUser){l.innerHTML='<div class="fav-empty">Connecte-toi pour voir ton historique.</div>';return;}
+  const {data,error}=await sb.from('recipes').select('title,region,created_at').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(30);
+  if(error||!data||!data.length){l.innerHTML='<div class="fav-empty">Aucune recette dans l\'historique.</div>';return;}
+  l.innerHTML=data.map(r=>{
+    const date=new Date(r.created_at).toLocaleDateString('fr-CA',{day:'numeric',month:'short'});
+    return '<div class="fav-item"><div><div class="fav-item-name">'+r.title+'</div><div class="fav-item-region">'+(r.region||'')+' · '+date+'</div></div><button class="fav-cook-btn" onclick="closeProfile();setTimeout(()=>openHistoryRecipe('+JSON.stringify(r.title)+'),200)">Voir</button></div>';
+  }).join("");
 }
 
 // Timer
