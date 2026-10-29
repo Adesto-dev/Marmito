@@ -159,8 +159,7 @@
     .share-copy:hover{background:rgba(250,250,245,0.2)}
     .share-wa{background:#25D366;color:#fff}
     .share-wa:hover{background:#1da855}
-    .share-link{background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)}
-    .share-link:hover{background:rgba(250,250,245,0.2)}
+
     /* Recette du jour */
     .daily-card{background:linear-gradient(135deg,#D46A22 0%,#A04010 60%,#6A2808 100%);border-radius:14px;padding:16px 18px;margin-bottom:16px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 4px 18px rgba(192,90,24,0.30)}
     .daily-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(192,90,24,0.42)}
@@ -689,6 +688,7 @@
     <button class="drawer-item" onclick="drawerAction('contact')" data-i18n="nav-contact">Nous contacter</button>
     <button class="drawer-item" onclick="drawerAction('tips')" data-i18n="nav-tips">Conseils &amp; Astuces</button>
     <button class="drawer-item" onclick="drawerAction('about')" data-i18n="nav-about">&#192; propos de Marmito</button>
+    <button class="drawer-item" onclick="drawerAction('share-app')" data-i18n="nav-share-app">&#128279; Inviter un ami</button>
   </div>
 
   <div class="drawer-bottom" id="drawer-bottom">
@@ -817,8 +817,7 @@
     </div>
     <div class="share-bar">
       <button class="share-btn share-copy" onclick="copyRecipe()" data-i18n="btn-copy">&#128203; Copier</button>
-      <button class="share-btn share-link" onclick="shareRecipeLink()">&#128279; Lien direct</button>
-      <button class="share-btn share-wa" onclick="shareRecipe()" data-i18n="btn-share">&#10548; Partager</button>
+      <button class="share-btn share-wa" onclick="shareRecipe()" data-i18n="btn-share">&#10548; Partager la recette</button>
     </div>
     <div class="result-body">
       <div>
@@ -1613,6 +1612,13 @@
     else if (action === 'about') { setTimeout(()=>openAbout(), 320); }
     else if (action === 'tips') { setTimeout(()=>openTips(), 320); }
     else if (action === 'contact') { setTimeout(()=>openContact(), 320); }
+    else if (action === 'share-app') {
+      const appUrl='https://marmito-one.vercel.app';
+      const msg='Essaie Marmito, un générateur de recettes africaines — gratuit ! 🍲\n'+appUrl;
+      if(navigator.share){ navigator.share({title:'Marmito',text:msg,url:appUrl}).catch(()=>{}); }
+      else if(navigator.clipboard){ navigator.clipboard.writeText(appUrl).then(()=>showToast('Lien copié !')); }
+      else { prompt('Partage ce lien :',appUrl); }
+    }
   }
 
   async function manageSubscription() {
@@ -11145,31 +11151,35 @@ function copyFallback(txt){
 }
 async function shareRecipe(){
   if(!cur)return;
-  const txt=rTxt(cur);
-  // Partage natif (iOS/Android) — ouvre le menu de partage du telephone
+  const url=window.location.origin+window.location.pathname+'#r/'+slugify(cur.title);
+  const title='Marmito — '+cur.title;
+  const text=(currentLang==='en'?'Check out this recipe: ':'Regarde cette recette : ')+cur.title;
+  // Partage natif (iOS/Android) — ouvre le menu de partage du telephone avec le lien direct
   if(navigator.share){
     try{
-      await navigator.share({title:'Marmito — '+cur.title, text:txt});
+      await navigator.share({title, text, url});
       return;
     }catch(e){ if(e.name==='AbortError')return; }
   }
-  // Fallback desktop : affiche le menu de partage custom
-  toggleShareMenu();
+  // Fallback desktop : menu avec options incluant le lien
+  toggleShareMenu(url);
 }
-function toggleShareMenu(){
+function toggleShareMenu(recipeUrl){
   let menu=document.getElementById('share-menu');
   if(menu){ menu.remove(); return; }
-  const txt=rTxt(cur);
-  const enc=encodeURIComponent(txt);
+  const url=recipeUrl||window.location.origin+window.location.pathname+(cur?'#r/'+slugify(cur.title):'');
+  const encUrl=encodeURIComponent(url);
+  const txt=cur?rTxt(cur):'';
+  const encTxt=encodeURIComponent(txt);
   menu=document.createElement('div');
   menu.id='share-menu';
   menu.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--card-bg);border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.2);padding:8px;z-index:999;min-width:220px;';
   const options=[
-    {label:'📋 Copier le texte', fn:`copyRecipe();document.getElementById('share-menu').remove()`},
-    {label:'💬 WhatsApp', url:'https://wa.me/?text='+enc},
-    {label:'✉️ Email', url:'mailto:?subject='+encodeURIComponent('Recette: '+cur.title)+'&body='+enc},
-    {label:'𝕏 Twitter/X', url:'https://twitter.com/intent/tweet?text='+encodeURIComponent(cur.title+' via @Marmito\n\n'+txt.slice(0,200)+'...')},
-    {label:'📘 Facebook', url:'https://www.facebook.com/sharer/sharer.php?u=https://marmito-one.vercel.app'},
+    {label:'🔗 Copier le lien', fn:`navigator.clipboard?navigator.clipboard.writeText(${JSON.stringify(url)}).then(()=>showToast('Lien copié !')):prompt('Copie ce lien :',${JSON.stringify(url)});document.getElementById('share-menu').remove()`},
+    {label:'💬 WhatsApp', url:'https://wa.me/?text='+encodeURIComponent((currentLang==='en'?'Check out this recipe: ':'Regarde cette recette : ')+url)},
+    {label:'✉️ Email', url:'mailto:?subject='+encodeURIComponent('Recette: '+(cur?cur.title:'Marmito'))+'&body='+encodeURIComponent(url)},
+    {label:'𝕏 Twitter/X', url:'https://twitter.com/intent/tweet?text='+encodeURIComponent((cur?cur.title:'Marmito')+' 🍲\n')+encUrl},
+    {label:'📘 Facebook', url:'https://www.facebook.com/sharer/sharer.php?u='+encUrl},
   ];
   options.forEach(o=>{
     const btn=document.createElement('button');
@@ -11191,17 +11201,6 @@ function slugify(str) {
   return str.toLowerCase()
     .normalize('NFD').replace(/[̀-ͯ]/g,'')
     .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-}
-function shareRecipeLink() {
-  if (!cur) return;
-  const url = window.location.origin + window.location.pathname + '#r/' + slugify(cur.title);
-  if (navigator.share) {
-    navigator.share({ title: cur.title, text: (currentLang==='en'?'Recipe: ':'Recette : ') + cur.title, url });
-  } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => showToast(t('toast-link')));
-  } else {
-    prompt(currentLang==='en'?'Copy this link:':'Copie ce lien :', url);
-  }
 }
 // Vérifier si l'URL contient un lien direct vers une recette
 function checkDirectLink() {
