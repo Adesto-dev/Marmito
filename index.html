@@ -414,7 +414,7 @@
     .profile-overlay.open{display:block}
     .profile-sheet{background:var(--bg);width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;animation:pageSlideIn 0.22s cubic-bezier(.4,0,.2,1)}
     .profile-sheet-head{flex-shrink:0}
-    .profile-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 20px 44px;flex:1;min-height:0}
+    .profile-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:20px 20px 44px;flex:1;min-height:0}
     .profile-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
     .profile-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
     .profile-title{font-family:"Playfair Display",Georgia,serif;font-weight:700;font-size:20px}
@@ -714,7 +714,7 @@
     <div class="card-label" data-i18n="card-cuisine">Type de cuisine</div>
     <div class="chips">
       <button class="chip active" data-group="cuisine" onclick="selectChip(this)" data-i18n="chip-cuisine-all">Toutes</button>
-      <button class="chip" data-group="cuisine" onclick="selectChip(this)">Afrique subsaharienne</button>
+      <button class="chip" data-group="cuisine" onclick="selectChip(this)">Afrique</button>
       <button class="chip" data-group="cuisine" onclick="selectChip(this)">Antilles</button>
       <button class="chip" data-group="cuisine" onclick="selectChip(this)">Chinoise</button>
       <button class="chip" data-group="cuisine" onclick="selectChip(this)">Espagnole</button>
@@ -974,7 +974,7 @@
         <div class="about-region-item">
           <div class="about-region-flag">🌍</div>
           <div class="about-region-body">
-            <div class="about-region-name" data-i18n="about-region-africa-name">Afrique subsaharienne</div>
+            <div class="about-region-name" data-i18n="about-region-africa-name">Afrique</div>
             <div class="about-region-desc" data-i18n="about-region-africa-desc">S&eacute;n&eacute;gal, Cameroun, C&ocirc;te d&rsquo;Ivoire, Nigeria, Congo, Mali&hellip;</div>
           </div>
         </div>
@@ -1235,7 +1235,7 @@
       if (userPlan === 'free') {
         cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Saveur — dès 4,99$/mois</button>';
       } else {
-        cta.innerHTML = '<button class="drawer-item manage-cta" onclick="drawerAction(\'manage\')"><span class="drawer-item-icon">⚙️</span><span class="drawer-item-text">Gérer mon abonnement</span></button>';
+        cta.innerHTML = '';
       }
       document.getElementById('drawer-bottom').style.display = 'block';
     } else {
@@ -1531,7 +1531,7 @@ const qtyMap={
 
 const recipes=[
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Poulet Yassa",
   emoji:"🍗",
@@ -1559,7 +1559,7 @@ const recipes=[
   tip:"Astuce : Pour la marinade, vous pouvez varier selon vos goûts — marinade classique oignon-citron (pressez 2 citrons jaunes + 2 oignons émincés), marinade citron confit (ajoutez 1 citron confit haché) ou marinade express (huile d'olive + moutarde forte). Marinez au minimum 2h, idéalement une nuit au réfrigérateur. Servez avec du riz blanc ou de l'attiéké."
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Riz Jollof pimenté",
   emoji:"🍚",
@@ -1585,7 +1585,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Thiéboudienne",
   emoji:"🐟",
@@ -1617,7 +1617,7 @@ const recipes=[
   tip:"Classique sénégalais : Le thiéboudienne (riz au poisson) est le plat national du Sénégal. Utilisez de préférence une daurade ou un mulet entier. Le riz doit absorber tout le bouillon de cuisson. Pour la version festive, ajoutez du manioc et du gombo aux légumes."
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Mafé (sauce arachide)",
   emoji:"🍽️",
@@ -1644,7 +1644,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Ndolé (Cameroun)",
   emoji:"🍽️",
@@ -1671,7 +1671,7 @@ const recipes=[
   diff:"Avancé"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Attiéké au poisson braisé",
   emoji:"🐠",
@@ -1696,7 +1696,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Poulet DG (Cameroun)",
   emoji:"🍽️",
@@ -1724,7 +1724,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Sauce gombo au poulet",
   emoji:"🫛",
@@ -1751,7 +1751,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Kedjenou de poulet",
   emoji:"🫕",
@@ -1778,7 +1778,7 @@ const recipes=[
   tip:"Ce plat ivoirien cuit à l'étouffée sans eau ni matière grasse. Le canari (jarre en terre cuite) donne le goût authentique, mais une cocotte en fonte convient très bien. Secouez régulièrement la cocotte (sans ouvrir) pour éviter que ça attache. Le Kedjenou se déguste avec de l'attiéké ou du riz."
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Alloco et poisson frit",
   emoji:"🍌",
@@ -1803,7 +1803,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Riz sauce tomate pimenté",
   emoji:"🍅",
@@ -1829,7 +1829,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Bœuf aux légumes africain",
   emoji:"🥩",
@@ -1857,7 +1857,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Moambe - Poulet sauce palme (Congo)",
   emoji:"🍽️",
@@ -1883,7 +1883,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Soupe kandia",
   emoji:"🍲",
@@ -1910,7 +1910,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Suya de bœuf grillé (Nigeria)",
   emoji:"🍽️",
@@ -1937,7 +1937,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Plantain farci à la viande",
   emoji:"🫔",
@@ -1963,7 +1963,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Tilapia épicé frit",
   emoji:"🐟",
@@ -1990,7 +1990,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Riz aux crevettes épicé",
   emoji:"🍤",
@@ -2019,7 +2019,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Maafe végétarien aux légumes",
   emoji:"🍽️",
@@ -2046,7 +2046,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Egusi Soup (Nigeria)",
   emoji:"🍽️",
@@ -2074,7 +2074,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Soupou yapp (soupe à la viande sénégalaise)",
   emoji:"🍽️",
@@ -2102,7 +2102,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Aboboi (haricots et maïs)",
   emoji:"🍽️",
@@ -2129,7 +2129,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Akara (beignets de haricots - Nigeria)",
   emoji:"🍽️",
@@ -2153,7 +2153,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Poulet aux épinards et arachides",
   emoji:"🥬",
@@ -3039,7 +3039,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Dessert",
   title:"Beignets de banane plantain",
   emoji:"🍌",
@@ -3344,7 +3344,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Dessert",
   title:"Beignets sucrés (Puff Puff - Nigeria)",
   emoji:"🍽️",
@@ -3423,7 +3423,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Boisson",
   title:"Bissap glacé à la menthe",
   emoji:"🍽️",
@@ -3470,7 +3470,7 @@ const recipes=[
   diff:"Très facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Boisson",
   title:"Jus de gingembre pimenté",
   emoji:"🍽️",
@@ -3494,7 +3494,7 @@ const recipes=[
   diff:"Très facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Boisson",
   title:"Jus de tamarin",
   emoji:"🌿",
@@ -3568,7 +3568,7 @@ const recipes=[
   diff:"Très facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Boisson",
   title:"Smoothie tropical africain",
   emoji:"🥭",
@@ -3592,7 +3592,7 @@ const recipes=[
   diff:"Très facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Boisson",
   title:"Dêgué (lait de mil fermenté)",
   emoji:"🍽️",
@@ -3667,7 +3667,7 @@ const recipes=[
   diff:"Très facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Boisson",
   title:"Punch tropical sans alcool",
   emoji:"🍹",
@@ -3718,7 +3718,7 @@ const recipes=[
   diff:"Très facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Boisson",
   title:"Lait de coco vanillé frappé",
   emoji:"🥥",
@@ -3742,7 +3742,7 @@ const recipes=[
   diff:"Très facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Foufou d'igname et sauce",
   emoji:"🍽️",
@@ -3765,7 +3765,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Poisson en sauce coco épicée",
   emoji:"🥥",
@@ -3792,7 +3792,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Sauce gombo végétarienne",
   emoji:"🫛",
@@ -3819,7 +3819,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Tilapia en sauce tomate africaine",
   emoji:"🐠",
@@ -4112,7 +4112,7 @@ const recipes=[
   diff:"Très facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Boisson",
   title:"Jus de pastèque et menthe",
   emoji:"🍉",
@@ -5415,7 +5415,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Jollof rice (riz rouge ouest-africain)",
   emoji:"🍅",
@@ -5445,7 +5445,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Fufu (boule de farine de manioc)",
   emoji:"🫔",
@@ -5465,7 +5465,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Beignets de plantains (Alloco)",
   emoji:"🍌",
@@ -5487,7 +5487,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Thiof grillé sauce diakhatou",
   emoji:"🐟",
@@ -5515,7 +5515,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Domoda (groundnut stew - Gambie)",
   emoji:"🥜",
@@ -5543,7 +5543,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Riz gras (Guinée)",
   emoji:"🍚",
@@ -5572,7 +5572,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Arachides grillées épicées",
   emoji:"🥜",
@@ -5594,7 +5594,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Dessert",
   title:"Thiakry (dessert sénégalais au mil)",
   emoji:"🥛",
@@ -5618,7 +5618,7 @@ const recipes=[
   tip:"Le thiakry est un dessert rafraîchissant sénégalais à base de mil fermenté (dégué). Vous pouvez le servir nature avec du lait caillé, ou agrémenter de mangue fraîche, d'ananas ou de papaye. Pour la version au lait, ajoutez simplement 20 cl de lait concentré sucré."
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Boisson",
   title:"Jus de bissap (fleur d'hibiscus)",
   emoji:"🌺",
@@ -5642,7 +5642,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Boisson",
   title:"Café Touba (café épicé sénégalais)",
   emoji:"☕",
@@ -6096,7 +6096,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Soupe de pistache (Congo)",
   emoji:"🌿",
@@ -6123,7 +6123,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Poisson braisé africain",
   emoji:"🐟",
@@ -6151,7 +6151,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Dessert",
   title:"Beignets banane (Mikate)",
   emoji:"🍌",
@@ -6821,7 +6821,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Sauce claire de gombo (Bénin)",
   emoji:"🫛",
@@ -6846,7 +6846,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Riz au poisson à la sénégalaise",
   emoji:"🐟",
@@ -6875,7 +6875,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Sauce arachide au poulet (Cameroun)",
   emoji:"🥜",
@@ -6901,7 +6901,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Egusi et légumes verts",
   emoji:"🌿",
@@ -6927,7 +6927,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Dessert",
   title:"Pain de singe (baobab lait)",
   emoji:"🥛",
@@ -6949,7 +6949,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Riz gras au bœuf (Sénégal)",
   emoji:"🥩",
@@ -6979,7 +6979,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Koki de haricots (Cameroun)",
   emoji:"🫘",
@@ -7001,7 +7001,7 @@ const recipes=[
   diff:"Moyen"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Boisson",
   title:"Ginger beer maison",
   emoji:"🫚",
@@ -8002,7 +8002,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Fumbwa (Congo)",
   emoji:"🌿",
@@ -8026,7 +8026,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Boisson",
   title:"Zobo (hibiscus épicé Nigeria)",
   emoji:"🌺",
@@ -8051,7 +8051,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Dessert",
   title:"Chin Chin (biscuits frits Nigeria)",
   emoji:"🪮",
@@ -8077,7 +8077,7 @@ const recipes=[
   diff:"Facile"
 },
 {
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   title:"Moi Moi (gâteau de haricots vapeur)",
   emoji:"🫘",
@@ -8339,7 +8339,7 @@ const recipes=[
 },
 {
   title:"Bobotie (Afrique du Sud)",
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   time:"1h10",
   diff:"Moyen",
@@ -8370,7 +8370,7 @@ const recipes=[
 },
 {
   title:"Pilau rice épicé (Kenya)",
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   time:"55 min",
   diff:"Moyen",
@@ -8401,7 +8401,7 @@ const recipes=[
 },
 {
   title:"Sauce feuilles de patate douce (Congo)",
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   time:"50 min",
   diff:"Facile",
@@ -8428,7 +8428,7 @@ const recipes=[
 },
 {
   title:"Ceebu yapp (riz à la viande sénégalaise)",
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   time:"1h30",
   diff:"Moyen",
@@ -8458,7 +8458,7 @@ const recipes=[
 },
 {
   title:"Muamba de galinha (Angola)",
-  region:"Afrique subsaharienne",
+  region:"Afrique",
   type:"Plat principal",
   time:"1h",
   diff:"Moyen",
@@ -11048,7 +11048,7 @@ function closePlanRepas() {
 const recipeMetaEN = {
   region: {
     'Antilles': 'Caribbean',
-    'Afrique subsaharienne': 'Sub-Saharan Africa',
+    'Afrique': 'Sub-Saharan Africa',
     'Maghreb': 'Maghreb',
     'Occidentale': 'Western'
   },
@@ -11183,7 +11183,7 @@ const i18n = {
     'about-title-what': 'C&rsquo;est quoi',
     'about-text-what': 'Un g&eacute;n&eacute;rateur de recettes fait pour les cuisines qu&rsquo;on voit rarement dans les apps habituelles. Tu choisis ce que t&rsquo;as dans le frigo ou le type de repas que tu veux, Marmito te sort une recette avec les quantit&eacute;s et un chrono &eacute;tape par &eacute;tape. Pas de scroll infini, pas de blog &agrave; lire avant d&rsquo;arriver aux ingr&eacute;dients.',
     'about-title-covers': 'Ce qu&rsquo;on couvre',
-    'about-region-africa-name': 'Afrique subsaharienne',
+    'about-region-africa-name': 'Afrique',
     'about-region-africa-desc': 'S&eacute;n&eacute;gal, Cameroun, C&ocirc;te d&rsquo;Ivoire, Nigeria, Congo, Mali&hellip;',
     'about-region-maghreb-name': 'Maghreb',
     'about-region-maghreb-desc': 'Maroc, Alg&eacute;rie, Tunisie&nbsp;: couscous, tajines, chorba&hellip;',
@@ -11508,7 +11508,7 @@ function pickNoRepeat(pool, key) {
 }
 
 function generateRecipe(){
-    // Freemium check
+    // Surprends-moi = 100% aléatoire, ignore les filtres actifs
     if(recipeCount>=getPlanLimit()){
       document.getElementById('limit-banner').classList.add('show');
       document.getElementById('limit-banner').scrollIntoView({behavior:'smooth',block:'center'});
@@ -11520,27 +11520,8 @@ function generateRecipe(){
   btn.disabled=true;btn.innerHTML="<span class=\"loading-dots\"><span></span><span></span><span></span></span>";
   document.getElementById("result-card").classList.remove("visible");
   setTimeout(()=>{
-    const cu=document.querySelector(".chip[data-group=\"cuisine\"].active");
-    const ty=document.querySelector(".chip[data-group=\"type\"].active");
-    const cuisine=cu?cu.textContent:"Toutes";
-    const type=ty?ty.textContent:"Plat principal";
-    const userIngs=[...document.querySelectorAll(".ingredient-tag")].map(t=>(t.dataset.fr||t.childNodes[0].textContent).trim().toLowerCase());
-    let pool=recipes;
-    if(cuisine!=="Toutes")pool=pool.filter(r=>r.region===cuisine);
-    if(type!=="Tout")pool=pool.filter(r=>r.type===type);
-    if(!pool.length)pool=recipes;
-    const filterKey=(cuisine||'Toutes')+'|'+(type||'Tout');
-    let chosen;
-    if(userIngs.length){
-      const sc=pool.map(r=>({r,s:r.ingredients.filter(i=>userIngs.some(u=>i.toLowerCase().includes(u)||u.includes(i.toLowerCase()))).length}));
-      sc.sort((a,b)=>b.s-a.s);
-      const best=sc.filter(x=>x.s===sc[0].s);
-      // Parmi les meilleurs matches, évite aussi les répétitions
-      const ingKey=filterKey+'|'+userIngs.join(',');
-      chosen=pickNoRepeat(best.map(x=>x.r), ingKey);
-    } else {
-      chosen=pickNoRepeat(pool, filterKey);
-    }
+    // Ignore tous les filtres — pool complet
+    const chosen=pickNoRepeat(recipes,'random-all');
     show(chosen);
     incrementRecipeCount();
     saveRecipeToHistory(chosen.title, chosen.region);
@@ -11553,7 +11534,7 @@ function show(recipe){
   translatedStepTexts=[];
   // Visual banner: emoji + gradient
   const gradientMap={
-    "Afrique subsaharienne":"linear-gradient(135deg,#C85A00 0%,#7A2800 100%)",
+    "Afrique":"linear-gradient(135deg,#C85A00 0%,#7A2800 100%)",
     "Maghreb":"linear-gradient(135deg,#B86A20 0%,#6B3010 100%)",
     "Occidentale":"linear-gradient(135deg,#2A5F8A 0%,#162E45 100%)"
   };
