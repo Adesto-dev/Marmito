@@ -939,6 +939,7 @@
       </div>
       <!-- Action buttons (upgrade or manage) -->
       <div class="profile-actions" id="p-actions"></div>
+      <button onclick="refreshPlanBtn()" style="width:100%;margin:6px 0 2px;padding:9px;background:none;border:1.5px solid var(--border);border-radius:10px;color:var(--fg2);font-family:inherit;font-size:13px;cursor:pointer" id="refresh-plan-btn">Rafra&#238;chir mon plan</button>
       <!-- Tabs: Favoris + Historique -->
       <div class="profile-tabs">
         <button class="profile-tab-btn active" data-tab="favs" onclick="switchProfileTab('favs')">❤️ Favoris</button>
@@ -1225,6 +1226,13 @@
     }
   }
 
+  async function refreshPlanBtn() {
+    const btn=document.getElementById('refresh-plan-btn');
+    if(btn){btn.textContent='Chargement...';btn.disabled=true;}
+    await loadUserProfile();
+    updateUserBar();
+    if(btn){btn.textContent='Plan mis à jour !';setTimeout(()=>{btn.textContent='Rafraîchir mon plan';btn.disabled=false;},2000);}
+  }
   async function refreshPlan() {
     await loadUserProfile();
     updateUserBar();
