@@ -143,7 +143,7 @@
     .result-header{background:var(--green);padding:0}
     .recipe-visual-banner{display:flex;align-items:center;justify-content:center;padding:22px 18px 14px;font-size:64px;line-height:1;transition:background 0.3s}
     .result-header-info{padding:0 18px 14px}
-    .result-header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .result-header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:relative}
     .result-meta-top{flex:1}
     .result-region{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(250,250,245,0.55);margin-bottom:4px}
     .result-title{font-family:"Playfair Display",Georgia,serif;font-weight:900;font-size:clamp(18px,4vw,24px);color:#FAFAF5;line-height:1.2}
@@ -151,6 +151,8 @@
     .fav-btn{background:none;border:none;cursor:pointer;padding:4px;color:rgba(250,250,245,0.35);transition:color 0.15s,transform 0.15s;flex-shrink:0;line-height:0;display:flex;align-items:center}
     .fav-btn:hover{color:rgba(250,250,245,0.75)}
     .fav-btn.active{color:#F4A261;transform:scale(1.1)}
+    #cooked-btn.cooked{background:rgba(74,179,90,0.3)!important;color:#5adb6f!important}
+    .cooked-badge{position:absolute;top:10px;right:54px;background:#27AE60;color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;letter-spacing:0.03em;pointer-events:none}
     .fav-toggle.has-favs svg{fill:currentColor}
     .fav-toggle svg{transition:fill 0.2s}
     .share-bar{display:flex;gap:8px;padding:10px 18px;background:linear-gradient(90deg,#4A2C10 0%,#6A3E18 100%);border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap}
@@ -779,6 +781,11 @@
       <button class="chip" data-group="type" onclick="selectChip(this)" data-i18n="chip-drink">Boisson</button>
       <button class="chip" data-group="type" onclick="selectChip(this)" data-i18n="chip-all">Tout</button>
     </div>
+    <div style="height:1px;background:var(--border);margin:8px 0"></div>
+    <div class="chips">
+      <button class="chip active" data-group="time" onclick="selectChip(this)">Toute dur&#233;e</button>
+      <button class="chip" data-group="time" onclick="selectChip(this)">30 min max</button>
+    </div>
   </div>
   <div class="btn-row">
     <button class="btn-generate" id="gen-btn" onclick="generateRecipe()" data-i18n="btn-gen">&#127922; Surprends-moi</button>
@@ -817,6 +824,7 @@
     <div class="share-bar">
       <button class="share-btn share-copy" onclick="copyRecipe()" data-i18n="btn-copy">&#128203; Copier</button>
       <button class="share-btn share-wa" onclick="shareRecipe()" data-i18n="btn-share">&#10548; Partager la recette</button>
+      <button class="share-btn" id="cooked-btn" onclick="toggleCooked()" style="background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)">&#10003; Cuisiné</button>
     </div>
     <div class="result-body">
       <div>
@@ -838,6 +846,7 @@
         <div class="meta-item"><span class="meta-label" data-i18n="meta-serves">Personnes</span><span class="meta-value" id="r-serves"></span></div>
         <div class="meta-item"><span class="meta-label" data-i18n="meta-diff">Difficult&eacute;</span><span class="meta-value" id="r-diff"></span></div>
       </div>
+      <button id="same-region-btn" class="btn-filter" style="width:100%;margin-top:12px;display:none" onclick="generateSameRegion()">Voir d&apos;autres recettes de cette r&eacute;gion</button>
     </div>
   </div>
 
@@ -11194,6 +11203,59 @@ function toggleShareMenu(recipeUrl){
   setTimeout(()=>document.addEventListener('click',function h(e){if(!menu.contains(e.target)){menu.remove();document.removeEventListener('click',h);}},true),100);
 }
 
+
+// ===== FILTRE DURÉE =====
+function parseDurationMin(t){
+  if(!t)return 999;
+  const s=t.split('+')[0].trim(); // ignore "30 min + 4h repos"
+  const hm=s.match(/(\d+)h(\d+)?/);
+  if(hm)return parseInt(hm[1])*60+(parseInt(hm[2])||0);
+  const m=s.match(/(\d+)\s*min/);
+  if(m)return parseInt(m[1]);
+  return 999;
+}
+
+// ===== MÊME RÉGION =====
+function generateSameRegion(){
+  if(!cur)return;
+  // Active le bon chip cuisine
+  document.querySelectorAll(".chip[data-group='cuisine']").forEach(c=>{
+    c.classList.remove("active");
+    if(c.textContent.trim()===cur.region)c.classList.add("active");
+  });
+  selectCuisineDropdown(cur.region);
+  // Active "Tout" pour le type
+  document.querySelectorAll(".chip[data-group='type']").forEach(c=>c.classList.remove("active"));
+  const allChip=document.querySelector(".chip[data-group='type'][data-i18n='chip-all']");
+  if(allChip)allChip.classList.add("active");
+  generateWithFilters();
+}
+
+// ===== BADGE CUISINÉ =====
+function getCookedList(){try{return JSON.parse(localStorage.getItem("marmito-cooked")||"[]");}catch(e){return[];}}
+function saveCookedList(l){try{localStorage.setItem("marmito-cooked",JSON.stringify(l));}catch(e){}}
+function toggleCooked(){
+  if(!cur)return;
+  const l=getCookedList();
+  const idx=l.indexOf(cur.title);
+  if(idx>=0)l.splice(idx,1); else l.push(cur.title);
+  saveCookedList(l);
+  updateCookedUI();
+  showToast(idx>=0?"Retiré de tes recettes cuisinées":"Marqué comme cuisiné !");
+}
+function updateCookedUI(){
+  if(!cur)return;
+  const cooked=getCookedList().includes(cur.title);
+  const btn=document.getElementById("cooked-btn");
+  if(btn){btn.textContent=cooked?"✓ Cuisiné":"✓ Cuisiné";btn.className="share-btn"+(cooked?" cooked":"");}
+  // Badge
+  document.querySelectorAll(".cooked-badge").forEach(b=>b.remove());
+  if(cooked){
+    const hdr=document.querySelector(".result-header-top");
+    if(hdr){const b=document.createElement("div");b.className="cooked-badge";b.textContent="Cuisiné";hdr.appendChild(b);}
+  }
+}
+
 // ===== SLUGIFY / PARTAGE PAR LIEN =====
 function slugify(str) {
   return str.toLowerCase()
@@ -11776,11 +11838,14 @@ function generateWithFilters(){
       return;
     }
     Object.values(timers).forEach(t=>{if(t.iv)clearInterval(t.iv);});timers={};
+    const tm=document.querySelector(".chip[data-group='time'].active");
+    const timeFilter=tm?tm.textContent.trim():"Toute durée";
     let pool=recipes;
     if(cuisine!=="Toutes")pool=pool.filter(r=>r.region===cuisine);
     if(type!=="Tout")pool=pool.filter(r=>r.type===type);
+    if(timeFilter==="30 min max"){pool=pool.filter(r=>parseDurationMin(r.time)<=30);if(!pool.length)pool=recipes.filter(r=>parseDurationMin(r.time)<=30);}
     if(!pool.length)pool=recipes;
-    const filterKey='F|'+(cuisine||'Toutes')+'|'+(type||'Tout');
+    const filterKey='F|'+(cuisine||'Toutes')+'|'+(type||'Tout')+'|'+timeFilter;
     let chosen;
     if(userIngs.length){
       const sc=pool.map(r=>({r,s:r.ingredients.filter(i=>userIngs.some(u=>i.toLowerCase().includes(u)||u.includes(i.toLowerCase()))).length}));
@@ -11891,6 +11956,11 @@ function show(recipe){
   }).join("");
   document.getElementById("result-card").classList.add("visible");
   setTimeout(()=>document.getElementById("result-card").scrollIntoView({behavior:"smooth",block:"start"}),80);
+  // Bouton même région
+  const srb=document.getElementById("same-region-btn");
+  if(srb&&recipe.region){srb.textContent="Voir d'autres recettes "+recipe.region;srb.style.display="";}
+  // Badge cuisiné
+  updateCookedUI();
   if(currentLang==="en") translateRecipeSteps(recipe.steps);
 }
 
