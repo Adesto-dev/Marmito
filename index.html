@@ -11035,7 +11035,7 @@ async function renderProfileHistory(){
   if(!l)return;
   l.innerHTML='<div class="fav-empty" style="color:var(--fg2)">Chargement...</div>';
   if(!currentUser){l.innerHTML='<div class="fav-empty">Connecte-toi pour voir ton historique.</div>';return;}
-  const {data,error}=await sb.from('recipes').select('title,region,created_at').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(30);
+  const {data,error}=await sb.from('recipes').select('title,region,created_at').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(10);
   if(error||!data||!data.length){l.innerHTML='<div class="fav-empty">Aucune recette dans l\'historique.</div>';return;}
   l.innerHTML=data.map(r=>{
     const date=new Date(r.created_at).toLocaleDateString('fr-CA',{day:'numeric',month:'short'});
