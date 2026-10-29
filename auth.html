@@ -240,6 +240,8 @@ document.addEventListener('keydown',e=>{
   const loginVisible=document.getElementById('login-form').style.display!=='none';
   if(loginVisible)doLogin();else doSignup();
 });
+
+if(new URLSearchParams(location.search).get('signup')==='1')switchTab('signup');
 </script>
 </body>
 </html>
