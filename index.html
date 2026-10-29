@@ -122,6 +122,9 @@
     .ing-drop-item{padding:10px 14px;font-size:14px;color:var(--fg);cursor:pointer;transition:background 0.1s;border-radius:6px;margin:2px 4px}
     .ing-drop-item:hover,.ing-drop-item.selected{background:var(--accent-light);color:var(--accent)}
     .chips{display:flex;flex-wrap:wrap;gap:7px}
+    .cuisine-select{width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--fg);font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;transition:border-color 0.15s}
+    .cuisine-select:focus{outline:none;border-color:var(--accent)}
+    .cuisine-select.has-filter{border-color:var(--accent);color:var(--accent);font-weight:600}
     .chip{padding:6px 13px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--fg2);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s}
     .chip:hover{border-color:var(--accent);color:var(--accent)}
     .chip.active{background:var(--green);border-color:var(--green);color:#FAFAF5}
@@ -485,6 +488,10 @@
     .plan-card-free .profile-plan-bar-wrap{background:var(--border)}
     .profile-plan-bar{height:100%;border-radius:3px;transition:width 0.6s ease}
     .profile-plan-bar-label{font-size:12px;opacity:0.75}
+    .profile-tabs{display:flex;gap:8px;margin:16px 0 12px}
+    .profile-tab-btn{flex:1;padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--fg2);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s}
+    .profile-tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    .profile-tab-content{margin-bottom:8px}
     .btn-profile-logout{width:100%;padding:12px;background:none;color:#C0392B;border:1.5px solid rgba(192,57,43,0.25);border-radius:12px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;transition:background 0.15s;display:flex;align-items:center;justify-content:center;gap:6px}
     .btn-profile-logout:hover{background:rgba(192,57,43,0.07)}
     @media(prefers-color-scheme:dark){.btn-profile-logout{color:#e55;border-color:rgba(220,50,50,0.3)}.btn-profile-logout:hover{background:rgba(200,50,50,0.1)}}
@@ -714,7 +721,23 @@
   </div>
   <div class="card">
     <div class="card-label" data-i18n="card-cuisine">Type de cuisine</div>
-    <div class="chips">
+    <select class="cuisine-select" id="cuisine-select" onchange="selectCuisineDropdown(this.value)">
+      <option value="Toutes" data-i18n="chip-cuisine-all">Toutes les cuisines</option>
+      <option value="Afrique">🌍 Afrique</option>
+      <option value="Antilles">🌴 Antilles &amp; Caraïbes</option>
+      <option value="Chinoise">🥢 Chinoise</option>
+      <option value="Espagnole">🇪🇸 Espagnole</option>
+      <option value="Grecque">🇬🇷 Grecque</option>
+      <option value="Indienne">🇮🇳 Indienne</option>
+      <option value="Italienne">🇮🇹 Italienne</option>
+      <option value="Japonaise">🇯🇵 Japonaise</option>
+      <option value="Libanaise">🇱🇧 Libanaise</option>
+      <option value="Maghreb">🌙 Maghreb</option>
+      <option value="Mexicaine">🌮 Mexicaine</option>
+      <option value="Occidentale" data-i18n="chip-cuisine-western">🍁 Québec &amp; Occident</option>
+    </select>
+    <!-- Chips cachés pour compatibilité avec generateWithFilters -->
+    <div class="chips" style="display:none">
       <button class="chip active" data-group="cuisine" onclick="selectChip(this)" data-i18n="chip-cuisine-all">Toutes</button>
       <button class="chip" data-group="cuisine" onclick="selectChip(this)">Afrique</button>
       <button class="chip" data-group="cuisine" onclick="selectChip(this)">Antilles</button>
@@ -890,6 +913,17 @@
       </div>
       <!-- Action buttons (upgrade or manage) -->
       <div class="profile-actions" id="p-actions"></div>
+      <!-- Tabs: Favoris + Historique -->
+      <div class="profile-tabs">
+        <button class="profile-tab-btn active" data-tab="favs" onclick="switchProfileTab('favs')">❤️ Favoris</button>
+        <button class="profile-tab-btn" data-tab="history" onclick="switchProfileTab('history')">📋 Historique</button>
+      </div>
+      <div id="profile-tab-favs" class="profile-tab-content">
+        <div id="profile-fav-list" class="fav-list"></div>
+      </div>
+      <div id="profile-tab-history" class="profile-tab-content" style="display:none">
+        <div id="profile-history-list"></div>
+      </div>
       <!-- Logout -->
       <button class="btn-profile-logout" onclick="signOut()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -1192,6 +1226,8 @@
     sheet.style.height = Math.round(vh * 0.72) + 'px';
     sheet.style.maxHeight = Math.round(vh * 0.72) + 'px';
     overlay.classList.add('open');
+    // Render tabs
+    renderProfileFavs();
   }
 
   function closeProfile() {
@@ -10747,6 +10783,40 @@ function selectChip(c){
   c.classList.add("active");
 }
 
+// Dropdown cuisine → synchronise les chips cachés
+function selectCuisineDropdown(val){
+  const sel=document.getElementById("cuisine-select");
+  sel.className=val==="Toutes"?"cuisine-select":"cuisine-select has-filter";
+  // Sync chip caché pour que generateWithFilters fonctionne
+  document.querySelectorAll(".chip[data-group='cuisine']").forEach(c=>{
+    c.classList.remove("active");
+    const txt=c.textContent.trim();
+    if((val==="Toutes"&&(txt==="Toutes"||c.dataset.i18n==="chip-cuisine-all"))||(txt===val))c.classList.add("active");
+  });
+}
+
+// Tabs profil (Favoris / Historique)
+function switchProfileTab(tab){
+  document.querySelectorAll(".profile-tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+  document.getElementById("profile-tab-favs").style.display=tab==="favs"?"":"none";
+  document.getElementById("profile-tab-history").style.display=tab==="history"?"":"none";
+  if(tab==="favs")renderProfileFavs();
+  else renderProfileHistory();
+}
+function renderProfileFavs(){
+  const l=document.getElementById("profile-fav-list");
+  if(!l)return;
+  if(!favs.length){l.innerHTML='<div class="fav-empty">Aucun favori. Clique sur ❤️ dans une recette.</div>';return;}
+  l.innerHTML=favs.map(f=>'<div class="fav-item"><div><div class="fav-item-name">'+f.title+'</div><div class="fav-item-region">'+f.region+' · '+f.type+'</div></div><button class="fav-cook-btn" onclick="closeProfile();setTimeout(()=>cookFav('+JSON.stringify(f.title)+'),200)">Cuisiner</button></div>').join("");
+}
+function renderProfileHistory(){
+  const l=document.getElementById("profile-history-list");
+  if(!l)return;
+  let hist=[];try{hist=JSON.parse(localStorage.getItem("marmito-history")||"[]");}catch(e){}
+  if(!hist.length){l.innerHTML='<div class="fav-empty">Aucune recette dans l\'historique.</div>';return;}
+  l.innerHTML=hist.slice(0,30).map(h=>'<div class="fav-item"><div><div class="fav-item-name">'+h.title+'</div><div class="fav-item-region">'+h.region+' · '+(h.date||'')+'</div></div><button class="fav-cook-btn" onclick="closeProfile();setTimeout(()=>openHistoryRecipe('+JSON.stringify(h.title)+'),200)">Voir</button></div>').join("");
+}
+
 // Timer
 let timers={};
 function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
@@ -10798,10 +10868,17 @@ function toggleFav(){
   if(!cur)return;
   const fb=document.getElementById("fav-btn");
   const idx=favs.findIndex(f=>f.title===cur.title);
-  if(idx>=0){favs.splice(idx,1);fb.innerHTML=FAV_SVG_EMPTY;fb.classList.remove("active");showToast(t('toast-fav-remove'));}
-  else{favs.push({title:cur.title,region:cur.region,type:cur.type});fb.innerHTML=FAV_SVG_FILLED;fb.classList.add("active");showToast(t('toast-fav-add'));}
+  if(idx>=0){
+    favs.splice(idx,1);fb.innerHTML=FAV_SVG_EMPTY;fb.classList.remove("active");showToast(t('toast-fav-remove'));
+  } else {
+    if(favs.length>=10){showToast(currentLang==='en'?'Limit of 10 favorites reached':'Limite de 10 favoris atteinte');return;}
+    favs.push({title:cur.title,region:cur.region,type:cur.type});fb.innerHTML=FAV_SVG_FILLED;fb.classList.add("active");showToast(t('toast-fav-add'));
+  }
   saveFavs();updateFavBtn();
   if(document.getElementById("fav-panel").classList.contains("visible"))renderFavs();
+  // Mettre à jour l'onglet favoris dans le profil si ouvert
+  const profTab=document.querySelector('.profile-tab-btn.active');
+  if(profTab&&profTab.dataset.tab==='favs')renderProfileFavs();
 }
 function updateFavBtn(){
   const tog=document.getElementById("fav-toggle");
