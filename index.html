@@ -427,7 +427,7 @@
     /* ── Tips overlay (plein écran) ─────────────────── */
     .tips-overlay{position:fixed;inset:0;z-index:400;display:none;overflow:hidden}
     .tips-overlay.open{display:block}
-    .tips-sheet{background:var(--bg);width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;animation:pageSlideIn 0.22s cubic-bezier(.4,0,.2,1)}
+    .tips-sheet{background:var(--bg);width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;animation:pageSlideIn 0.22s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
     .tips-sheet-head{flex-shrink:0}
     .tips-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 20px 44px;flex:1;min-height:0}
     .tips-section{margin-bottom:28px}
@@ -439,6 +439,26 @@
 
     /* ── Full-page navigation header ───────────────── */
     @keyframes pageSlideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+    @keyframes pageSlideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+    @keyframes tipDetailIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+    @keyframes tipDetailOut{from{transform:translateX(0)}to{transform:translateX(100%)}}
+    .tips-cat-grid{display:flex;flex-direction:column;gap:10px;padding:4px 0 8px}
+    .tips-cat-tile{display:flex;align-items:center;gap:14px;background:var(--card-bg);border:1.5px solid var(--border);border-radius:14px;padding:15px 16px;cursor:pointer;transition:border-color 0.15s,transform 0.1s;text-align:left;width:100%}
+    .tips-cat-tile:active{transform:scale(0.98)}
+    .tips-cat-tile:hover{border-color:var(--accent)}
+    .tips-cat-icon{font-size:26px;flex-shrink:0;width:36px;text-align:center}
+    .tips-cat-body{flex:1}
+    .tips-cat-name{font-size:15px;font-weight:700;color:var(--fg);margin-bottom:2px}
+    .tips-cat-count{font-size:12px;color:var(--fg2)}
+    .tips-cat-arrow{font-size:16px;color:var(--fg3);flex-shrink:0}
+    .tips-detail-view{position:absolute;inset:0;background:var(--bg);display:none;flex-direction:column;z-index:2}
+    .tips-detail-view.open{display:flex;animation:tipDetailIn 0.2s cubic-bezier(.4,0,.2,1)}
+    .tips-detail-view.closing{animation:tipDetailOut 0.18s cubic-bezier(.4,0,.2,1) forwards}
+    .tips-detail-head{flex-shrink:0;border-bottom:1px solid var(--border)}
+    .tips-detail-back{display:flex;align-items:center;gap:10px;padding:16px 18px;cursor:pointer;background:none;border:none;color:var(--accent);font-size:14px;font-weight:600;font-family:inherit}
+    .tips-detail-back span{font-size:18px}
+    .tips-detail-title{padding:0 18px 14px;font-family:"Playfair Display",Georgia,serif;font-size:20px;font-weight:700;color:var(--fg)}
+    .tips-detail-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 20px 44px;flex:1;min-height:0}
     .page-nav-header{background:var(--grad-dark);padding:env(safe-area-inset-top,0) 0 0;flex-shrink:0}
     .page-nav-inner{display:flex;align-items:center;gap:12px;padding:12px 16px 14px}
     .page-back-btn{background:none;border:none;color:rgba(250,240,228,0.88);font-size:26px;cursor:pointer;padding:4px 8px;line-height:1;flex-shrink:0;border-radius:8px;transition:background 0.15s;font-family:sans-serif}
@@ -995,55 +1015,128 @@
     </div>
     <div class="about-sheet-body">
 
+    <!-- Section: C'est quoi -->
     <div class="about-section">
-      <div class="about-section-title" data-i18n="about-title-what">C&rsquo;est quoi</div>
-      <div class="about-text" data-i18n="about-text-what">
-        Un g&eacute;n&eacute;rateur de recettes fait pour les cuisines qu&rsquo;on voit rarement dans les apps habituelles.
-        Tu choisis ce que t&rsquo;as dans le frigo ou le type de repas que tu veux, Marmito te sort une recette avec les quantit&eacute;s
-        et un chrono &eacute;tape par &eacute;tape. Pas de scroll infini, pas de blog &agrave; lire avant d&rsquo;arriver aux ingr&eacute;dients.
+      <div class="about-section-title">C&rsquo;est quoi</div>
+      <div class="about-text">
+        Marmito, c&rsquo;est un g&eacute;n&eacute;rateur de recettes fait pour les cuisines qu&rsquo;on voit rarement dans les apps habituelles. Afrique, Maghreb, Antilles, Liban, Japon&hellip; des plats qu&rsquo;on cuisine vraiment &agrave; la maison, pas des versions adapt&eacute;es pour plaire &agrave; tout le monde.
+      </div>
+      <div class="about-text" style="margin-top:10px">
+        Tu mets ce que t&rsquo;as dans le frigo, tu choisis ta cuisine, et Marmito sort une recette compl&egrave;te avec les quantit&eacute;s et un chrono &eacute;tape par &eacute;tape. Pas de scroll, pas de blog &agrave; lire avant d&rsquo;arriver aux ingr&eacute;dients.
       </div>
     </div>
 
+    <!-- Section: Recettes présentes -->
     <div class="about-section">
-      <div class="about-section-title" data-i18n="about-title-covers">Ce qu&rsquo;on couvre</div>
+      <div class="about-section-title">Les recettes pr&eacute;sentes</div>
+      <div class="about-text" style="margin-bottom:12px">342 recettes au total, r&eacute;parties en 12 cuisines&nbsp;:</div>
       <div class="about-regions">
         <div class="about-region-item">
-          <div class="about-region-flag">🌍</div>
+          <div class="about-region-flag">🌴</div>
           <div class="about-region-body">
-            <div class="about-region-name" data-i18n="about-region-africa-name">Afrique</div>
-            <div class="about-region-desc" data-i18n="about-region-africa-desc">S&eacute;n&eacute;gal, Cameroun, C&ocirc;te d&rsquo;Ivoire, Nigeria, Congo, Mali&hellip;</div>
+            <div class="about-region-name">Antilles &amp; Cara&iuml;bes</div>
+            <div class="about-region-desc">73 recettes &bull; Guadeloupe, Martinique, Ha&iuml;ti, Guyane &bull; Bouyon, colombo, accras, griot, matoutou</div>
           </div>
         </div>
         <div class="about-region-item">
-          <div class="about-region-flag">🇲🇦</div>
+          <div class="about-region-flag">🌙</div>
           <div class="about-region-body">
-            <div class="about-region-name" data-i18n="about-region-maghreb-name">Maghreb</div>
-            <div class="about-region-desc" data-i18n="about-region-maghreb-desc">Maroc, Alg&eacute;rie, Tunisie : couscous, tajines, chorba&hellip;</div>
+            <div class="about-region-name">Maghreb</div>
+            <div class="about-region-desc">70 recettes &bull; Maroc, Alg&eacute;rie, Tunisie &bull; Couscous, tajines, chorba, brick, harira</div>
           </div>
         </div>
         <div class="about-region-item">
           <div class="about-region-flag">🍁</div>
           <div class="about-region-body">
-            <div class="about-region-name" data-i18n="about-region-qc-name">Qu&eacute;bec &amp; international</div>
-            <div class="about-region-desc" data-i18n="about-region-qc-desc">Les classiques d&rsquo;ici et quelques recettes du reste du monde.</div>
+            <div class="about-region-name">Qu&eacute;bec &amp; Occident</div>
+            <div class="about-region-desc">69 recettes &bull; Poutine, tourtière, soupes, rôtis, quiches et classiques occidentaux</div>
           </div>
         </div>
         <div class="about-region-item">
-          <div class="about-region-flag">🌴</div>
+          <div class="about-region-flag">🌍</div>
           <div class="about-region-body">
-            <div class="about-region-name" data-i18n="about-region-antibes-name">Antilles &amp; Cara&iuml;bes</div>
-            <div class="about-region-desc" data-i18n="about-region-antibes-desc">Guadeloupe, Martinique, Ha&iuml;ti : bouyon, colombo, accras et saveurs cr&eacute;oles.</div>
+            <div class="about-region-name">Afrique subsaharienne</div>
+            <div class="about-region-desc">68 recettes &bull; S&eacute;n&eacute;gal, Cameroun, C&ocirc;te d&rsquo;Ivoire, Congo, Nigeria &bull; Thiéboudienne, ndolé, aloko, sauce arachide</div>
+          </div>
+        </div>
+        <div class="about-region-item">
+          <div class="about-region-flag">🇯🇵</div>
+          <div class="about-region-body">
+            <div class="about-region-name">Japonaise</div>
+            <div class="about-region-desc">10 recettes &bull; Ramen, onigiri, teriyaki, gyoza, miso</div>
+          </div>
+        </div>
+        <div class="about-region-item">
+          <div class="about-region-flag">🇮🇳</div>
+          <div class="about-region-body">
+            <div class="about-region-name">Indienne</div>
+            <div class="about-region-desc">8 recettes &bull; Dal, butter chicken, biryani, samosa, raita</div>
+          </div>
+        </div>
+        <div class="about-region-item">
+          <div class="about-region-flag">🇱🇧</div>
+          <div class="about-region-body">
+            <div class="about-region-name">Libanaise</div>
+            <div class="about-region-desc">8 recettes &bull; Fattoush, kibbeh, houmous, mujaddara, kebbeh</div>
+          </div>
+        </div>
+        <div class="about-region-item">
+          <div class="about-region-flag">🌮</div>
+          <div class="about-region-body">
+            <div class="about-region-name">Mexicaine</div>
+            <div class="about-region-desc">8 recettes &bull; Tacos, enchiladas, guacamole, tamales, chili</div>
+          </div>
+        </div>
+        <div class="about-region-item">
+          <div class="about-region-flag">🇮🇹</div>
+          <div class="about-region-body">
+            <div class="about-region-name">Italienne</div>
+            <div class="about-region-desc">7 recettes &bull; Risotto, osso buco, pasta, arancini, tiramisu</div>
+          </div>
+        </div>
+        <div class="about-region-item">
+          <div class="about-region-flag">🇬🇷</div>
+          <div class="about-region-body">
+            <div class="about-region-name">Grecque</div>
+            <div class="about-region-desc">7 recettes &bull; Moussaka, spanakopita, souvlaki, tzatziki, fasolada</div>
+          </div>
+        </div>
+        <div class="about-region-item">
+          <div class="about-region-flag">🇪🇸</div>
+          <div class="about-region-body">
+            <div class="about-region-name">Espagnole</div>
+            <div class="about-region-desc">7 recettes &bull; Paella, gazpacho, tortilla española, croquetas, pisto</div>
+          </div>
+        </div>
+        <div class="about-region-item">
+          <div class="about-region-flag">🥢</div>
+          <div class="about-region-body">
+            <div class="about-region-name">Chinoise</div>
+            <div class="about-region-desc">7 recettes &bull; Riz cantonais, dim sum, mapo tofu, bao, soupe wonton</div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Section: Comment ça marche -->
     <div class="about-section">
-      <div class="about-section-title" data-i18n="about-title-how">Comment &ccedil;a marche</div>
+      <div class="about-section-title">Comment &ccedil;a marche</div>
       <div class="about-steps">
-        <div class="about-step" data-i18n="about-step-1"><div class="about-step-num">1</div>Tu entres tes ingr&eacute;dients ou tu choisis un type de repas.</div>
-        <div class="about-step" data-i18n="about-step-2"><div class="about-step-num">2</div>Marmito te g&eacute;n&egrave;re une recette avec quantit&eacute;s et &eacute;tapes.</div>
-        <div class="about-step" data-i18n="about-step-3"><div class="about-step-num">3</div>Tu lances le chrono directement depuis l&rsquo;&eacute;cran, pas besoin de regarder ta montre.</div>
+        <div class="about-step"><div class="about-step-num">1</div>Choisis ta cuisine et entre les ingr&eacute;dients que t&rsquo;as (optionnel).</div>
+        <div class="about-step"><div class="about-step-num">2</div>Marmito g&eacute;n&egrave;re une recette compl&egrave;te avec ingr&eacute;dients et &eacute;tapes d&eacute;taill&eacute;es.</div>
+        <div class="about-step"><div class="about-step-num">3</div>Lance le mode cuisine pour suivre les &eacute;tapes une &agrave; une avec chrono int&eacute;gr&eacute;.</div>
+        <div class="about-step"><div class="about-step-num">4</div>Sauvegarde tes favoris, retrouve ton historique et ajuste les portions selon les convives.</div>
+      </div>
+    </div>
+
+    <!-- Section: À venir -->
+    <div class="about-section">
+      <div class="about-section-title">&Agrave; venir</div>
+      <div class="about-text">
+        Nouvelles cuisines (Persane, &Eacute;thiopienne, Brésilienne), mode photo pour identifier les ingr&eacute;dients, partage de recettes, et d&rsquo;autres am&eacute;liorations ba&eacute;ses sur vos retours.
+      </div>
+      <div class="about-text" style="margin-top:10px">
+        Une question ou une suggestion ? Passe par <strong>Contact</strong> dans le menu.
       </div>
     </div>
 
@@ -1231,7 +1324,16 @@
   }
 
   function closeProfile() {
-    document.getElementById('profile-overlay').classList.remove('open');
+    const sheet = document.getElementById('profile-sheet');
+    if (sheet) {
+      sheet.style.animation = 'pageSlideOut 0.18s cubic-bezier(.4,0,.2,1) forwards';
+      setTimeout(() => {
+        document.getElementById('profile-overlay').classList.remove('open');
+        sheet.style.animation = '';
+      }, 175);
+    } else {
+      document.getElementById('profile-overlay').classList.remove('open');
+    }
   }
 
   function openHistoryRecipe(title) {
@@ -1309,8 +1411,18 @@
     }).join('');
   }
   function closeHistory() {
-    document.getElementById('history-overlay').classList.remove('open');
-    document.body.style.overflow = '';
+    const sheet = document.querySelector('#history-overlay .history-sheet');
+    if (sheet) {
+      sheet.style.animation = 'pageSlideOut 0.18s cubic-bezier(.4,0,.2,1) forwards';
+      setTimeout(() => {
+        document.getElementById('history-overlay').classList.remove('open');
+        sheet.style.animation = '';
+        document.body.style.overflow = '';
+      }, 175);
+    } else {
+      document.getElementById('history-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
   }
 
   function openContact() {
@@ -1318,8 +1430,18 @@
     document.body.style.overflow = 'hidden';
   }
   function closeContact() {
-    document.getElementById('contact-overlay').classList.remove('open');
-    document.body.style.overflow = '';
+    const sheet = document.querySelector('#contact-overlay .contact-sheet');
+    if (sheet) {
+      sheet.style.animation = 'pageSlideOut 0.18s cubic-bezier(.4,0,.2,1) forwards';
+      setTimeout(() => {
+        document.getElementById('contact-overlay').classList.remove('open');
+        sheet.style.animation = '';
+        document.body.style.overflow = '';
+      }, 175);
+    } else {
+      document.getElementById('contact-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
   }
   async function submitContact2(e) {
     e.preventDefault();
@@ -1341,15 +1463,103 @@
     document.body.style.overflow = 'hidden';
   }
   function closeTips() {
-    document.getElementById('tips-overlay').classList.remove('open');
+    const sheet = document.querySelector('#tips-overlay .tips-sheet');
+    // Also close detail if open
+    const detail = document.getElementById('tips-detail-view');
+    if (detail) { detail.className = 'tips-detail-view'; }
+    sheet.style.animation = 'pageSlideOut 0.18s cubic-bezier(.4,0,.2,1) forwards';
+    setTimeout(() => {
+      document.getElementById('tips-overlay').classList.remove('open');
+      sheet.style.animation = '';
+    }, 175);
     document.body.style.overflow = '';
+  }
+  function openTipsCategory(cat) {
+    const TIPS_DATA = {
+      conservation: {
+        title: '🧊 Conservation',
+        tips: [
+          { head: 'Gingembre frais', body: 'Congèle-le entier et râpe-le directement congelé. Ça tient 3 mois et ça râpe bien mieux congelé que frais, sans perdre son jus.' },
+          { head: 'Herbes fraîches', body: 'Persil, coriandre, cive : lave, sèche, hache grossièrement et congèle dans un sac à plat. Tu en prends ce qu'il te faut directement dans la casserole, sans décongeler.' },
+          { head: 'Piment frais', body: 'Conserve dans un petit bocal fermé avec un filet d'huile au réfrigérateur. Se garde facilement 2 à 3 semaines sans moisir.' },
+          { head: 'Sauce tomate maison', body: 'Divise en portions dans des sacs de congélation posés à plat. Tu casses la quantité exacte dont tu as besoin sans sortir tout le lot.' },
+        ]
+      },
+      cuisson: {
+        title: '🔥 Astuces de cuisson',
+        tips: [
+          { head: 'Oignons vraiment fondus', body: 'La plupart des sauces africaines et maghrébines commencent par des oignons qui fondent à feu moyen pendant 10 à 15 minutes. Pas sautés, fondus. C'est là que la base de goût se construit.' },
+          { head: 'Riz parfait', body: 'Rince jusqu'à ce que l'eau soit claire, puis cuis à feu très doux avec le couvercle. À la fin, éteins et laisse reposer 5 minutes sans soulever le couvercle. L'humidité finit le travail.' },
+          { head: 'Viande tendre en ragoût', body: 'Pour les ragoûts africains et les tajines, saisis d'abord à feu vif 2 à 3 minutes pour colorer, puis ajoute le liquide et laisse mijoter à feu très doux. Plus tu prends ton temps, meilleure est la viande.' },
+          { head: 'Piment : goût sans bruler', body: 'Ajoute le piment entier dans la sauce en cours de cuisson et retire-le avant de servir. Tu obtiens le parfum et la chaleur de fond sans que ça brûle. Coupe-le seulement si tu veux vraiment que ça pique.' },
+          { head: 'Lait de coco : ne pas faire bouillir', body: 'Ajoute le lait de coco en fin de cuisson à feu doux. À gros bouillons, il se sépare et perd sa texture crémeuse. Un frémissement suffit.' },
+        ]
+      },
+      epices: {
+        title: '🌶️ Épices par cuisine',
+        tips: [
+          { head: 'Cuisine africaine', tag: 'Afrique', body: 'Gingembre frais, ail, oignon et piment forment la base de presque toutes les sauces. Le poivre de Selim (kani) et la tomate concentrée complètent le profil. Fais revenir le gingembre et l'ail dès le début pour développer les arômes.' },
+          { head: 'Maghreb', tag: 'Maghreb', body: 'Ras el hanout, cumin moulu et cannelle sont au cœur des tajines et couscous. Pense aussi à la coriandre fraîche et au citron confit en finition — ils relèvent tout sans couvrir.' },
+          { head: 'Antilles & Caraïbes', tag: 'Antilles', body: 'Thym frais, cive (ciboulette créole), ail et piment bonda man jak ou scotch bonnet. Pour le colombo, le mélange de colombo sec s'utilise en début de cuisson avec les matières grasses.' },
+          { head: 'Cuisines asiatiques', tag: 'Asie', body: 'Sauce soja, gingembre, sésame et ail pour les sauces de base. Pour les plats indiens, fais revenir les épices sèches (cumin entier, moutarde) dans l'huile chaude avant d'ajouter l'oignon : ça libère 3 fois plus de saveur.' },
+          { head: 'Mélanges faits maison', body: 'Ras el hanout rapide : cumin + coriandre + cannelle + poivre + cardamome + paprika. Épices créoles : thym séché + ail en poudre + piment doux + origan + sel. Ça remplace les mélanges du commerce en dépannage.' },
+        ]
+      },
+      substitutions: {
+        title: '🔄 Substitutions',
+        tips: [
+          { head: 'Pas de ras el hanout ?', body: 'Mélange cumin + coriandre + cannelle + poivre + une pincée de cardamome. Pas identique, mais ça fait le travail dans un tajine ou un couscous.' },
+          { head: 'Pas de feuilles de manioc fraîches ?', body: 'Les épinards congelés font un remplacement correct pour le pondu ou le saka saka. Texture légèrement différente mais les saveurs de la sauce restent là.' },
+          { head: 'Pas de lait de coco en boîte ?', body: '200 ml de crème 15% + 50 ml d'eau + 1 c. à thé d'huile de coco fondue. Ce n'est pas pareil, mais ça donne la texture crémeuse qu'on cherche dans un curry ou un bouyon.' },
+          { head: 'Pas de colombo en poudre ?', body: 'Cumin + curcuma + coriandre + piment doux + un peu de fenouil. C'est la base du mélange. Fais revenir dans l'huile avant d'ajouter la viande.' },
+        ]
+      },
+      marmito: {
+        title: '📱 Utiliser Marmito',
+        tips: [
+          { head: 'Ingrédients : optionnels', body: 'Tu n'as pas besoin de remplir le champ ingrédients. Choisis juste la cuisine et appuie sur "Selon mes filtres". Marmito trouve une recette qui convient même sans liste.' },
+          { head: 'Ajuste les portions', body: 'Le curseur sous la recette adapte toutes les quantités en temps réel. De 1 à 8 personnes, chaque gramme est recalculé. Pratique si vous êtes plus que prévu.' },
+          { head: 'Mode cuisine', body: 'Appuie sur "Commencer la préparation" pour lancer le mode étape par étape avec chrono intégré. L'écran reste allumé tant que tu cuisines. Tu n'as pas besoin de chronométrer ailleurs.' },
+          { head: 'Favoris & historique', body: 'Sauvegarde jusqu'à 10 recettes dans les favoris via le ❤️ en haut à droite. Retrouve les 30 dernières recettes générées dans l'onglet Historique de ton profil.' },
+        ]
+      },
+      hygiene: {
+        title: '🧼 Hygiène & Sécurité',
+        tips: [
+          { head: 'Décongélation correcte', body: 'Décongèle toujours la viande et le poisson au réfrigérateur, pas sur le comptoir. Si tu es pressé, utilise l'eau froide courante dans un sac fermé. Ne recongèle jamais un aliment décongelé à température ambiante.' },
+          { head: 'Viande hachée et volaille', body: 'Le poulet et la viande hachée doivent être cuits à cœur. Pas de rose, pas de jus rose. Pour les ragoûts avec morceaux entiers de bœuf, un peu de rose en surface après saisie, c'est normal — ce qui compte c'est que l'intérieur soit chaud.' },
+          { head: 'Légumes et herbes', body: 'Lave toujours les légumes et herbes fraîches à l'eau froide avant de les utiliser, même si tu les épluches après. La coriandre et la cive en particulier accumulent de la terre entre les feuilles.' },
+          { head: 'Restes et conservation', body: 'Mets les restes au réfrigérateur dans les 2 heures qui suivent la cuisson. Un plat chaud qui reste sur le comptoir toute une nuit, c'est un risque inutile. La plupart des plats mijotés sont meilleurs réchauffés le lendemain de toute façon.' },
+        ]
+      }
+    };
+    const data = TIPS_DATA[cat];
+    if (!data) return;
+    document.getElementById('tips-detail-title').textContent = data.title;
+    document.getElementById('tips-detail-body').innerHTML = data.tips.map(t =>
+      '<div class="tip-card" style="margin-bottom:12px">' +
+      (t.tag ? '<span class="tip-tag">'+t.tag+'</span><br>' : '') +
+      '<strong>'+t.head+'</strong><br><span style="line-height:1.6">'+t.body+'</span></div>'
+    ).join('');
+    const dv = document.getElementById('tips-detail-view');
+    dv.className = 'tips-detail-view open';
+  }
+  function closeTipsCategory() {
+    const dv = document.getElementById('tips-detail-view');
+    dv.classList.add('closing');
+    setTimeout(() => { dv.className = 'tips-detail-view'; }, 180);
   }
   function openAbout() {
     document.getElementById('about-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
   function closeAbout() {
-    document.getElementById('about-overlay').classList.remove('open');
+    const sheet = document.querySelector('#about-overlay .about-sheet');
+    sheet.style.animation = 'pageSlideOut 0.18s cubic-bezier(.4,0,.2,1) forwards';
+    setTimeout(() => {
+      document.getElementById('about-overlay').classList.remove('open');
+      sheet.style.animation = '';
+    }, 175);
     document.body.style.overflow = '';
   }
 
@@ -11891,101 +12101,70 @@ applyLang();
       </div>
     </div>
     <div class="tips-sheet-body">
-
-      <div style="padding:18px 0 8px">
-
-        <!-- Section 1: Épices de base -->
-        <div class="tips-section">
-          <div class="tips-section-title">Épices de base</div>
-          <div class="tips-list">
-            <div class="tip-card">
-              <span class="tip-tag">Africaine</span><br>
-              <strong>Poivre de Selim</strong> (kani), <strong>dattes de Poivre</strong> et <strong>gingembre frais</strong> sont indispensables pour la plupart des sauces africaines.
+      <div style="padding:16px 0 8px">
+        <p style="font-size:13px;color:var(--fg2);margin:0 0 16px;line-height:1.5">Choisis une catégorie pour voir les conseils.</p>
+        <div class="tips-cat-grid">
+          <button class="tips-cat-tile" onclick="openTipsCategory('conservation')">
+            <div class="tips-cat-icon">🧊</div>
+            <div class="tips-cat-body">
+              <div class="tips-cat-name">Conservation</div>
+              <div class="tips-cat-count">4 astuces &bull; Épices, herbes, congélation</div>
             </div>
-            <div class="tip-card">
-              <span class="tip-tag">Maghreb</span><br>
-              <strong>Ras el hanout</strong>, <strong>cumin moulu</strong> et <strong>cannelle</strong> sont à la base de la majorité des tajines et couscous.
+            <div class="tips-cat-arrow">›</div>
+          </button>
+          <button class="tips-cat-tile" onclick="openTipsCategory('cuisson')">
+            <div class="tips-cat-icon">🔥</div>
+            <div class="tips-cat-body">
+              <div class="tips-cat-name">Astuces de cuisson</div>
+              <div class="tips-cat-count">5 astuces &bull; Oignons, riz, viande, sauces</div>
             </div>
-            <div class="tip-card">
-              <span class="tip-tag">Antilles</span><br>
-              <strong>Piment bonda man jak</strong>, <strong>thym frais</strong> et <strong>cive</strong> (ciboulette créole) sont les incontournables du colombo et du bouyon.
+            <div class="tips-cat-arrow">›</div>
+          </button>
+          <button class="tips-cat-tile" onclick="openTipsCategory('epices')">
+            <div class="tips-cat-icon">🌶️</div>
+            <div class="tips-cat-body">
+              <div class="tips-cat-name">Épices par cuisine</div>
+              <div class="tips-cat-count">5 astuces &bull; Afrique, Maghreb, Antilles&hellip;</div>
             </div>
-          </div>
+            <div class="tips-cat-arrow">›</div>
+          </button>
+          <button class="tips-cat-tile" onclick="openTipsCategory('substitutions')">
+            <div class="tips-cat-icon">🔄</div>
+            <div class="tips-cat-body">
+              <div class="tips-cat-name">Substitutions</div>
+              <div class="tips-cat-count">4 astuces &bull; Remplacer les ingr&eacute;dients</div>
+            </div>
+            <div class="tips-cat-arrow">›</div>
+          </button>
+          <button class="tips-cat-tile" onclick="openTipsCategory('marmito')">
+            <div class="tips-cat-icon">📱</div>
+            <div class="tips-cat-body">
+              <div class="tips-cat-name">Utiliser Marmito</div>
+              <div class="tips-cat-count">4 astuces &bull; Filtres, portions, mode cuisine</div>
+            </div>
+            <div class="tips-cat-arrow">›</div>
+          </button>
+          <button class="tips-cat-tile" onclick="openTipsCategory('hygiene')">
+            <div class="tips-cat-icon">🧼</div>
+            <div class="tips-cat-body">
+              <div class="tips-cat-name">Hygi&egrave;ne &amp; S&eacute;curit&eacute;</div>
+              <div class="tips-cat-count">4 astuces &bull; Cuisson, d&eacute;congélation, cuisine saine</div>
+            </div>
+            <div class="tips-cat-arrow">›</div>
+          </button>
         </div>
+      </div>
+    </div>
 
-        <!-- Section 2: Conservation -->
-        <div class="tips-section">
-          <div class="tips-section-title">Conservation</div>
-          <div class="tips-list">
-            <div class="tip-card">
-              <strong>Gingembre frais</strong> : congèle-le entier et râpe-le directement congelé. Ça tient 3 mois et ça râpe mieux congelé que frais.
-            </div>
-            <div class="tip-card">
-              <strong>Herbes fraîches</strong> (persil, coriandre, cive) : lave, sèche, hache et congèle dans un sac. Tu le mets directement dans la casserole sans décongeler.
-            </div>
-            <div class="tip-card">
-              <strong>Piment frais</strong> : conserve dans un bocal avec un peu d'huile au réfrigérateur. Se garde 2 semaines.
-            </div>
-            <div class="tip-card">
-              <strong>Sauce tomate maison</strong> : divise en portions dans des sacs de congélation à plat. Tu casses ce qu'il te faut sans sortir tout le lot.
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 3: Substitutions -->
-        <div class="tips-section">
-          <div class="tips-section-title">Substitutions courantes</div>
-          <div class="tips-list">
-            <div class="tip-card">
-              <strong>Pas de ras el hanout ?</strong> Mélange cumin + coriandre + cannelle + poivre + une pincée de cardamome. C'est pas identique mais ça fait le travail.
-            </div>
-            <div class="tip-card">
-              <strong>Pas de feuilles de manioc fraîches ?</strong> Les épinards congelés font un remplacement correct pour le pondu ou le saka saka.
-            </div>
-            <div class="tip-card">
-              <strong>Pas de lait de coco en boîte ?</strong> Mélange 200 ml de crème 15% + 50 ml d'eau + 1 c. à thé d'huile de coco. C'est pas pareil mais ça donne la texture crémeuse qu'on cherche.
-            </div>
-            <div class="tip-card">
-              <strong>Assaisonnement</strong> : utilise sel, poivre et herbes fraîches ou séchées plutôt que les cubes du commerce. Tu contrôles mieux le sel et les saveurs.
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 4: Astuces de cuisson -->
-        <div class="tips-section">
-          <div class="tips-section-title">Astuces de cuisson</div>
-          <div class="tips-list">
-            <div class="tip-card">
-              <strong>Oignons bien fondus</strong> : la plupart des sauces africaines demandent des oignons vraiment fondus (10-15 min à feu moyen). Pas sautés, fondus. C'est là que le goût se construit.
-            </div>
-            <div class="tip-card">
-              <strong>Piment</strong> : ajoute-le entier dans la sauce et retire avant de servir si tu veux du goût sans trop de piquant. Coupe-le si tu veux que ça pique pour de vrai.
-            </div>
-            <div class="tip-card">
-              <strong>Riz parfait</strong> : rince jusqu'à ce que l'eau soit claire, puis laisse reposer 5 min à couvert sans ouvrir le couvercle.
-            </div>
-            <div class="tip-card">
-              <strong>Viande tendre</strong> : pour les ragoûts africains, saisis d'abord à feu vif 2-3 min, puis mijote à feu doux longtemps. Plus tu laisses mijoter, meilleur c'est.
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 5: Utiliser Marmito -->
-        <div class="tips-section">
-          <div class="tips-section-title">Utiliser Marmito</div>
-          <div class="tips-list">
-            <div class="tip-card">
-              <strong>Ingrédients optionnels</strong> : tu n'as pas besoin d'en mettre. Laisse le champ vide et choisis juste la région. Marmito s'occupe du reste.
-            </div>
-            <div class="tip-card">
-              <strong>Ajuste les portions</strong> : utilise le curseur sous la recette pour adapter les quantités. Que tu cuisines pour toi seul ou pour 8 personnes.
-            </div>
-            <div class="tip-card">
-              <strong>Mode cuisine</strong> : appuie sur "Commencer la préparation" pour avoir le chrono intégré étape par étape. Ton téléphone reste allumé et tu suis le chrono sans chercher ailleurs.
-            </div>
-          </div>
-        </div>
-
+    <!-- TIPS DETAIL VIEW (slides over) -->
+    <div class="tips-detail-view" id="tips-detail-view">
+      <div class="tips-detail-head">
+        <button class="tips-detail-back" onclick="closeTipsCategory()">
+          <span>&#8592;</span> Retour
+        </button>
+        <div class="tips-detail-title" id="tips-detail-title">Conservation</div>
+      </div>
+      <div class="tips-detail-body" id="tips-detail-body">
       </div>
     </div>
   </div>
