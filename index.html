@@ -1171,7 +1171,7 @@
   async function initAuth() {
     const { data: { session } } = await sb.auth.getSession();
     if (!session) {
-      window.location.href = '/auth.html';
+      window.location.href = '/landing.html';
       return;
     }
     currentUser = session.user;
@@ -1296,7 +1296,7 @@
       return;
     }
     if (!currentUser) {
-      window.location.href = '/auth.html';
+      window.location.href = '/landing.html';
       return;
     }
     // Avatar initials
