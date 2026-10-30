@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { userId, email, plan } = req.body;
+    const { userId, email, plan, referredBy } = req.body;
     if (!userId || !email) return res.status(400).json({ error: 'userId and email required' });
 
     let priceId;
@@ -21,16 +21,25 @@ module.exports = async (req, res) => {
     }
     if (!priceId) return res.status(500).json({ error: 'Price ID not configured for plan: ' + plan });
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams = {
       mode: 'subscription',
       payment_method_types: ['card'],
       customer_email: email,
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${process.env.SITE_URL || 'https://marmito-one.vercel.app'}/?upgraded=1`,
       cancel_url: `${process.env.SITE_URL || 'https://marmito-one.vercel.app'}/?cancelled=1`,
-      metadata: { supabase_user_id: userId, plan: plan || 'saveur' },
-    });
+      metadata: {
+        supabase_user_id: userId,
+        plan: plan || 'saveur',
+        referred_by: referredBy || '',
+      },
+    };
 
+    if (referredBy && process.env.STRIPE_COUPON_REFERRAL) {
+      sessionParams.discounts = [{ coupon: process.env.STRIPE_COUPON_REFERRAL }];
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
     res.status(200).json({ url: session.url });
   } catch (err) {
     console.error('Stripe checkout error:', err);
