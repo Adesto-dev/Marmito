@@ -121,6 +121,12 @@
     .plan-price { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--accent); }
     .plan-price span { font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 500; color: var(--fg2); }
     .plan-features { font-size: 12px; color: var(--fg2); margin-top: 6px; line-height: 1.6; }
+    .plan-launch-badge { display: inline-flex; align-items: center; gap: 4px; background: linear-gradient(90deg,#e63946,#ff6b35); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-bottom: 4px; }
+    .plan-price-row { display: flex; align-items: baseline; gap: 6px; }
+    .plan-price-old { font-family: 'Raleway', sans-serif; font-size: 14px; font-weight: 500; color: var(--fg2); text-decoration: line-through; opacity: 0.65; }
+    .plan-price-new { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: #e63946; }
+    .plan-price-new span { font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 500; color: var(--fg2); }
+    .plan-launch-note { font-size: 11px; color: #e63946; font-weight: 600; margin-top: 2px; margin-bottom: 4px; }
 
     /* CTA FINAL */
     .final-cta { background: var(--grad-dark); padding: 52px 20px; text-align: center; }
@@ -266,12 +272,22 @@
     </div>
     <div class="plan featured">
       <div class="plan-name">🍽️ Saveur</div>
-      <div class="plan-price">5,99$ <span>/ mois</span></div>
+      <div class="plan-launch-badge">✨ Prix spécial</div>
+      <div class="plan-price-row">
+        <span class="plan-price-old">5,99$</span>
+        <div class="plan-price-new">3,99$<span> / mois</span></div>
+      </div>
+      <div class="plan-launch-note">Premier mois seulement</div>
       <div class="plan-features">130 recettes par mois · Plan repas 7 jours · Filtre par durée & ingrédients · Tout du plan Gratuit</div>
     </div>
     <div class="plan">
       <div class="plan-name">👨‍🍳 Chef</div>
-      <div class="plan-price">10,99$ <span>/ mois</span></div>
+      <div class="plan-launch-badge">✨ Prix spécial</div>
+      <div class="plan-price-row">
+        <span class="plan-price-old">10,99$</span>
+        <div class="plan-price-new">6,99$<span> / mois</span></div>
+      </div>
+      <div class="plan-launch-note">Premier mois seulement</div>
       <div class="plan-features">342 recettes (accès complet) · Plan repas 7 jours · Conseils & Astuces exclusifs · Nouvelles fonctionnalités en avant-première</div>
     </div>
   </div>
