@@ -844,7 +844,7 @@
     <div class="limit-banner" id="limit-banner">
       <h3 data-i18n="limit-title">Limite atteinte</h3>
       <p data-i18n="limit-text">Tu as genere tes 20 recettes gratuites du mois. Passe à Saveur ou Chef pour plus de recettes et toutes les régions.</p>
-      <button class="btn-upgrade-big" onclick="startUpgrade(this)" data-i18n="btn-upgrade">Passer à Saveur dès 5,99$/mois</button>
+      <button class="btn-upgrade-big" onclick="startUpgrade(this)" data-i18n="btn-upgrade">✨ Passer à Saveur dès 3,99$/mois</button>
     </div>
 
 <div class="result-card" id="result-card">
@@ -1397,7 +1397,7 @@
     const act = document.getElementById('p-actions');
     if (!isPaid) {
       act.innerHTML = '<button class="btn-profile-upgrade" onclick="startUpgrade(this)">' +
-        (currentLang === 'en' ? '⭐ Upgrade — from $5.99/month' : '⭐ Passer à Saveur dès 5,99$/mois') + '</button>';
+        (currentLang === 'en' ? '✨ Upgrade — from $3.99/month' : '✨ Passer à Saveur dès 3,99$/mois') + '</button>';
     } else {
       act.innerHTML = '<button class="btn-manage-portal" onclick="manageSubscription()">⚙️ ' +
         (currentLang === 'en' ? 'Manage subscription' : 'Gérer mon abonnement') + '</button>';
@@ -12430,12 +12430,12 @@ applyLang();
           <div class="plan-card-top">
             <div class="plan-name">🍽️ Saveur</div>
           </div>
-          <div class="launch-badge">🔥 Offre de lancement</div>
+          <div class="launch-badge">✨ Prix spécial</div>
           <div class="plan-price-launch">
             <span class="plan-price-old">5,99$</span>
             <div class="plan-price-new">3,99$<span>/mois</span></div>
           </div>
-          <div class="launch-note">Premier mois seulement — pour les 100 premiers abonnés</div>
+          <div class="launch-note">Premier mois seulement</div>
           <ul class="plan-features">
             <li>130 recettes accessibles</li>
             <li>Recherche par région et type</li>
@@ -12452,12 +12452,12 @@ applyLang();
           <div class="plan-card-top">
             <div class="plan-name">👨‍🍳 Chef</div>
           </div>
-          <div class="launch-badge">🔥 Offre de lancement</div>
+          <div class="launch-badge">✨ Prix spécial</div>
           <div class="plan-price-launch">
             <span class="plan-price-old">10,99$</span>
             <div class="plan-price-new">6,99$<span>/mois</span></div>
           </div>
-          <div class="launch-note">Premier mois seulement — pour les 100 premiers abonnés</div>
+          <div class="launch-note">Premier mois seulement</div>
           <ul class="plan-features">
             <li>342 recettes accessibles</li>
             <li>Recherche par région et type</li>
