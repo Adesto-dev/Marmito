@@ -35,11 +35,22 @@ module.exports = async (req, res) => {
       },
     };
 
+    // Appliquer le coupon selon la priorité : parrainage > offre de lancement
     if (referredBy && process.env.STRIPE_COUPON_REFERRAL) {
+      // Parrainage : 50% premier mois
       sessionParams.discounts = [{ coupon: process.env.STRIPE_COUPON_REFERRAL }];
+    } else {
+      // Offre de lancement : -2$ Saveur ou -4$ Chef
+      const launchCoupon = plan === 'chef'
+        ? process.env.STRIPE_COUPON_LAUNCH_CHEF
+        : process.env.STRIPE_COUPON_LAUNCH_SAVEUR;
+      if (launchCoupon) {
+        sessionParams.discounts = [{ coupon: launchCoupon }];
+      }
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams);
+
     res.status(200).json({ url: session.url });
   } catch (err) {
     console.error('Stripe checkout error:', err);
