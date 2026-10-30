@@ -1231,6 +1231,12 @@
       // Succes : on charge le profil
       userPlan = data.plan || 'free';
       userReferralCode = data.referral_code || null;
+      // Utilisateur existant sans code de parrainage → en générer un
+      if (!userReferralCode) {
+        const newCode = generateReferralCode(currentUser.email);
+        await sb.from('profiles').update({ referral_code: newCode }).eq('id', currentUser.id);
+        userReferralCode = newCode;
+      }
       userBonusExpires = data.bonus_expires_at || null;
       // Override plan with active bonus plan if it outranks current plan
       if (data.bonus_plan && data.bonus_expires_at && new Date(data.bonus_expires_at) > new Date()) {
