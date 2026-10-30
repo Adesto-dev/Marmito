@@ -1698,7 +1698,7 @@
   function shareReferral() {
     if (!userReferralCode) return;
     const link = 'https://marmito-one.vercel.app/auth.html?signup=1&ref=' + userReferralCode;
-    const msg = 'J\'utilise Marmito pour cuisiner des recettes africaines, antillaises et du monde entier 🍲 Essaie-le gratuitement avec mon lien et on gagne tous les deux 7 jours d\'accès premium !\n' + link;
+    const msg = 'J\'utilise Marmito pour cuisiner des recettes africaines, antillaises et du monde entier 🍲 Avec mon lien, tu as 50% sur ton 1er mois !\n' + link;
     if (navigator.share) navigator.share({ title: 'Marmito', text: msg, url: link }).catch(() => {});
     else navigator.clipboard.writeText(msg).then(() => showToast('Message copié !')).catch(() => showToast('Copiez ce lien : ' + link));
   }
@@ -1789,7 +1789,7 @@
       const res = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id, email: currentUser.email, plan })
+        body: JSON.stringify({ userId: currentUser.id, email: currentUser.email, plan, referredBy: (await sb.from('profiles').select('referred_by').eq('id', currentUser.id).single()).data?.referred_by || '' })
       });
       const { url, error } = await res.json();
       if (error) throw new Error(error);
@@ -12468,8 +12468,8 @@ applyLang();
 
       <div class="referral-hero">
         <div class="referral-hero-icon">&#x1F372;</div>
-        <div class="referral-hero-title">Partagez Marmito, recevez 7 jours Saveur</div>
-        <div class="referral-hero-sub">Vous et votre ami profitez chacun de 7 jours d&rsquo;acc&egrave;s Saveur gratuit d&egrave;s son inscription.</div>
+        <div class="referral-hero-title">Partagez Marmito, gagnez 1 mois gratuit</div>
+        <div class="referral-hero-sub">Votre ami obtient 50% sur son 1er mois. Vous gagnez 1 mois gratuit d&egrave;s qu&rsquo;il souscrit &agrave; un plan pay&eacute;.</div>
       </div>
 
       <div id="referral-bonus-active" class="referral-bonus-bar"></div>
@@ -12478,12 +12478,12 @@ applyLang();
         <div class="referral-reward-box">
           <div class="referral-reward-box-icon">&#x1F381;</div>
           <div class="referral-reward-box-label">Vous gagnez</div>
-          <div class="referral-reward-box-val">7 jours Saveur</div>
+          <div class="referral-reward-box-val">1 mois gratuit</div>
         </div>
         <div class="referral-reward-box">
           <div class="referral-reward-box-icon">&#x1F464;</div>
           <div class="referral-reward-box-label">Votre ami gagne</div>
-          <div class="referral-reward-box-val">7 jours Saveur</div>
+          <div class="referral-reward-box-val">50% sur le 1er mois</div>
         </div>
       </div>
 
@@ -12518,7 +12518,7 @@ applyLang();
         </div>
         <div class="referral-step">
           <div class="referral-step-num">3</div>
-          <div class="referral-step-text">Vous recevez tous les deux 7 jours d&rsquo;acc&egrave;s Saveur automatiquement &mdash; sans carte de cr&eacute;dit.</div>
+          <div class="referral-step-text">Votre ami b&eacute;n&eacute;ficie de 50% sur son 1er mois. Vous recevez automatiquement 1 mois gratuit sur votre plan d&egrave;s son paiement.</div>
         </div>
       </div>
 
