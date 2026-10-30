@@ -27,6 +27,15 @@
   <meta name="twitter:description" content="342 recettes avec chrono intégré. Couscous, tajine, chorba, yassa et plus.">
   <meta name="twitter:image" content="https://marmito-one.vercel.app/og-image.png">
 
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#D46820">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Marmito">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
   <!-- Structured Data -->
   <script type="application/ld+json">
   {
@@ -12541,5 +12550,15 @@ applyLang();
   </div>
 </div>
 
+<!-- Service Worker PWA -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('Marmito SW enregistré'))
+      .catch((err) => console.warn('SW erreur:', err));
+  });
+}
+</script>
 </body>
 </html>
