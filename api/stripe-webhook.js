@@ -1,17 +1,10 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(
+const sb = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
-
-const getRawBody = (req) => new Promise((resolve, reject) => {
-  const chunks = [];
-  req.on('data', chunk => chunks.push(chunk));
-  req.on('end', () => resolve(Buffer.concat(chunks)));
-  req.on('error', reject);
-});
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
@@ -20,44 +13,65 @@ module.exports = async (req, res) => {
   let event;
 
   try {
-    const rawBody = await getRawBody(req);
-    event = stripe.webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
   } catch (err) {
     console.error('Webhook signature error:', err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+    return res.status(400).json({ error: 'Invalid signature' });
   }
-
-  const userId = event.data.object.metadata?.supabase_user_id;
-  console.log('[Webhook] event type:', event.type, '| userId:', userId);
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const subscribedPlan = session.metadata?.plan || 'saveur';
-    if (userId) {
-      const { error } = await supabase.from('profiles').upsert({
-        id: userId,
-        plan: subscribedPlan,
-        stripe_customer_id: session.customer,
-        stripe_subscription_id: session.subscription,
-      });
-      if (error) {
-        console.error('[Webhook] Supabase upsert error:', JSON.stringify(error));
-      } else {
-        console.log('[Webhook] Supabase updated to', subscribedPlan, 'for user:', userId);
-      }
-    } else {
-      console.error('[Webhook] userId manquant dans metadata!');
-    }
-  }
+    if (session.mode !== 'subscription') return res.status(200).end();
 
-  if (event.type === 'customer.subscription.deleted') {
-    const sub = event.data.object;
-    const { data, error: selectError } = await supabase.from('profiles').select('id').eq('stripe_subscription_id', sub.id).single();
-    if (selectError) console.error('[Webhook] Select error:', JSON.stringify(selectError));
-    if (data) {
-      const { error: updateError } = await supabase.from('profiles').update({ plan: 'free' }).eq('id', data.id);
-      if (updateError) console.error('[Webhook] Update error:', JSON.stringify(updateError));
-      else console.log('[Webhook] Supabase updated to FREE for user:', data.id);
+    const referredBy = session.metadata?.referred_by;
+    const subscriberUserId = session.metadata?.supabase_user_id;
+
+    if (!referredBy || !subscriberUserId) return res.status(200).end();
+
+    try {
+      const { data: subscriber } = await sb
+        .from('profiles')
+        .select('referral_applied')
+        .eq('id', subscriberUserId)
+        .single();
+
+      if (!subscriber || subscriber.referral_applied) return res.status(200).end();
+
+      const { data: referrer } = await sb
+        .from('profiles')
+        .select('id, bonus_expires_at')
+        .eq('referral_code', referredBy)
+        .neq('id', subscriberUserId)
+        .single();
+
+      if (!referrer) return res.status(200).end();
+
+      await sb.from('profiles').update({ referral_applied: true }).eq('id', subscriberUserId);
+
+      const MAX_BONUS_DAYS = 90;
+      const now = new Date();
+      let newExpires;
+
+      if (!referrer.bonus_expires_at || new Date(referrer.bonus_expires_at) < now) {
+        newExpires = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+      } else {
+        const current = new Date(referrer.bonus_expires_at);
+        const extended = new Date(current.getTime() + 30 * 24 * 60 * 60 * 1000);
+        const maxDate = new Date(now.getTime() + MAX_BONUS_DAYS * 24 * 60 * 60 * 1000);
+        newExpires = extended < maxDate ? extended : maxDate;
+      }
+
+      await sb.from('profiles').update({
+        bonus_plan: 'saveur',
+        bonus_expires_at: newExpires.toISOString(),
+      }).eq('id', referrer.id);
+
+    } catch (err) {
+      console.error('[Marmito] Webhook referral error:', err);
     }
   }
 
