@@ -1465,7 +1465,7 @@
       const cta = document.getElementById('drawer-sub-cta');
       const subSection = document.getElementById('drawer-sub-section');
       if (userPlan === 'free') {
-        cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Saveur dès 5,99$/mois</button>';
+        cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">✨ Passer à Saveur dès 3,99$/mois</button>';
         if (subSection) subSection.style.display = '';
       } else {
         cta.innerHTML = '';
@@ -1474,7 +1474,7 @@
       document.getElementById('drawer-bottom').style.display = 'block';
     } else {
       userEl.classList.remove('show');
-      document.getElementById('drawer-sub-cta').innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Saveur dès 5,99$/mois</button>';
+      document.getElementById('drawer-sub-cta').innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">✨ Passer à Saveur dès 3,99$/mois</button>';
       document.getElementById('drawer-bottom').style.display = 'none';
     }
   }
@@ -11618,7 +11618,7 @@ const i18n = {
     'btn-filter': '🍳 Selon mes filtres',
     'limit-title': 'Limite atteinte',
     'limit-text': 'Tu as généré tes 20 recettes gratuites du mois. Passe à Saveur ou Chef pour plus de recettes et toutes les régions.',
-    'btn-upgrade': 'Passer à Saveur dès 5,99$/mois',
+    'btn-upgrade': '✨ Passer à Saveur dès 3,99$/mois',
     'btn-copy': '📋 Copier',
     'btn-share': '🔗 Partager',
     'sec-ingredients': 'Ingrédients',
@@ -11676,7 +11676,7 @@ const i18n = {
     'plan-title': '&#128197; Plan 7 jours',
     'plan-pro-title': 'Fonctionnalit&eacute; Saveur/Chef',
     'plan-pro-text': 'Le plan de repas 7 jours est r&eacute;serv&eacute; aux abonn&eacute;s Marmito Saveur/Chef.',
-    'plan-pro-btn': 'Passer &agrave; Saveur &mdash; d&egrave;s 5,99$/mois',
+    'plan-pro-btn': '✨ Passer &agrave; Saveur &mdash; d&egrave;s 3,99$/mois',
     'plan-lbl-mon': 'Lundi',
     'plan-lbl-tue': 'Mardi',
     'plan-lbl-wed': 'Mercredi',
@@ -11738,7 +11738,7 @@ const i18n = {
     'btn-filter': '🍳 By my filters',
     'limit-title': 'Limit reached',
     'limit-text': 'You’ve used your 20 free recipes this month. Upgrade to Saveur or Chef for more recipes and all regions.',
-    'btn-upgrade': 'Upgrade — from $5.99/month',
+    'btn-upgrade': '✨ Upgrade — from $3.99/month',
     'btn-copy': '📋 Copy',
     'btn-share': '🔗 Share',
     'sec-ingredients': 'Ingredients',
