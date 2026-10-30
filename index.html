@@ -672,6 +672,13 @@
     .plan-btn.pro-btn:hover{opacity:0.88}
     .plan-btn:disabled{opacity:0.5;cursor:not-allowed}
     .pricing-footer{text-align:center;font-size:12px;color:var(--text-secondary);margin-top:16px;padding:0 8px}
+    /* ===== LAUNCH OFFER BADGE ===== */
+    .launch-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(90deg,#e63946,#ff6b35);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:0.3px;margin-bottom:8px}
+    .plan-price-launch{display:flex;align-items:baseline;gap:6px}
+    .plan-price-old{font-size:14px;font-weight:500;color:var(--text-secondary);text-decoration:line-through;opacity:0.7}
+    .plan-price-new{font-size:22px;font-weight:800;color:#e63946}
+    .plan-price-new span{font-size:13px;font-weight:400;color:var(--text-secondary)}
+    .launch-note{font-size:11px;color:#e63946;font-weight:600;margin-bottom:10px;opacity:0.9}
   
     .hero-wrapper{position:relative;overflow:hidden}
     .hero-overlay{position:absolute;bottom:0;left:0;right:0;padding:20px 24px 24px;pointer-events:none}
@@ -12422,8 +12429,13 @@ applyLang();
         <div class="plan-card featured">
           <div class="plan-card-top">
             <div class="plan-name">🍽️ Saveur</div>
-            <div class="plan-price">5.99$<span>/mois</span></div>
           </div>
+          <div class="launch-badge">🔥 Offre de lancement</div>
+          <div class="plan-price-launch">
+            <span class="plan-price-old">5,99$</span>
+            <div class="plan-price-new">3,99$<span>/mois</span></div>
+          </div>
+          <div class="launch-note">Premier mois seulement — pour les 100 premiers abonnés</div>
           <ul class="plan-features">
             <li>130 recettes accessibles</li>
             <li>Recherche par région et type</li>
@@ -12439,8 +12451,13 @@ applyLang();
         <div class="plan-card">
           <div class="plan-card-top">
             <div class="plan-name">👨‍🍳 Chef</div>
-            <div class="plan-price">10.99$<span>/mois</span></div>
           </div>
+          <div class="launch-badge">🔥 Offre de lancement</div>
+          <div class="plan-price-launch">
+            <span class="plan-price-old">10,99$</span>
+            <div class="plan-price-new">6,99$<span>/mois</span></div>
+          </div>
+          <div class="launch-note">Premier mois seulement — pour les 100 premiers abonnés</div>
           <ul class="plan-features">
             <li>342 recettes accessibles</li>
             <li>Recherche par région et type</li>
