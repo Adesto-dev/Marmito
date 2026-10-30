@@ -11065,7 +11065,7 @@ let dropIdx=-1;
 
 // Liste de tous les ingrédients connus
 const allIngredients=[...new Set([
-  ...Object.keys(qtyMap)...recipes.flatMap(r=>r.ingredients||[])
+  ...Object.keys(qtyMap), ...recipes.flatMap(r=>r.ingredients||[])
 ])].sort((a,b)=>a.localeCompare(b,'fr'));
 
 let allIngredientsEN = null; // cache FR→EN map
