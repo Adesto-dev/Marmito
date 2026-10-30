@@ -1,0 +1,26 @@
+{
+  "name": "Marmito - Recettes du monde",
+  "short_name": "Marmito",
+  "description": "342 recettes du monde entier avec chrono intégré. Japonaise, Italienne, Antilles, Afrique et plus.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5E6CC",
+  "theme_color": "#D46820",
+  "lang": "fr",
+  "orientation": "portrait",
+  "categories": ["food", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
