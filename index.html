@@ -608,6 +608,39 @@
     .contact-sheet{background:var(--bg);width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;animation:pageSlideIn 0.22s cubic-bezier(.4,0,.2,1)}
     .contact-sheet-head{flex-shrink:0}
     .contact-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:20px 20px 44px;flex:1;min-height:0}
+    /* ===== REFERRAL OVERLAY ===== */
+    .referral-overlay{position:fixed;inset:0;z-index:450;display:none;overflow:hidden}
+    .referral-overlay.open{display:block}
+    .referral-sheet{background:var(--bg);width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;animation:pageSlideIn 0.22s cubic-bezier(.4,0,.2,1)}
+    .referral-sheet-head{flex-shrink:0}
+    .referral-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:20px 20px 44px;flex:1;min-height:0}
+    .referral-hero{background:linear-gradient(135deg,#7A4820 0%,#A06030 55%,#C07840 100%);border-radius:16px;padding:22px 18px;margin-bottom:20px;text-align:center;color:#FAFAF5}
+    .referral-hero-icon{font-size:36px;margin-bottom:8px}
+    .referral-hero-title{font-family:"Playfair Display",Georgia,serif;font-size:17px;font-weight:700;margin-bottom:6px;text-wrap:balance}
+    .referral-hero-sub{font-size:13px;opacity:0.85;line-height:1.55}
+    .referral-reward-row{display:flex;gap:10px;margin-bottom:20px}
+    .referral-reward-box{flex:1;background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center}
+    .referral-reward-box-icon{font-size:22px;margin-bottom:4px}
+    .referral-reward-box-label{font-size:10px;color:var(--fg2);text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+    .referral-reward-box-val{font-size:14px;font-weight:700;color:var(--accent);margin-top:4px}
+    .referral-link-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--fg2);margin-bottom:8px}
+    .referral-link-box{display:flex;align-items:center;gap:8px;background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:12px}
+    .referral-link-text{flex:1;font-size:11px;color:var(--fg);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .referral-copy-btn{flex-shrink:0;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+    .referral-copy-btn:active{filter:brightness(0.9)}
+    .referral-share-btn{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:12px;font-family:"Playfair Display",Georgia,serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px}
+    .referral-share-btn:active{filter:brightness(0.9)}
+    .referral-stats{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px}
+    .referral-stats-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--fg2);margin-bottom:10px}
+    .referral-stats-row{display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--fg);padding:6px 0;border-bottom:1px solid var(--border)}
+    .referral-stats-row:last-child{border-bottom:none;padding-bottom:0}
+    .referral-stats-val{font-weight:700;color:var(--accent)}
+    .referral-bonus-bar{background:var(--green-light);border:1px solid var(--green);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--green);font-weight:600;display:none;margin-bottom:16px;text-align:center}
+    .referral-bonus-bar.show{display:block}
+    .referral-how-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--fg2);margin-bottom:10px}
+    .referral-step{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+    .referral-step-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+    .referral-step-text{font-size:13px;color:var(--fg);line-height:1.55}
     /* ===== PRICING OVERLAY ===== */
     .pricing-overlay{position:fixed;inset:0;z-index:450;display:none;overflow:hidden}
     .pricing-overlay.open{display:block}
@@ -1192,11 +1225,18 @@
     // Heure locale (pas UTC) pour eviter un reset premature en soiree a Montreal
     const _now = new Date();
     const currentMonth = _now.getFullYear() + '-' + String(_now.getMonth() + 1).padStart(2, '0');
-    const { data, error } = await sb.from('profiles').select('plan,recipe_count,reset_month').eq('id', currentUser.id).single();
+    const { data, error } = await sb.from('profiles').select('plan,recipe_count,reset_month,referral_code,bonus_plan,bonus_expires_at,referred_by,referral_applied').eq('id', currentUser.id).single();
 
     if (data) {
       // Succes : on charge le profil
       userPlan = data.plan || 'free';
+      userReferralCode = data.referral_code || null;
+      userBonusExpires = data.bonus_expires_at || null;
+      // Override plan with active bonus plan if it outranks current plan
+      if (data.bonus_plan && data.bonus_expires_at && new Date(data.bonus_expires_at) > new Date()) {
+        const planRank = {free:0, saveur:1, chef:2};
+        if ((planRank[data.bonus_plan] || 0) > (planRank[userPlan] || 0)) userPlan = data.bonus_plan;
+      }
       // Cache le plan en localStorage pour resilience offline/erreur reseau
       try { localStorage.setItem('marmito-plan', userPlan); } catch(e){}
       // Reset mensuel : si le mois a change, on repart a 0
@@ -1211,9 +1251,21 @@
       }
     } else if (error && error.code === 'PGRST116') {
       // Aucun profil trouve (premiere connexion) - on cree le profil
-      await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email, plan: 'free', recipe_count: 0, reset_month: currentMonth });
-      userPlan = 'free'; recipeCount = 0;
+      const newCode = generateReferralCode(currentUser.email);
+      const pendingRef = (() => { try { return localStorage.getItem('marmito-pending-ref'); } catch(e) { return null; } })();
+      await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email, plan: 'free', recipe_count: 0, reset_month: currentMonth, referral_code: newCode, referred_by: pendingRef || null });
+      userReferralCode = newCode; userPlan = 'free'; recipeCount = 0;
       try { localStorage.setItem('marmito-plan', 'free'); } catch(e){}
+      // Apply referral bonus if the user arrived with a ref code
+      if (pendingRef) {
+        try {
+          await sb.rpc('apply_referral_bonus', { p_referree_id: currentUser.id, p_ref_code: pendingRef });
+          userPlan = 'saveur';
+          userBonusExpires = new Date(Date.now() + 7*24*60*60*1000).toISOString();
+          showToast('🎁 7 jours Saveur offerts grâce au parrainage !');
+        } catch(e) { console.warn('[Marmito] Referral bonus error:', e); }
+        try { localStorage.removeItem('marmito-pending-ref'); } catch(e){}
+      }
     } else {
       // Erreur reseau ou Supabase indisponible : on utilise le cache local
       // NE PAS ecraser le plan avec 'free' - utiliser la derniere valeur connue
@@ -1580,6 +1632,77 @@
     dv.classList.add('closing');
     setTimeout(() => { dv.className = 'tips-detail-view'; }, 180);
   }
+  // ===== REFERRAL PROGRAM =====
+  let userReferralCode = null;
+  let userBonusExpires = null;
+
+  function generateReferralCode(email) {
+    const base = email.replace(/[^a-zA-Z]/g, '').substring(0, 4).toUpperCase().padEnd(4, 'X');
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let suffix = '';
+    for (let i = 0; i < 4; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
+    return base + suffix; // e.g. MARC7X2K
+  }
+
+  function openReferral() {
+    document.getElementById('referral-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    loadReferralData();
+  }
+
+  function closeReferral() {
+    const sheet = document.querySelector('#referral-overlay .referral-sheet');
+    if (sheet) { sheet.style.animation = 'pageSlideOut 0.18s cubic-bezier(.4,0,.2,1) forwards'; setTimeout(() => { document.getElementById('referral-overlay').classList.remove('open'); sheet.style.animation = ''; }, 175); }
+    else document.getElementById('referral-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  async function loadReferralData() {
+    if (!currentUser || !userReferralCode) return;
+    const appUrl = 'https://marmito-one.vercel.app';
+    const link = appUrl + '/auth.html?signup=1&ref=' + userReferralCode;
+    const linkEl = document.getElementById('referral-link-display');
+    if (linkEl) linkEl.textContent = link;
+
+    const bonusBar = document.getElementById('referral-bonus-active');
+    if (bonusBar) {
+      if (userBonusExpires && new Date(userBonusExpires) > new Date()) {
+        const daysLeft = Math.ceil((new Date(userBonusExpires) - new Date()) / (1000 * 60 * 60 * 24));
+        bonusBar.textContent = '🎁 Bonus actif — ' + daysLeft + ' jour' + (daysLeft > 1 ? 's' : '') + ' Saveur restant' + (daysLeft > 1 ? 's' : '');
+        bonusBar.classList.add('show');
+      } else { bonusBar.classList.remove('show'); }
+    }
+
+    try {
+      const { count } = await sb.from('profiles').select('id', { count: 'exact', head: true }).eq('referred_by', userReferralCode);
+      const n = count || 0;
+      const cEl = document.getElementById('ref-count-display'); if (cEl) cEl.textContent = n;
+      const dEl = document.getElementById('ref-days-display'); if (dEl) dEl.textContent = (n * 7) + ' jour' + (n*7 !== 1 ? 's' : '');
+    } catch(e) { console.warn('[Marmito] Referral stats error:', e); }
+  }
+
+  async function copyReferralLink(btn) {
+    if (!userReferralCode) return;
+    const link = 'https://marmito-one.vercel.app/auth.html?signup=1&ref=' + userReferralCode;
+    try {
+      await navigator.clipboard.writeText(link);
+      const orig = btn.textContent; btn.textContent = '✓ Copié !';
+      setTimeout(() => btn.textContent = orig, 2000);
+    } catch(e) {
+      const el = document.getElementById('referral-link-display');
+      if (el) { const r = document.createRange(); r.selectNode(el); window.getSelection().removeAllRanges(); window.getSelection().addRange(r); }
+      showToast('Sélectionnez et copiez le lien');
+    }
+  }
+
+  function shareReferral() {
+    if (!userReferralCode) return;
+    const link = 'https://marmito-one.vercel.app/auth.html?signup=1&ref=' + userReferralCode;
+    const msg = 'J\'utilise Marmito pour cuisiner des recettes africaines, antillaises et du monde entier 🍲 Essaie-le gratuitement avec mon lien et on gagne tous les deux 7 jours d\'accès premium !\n' + link;
+    if (navigator.share) navigator.share({ title: 'Marmito', text: msg, url: link }).catch(() => {});
+    else navigator.clipboard.writeText(msg).then(() => showToast('Message copié !')).catch(() => showToast('Copiez ce lien : ' + link));
+  }
+
   function openAbout() {
     document.getElementById('about-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -1633,13 +1756,7 @@
     else if (action === 'about') { setTimeout(()=>openAbout(), 320); }
     else if (action === 'tips') { setTimeout(()=>openTips(), 320); }
     else if (action === 'contact') { setTimeout(()=>openContact(), 320); }
-    else if (action === 'share-app') {
-      const appUrl='https://marmito-one.vercel.app';
-      const msg='Essaie Marmito, un générateur de recettes africaines — gratuit ! 🍲\n'+appUrl;
-      if(navigator.share){ navigator.share({title:'Marmito',text:msg,url:appUrl}).catch(()=>{}); }
-      else if(navigator.clipboard){ navigator.clipboard.writeText(appUrl).then(()=>showToast('Lien copié !')); }
-      else { prompt('Partage ce lien :',appUrl); }
-    }
+    else if (action === 'share-app') { setTimeout(()=>openReferral(), 320); }
   }
 
   async function manageSubscription() {
@@ -11796,7 +11913,7 @@ function toggleLang() {
 function goHome() {
   const ids = ['fav-panel','result-card'];
   ids.forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('visible'); });
-  const overlays = ['cook-mode','profile-overlay','about-overlay','plan-overlay','auth-overlay','pricing-overlay'];
+  const overlays = ['cook-mode','profile-overlay','about-overlay','plan-overlay','auth-overlay','pricing-overlay','referral-overlay'];
   overlays.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -12332,6 +12449,79 @@ applyLang();
 
       </div>
       <div class="pricing-footer">Résiliation possible à tout moment · Paiement sécurisé via Stripe</div>
+    </div>
+  </div>
+</div>
+
+<!-- Referral Overlay -->
+<div class="referral-overlay" id="referral-overlay">
+  <div class="referral-sheet">
+    <div class="referral-sheet-head">
+      <div class="page-nav-header">
+        <div class="page-nav-inner">
+          <button class="page-back-btn" onclick="closeReferral()" aria-label="Retour">&#8592;</button>
+          <div class="page-nav-title">&#x1F381; Inviter un ami</div>
+        </div>
+      </div>
+    </div>
+    <div class="referral-sheet-body">
+
+      <div class="referral-hero">
+        <div class="referral-hero-icon">&#x1F372;</div>
+        <div class="referral-hero-title">Partagez Marmito, recevez 7 jours Saveur</div>
+        <div class="referral-hero-sub">Vous et votre ami profitez chacun de 7 jours d&rsquo;acc&egrave;s Saveur gratuit d&egrave;s son inscription.</div>
+      </div>
+
+      <div id="referral-bonus-active" class="referral-bonus-bar"></div>
+
+      <div class="referral-reward-row">
+        <div class="referral-reward-box">
+          <div class="referral-reward-box-icon">&#x1F381;</div>
+          <div class="referral-reward-box-label">Vous gagnez</div>
+          <div class="referral-reward-box-val">7 jours Saveur</div>
+        </div>
+        <div class="referral-reward-box">
+          <div class="referral-reward-box-icon">&#x1F464;</div>
+          <div class="referral-reward-box-label">Votre ami gagne</div>
+          <div class="referral-reward-box-val">7 jours Saveur</div>
+        </div>
+      </div>
+
+      <div class="referral-link-label">Votre lien de parrainage</div>
+      <div class="referral-link-box">
+        <span class="referral-link-text" id="referral-link-display">Chargement&hellip;</span>
+        <button class="referral-copy-btn" onclick="copyReferralLink(this)">Copier</button>
+      </div>
+      <button class="referral-share-btn" onclick="shareReferral()">&#x1F4E4; Partager mon lien</button>
+
+      <div class="referral-stats">
+        <div class="referral-stats-title">Mes parrainages</div>
+        <div class="referral-stats-row">
+          <span>Amis parrainés</span>
+          <span class="referral-stats-val" id="ref-count-display">—</span>
+        </div>
+        <div class="referral-stats-row">
+          <span>Jours bonus gagnés</span>
+          <span class="referral-stats-val" id="ref-days-display">—</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="referral-how-title">Comment &ccedil;a marche</div>
+        <div class="referral-step">
+          <div class="referral-step-num">1</div>
+          <div class="referral-step-text">Copiez votre lien et envoyez-le &agrave; un ami qui ne conna&icirc;t pas encore Marmito.</div>
+        </div>
+        <div class="referral-step">
+          <div class="referral-step-num">2</div>
+          <div class="referral-step-text">Votre ami cr&eacute;e son compte via votre lien.</div>
+        </div>
+        <div class="referral-step">
+          <div class="referral-step-num">3</div>
+          <div class="referral-step-text">Vous recevez tous les deux 7 jours d&rsquo;acc&egrave;s Saveur automatiquement &mdash; sans carte de cr&eacute;dit.</div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
