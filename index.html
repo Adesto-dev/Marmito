@@ -922,6 +922,7 @@
       <div class="cook-step-body">
         <div class="cook-icon-big" id="cook-icon-big"></div>
         <div class="cook-step-text" id="cook-step-text"></div>
+        <div style="text-align:center;margin:12px 0"><button type="button" id="cook-speak-btn" onclick="cookSpeakToggle()" style="border:1px solid currentColor;border-radius:20px;background:transparent;color:inherit;padding:9px 16px;cursor:pointer">🔊 Écouter l’étape</button></div>
         <div class="cook-timer-zone" id="cook-timer-zone" style="display:none">
           <div class="cook-timer-display" id="cook-timer-disp"></div>
           <div class="cook-timer-btns">
@@ -2039,8 +2040,7 @@ const recipes=[
       {
         "text": "Remets le poulet dans la poêle avec les oignons. Ajoute 100 ml d'eau. Couvre et laisse mijoter à feu doux pendant 25 à 30 minutes, jusqu'à cuisson complète du poulet.",
         "icon": "cook",
-        "time": 1800
-      },
+        "time": 1800, "timeMax": 1800},
       {
         "text": "Sers bien chaud avec du riz blanc. Verse la sauce aux oignons par-dessus le poulet.",
         "icon": "serve"
@@ -2167,8 +2167,7 @@ const recipes=[
       {
         "text": "Retire les légumes et le poisson avec une écumoire. Plonge 400 g de riz brisé dans le bouillon. Couvre et cuis à feu doux 20 à 25 minutes, jusqu'à absorption du bouillon.",
         "icon": "cook",
-        "time": 1500
-      },
+        "time": 1500, "timeMax": 1500},
       {
         "text": "Sers le riz dans un grand plat avec les légumes et le poisson frits disposés par-dessus. C'est un plat de famille !",
         "icon": "serve"
@@ -2336,8 +2335,7 @@ const recipes=[
       {
         "text": "Fais chauffer le gril du four à 220°C ou prépare une braise. Huile légèrement le poisson. Grille 10 à 12 minutes de chaque côté, selon la taille du poisson jusqu'à belle coloration.",
         "icon": "oven",
-        "time": 720
-      },
+        "time": 720, "timeMax": 720},
       {
         "text": "Pendant ce temps, mixe 2 tomates, 1/2 oignon et du piment. Fais revenir ce mélange dans 2 c. à soupe d'huile pendant 8 minutes pour faire la sauce.",
         "icon": "fry",
@@ -2406,8 +2404,7 @@ const recipes=[
       {
         "text": "Remets le poulet. Ajoute 150 ml d'eau, sel, piment. Couvre et laisse mijoter 25 à 30 minutes, jusqu'à cuisson complète du poulet.",
         "icon": "cook",
-        "time": 1800
-      },
+        "time": 1800, "timeMax": 1800},
       {
         "text": "2 minutes avant la fin, ajoute les rondelles de plantain frites. Mélange doucement. Sers immédiatement.",
         "icon": "mix",
@@ -2468,8 +2465,7 @@ const recipes=[
       {
         "text": "Porte à ébullition, puis baisse le feu. Laisse mijoter 25 à 30 minutes, jusqu'à cuisson complète du poulet. Les gombos vont épaissir la sauce naturellement.",
         "icon": "cook",
-        "time": 1800
-      },
+        "time": 1800, "timeMax": 1800},
       {
         "text": "Ajuste le sel et le piment. Sers avec du riz blanc ou du foufou.",
         "icon": "serve"
@@ -2569,13 +2565,11 @@ const recipes=[
       {
         "text": "Fais frire les rondelles 3-4 minutes jusqu'à ce qu'elles soient bien dorées. Retourne à mi-cuisson. Égoutte sur du papier absorbant. Sale légèrement.",
         "icon": "fry",
-        "time": 240
-      },
+        "time": 240, "timeMax": 240},
       {
         "text": "Sale, poivre et assaisonne le poisson. Fais-le frire dans la même huile 6 à 8 minutes de chaque côté, selon sa taille jusqu'à croustillant.",
         "icon": "fry",
-        "time": 480
-      },
+        "time": 480, "timeMax": 480},
       {
         "text": "Prépare la sauce pimentée : mixe 2 piments rouges avec 1/4 d'oignon et une pincée de sel. Verse dans un petit bol.",
         "icon": "mix"
@@ -2634,8 +2628,7 @@ const recipes=[
       {
         "text": "Couvre hermétiquement. Cuis à feu très doux 20 à 25 minutes, en ajoutant un peu d'eau chaude si nécessaire.",
         "icon": "cook",
-        "time": 1500
-      },
+        "time": 1500, "timeMax": 1500},
       {
         "text": "Laisse reposer 5 minutes couvercle fermé. Égrène à la fourchette et sers chaud.",
         "icon": "rest",
@@ -2798,8 +2791,7 @@ const recipes=[
       {
         "text": "Couvre d'eau (1 litre). Ajoute sel et piment. Porte à ébullition, puis laisse cuire à feu moyen 50 à 60 minutes, jusqu'à ce que le bœuf soit tendre.",
         "icon": "cook",
-        "time": 3600
-      },
+        "time": 3600, "timeMax": 3600},
       {
         "text": "Mixe 250 g de gombos frais avec 100 ml d'eau jusqu'à consistance lisse.",
         "icon": "mix"
@@ -2925,8 +2917,7 @@ const recipes=[
       {
         "text": "Remets les plantains farcis au four à 200°C pendant 10 à 15 minutes, jusqu'à ce qu'ils soient tendres et dorés.",
         "icon": "oven",
-        "time": 900
-      },
+        "time": 900, "timeMax": 900},
       {
         "text": "Sers chaud avec une sauce tomate pimentée.",
         "icon": "serve"
@@ -2981,8 +2972,7 @@ const recipes=[
       {
         "text": "Fais frire le tilapia entier 5-6 minutes de chaque côté jusqu'à la peau très croustillante et bien dorée. Égoutte.",
         "icon": "fry",
-        "time": 360
-      },
+        "time": 360, "timeMax": 360},
       {
         "text": "Sers avec du riz, de la sauce tomate fraîche et des rondelles d'oignon cru.",
         "icon": "serve"
@@ -3113,8 +3103,7 @@ const recipes=[
       {
         "text": "Couvre et laisse mijoter à feu doux 25-30 minutes. Remue toutes les 10 minutes. Les légumes doivent être tendres et la sauce bien épaisse. Sers avec du riz.",
         "icon": "cook",
-        "time": 1800
-      }
+        "time": 1800, "timeMax": 1800}
     ],
     "time": "40 min",
     "serves": "4 pers.",
@@ -3234,8 +3223,7 @@ const recipes=[
       {
         "text": "Ajoute les carottes, les navets et la patate douce en gros morceaux. Poursuis la cuisson 25 à 30 minutes, jusqu'à ce que tout soit tendre.",
         "icon": "cook",
-        "time": 1800
-      },
+        "time": 1800, "timeMax": 1800},
       {
         "text": "Rectifie l'assaisonnement et sers la soupe bien chaude, avec du riz si tu le souhaites.",
         "icon": "serve"
@@ -3278,13 +3266,11 @@ const recipes=[
       {
         "text": "Fais tremper les haricots secs dans l'eau froide pendant 8 à 12 heures.",
         "icon": "rest",
-        "time": 28800
-      },
+        "time": 28800, "timeMax": 43200},
       {
         "text": "Égoutte-les et cuis-les dans une eau frémissante pendant 60 à 90 minutes, jusqu'à ce qu'ils soient tendres.",
         "icon": "cook",
-        "time": 5400
-      },
+        "time": 5400, "timeMax": 5400},
       {
         "text": "Fais revenir l'oignon haché dans l'huile de palme pendant 3 minutes. Ajoute les tomates concassées et le piment. Cuis 7 minutes.",
         "icon": "fry",
@@ -3331,8 +3317,7 @@ const recipes=[
       {
         "text": "Fais tremper les haricots à œil noir pendant 6 à 8 heures. Frotte-les dans l'eau pour retirer les peaux, puis rince.",
         "icon": "rest",
-        "time": 21600
-      },
+        "time": 21600, "timeMax": 28800},
       {
         "text": "Mixe les haricots pelés avec l'oignon, le piment, 1 c. à café rase de sel et juste assez d'eau pour obtenir une pâte épaisse.",
         "icon": "mix"
@@ -3345,8 +3330,7 @@ const recipes=[
       {
         "text": "Chauffe l'huile à 170-175°C. Dépose des petites cuillerées de pâte et fais frire 4 à 6 minutes en les retournant.",
         "icon": "fry",
-        "time": 360
-      },
+        "time": 360, "timeMax": 360},
       {
         "text": "Égoutte sur du papier absorbant et sers les beignets chauds.",
         "icon": "serve"
@@ -3669,8 +3653,7 @@ const recipes=[
       {
         "text": "Fais cuire les merguez sur un gril à feu moyen pendant 10 à 12 minutes en les retournant régulièrement, jusqu'à cuisson complète.",
         "icon": "fry",
-        "time": 720
-      },
+        "time": 720, "timeMax": 720},
       {
         "text": "Réchauffe les pains pita et sers avec les merguez et les légumes.",
         "icon": "serve"
@@ -3795,8 +3778,7 @@ const recipes=[
       {
         "text": "Rince le frik, ajoute-le à la soupe et cuis encore 20 à 25 minutes en remuant de temps en temps.",
         "icon": "cook",
-        "time": 1500
-      },
+        "time": 1500, "timeMax": 1500},
       {
         "text": "Ajoute la coriandre fraîche et sers avec des quartiers de citron.",
         "icon": "serve"
@@ -3841,8 +3823,7 @@ const recipes=[
       {
         "text": "Pique les aubergines et fais-les rôtir au four à 220°C pendant 30 à 35 minutes, jusqu'à ce qu'elles soient tendres.",
         "icon": "oven",
-        "time": 2100
-      },
+        "time": 2100, "timeMax": 2100},
       {
         "text": "Laisse tiédir, retire la peau et écrase la chair à la fourchette.",
         "icon": "mix"
@@ -3900,13 +3881,11 @@ const recipes=[
       {
         "text": "Fais tremper les haricots dans l'eau froide pendant 8 à 12 heures.",
         "icon": "rest",
-        "time": 28800
-      },
+        "time": 28800, "timeMax": 43200},
       {
         "text": "Égoutte-les et fais-les cuire dans de l'eau frémissante 60 à 90 minutes, jusqu'à ce qu'ils soient tendres.",
         "icon": "cook",
-        "time": 5400
-      },
+        "time": 5400, "timeMax": 5400},
       {
         "text": "Fais revenir l'oignon et l'ail hachés dans l'huile pendant 5 minutes. Ajoute le cumin et le paprika.",
         "icon": "fry",
@@ -3976,8 +3955,7 @@ const recipes=[
       {
         "text": "Enfourne 25 à 30 minutes selon l'épaisseur, jusqu'à ce que la chair soit opaque et se détache facilement.",
         "icon": "oven",
-        "time": 1800
-      },
+        "time": 1800, "timeMax": 1800},
       {
         "text": "Sers chaud avec du pain ou du riz.",
         "icon": "serve"
@@ -4028,8 +4006,7 @@ const recipes=[
       {
         "text": "Verse 1 litre d'eau et laisse mijoter à couvert 35 à 40 minutes. Ajoute les pois chiches cuits 10 minutes avant la fin.",
         "icon": "cook",
-        "time": 2400
-      },
+        "time": 2400, "timeMax": 2400},
       {
         "text": "Pendant ce temps, fais cuire les pâtes rechta à la vapeur au-dessus du bouillon, en les aérant et en les humidifiant légèrement, jusqu'à ce qu'elles soient tendres.",
         "icon": "cook",
@@ -4105,8 +4082,7 @@ const recipes=[
       {
         "text": "Referme avec les feuilles qui dépassent et couvre avec 2 autres feuilles beurrées. Enfourne à 190°C pendant 25 à 30 minutes.",
         "icon": "oven",
-        "time": 1800
-      },
+        "time": 1800, "timeMax": 1800},
       {
         "text": "Laisse reposer 5 minutes. Saupoudre légèrement de sucre glace et de cannelle avant de servir.",
         "icon": "serve"
@@ -4225,8 +4201,7 @@ const recipes=[
       {
         "text": "Verse le tout dans le plat. Enfourne 55 à 65 minutes, jusqu'à ce que les pommes de terre soient fondantes et le dessus doré.",
         "icon": "oven",
-        "time": 3900
-      },
+        "time": 3900, "timeMax": 3900},
       {
         "text": "Laisse reposer 10 minutes avant de servir.",
         "icon": "rest",
@@ -4284,8 +4259,7 @@ const recipes=[
       {
         "text": "Enfourne 35 à 40 minutes, jusqu'à ce que la garniture soit prise et légèrement dorée.",
         "icon": "oven",
-        "time": 2400
-      },
+        "time": 2400, "timeMax": 2400},
       {
         "text": "Laisse tiédir 10 minutes avant de découper.",
         "icon": "rest",
@@ -4330,8 +4304,7 @@ const recipes=[
       {
         "text": "Fais dorer le guanciale coupé en bâtonnets dans une poêle sans huile pendant 6 à 8 minutes. Coupe le feu.",
         "icon": "fry",
-        "time": 480
-      },
+        "time": 480, "timeMax": 480},
       {
         "text": "Fais cuire les spaghetti al dente. Réserve une tasse d'eau de cuisson avant de les égoutter.",
         "icon": "cook",
@@ -4529,8 +4502,7 @@ const recipes=[
       {
         "text": "Passe sous le gril du four 5-8 minutes jusqu’à ce que le fromage bien gratiné et bulleux. Mange très chaud, attention aux bols brûlants !",
         "icon": "oven",
-        "time": 480
-      }
+        "time": 480, "timeMax": 480}
     ],
     "time": "1h",
     "serves": "4 pers.",
@@ -4574,8 +4546,7 @@ const recipes=[
       {
         "text": "deuxième bain à 180°C pendant 3-4 minutes jusqu'à frites très croustillantes et bien dorées. Égoutte. Sale immédiatement.",
         "icon": "fry",
-        "time": 240
-      },
+        "time": 240, "timeMax": 240},
       {
         "text": "Prépare la sauce : dans une casserole, fais fondre 2 c. à soupe de beurre. Ajoute 2 c. à soupe de farine. Verse 500 ml de bouillon de veau ou bœuf chaud en fouettant. Cuis jusqu'à épaississement. Assaisonne.",
         "icon": "cook",
@@ -4642,8 +4613,7 @@ const recipes=[
       {
         "text": "Laisse mijoter à feu doux 45-60 minutes en remuant de temps en temps. Les pois doivent être complètement défaits.",
         "icon": "cook",
-        "time": 3600
-      },
+        "time": 3600, "timeMax": 3600},
       {
         "text": "Mixe partiellement (la moitié) pour une texture crémeuse mais avec des morceaux. Rectifie le sel. Sers chaud avec du pain de campagne.",
         "icon": "serve"
@@ -4879,8 +4849,7 @@ const recipes=[
       {
         "text": "Enfourne pour 12-15 minutes selon l'épaisseur. Le saumon est cuit quand il devient opaque et se détache facilement à la fourchette.",
         "icon": "oven",
-        "time": 900
-      },
+        "time": 900, "timeMax": 900},
       {
         "text": "Ne fais pas trop cuire ! Un saumon trop cuit devient sec. Il doit encore être légèrement rosé au centre.",
         "icon": "cook"
@@ -4942,8 +4911,7 @@ const recipes=[
       {
         "text": "Enfourne à four très chaud 8-10 minutes. La tarte doit être légèrement cloquée et les bords bien croustillants. Mange immédiatement !",
         "icon": "oven",
-        "time": 600
-      }
+        "time": 600, "timeMax": 600}
     ],
     "time": "20 min",
     "serves": "2 pers.",
@@ -4996,8 +4964,7 @@ const recipes=[
       {
         "text": "Passe sous le gril du four 5-7 minutes jusqu'à fromage bien gratiné et doré. Sers immédiatement avec une salade verte.",
         "icon": "oven",
-        "time": 420
-      }
+        "time": 420, "timeMax": 420}
     ],
     "time": "20 min",
     "serves": "2 pers.",
@@ -5313,8 +5280,7 @@ const recipes=[
       {
         "text": "Fais frire à 160°C 3-4 minutes jusqu'à belle dorure. Ou enfourne à 180°C pendant 20 minutes.",
         "icon": "fry",
-        "time": 240
-      },
+        "time": 240, "timeMax": 240},
       {
         "text": "Trempe chaud dans du miel liquide (chauffé avec un peu d'eau de fleur d'oranger). Laisse égouttez. Parsème de graines de sésame.",
         "icon": "serve"
@@ -5367,8 +5333,7 @@ const recipes=[
       {
         "text": "Fais frire 3-4 minutes en retournant à mi-cuisson. Les beignets doivent être bien dorés de toutes parts.",
         "icon": "fry",
-        "time": 240
-      },
+        "time": 240, "timeMax": 240},
       {
         "text": "Égoutte sur du papier absorbant. Saupoudre de sucre glace et de cannelle. Sers chaud !",
         "icon": "serve"
@@ -5424,8 +5389,7 @@ const recipes=[
       {
         "text": "Verse dans le moule. Enfourne 30-35 minutes. Un couteau planté au centre doit ressortir propre. Laisse refroidir avant de démouler.",
         "icon": "oven",
-        "time": 2100
-      }
+        "time": 2100, "timeMax": 2100}
     ],
     "time": "45 min",
     "serves": "6 pers.",
@@ -5475,8 +5439,7 @@ const recipes=[
       {
         "text": "Enfourne à 180°C pendant 35-40 minutes. La tarte doit être dorée et l'appareil pris mais encore légèrement tremblotant.",
         "icon": "oven",
-        "time": 2400
-      },
+        "time": 2400, "timeMax": 2400},
       {
         "text": "Laisse refroidir 15 minutes. Saupoudre de sucre glace. Se mange tiède ou froide avec de la chantilly.",
         "icon": "serve"
@@ -5582,8 +5545,7 @@ const recipes=[
       {
         "text": "Pour un gâteau fondant (cuit) : enfourne 20-25 minutes. Le centre doit être pris mais légèrement humide. Pour un coulant : 10-12 minutes seulement (le cœur reste liquide).",
         "icon": "oven",
-        "time": 1500
-      },
+        "time": 1500, "timeMax": 1500},
       {
         "text": "Laisse reposer 5 minutes avant de démouler délicatement. Sers avec de la glace vanille ou de la crème anglaise.",
         "icon": "serve",
@@ -5678,8 +5640,7 @@ const recipes=[
       {
         "text": "Cuis à feu très doux pendant 35-40 minutes en remuant toutes les 5 minutes avec une spatule en bois. Le riz doit absorber presque tout le lait.",
         "icon": "cook",
-        "time": 2400
-      },
+        "time": 2400, "timeMax": 2400},
       {
         "text": "Ajoute 80 g de sucre en poudre. Mélange. Cuis encore 5 minutes.",
         "icon": "cook",
@@ -5740,8 +5701,7 @@ const recipes=[
       {
         "text": "Enfourne à 200°C pendant 25-30 minutes. La pâte doit être bien dorée et croustillante.",
         "icon": "oven",
-        "time": 1800
-      },
+        "time": 1800, "timeMax": 1800},
       {
         "text": "Laisse refroidir 5 minutes hors du four. Retourne d'un coup sec sur un plat, attention au caramel chaud ! Sers tiède avec de la glace vanille.",
         "icon": "serve",
@@ -5798,8 +5758,7 @@ const recipes=[
       {
         "text": "Enfourne 40-45 minutes. Le clafoutis doit être gonflé, légèrement dorée et pris (test du couteau). Il se dégonfle en refroidissant, c'est normal. Saupoudre de sucre glace.",
         "icon": "oven",
-        "time": 2700
-      }
+        "time": 2700, "timeMax": 2700}
     ],
     "time": "50 min",
     "serves": "6 pers.",
@@ -5849,8 +5808,7 @@ const recipes=[
       {
         "text": "Pose sur une plaque recouverte de papier cuisson. Enfourne 12-14 minutes. Ils doivent rester pâles avec juste les bords légèrement dorés.",
         "icon": "oven",
-        "time": 840
-      },
+        "time": 840, "timeMax": 840},
       {
         "text": "Laisse refroidir sur une grille avant de toucher, ils sont très fragiles chauds. Se conserve 1 semaine dans une boîte hermétique.",
         "icon": "rest"
@@ -5960,8 +5918,7 @@ const recipes=[
       {
         "text": "Enfourne 20-22 minutes. Le centre doit rester légèrement tremblotant, c est le secret du brownie fondant !",
         "icon": "oven",
-        "time": 1320
-      },
+        "time": 1320, "timeMax": 1320},
       {
         "text": "Laisse refroidir complètement avant de couper en carrés. Encore meilleur le lendemain.",
         "icon": "rest"
@@ -6014,8 +5971,7 @@ const recipes=[
       {
         "text": "Fais frire 4-5 minutes en les retournant souvent jusqu'à dorure uniforme de toutes parts.",
         "icon": "fry",
-        "time": 300
-      },
+        "time": 300, "timeMax": 300},
       {
         "text": "Égoutte. Roule dans du sucre fin ou du sucre glace pendant qu'ils sont encore chauds. Ces beignets se mangent chauds, ils sont meilleurs immédiatement !",
         "icon": "serve"
@@ -6071,8 +6027,7 @@ const recipes=[
       {
         "text": "Enfourne 30-35 minutes jusqu'à dessus bien doré. Sers chaud avec de la glace ou de la crème fraîche.",
         "icon": "oven",
-        "time": 2100
-      }
+        "time": 2100, "timeMax": 2100}
     ],
     "time": "45 min",
     "serves": "6 pers.",
@@ -6126,8 +6081,7 @@ const recipes=[
       {
         "text": "Verse dans le moule. Enfourne 55-60 minutes. Un cure-dent planté au centre doit ressortir propre. Laisse refroidir 15 minutes avant de démouler.",
         "icon": "oven",
-        "time": 3600
-      }
+        "time": 3600, "timeMax": 3600}
     ],
     "time": "1h20",
     "serves": "8 tranches",
@@ -6224,8 +6178,7 @@ const recipes=[
       {
         "text": "Laisse infuser 3-4 minutes. Puis verse un verre de thé dans la théière et recommence 3 fois, c'est la technique pour bien mélanger.",
         "icon": "rest",
-        "time": 240
-      },
+        "time": 240, "timeMax": 240},
       {
         "text": "Ajoute 3-4 morceaux de sucre (ou selon ton goût). Le thé marocain est traditionnellement très sucré.",
         "icon": "mix"
@@ -6629,8 +6582,7 @@ const recipes=[
       {
         "text": "Verse les fleurs dans l'eau bouillante. Éteins le feu immédiatement. Laisse infuser 5-7 minutes. Plus tu laisses, plus c'est intense et acide.",
         "icon": "rest",
-        "time": 420
-      },
+        "time": 420, "timeMax": 420},
       {
         "text": "Filtre avec une passoire fine. La couleur doit être rouge rubis profond.",
         "icon": "mix"
@@ -6831,8 +6783,7 @@ const recipes=[
       {
         "text": "Mets dans une grande casserole. Couvre d'eau froide. Porte à ébullition et cuis 25-30 minutes jusqu'à ce que l'igname soit très tendre (test au couteau).",
         "icon": "cook",
-        "time": 1800
-      },
+        "time": 1800, "timeMax": 1800},
       {
         "text": "Égoutte complètement. Garde un peu d'eau de cuisson de côté.",
         "icon": "rest"
@@ -6844,8 +6795,7 @@ const recipes=[
       {
         "text": "Continue à piler ou mixer jusqu'à obtenir une pâte très lisse, élastique et sans grumeaux. Ça demande 5-10 minutes d'effort !",
         "icon": "mix",
-        "time": 600
-      },
+        "time": 600, "timeMax": 600},
       {
         "text": "Forme des boules avec les mains mouillées. Sers immédiatement avec une sauce (gombo, mafé, soupe kandia...). Le foufou, ça se mange chaud !",
         "icon": "serve"
@@ -7080,8 +7030,7 @@ const recipes=[
       {
         "text": "Fais chauffer 2 cm d'huile dans une poêle à feu vif. Fais frire le brik délicatement 1-2 minutes de chaque côté jusqu'à dorure croustillante.",
         "icon": "fry",
-        "time": 120
-      },
+        "time": 120, "timeMax": 120},
       {
         "text": "L'objectif : jaune d'œuf encore coulant, pâte croustillante. Égoutte rapidement sur du papier absorbant.",
         "icon": "cook"
@@ -7123,8 +7072,7 @@ const recipes=[
       {
         "text": "Pose directement sur la flamme du gaz (ou sous le gril du four à 240°C) : 4 tomates, 3 poivrons verts, 2 piments forts et 3 gousses d'ail. Fais griller en retournant régulièrement jusqu'à la peau toute noire (15-20 min).",
         "icon": "oven",
-        "time": 1200
-      },
+        "time": 1200, "timeMax": 1200},
       {
         "text": "Mets les légumes grillés dans un bol. Couvre d'un film alimentaire. Laisse reposer 10 minutes pour faciliter l'épluchage.",
         "icon": "rest",
@@ -7196,8 +7144,7 @@ const recipes=[
       {
         "text": "Option 1 - Four : enfourne à 200°C pendant 15-20 minutes jusqu'à dorure. Option 2 - Friture : fais frire à 170°C 3-4 minutes jusqu'à croustillant.",
         "icon": "oven",
-        "time": 1200
-      },
+        "time": 1200, "timeMax": 1200},
       {
         "text": "Sers chaud en apéritif ou en entrée avec une salade et du citron.",
         "icon": "serve"
@@ -7315,8 +7262,7 @@ const recipes=[
       {
         "text": "Porte à ébullition. Laisse cuire 25-30 minutes à feu moyen jusqu'à ce que tous les légumes soient très tendres.",
         "icon": "cook",
-        "time": 1800
-      },
+        "time": 1800, "timeMax": 1800},
       {
         "text": "Mixe partiellement si tu veux une texture crémeuse. Sinon laisse en morceaux. Rectifie l'assaisonnement. Ajoute du persil frais. Sers avec du pain.",
         "icon": "serve"
@@ -7375,8 +7321,7 @@ const recipes=[
       {
         "text": "Porte à ébullition. Laisse cuire 20-25 minutes jusqu'à légumes bien tendres.",
         "icon": "cook",
-        "time": 1500
-      },
+        "time": 1500, "timeMax": 1500},
       {
         "text": "Retire du feu. Mixe à pleine puissance jusqu'à obtenir un velouté lisse et soyeux. Ajoute 100 ml de crème fraîche. Mixe encore.",
         "icon": "mix"
@@ -7444,8 +7389,7 @@ const recipes=[
       {
         "text": "Enfourne 30-35 minutes à 180°C. La quiche doit être légèrement dorée et à peine tremblotante au centre. Laisse tiédir avant de découper.",
         "icon": "oven",
-        "time": 2100
-      }
+        "time": 2100, "timeMax": 2100}
     ],
     "time": "45 min",
     "serves": "4 pers.",
@@ -7690,8 +7634,7 @@ const recipes=[
       {
         "text": "Laisse infuser 5-7 minutes couvert. Plus longtemps = plus amer.",
         "icon": "rest",
-        "time": 420
-      },
+        "time": 420, "timeMax": 420},
       {
         "text": "Filtre l'infusion dans des tasses.",
         "icon": "mix"
@@ -7754,8 +7697,7 @@ const recipes=[
       {
         "text": "Remets le poulet, ajoute les légumes, verse 300 ml d'eau. Ajoute le thym et le piment entier (ne le coupe pas, sinon ce sera très piquant). Couvre et laisse mijoter à feu doux 35-40 minutes. Le plat est prêt quand le poulet se détache facilement de l'os.",
         "icon": "rest",
-        "time": 2400
-      }
+        "time": 2400, "timeMax": 2400}
     ],
     "time": "55 min",
     "serves": "4 pers.",
@@ -9162,8 +9104,7 @@ const recipes=[
       {
         "text": "Répète l'opération toutes les 30 minutes pendant 2-3 heures jusqu'à obtenir une texture granuleuse et crémeuse. Sers dans des coupes ou dans des demi-citrons verts évidés pour l'effet carte postale !",
         "icon": "rest",
-        "time": 7200
-      }
+        "time": 7200, "timeMax": 10800}
     ],
     "time": "3h",
     "serves": "6 pers.",
@@ -10022,8 +9963,7 @@ const recipes=[
       {
         "text": "Laisse reposer la pâte 30-45 minutes dans un endroit chaud, elle doit faire des bulles en surface. C'est la levure qui travaille et qui va créer les mille trous.",
         "icon": "rest",
-        "time": 2700
-      },
+        "time": 2700, "timeMax": 2700},
       {
         "text": "Chauffe une poêle antiadhésive à feu moyen SANS matière grasse. Verse une louche de pâte. Ne la retourne JAMAIS, le baghrir se cuit d'un seul côté. Les trous vont apparaître en 2-3 minutes. La crêpe est cuite quand la surface est sèche et matte.",
         "icon": "fry"
@@ -10361,8 +10301,7 @@ const recipes=[
       {
         "text": "Ajoute la patate douce en cubes, l'aubergine en dés, le piment entier, sel et poivre. Laisse mijoter 30-35 minutes à feu doux en remuant régulièrement. La sauce doit être épaisse. Sers avec du riz blanc.",
         "icon": "rest",
-        "time": 2100
-      }
+        "time": 2100, "timeMax": 2100}
     ],
     "time": "1h15",
     "serves": "4 pers.",
@@ -11640,8 +11579,7 @@ const recipes=[
       {
         "text": "Verse 800 ml d'eau bouillante (ratio 1 riz / 2 eau). Porte à ébullition, baisse à feu doux, couvre hermétiquement. Laisse cuire 18-20 minutes sans soulever le couvercle.",
         "icon": "rest",
-        "time": 1200
-      },
+        "time": 1200, "timeMax": 1200},
       {
         "text": "Coupe le feu et laisse reposer 5 minutes couvert. Le riz doit être absorbé et les crabes bien infusés dans le grain. Sers directement dans la cocotte.",
         "icon": "serve"
@@ -11702,8 +11640,7 @@ const recipes=[
       {
         "text": "Remets le poulet. Verse le lait de coco et 100 ml d'eau. Porte à ébullition, baisse le feu, couvre et laisse mijoter 35-40 minutes. Le poulet doit être tendre et la sauce crémeuse et parfumée.",
         "icon": "rest",
-        "time": 2400
-      },
+        "time": 2400, "timeMax": 2400},
       {
         "text": "Rectifie le sel. Parsème de cives fraîches émincées. Sers avec du riz blanc ou des ignames.",
         "icon": "serve"
@@ -12063,8 +12000,7 @@ const recipes=[
       {
         "text": "La veille, fais tremper les pois d'Angole dans l'eau froide 12h. Le lendemain, rince-les. Fais-les cuire dans 1,5 litre d'eau fraîche avec le thym et le laurier pendant 45-50 minutes jusqu'à tendreté.",
         "icon": "rest",
-        "time": 3000
-      },
+        "time": 3000, "timeMax": 3000},
       {
         "text": "Garde l'eau de cuisson des pois. Dans une grande casserole, fais revenir l'oignon et l'ail émincés dans l'huile 4 minutes.",
         "icon": "fry"
@@ -12076,8 +12012,7 @@ const recipes=[
       {
         "text": "Porte à ébullition, baisse à feu doux, couvre et laisse cuire 40-45 minutes, le riz complet prend plus de temps que le riz blanc. Laisse reposer 10 min. Le plat doit être parfumé et les pois fondants.",
         "icon": "rest",
-        "time": 2700
-      }
+        "time": 2700, "timeMax": 2700}
     ],
     "time": "1h30 (+ trempage 12h)",
     "serves": "4 pers.",
@@ -12822,8 +12757,7 @@ const recipes=[
       {
         "text": "Verse la pâte d'arachide diluée dans la marmite. Remets le poulet. Ajoute le laurier. Laisse mijoter à feu doux 35-40 min en remuant régulièrement, la sauce a tendance à attacher au fond.",
         "icon": "rest",
-        "time": 2400
-      },
+        "time": 2400, "timeMax": 2400},
       {
         "text": "La sauce doit être épaisse et crémeuse. Elle ne doit pas être trop claire. Rectifie sel et piment. Sers avec du riz, du plantain bouilli ou du couscous de manioc.",
         "icon": "serve"
@@ -13157,8 +13091,7 @@ const recipes=[
       {
         "text": "Laisse reposer les steaks 3-4 min sur une planche, c'est crucial. Le repos redistribue les jus et la viande sera bien plus tendre. Sale les frites à la sortie de la friture. Sers immédiatement.",
         "icon": "rest",
-        "time": 240
-      }
+        "time": 240, "timeMax": 240}
     ],
     "time": "40 min",
     "serves": "4 pers.",
@@ -13470,8 +13403,7 @@ const recipes=[
       {
         "text": "Remets le porc. Ajoute les ignames égouttés. Verse 400 ml d'eau. Couvre et laisse mijoter à feu doux 40-45 min. Les ignames doivent être fondants et le porc tendre. Rectifie l'assaisonnement.",
         "icon": "rest",
-        "time": 2700
-      }
+        "time": 2700, "timeMax": 2700}
     ],
     "time": "1h15",
     "serves": "4 pers.",
@@ -13670,8 +13602,7 @@ const recipes=[
       {
         "text": "Verse 600 ml du bouillon de lentilles. Laisse mijoter 30-40 min (poulet) ou 1h (agneau) jusqu'à la viande tendre. Ajoute les lentilles et laisse chauffer 5 min.",
         "icon": "rest",
-        "time": 2400
-      },
+        "time": 2400, "timeMax": 2400},
       {
         "text": "Déchire le msemen ou le pain plat en morceaux. Dispose-les dans un grand plat creux. Verse la rfissa par-dessus. La rfissa doit imbiber le pain. Parsème de coriandre fraîche.",
         "icon": "serve"
@@ -13963,8 +13894,7 @@ const recipes=[
       {
         "text": "Verse dans un bocal propre. Couvre d'un linge et laisse fermenter à température ambiante 8-12h. Plus il fermente longtemps, plus il sera acidulé.",
         "icon": "rest",
-        "time": 28800
-      },
+        "time": 28800, "timeMax": 43200},
       {
         "text": "Quand le lben est pris, agite-le vigoureusement ou mixe-le légèrement pour lui donner une texture crémeuse et légèrement liquide.",
         "icon": "mix"
@@ -14152,8 +14082,7 @@ const recipes=[
       {
         "text": "Couvre et laisse cuire à feu doux 5-8 min selon tes préférences : 5 min pour un jaune coulant, 8 min pour bien cuit. Parsème de persil et coriandre hachés. Sers directement dans la poêle avec du pain.",
         "icon": "rest",
-        "time": 480
-      }
+        "time": 480, "timeMax": 480}
     ],
     "time": "40 min",
     "serves": "3 pers.",
@@ -14647,8 +14576,7 @@ const recipes=[
       {
         "text": "Laisse mijoter 25-30 min à feu doux. Les légumes doivent être fondants et la sauce parfumée. La vanille donne une douceur unique au curry. Retire la gousse avant de servir. Accompagne de riz jasmin.",
         "icon": "rest",
-        "time": 1800
-      }
+        "time": 1800, "timeMax": 1800}
     ],
     "time": "50 min",
     "serves": "4 pers.",
@@ -14888,8 +14816,7 @@ const recipes=[
       {
         "text": "Laisse mijoter 20-25 min à feu doux. Les feuilles doivent être bien fondues et la sauce crémeuse. Sers avec du fufu ou du riz.",
         "icon": "rest",
-        "time": 1500
-      }
+        "time": 1500, "timeMax": 1500}
     ],
     "time": "40 min",
     "serves": "4 pers.",
@@ -15246,8 +15173,7 @@ const recipes=[
       {
         "text": "Baisse à feu très doux, couvre hermétiquement et laisse cuire 20-22 min sans soulever le couvercle. Éteins le feu et laisse reposer 10 min. Le riz doit être légèrement violet et très parfumé. Sers avec des viandes grillées et de la sauce ti-malice.",
         "icon": "rest",
-        "time": 1200
-      }
+        "time": 1200, "timeMax": 1320}
     ],
     "time": "1h30 (+ trempage 12h)",
     "serves": "4 pers.",
@@ -20676,7 +20602,8 @@ const recipes=[
       },
       {
         "text": "Faire revenir l'oignon et l'ail dans le reste d'huile, ajouter les tomates mixées et cuire 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Prélever la moitié de la sauce pour napper le poulet, ajouter 600 ml d'eau à l'autre moitié et porter à ébullition",
@@ -20684,8 +20611,8 @@ const recipes=[
       },
       {
         "text": "Verser progressivement la farine de maïs en remuant et cuire 15 à 20 min jusqu'à obtenir une pâte ferme",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 900, "timeMax": 1200},
       {
         "text": "Servir l'amiwo avec le poulet et la sauce réservée",
         "icon": "serve"
@@ -20731,15 +20658,18 @@ const recipes=[
       },
       {
         "text": "Faire revenir l'oignon émincé dans l'huile pendant 3 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 180
       },
       {
         "text": "Ajouter les tomates concassées, le piment et l'eau, puis laisser mijoter 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Déposer le wagassi dans la sauce et chauffer doucement 8 min sans trop remuer",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 480
       }
     ],
     "time": "35 min",
@@ -20776,20 +20706,21 @@ const recipes=[
     "steps": [
       {
         "text": "Faire tremper les haricots au moins 6 h puis les égoutter",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 21600
       },
       {
         "text": "Cuire les haricots dans une grande casserole d'eau pendant 35 à 45 min jusqu'à ce qu'ils soient presque tendres",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 2100, "timeMax": 2700},
       {
         "text": "Ajouter le riz rincé, l'oignon émincé et suffisamment d'eau de cuisson pour couvrir d'environ 1 cm",
         "icon": "cook"
       },
       {
         "text": "Saler, couvrir et cuire à feu doux 18 à 20 min jusqu'à absorption du liquide",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 1080, "timeMax": 1200},
       {
         "text": "Égrainer à la fourchette et servir avec une sauce tomate pimentée",
         "icon": "serve"
@@ -20834,15 +20765,17 @@ const recipes=[
       },
       {
         "text": "Remuer sur feu doux pendant 15 à 20 min jusqu'à obtenir une pâte ferme",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 900, "timeMax": 1200},
       {
         "text": "Faire revenir l'oignon et les tomates dans l'huile pendant 5 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 300
       },
       {
         "text": "Ajouter l'oseille lavée, 250 ml d'eau et l'assaisonnement, puis cuire 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Former des portions de tô et servir avec la sauce",
@@ -20889,15 +20822,18 @@ const recipes=[
       },
       {
         "text": "Cuire à feu moyen en remuant constamment jusqu'à obtenir une pâte translucide et élastique, environ 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Faire mijoter le bœuf avec l'oignon, la tomate et 200 ml d'eau pendant 25 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1500
       },
       {
         "text": "Ajouter le concentré de noix de palme, compléter avec un peu d'eau si nécessaire et mijoter 20 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1200
       },
       {
         "text": "Servir le placali chaud avec la sauce graine",
@@ -20944,11 +20880,13 @@ const recipes=[
       },
       {
         "text": "Chauffer l'huile et frire le thon 5 à 7 min par face selon l'épaisseur, jusqu'à cuisson complète",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 600
       },
       {
         "text": "Réchauffer l'attiéké à la vapeur pendant 5 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 300
       },
       {
         "text": "Couper les tomates, l'oignon et le piment en petits dés",
@@ -20996,11 +20934,13 @@ const recipes=[
     "steps": [
       {
         "text": "Cuire le bœuf avec l'oignon et l'eau pendant 35 min jusqu'à ce qu'il soit tendre",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 2100
       },
       {
         "text": "Ajouter le poisson fumé nettoyé et les waterleaf ou épinards, puis cuire 8 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 480
       },
       {
         "text": "Incorporer les feuilles d'eru et l'huile de palme",
@@ -21008,8 +20948,8 @@ const recipes=[
       },
       {
         "text": "Mijoter 15 à 20 min en remuant et rectifier l'assaisonnement",
-        "icon": "serve"
-      }
+        "icon": "serve",
+        "time": 900, "timeMax": 1200}
     ],
     "time": "1h15",
     "serves": "4 pers.",
@@ -21051,7 +20991,8 @@ const recipes=[
       },
       {
         "text": "Mettre les feuilles dans l'eau avec l'oignon et l'ail, puis cuire à couvert pendant 45 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 2700
       },
       {
         "text": "Ajouter le poisson fumé nettoyé et l'huile de palme",
@@ -21059,8 +21000,8 @@ const recipes=[
       },
       {
         "text": "Poursuivre la cuisson 20 à 25 min jusqu'à ce que les feuilles soient bien tendres",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 1200, "timeMax": 1500},
       {
         "text": "Assaisonner et servir avec du riz ou du manioc",
         "icon": "serve"
@@ -21105,15 +21046,18 @@ const recipes=[
       },
       {
         "text": "Faire revenir le bœuf dans l'huile pendant 6 min, puis ajouter l'oignon et les tomates",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 360
       },
       {
         "text": "Verser l'eau, couvrir et laisser mijoter 30 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1800
       },
       {
         "text": "Ajouter les bananes et poursuivre la cuisson 20 min jusqu'à ce qu'elles soient tendres",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1200
       },
       {
         "text": "Écraser légèrement une partie des bananes pour épaissir la sauce",
@@ -21157,19 +21101,21 @@ const recipes=[
     "steps": [
       {
         "text": "Mélanger la farine de teff et 450 ml d'eau, couvrir et laisser fermenter 24 à 48 h dans un endroit adapté jusqu'à une légère acidité",
-        "icon": "mix"
-      },
+        "icon": "mix",
+        "time": 86400, "timeMax": 172800},
       {
         "text": "Cuire de fines crêpes d'injera dans une poêle antiadhésive, sur une seule face, jusqu'à formation de petits trous",
         "icon": "cook"
       },
       {
         "text": "Faire fondre le beurre clarifié, cuire les oignons émincés 15 min puis ajouter le berbere",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Ajouter le poulet et 250 ml d'eau, couvrir et mijoter 40 min jusqu'à cuisson complète",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 2400
       },
       {
         "text": "Servir le doro wat avec les œufs durs sur les injera",
@@ -21223,7 +21169,8 @@ const recipes=[
       },
       {
         "text": "Cuire au four à 150 °C pendant environ 3 h, jusqu'à ce que la viande soit très tendre",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 10800
       },
       {
         "text": "Ouvrir et réduire légèrement le jus si nécessaire avant de servir",
@@ -21267,7 +21214,8 @@ const recipes=[
     "steps": [
       {
         "text": "Cuire les pommes de terre à l'eau salée pendant 20 min puis les égoutter soigneusement",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 1200
       },
       {
         "text": "Écraser les pommes de terre et mélanger avec l'œuf, le persil, l'ail et l'assaisonnement",
@@ -21279,7 +21227,8 @@ const recipes=[
       },
       {
         "text": "Faire dorer dans l'huile chaude 3 à 4 min par face puis égoutter",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 360
       }
     ],
     "time": "45 min",
@@ -21319,19 +21268,23 @@ const recipes=[
     "steps": [
       {
         "text": "Faire gonfler les raisins dans de l'eau tiède pendant 10 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 600
       },
       {
         "text": "Émincer les oignons et les cuire avec le beurre à feu doux pendant 25 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1500
       },
       {
         "text": "Ajouter la cannelle, le miel, les raisins égouttés et 100 ml d'eau, puis confire 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Hydrater le couscous avec 350 ml d'eau chaude salée, couvrir 5 min puis égrainer",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 300
       },
       {
         "text": "Garnir le couscous des oignons confits et des amandes grillées",
@@ -21380,16 +21333,18 @@ const recipes=[
       },
       {
         "text": "Ajouter le concentré de tomate, les pois chiches et l'eau, puis mijoter 35 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 2100
       },
       {
         "text": "Faire griller les petites pâtes à sec dans une poêle pendant 3 min en remuant",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 180
       },
       {
         "text": "Verser les pâtes dans la sauce et cuire 10 à 12 min en ajoutant de l'eau si besoin",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 600, "timeMax": 720},
       {
         "text": "Servir avec le poulet et les pois chiches",
         "icon": "serve"
@@ -21433,7 +21388,8 @@ const recipes=[
     "steps": [
       {
         "text": "Pétrir la semoule avec 150 ml d'eau et une pincée de sel, puis laisser reposer 20 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 1200
       },
       {
         "text": "Étaler très finement et cuire des feuilles de galette dans une poêle chaude, puis les déchirer en petits morceaux",
@@ -21445,7 +21401,8 @@ const recipes=[
       },
       {
         "text": "Laisser mijoter 50 min jusqu'à tendreté de la viande",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 3000
       },
       {
         "text": "Humidifier les morceaux de galette avec la sauce chaude et servir avec la viande",
@@ -21492,11 +21449,13 @@ const recipes=[
     "steps": [
       {
         "text": "Faire revenir l'oignon et les tomates dans l'huile pendant 5 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 300
       },
       {
         "text": "Ajouter les carottes, le navet, les pois chiches et l'eau, puis cuire 20 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1200
       },
       {
         "text": "Ajouter la courgette et les berkoukes",
@@ -21504,8 +21463,8 @@ const recipes=[
       },
       {
         "text": "Cuire 12 à 15 min en remuant jusqu'à ce que les grains soient tendres",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 720, "timeMax": 900},
       {
         "text": "Rectifier l'assaisonnement et servir chaud",
         "icon": "serve"
@@ -21553,11 +21512,13 @@ const recipes=[
     "steps": [
       {
         "text": "Mélanger farine, levure, eau, huile et sel, pétrir puis laisser lever 1 h",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 3600
       },
       {
         "text": "Former 8 petits pains ovales et les laisser reposer 20 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1200
       },
       {
         "text": "Faire frire les pains à 170 °C jusqu'à coloration, puis égoutter",
@@ -21612,20 +21573,22 @@ const recipes=[
     "steps": [
       {
         "text": "Faire revenir l'oignon et le poivron émincés dans l'huile pendant 6 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 360
       },
       {
         "text": "Ajouter les tomates et la harissa, puis mijoter 10 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 600
       },
       {
         "text": "Incorporer les crevettes et cuire 3 à 4 min jusqu'à ce qu'elles deviennent opaques",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 180, "timeMax": 240},
       {
         "text": "Casser les œufs dans la sauce, couvrir et cuire 4 à 6 min selon la cuisson souhaitée",
-        "icon": "serve"
-      }
+        "icon": "serve",
+        "time": 240, "timeMax": 360}
     ],
     "time": "30 min",
     "serves": "4 pers.",
@@ -21665,11 +21628,13 @@ const recipes=[
     "steps": [
       {
         "text": "Mariner le porc avec les agrumes, l'ail, l'oignon, le poivron et l'assaisonnement pendant au moins 2 h au frais",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 7200
       },
       {
         "text": "Mettre le porc et sa marinade dans une casserole avec l'eau, puis mijoter 45 min jusqu'à tendreté",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 2700
       },
       {
         "text": "Égoutter et sécher les morceaux de porc",
@@ -21734,7 +21699,8 @@ const recipes=[
       },
       {
         "text": "Fermer et laisser reposer au réfrigérateur au moins 24 h avant de servir",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 86400
       }
     ],
     "time": "20 min (+ repos)",
@@ -21774,11 +21740,13 @@ const recipes=[
     "steps": [
       {
         "text": "Faire mariner le bœuf avec le jus d'agrume, l'ail, l'oignon et l'assaisonnement pendant 1 h au frais",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 3600
       },
       {
         "text": "Mettre la viande et la marinade dans une cocotte, ajouter l'eau et mijoter 50 min jusqu'à tendreté",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 3000
       },
       {
         "text": "Égoutter puis sécher la viande",
@@ -21833,7 +21801,8 @@ const recipes=[
     "steps": [
       {
         "text": "Faire mijoter le bœuf avec l'oignon, l'ail et 800 ml d'eau pendant 45 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 2700
       },
       {
         "text": "Cuire la courge dans 400 ml d'eau jusqu'à tendreté puis la mixer en purée",
@@ -21843,10 +21812,8 @@ const recipes=[
         "text": "Ajouter au bœuf la purée de courge, les légumes coupés et le reste d'eau",
         "icon": "cook"
       },
-      {
-        "text": "Cuire 20 min, ajouter les pâtes puis poursuivre 10 à 12 min",
-        "icon": "cook"
-      },
+      {"text": "Cuire 20 min, ajouter les pâtes", "icon": "cook", "time": 1200},
+      {"text": "puis poursuivre 10 à 12 min", "icon": "cook", "time": 600, "timeMax": 720},
       {
         "text": "Rectifier l'assaisonnement et servir bien chaud",
         "icon": "serve"
@@ -21896,16 +21863,18 @@ const recipes=[
       },
       {
         "text": "Ajouter 400 ml d'eau et mijoter 35 min jusqu'à ce que la viande soit tendre",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 2100
       },
       {
         "text": "Ajouter les feuilles de lalo préparées et cuire 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Cuire le riz séparément dans 300 ml d'eau salée pendant 15 à 18 min",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 900, "timeMax": 1080},
       {
         "text": "Servir le lalo en sauce sur le riz",
         "icon": "serve"
@@ -21957,16 +21926,18 @@ const recipes=[
       },
       {
         "text": "Faire revenir l'oignon, l'ail et les tomates dans l'huile pendant 5 min, puis ajouter 500 ml d'eau",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 300
       },
       {
         "text": "Déposer les dombrés dans la sauce frémissante et cuire 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Ajouter les crevettes et poursuivre 4 à 5 min jusqu'à cuisson complète",
-        "icon": "serve"
-      }
+        "icon": "serve",
+        "time": 240, "timeMax": 300}
     ],
     "time": "55 min",
     "serves": "4 pers.",
@@ -22006,15 +21977,18 @@ const recipes=[
     "steps": [
       {
         "text": "Faire dorer le poulet dans l'huile pendant 8 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 480
       },
       {
         "text": "Ajouter l'oignon, l'ail et le thym, puis faire revenir 3 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 180
       },
       {
         "text": "Ajouter le giraumon en cubes et l'eau, couvrir et mijoter 30 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1800
       },
       {
         "text": "Vérifier que le poulet est cuit à cœur et écraser quelques morceaux de giraumon pour lier la sauce",
@@ -22065,7 +22039,8 @@ const recipes=[
       },
       {
         "text": "Cuire 6 à 8 min par face à feu moyen jusqu'à ce qu'elles soient fermes et dorées",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 720
       },
       {
         "text": "Servir tiède",
@@ -22104,11 +22079,13 @@ const recipes=[
     "steps": [
       {
         "text": "Cuire les pommes de terre à l'eau salée pendant 20 min et les écraser avec le lait et le beurre",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 1200
       },
       {
         "text": "Faire revenir l'oignon et le bœuf haché dans l'huile pendant 10 min jusqu'à cuisson complète",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 600
       },
       {
         "text": "Étaler la viande dans un plat à gratin et recouvrir de purée",
@@ -22116,7 +22093,8 @@ const recipes=[
       },
       {
         "text": "Parsemer de fromage et cuire au four à 200 °C pendant 20 min",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 1200
       }
     ],
     "time": "1h05",
@@ -22162,7 +22140,8 @@ const recipes=[
       },
       {
         "text": "Faire revenir les lardons, l'oignon, les carottes et l'ail pendant 8 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 480
       },
       {
         "text": "Saupoudrer de farine, remettre le poulet et verser le vin",
@@ -22170,11 +22149,13 @@ const recipes=[
       },
       {
         "text": "Couvrir et mijoter doucement 50 min jusqu'à cuisson complète",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 3000
       },
       {
         "text": "Ajouter les champignons et poursuivre 15 min avant de servir",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 900
       }
     ],
     "time": "1h50",
@@ -22221,7 +22202,8 @@ const recipes=[
       },
       {
         "text": "Faire revenir l'oignon, l'ail et les poivrons émincés pendant 8 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 480
       },
       {
         "text": "Ajouter les tomates concassées, l'eau et l'assaisonnement",
@@ -22229,7 +22211,8 @@ const recipes=[
       },
       {
         "text": "Remettre le poulet, couvrir et mijoter 35 min jusqu'à cuisson complète",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 2100
       },
       {
         "text": "Servir avec du riz ou des pommes de terre",
@@ -22275,19 +22258,23 @@ const recipes=[
     "steps": [
       {
         "text": "Faire revenir l'oignon dans l'huile pendant 4 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 240
       },
       {
         "text": "Ajouter la choucroute, les baies de genièvre et le bouillon, puis couvrir et mijoter 40 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 2400
       },
       {
         "text": "Cuire les pommes de terre séparément dans l'eau pendant 20 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1200
       },
       {
         "text": "Déposer la palette déjà cuite et les saucisses sur la choucroute et réchauffer 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Servir avec les pommes de terre",
@@ -22331,11 +22318,13 @@ const recipes=[
     "steps": [
       {
         "text": "Cuire les endives à la vapeur pendant 20 min puis bien les égoutter",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 1200
       },
       {
         "text": "Faire fondre le beurre, ajouter la farine et mélanger 1 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 60
       },
       {
         "text": "Verser progressivement le lait en fouettant et cuire jusqu'à épaississement",
@@ -22347,7 +22336,8 @@ const recipes=[
       },
       {
         "text": "Napper de béchamel, parsemer de fromage et gratiner 20 min à 200 °C",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 1200
       }
     ],
     "time": "55 min",
@@ -22400,8 +22390,8 @@ const recipes=[
       },
       {
         "text": "Cuire 35 à 40 min jusqu'à ce que la tarte soit dorée",
-        "icon": "serve"
-      }
+        "icon": "serve",
+        "time": 2100, "timeMax": 2400}
     ],
     "time": "1h10",
     "serves": "4 pers.",
@@ -22443,16 +22433,15 @@ const recipes=[
       },
       {
         "text": "Réfrigérer la pâte pendant 30 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1800
       },
       {
         "text": "Remplir les moules à madeleines aux trois quarts",
         "icon": "cook"
       },
-      {
-        "text": "Cuire 5 min à 220 °C puis 6 à 8 min à 180 °C",
-        "icon": "serve"
-      }
+      {"text": "Cuire 5 min à 220 °C", "icon": "serve", "time": 300},
+      {"text": "puis 6 à 8 min à 180 °C", "icon": "cook", "time": 360, "timeMax": 480}
     ],
     "time": "30 min (+ repos)",
     "serves": "4 pers.",
@@ -22504,7 +22493,8 @@ const recipes=[
       },
       {
         "text": "Passer 5 min sous le gril du four jusqu'à coloration",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 300
       }
     ],
     "time": "25 min",
@@ -22556,7 +22546,8 @@ const recipes=[
       },
       {
         "text": "Cuire 6 min par face à feu moyen jusqu'à cuisson complète du porc",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 720
       },
       {
         "text": "Napper de sauce okonomiyaki avant de servir",
@@ -22594,10 +22585,8 @@ const recipes=[
       "Graines de sésame"
     ],
     "steps": [
-      {
-        "text": "Rincer le riz jusqu'à ce que l'eau soit presque claire, puis cuire avec l'eau pendant 15 min et laisser reposer 10 min",
-        "icon": "mix"
-      },
+      {"text": "Rincer le riz jusqu'à ce que l'eau soit presque claire, puis cuire avec l'eau pendant 15 min", "icon": "mix", "time": 900},
+      {"text": "et laisser reposer 10 min", "icon": "cook", "time": 600},
       {
         "text": "Émietter le saumon cuit et vérifier qu'il ne reste pas d'arêtes",
         "icon": "cook"
@@ -22650,16 +22639,17 @@ const recipes=[
       },
       {
         "text": "Faire mijoter l'oignon émincé dans le dashi, la sauce soja, le mirin et le sucre pendant 5 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 300
       },
       {
         "text": "Ajouter le poulet et cuire 8 à 10 min jusqu'à cuisson complète",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 480, "timeMax": 600},
       {
         "text": "Verser les œufs légèrement battus sur le poulet et couvrir 2 à 3 min jusqu'à ce qu'ils soient pris",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 120, "timeMax": 180},
       {
         "text": "Servir immédiatement sur le riz chaud",
         "icon": "serve"
@@ -22697,7 +22687,8 @@ const recipes=[
     "steps": [
       {
         "text": "Faire réduire la sauce soja, le mirin, le saké et le sucre dans une petite casserole pendant 5 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 300
       },
       {
         "text": "Couper le poulet et les oignons nouveaux en morceaux, puis les enfiler sur les brochettes",
@@ -22705,8 +22696,8 @@ const recipes=[
       },
       {
         "text": "Faire griller les brochettes 12 à 15 min en les retournant souvent",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 720, "timeMax": 900},
       {
         "text": "Badigeonner de sauce en fin de cuisson et poursuivre jusqu'à ce que le poulet soit cuit à cœur",
         "icon": "serve"
@@ -22744,7 +22735,8 @@ const recipes=[
     "steps": [
       {
         "text": "Faire revenir le bœuf et l'oignon dans l'huile pendant 8 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 480
       },
       {
         "text": "Ajouter les carottes, les pommes de terre et l'eau",
@@ -22752,11 +22744,13 @@ const recipes=[
       },
       {
         "text": "Couvrir et mijoter 45 min jusqu'à ce que la viande soit tendre",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 2700
       },
       {
         "text": "Hors du feu, dissoudre le roux de curry puis remettre à feu doux 5 min pour épaissir",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 300
       },
       {
         "text": "Servir avec le riz chaud",
@@ -22803,12 +22797,11 @@ const recipes=[
       },
       {
         "text": "Laisser reposer 10 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 600
       },
-      {
-        "text": "Cuire de petits pancakes 2 min sur la première face et 1 min sur l'autre dans une poêle légèrement huilée",
-        "icon": "cook"
-      },
+      {"text": "Cuire de petits pancakes 2 min sur la première face", "icon": "cook", "time": 120},
+      {"text": "et 1 min sur l'autre dans une poêle légèrement huilée", "icon": "cook", "time": 60},
       {
         "text": "Garnir un pancake d'anko et recouvrir d'un second",
         "icon": "serve"
@@ -22848,11 +22841,13 @@ const recipes=[
     "steps": [
       {
         "text": "Couper l'aubergine en dés et les faire dorer dans 3 cuillères d'huile pendant 12 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 720
       },
       {
         "text": "Faire revenir l'ail dans le reste d'huile puis ajouter les tomates et mijoter 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Cuire les pâtes al dente dans une grande casserole d'eau salée",
@@ -22956,7 +22951,8 @@ const recipes=[
       },
       {
         "text": "Faire sauter les champignons et l'ail dans l'huile pendant 8 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 480
       },
       {
         "text": "Incorporer le beurre et le parmesan à la polenta chaude",
@@ -23008,20 +23004,20 @@ const recipes=[
       },
       {
         "text": "Les faire rôtir 20 min à 200 °C en les retournant à mi-cuisson",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1200
       },
       {
         "text": "Faire mijoter le coulis avec l'ail et le basilic pendant 10 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 600
       },
       {
         "text": "Alterner dans un plat les couches d'aubergines, de sauce, de mozzarella et de parmesan",
         "icon": "cook"
       },
-      {
-        "text": "Cuire au four à 190 °C pendant 25 min puis laisser reposer 10 min",
-        "icon": "serve"
-      }
+      {"text": "Cuire au four à 190 °C pendant 25 min", "icon": "serve", "time": 1500},
+      {"text": "puis laisser reposer 10 min", "icon": "cook", "time": 600}
     ],
     "time": "1h10",
     "serves": "4 pers.",
@@ -23059,7 +23055,8 @@ const recipes=[
     "steps": [
       {
         "text": "Pétrir la farine et les œufs pour obtenir une pâte souple, puis laisser reposer 30 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 1800
       },
       {
         "text": "Faire tomber les épinards à la poêle, les égoutter et les hacher",
@@ -23075,8 +23072,8 @@ const recipes=[
       },
       {
         "text": "Cuire 3 à 4 min dans l'eau frémissante salée et servir avec le beurre fondu",
-        "icon": "serve"
-      }
+        "icon": "serve",
+        "time": 180, "timeMax": 240}
     ],
     "time": "1h20",
     "serves": "4 pers.",
@@ -23153,11 +23150,13 @@ const recipes=[
     "steps": [
       {
         "text": "Faire cuire le poulet avec la moitié de l'oignon dans l'eau pendant 35 min, puis l'effilocher",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 2100
       },
       {
         "text": "Réhydrater les piments guajillo épépinés dans l'eau chaude pendant 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Mixer les piments avec les tomates, l'ail et un peu de bouillon, puis filtrer si nécessaire",
@@ -23165,7 +23164,8 @@ const recipes=[
       },
       {
         "text": "Ajouter cette sauce au bouillon avec le hominy et laisser mijoter 20 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1200
       },
       {
         "text": "Remettre le poulet, assaisonner et servir avec de l'origan",
@@ -23210,7 +23210,8 @@ const recipes=[
     "steps": [
       {
         "text": "Tremper les feuilles de maïs dans l'eau chaude pendant 30 min pour les assouplir",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 1800
       },
       {
         "text": "Fouetter la matière grasse puis incorporer la masa harina, la levure et progressivement le bouillon pour obtenir une pâte souple",
@@ -23226,8 +23227,8 @@ const recipes=[
       },
       {
         "text": "Cuire les tamales à la vapeur pendant 60 à 75 min jusqu'à ce que la pâte se détache facilement des feuilles",
-        "icon": "serve"
-      }
+        "icon": "serve",
+        "time": 3600, "timeMax": 4500}
     ],
     "time": "1h45 (+ trempage)",
     "serves": "4 pers.",
@@ -23267,7 +23268,8 @@ const recipes=[
     "steps": [
       {
         "text": "Couper les tortillas en lanières et les faire dorer au four à 190 °C pendant 10 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 600
       },
       {
         "text": "Faire revenir l'oignon et l'ail dans l'huile, puis ajouter les tomates et le piment ancho réhydraté",
@@ -23279,7 +23281,8 @@ const recipes=[
       },
       {
         "text": "Verser dans une casserole avec le reste du bouillon et laisser mijoter 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Servir avec les lanières croustillantes et l'avocat en dés",
@@ -23325,7 +23328,8 @@ const recipes=[
     "steps": [
       {
         "text": "Couper les tortillas en triangles et les faire griller au four à 190 °C pendant 12 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 720
       },
       {
         "text": "Mixer les tomates avec le piment, l'oignon et l'ail",
@@ -23333,7 +23337,8 @@ const recipes=[
       },
       {
         "text": "Faire mijoter cette salsa dans une poêle huilée pendant 10 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 600
       },
       {
         "text": "Cuire les œufs au plat dans une autre poêle",
@@ -23381,11 +23386,13 @@ const recipes=[
     "steps": [
       {
         "text": "Cuire les épis dans l'eau frémissante pendant 8 min puis les égoutter",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 480
       },
       {
         "text": "Les faire griller dans une poêle-gril avec le beurre pendant 8 min en les tournant",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 480
       },
       {
         "text": "Badigeonner les épis de mayonnaise",
@@ -23442,15 +23449,16 @@ const recipes=[
       },
       {
         "text": "Cuire au four à 180 °C pendant 25 à 30 min",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 1500, "timeMax": 1800},
       {
         "text": "Mélanger les trois laits, piquer le gâteau refroidi et verser progressivement le mélange dessus",
         "icon": "cook"
       },
       {
         "text": "Réfrigérer au moins 4 h avant de découper",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 14400
       }
     ],
     "time": "55 min (+ repos)",
@@ -23490,15 +23498,18 @@ const recipes=[
     "steps": [
       {
         "text": "Blanchir les épinards 2 min puis les refroidir et les mixer",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 120
       },
       {
         "text": "Faire revenir l'oignon, l'ail et le cumin dans l'huile pendant 5 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 300
       },
       {
         "text": "Ajouter les tomates et le garam masala, puis cuire 8 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 480
       },
       {
         "text": "Incorporer la purée d'épinards, l'eau et le paneer en cubes",
@@ -23506,7 +23517,8 @@ const recipes=[
       },
       {
         "text": "Mijoter doucement 5 min sans trop remuer",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 300
       }
     ],
     "time": "40 min",
@@ -23550,19 +23562,23 @@ const recipes=[
     "steps": [
       {
         "text": "Faire revenir l'oignon dans l'huile pendant 5 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 300
       },
       {
         "text": "Ajouter l'ail, le gingembre et les épices, puis cuire 1 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 60
       },
       {
         "text": "Incorporer les tomates et laisser mijoter 10 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 600
       },
       {
         "text": "Ajouter les pois chiches et l'eau, puis cuire encore 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Écraser quelques pois chiches pour épaissir la sauce et servir",
@@ -23614,15 +23630,18 @@ const recipes=[
       },
       {
         "text": "Faire revenir l'oignon et le cumin dans l'huile pendant 4 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 240
       },
       {
         "text": "Ajouter les tomates, le curcuma et la coriandre, puis cuire 5 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 300
       },
       {
         "text": "Incorporer les pommes de terre, le chou-fleur et l'eau, couvrir et cuire 20 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1200
       },
       {
         "text": "Découvrir et laisser évaporer le surplus de liquide",
@@ -23671,11 +23690,13 @@ const recipes=[
     "steps": [
       {
         "text": "Faire dorer l'agneau dans l'huile pendant 8 min puis le réserver",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 480
       },
       {
         "text": "Faire revenir l'oignon, l'ail, le gingembre et les épices pendant 5 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 300
       },
       {
         "text": "Baisser le feu, incorporer progressivement le yaourt en remuant",
@@ -23683,7 +23704,8 @@ const recipes=[
       },
       {
         "text": "Remettre l'agneau, ajouter l'eau et laisser mijoter à couvert 70 min jusqu'à tendreté",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 4200
       },
       {
         "text": "Réduire la sauce quelques minutes si nécessaire et servir",
@@ -23731,12 +23753,13 @@ const recipes=[
     "steps": [
       {
         "text": "Faire tremper séparément le riz et les lentilles pendant 6 h, puis mixer avec un peu d'eau pour obtenir une pâte fluide",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 21600
       },
       {
         "text": "Mélanger, couvrir et laisser fermenter 8 à 12 h dans un endroit tiède jusqu'à ce que la pâte soit légèrement aérée",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 28800, "timeMax": 43200},
       {
         "text": "Cuire les pommes de terre, les écraser grossièrement et les mélanger avec l'oignon revenu, la moutarde et le curcuma",
         "icon": "cook"
@@ -23787,7 +23810,8 @@ const recipes=[
     "steps": [
       {
         "text": "Faire chauffer le sucre, l'eau et la cardamome pendant 8 min pour obtenir un sirop léger",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 480
       },
       {
         "text": "Mélanger le lait en poudre, la farine et la levure, puis ajouter le beurre et le lait progressivement",
@@ -23799,11 +23823,13 @@ const recipes=[
       },
       {
         "text": "Faire frire à feu doux jusqu'à coloration brun doré, environ 7 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 420
       },
       {
         "text": "Plonger les boules dans le sirop tiède et laisser imbiber 30 min",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 1800
       }
     ],
     "time": "45 min",
@@ -23841,19 +23867,23 @@ const recipes=[
     "steps": [
       {
         "text": "Faire cuire les lentilles dans 500 ml d'eau pendant 15 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 900
       },
       {
         "text": "Ajouter le riz rincé, 250 ml d'eau et le cumin, puis cuire à couvert 18 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1080
       },
       {
         "text": "Émincer les oignons et les faire caraméliser lentement dans l'huile pendant 20 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1200
       },
       {
         "text": "Laisser reposer le riz aux lentilles 5 min puis égrainer",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 300
       },
       {
         "text": "Servir avec les oignons dorés sur le dessus",
@@ -23913,7 +23943,8 @@ const recipes=[
       },
       {
         "text": "Cuire au four à 190 °C pendant 45 min jusqu'à cuisson complète de la viande et des pommes de terre",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 2700
       }
     ],
     "time": "1h05",
@@ -23950,11 +23981,13 @@ const recipes=[
     "steps": [
       {
         "text": "Mélanger farine, levure, eau et sel, puis pétrir 8 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 480
       },
       {
         "text": "Couvrir et laisser lever pendant 1 h",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 3600
       },
       {
         "text": "Mélanger le zaatar avec l'huile d'olive pour former une pâte",
@@ -23966,8 +23999,8 @@ const recipes=[
       },
       {
         "text": "Cuire au four à 230 °C pendant 8 à 10 min jusqu'à ce que les bords soient dorés",
-        "icon": "serve"
-      }
+        "icon": "serve",
+        "time": 480, "timeMax": 600}
     ],
     "time": "35 min (+ levée)",
     "serves": "4 pers.",
@@ -24003,7 +24036,8 @@ const recipes=[
     "steps": [
       {
         "text": "Pétrir la farine, la levure, l'eau, 1 cuillère d'huile et le sel, puis laisser lever 1 h",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 3600
       },
       {
         "text": "Faire revenir l'oignon et les épinards hachés, puis égoutter soigneusement",
@@ -24019,8 +24053,8 @@ const recipes=[
       },
       {
         "text": "Cuire au four à 200 °C pendant 18 à 20 min",
-        "icon": "serve"
-      }
+        "icon": "serve",
+        "time": 1080, "timeMax": 1200}
     ],
     "time": "50 min (+ levée)",
     "serves": "4 pers.",
@@ -24061,11 +24095,13 @@ const recipes=[
     "steps": [
       {
         "text": "Faire dorer le poulet et les oignons dans l'huile pendant 8 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 480
       },
       {
         "text": "Ajouter les épices, les pois chiches et 700 ml d'eau, puis mijoter 35 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 2100
       },
       {
         "text": "Retirer le poulet et le garder au chaud",
@@ -24118,11 +24154,13 @@ const recipes=[
     "steps": [
       {
         "text": "Faire revenir le porc haché dans l'huile pendant 5 min jusqu'à cuisson complète",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 300
       },
       {
         "text": "Ajouter l'ail, le gingembre et le doubanjiang, puis cuire 1 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 60
       },
       {
         "text": "Verser l'eau et la sauce soja, puis ajouter le tofu en cubes",
@@ -24130,7 +24168,8 @@ const recipes=[
       },
       {
         "text": "Laisser frémir 5 min et lier avec la fécule délayée dans un peu d'eau froide",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 300
       },
       {
         "text": "Parsemer de poivre du Sichuan et servir avec du riz",
@@ -24235,7 +24274,8 @@ const recipes=[
       },
       {
         "text": "Faire sauter les poivrons en morceaux pendant 4 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 240
       },
       {
         "text": "Mélanger ketchup, vinaigre, sucre, sauce soja et eau, puis verser dans la poêle",
@@ -24243,7 +24283,8 @@ const recipes=[
       },
       {
         "text": "Ajouter l'ananas et laisser épaissir 3 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 180
       },
       {
         "text": "Remettre le porc et mélanger brièvement avant de servir",
@@ -24292,11 +24333,13 @@ const recipes=[
       },
       {
         "text": "Porter à ébullition puis cuire à feu doux 35 min en remuant régulièrement",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 2100
       },
       {
         "text": "Ajouter le poulet et poursuivre la cuisson 20 min jusqu'à ce qu'il soit bien cuit",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1200
       },
       {
         "text": "Effilocher le poulet et le remettre dans la bouillie",
@@ -24346,7 +24389,8 @@ const recipes=[
     "steps": [
       {
         "text": "Pétrir la farine, la levure, l'eau et le sucre, puis laisser lever 1 h",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 3600
       },
       {
         "text": "Mélanger le porc haché avec les oignons nouveaux, la sauce soja, l'huile de sésame et le gingembre",
@@ -24358,12 +24402,13 @@ const recipes=[
       },
       {
         "text": "Pincer les bords pour fermer les brioches, puis laisser reposer 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Cuire à la vapeur 15 à 18 min jusqu'à cuisson complète de la farce",
-        "icon": "serve"
-      }
+        "icon": "serve",
+        "time": 900, "timeMax": 1080}
     ],
     "time": "1h10 (+ levée)",
     "serves": "4 pers.",
@@ -24411,7 +24456,8 @@ const recipes=[
       },
       {
         "text": "Faire revenir le bœuf et l'oignon, ajouter les tomates et la cannelle, puis mijoter 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Préparer une béchamel avec le beurre, la farine et le lait, puis incorporer l'œuf hors du feu après léger refroidissement",
@@ -24423,7 +24469,8 @@ const recipes=[
       },
       {
         "text": "Cuire au four à 190 °C pendant 30 min et laisser reposer avant de servir",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 1800
       }
     ],
     "time": "1h20",
@@ -24476,7 +24523,8 @@ const recipes=[
       },
       {
         "text": "Ajouter le riz, la chair des tomates et le persil, puis cuire 5 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 300
       },
       {
         "text": "Farcir les légumes aux trois quarts, replacer les chapeaux et disposer dans un plat avec l'eau et le reste d'huile",
@@ -24484,7 +24532,8 @@ const recipes=[
       },
       {
         "text": "Cuire au four à 190 °C pendant 55 min jusqu'à ce que le riz soit tendre",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 3300
       }
     ],
     "time": "1h20",
@@ -24527,11 +24576,13 @@ const recipes=[
     "steps": [
       {
         "text": "Faire revenir l'oignon, les carottes et le céleri émincés dans l'huile pendant 8 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 480
       },
       {
         "text": "Ajouter les tomates, le laurier et l'eau, puis mijoter 20 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1200
       },
       {
         "text": "Incorporer les haricots blancs cuits",
@@ -24539,7 +24590,8 @@ const recipes=[
       },
       {
         "text": "Poursuivre la cuisson 20 min à feu doux pour développer les saveurs",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 1200
       },
       {
         "text": "Rectifier l'assaisonnement et servir avec un filet d'huile d'olive",
@@ -24601,8 +24653,8 @@ const recipes=[
       },
       {
         "text": "Couvrir d'une assiette et cuire à feu doux 40 à 45 min jusqu'à tendreté du riz",
-        "icon": "serve"
-      }
+        "icon": "serve",
+        "time": 2400, "timeMax": 2700}
     ],
     "time": "1h15",
     "serves": "4 pers.",
@@ -24654,11 +24706,12 @@ const recipes=[
       },
       {
         "text": "Cuire au four à 180 °C pendant 35 à 40 min jusqu'à coloration",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 2100, "timeMax": 2400},
       {
         "text": "Faire bouillir le sucre du sirop avec l'eau et le citron pendant 8 min, puis verser le sirop refroidi sur le gâteau chaud",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 480
       }
     ],
     "time": "1h10",
@@ -24699,7 +24752,8 @@ const recipes=[
     "steps": [
       {
         "text": "Faire revenir doucement le lard, le chorizo et l'oignon pendant 5 min",
-        "icon": "mix"
+        "icon": "mix",
+        "time": 300
       },
       {
         "text": "Ajouter l'ail, le laurier, les haricots et l'eau",
@@ -24707,7 +24761,8 @@ const recipes=[
       },
       {
         "text": "Laisser mijoter à feu doux pendant 40 min sans remuer brusquement",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 2400
       },
       {
         "text": "Ajouter le safran si souhaité et rectifier l'assaisonnement",
@@ -24715,7 +24770,8 @@ const recipes=[
       },
       {
         "text": "Laisser reposer 10 min avant de servir",
-        "icon": "serve"
+        "icon": "serve",
+        "time": 600
       }
     ],
     "time": "1h10",
@@ -24753,15 +24809,16 @@ const recipes=[
     "steps": [
       {
         "text": "Cuire le poulpe dans une grande casserole d'eau frémissante avec le laurier pendant 40 à 50 min jusqu'à ce qu'il soit tendre",
-        "icon": "mix"
-      },
+        "icon": "mix",
+        "time": 2400, "timeMax": 3000},
       {
         "text": "Laisser tiédir le poulpe dans son eau de cuisson",
         "icon": "cook"
       },
       {
         "text": "Cuire les pommes de terre en rondelles épaisses dans l'eau salée pendant 15 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 900
       },
       {
         "text": "Couper le poulpe en tronçons et les disposer sur les pommes de terre",
@@ -24808,8 +24865,8 @@ const recipes=[
       },
       {
         "text": "Déposer la morue côté peau dans l'huile tiède et cuire à feu très doux 8 à 10 min selon l'épaisseur",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 480, "timeMax": 600},
       {
         "text": "Retirer le poisson et laisser tiédir légèrement l'huile",
         "icon": "cook"
@@ -24853,7 +24910,8 @@ const recipes=[
       },
       {
         "text": "Ajouter la mie de pain et laisser imbiber 10 min",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 600
       },
       {
         "text": "Mixer à nouveau en versant progressivement l'huile d'olive pour obtenir une crème épaisse",
@@ -24861,7 +24919,8 @@ const recipes=[
       },
       {
         "text": "Saler et réfrigérer au moins 1 h",
-        "icon": "cook"
+        "icon": "cook",
+        "time": 3600
       },
       {
         "text": "Servir froid avec les œufs durs hachés et le jambon en petits morceaux",
@@ -24913,8 +24972,8 @@ const recipes=[
       },
       {
         "text": "Verser dans le moule et cuire 30 à 35 min jusqu'à ce que le centre soit pris",
-        "icon": "cook"
-      },
+        "icon": "cook",
+        "time": 1800, "timeMax": 2100},
       {
         "text": "Laisser refroidir puis saupoudrer de sucre glace",
         "icon": "serve"
@@ -25116,7 +25175,21 @@ async function renderProfileHistory(){
 
 // Timer
 let timers={};
-function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+function fmt(s){s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),sec=s%60;return h?h+":"+String(m).padStart(2,"0")+":"+String(sec).padStart(2,"0"):String(m).padStart(2,"0")+":"+String(sec).padStart(2,"0");}
+function timerLabel(s){s=Math.floor(s);if(s<60)return s+' s';const m=Math.floor(s/60);if(m<60)return m+' min';const h=Math.floor(m/60),rest=m%60;return h+' h'+(rest?' '+String(rest).padStart(2,'0'):'');}
+function timerRangeLabel(step){const base=timerLabel(step.time);if(!step.timeMax)return base;const max=step.timeMax;
+ const match=String(step.text||'').match(/(\d+)\s*(?:à|[-–])\s*(\d+)\s*(heures?|h\b|minutes?|min\b|secondes?|sec\b)/i);
+ if(match){const factor=/^(?:h|heure)/i.test(match[3])?3600:/^(?:s|sec)/i.test(match[3])?1:60;
+ const low=+match[1]*factor,high=+match[2]*factor;
+ if(high===max&&(step.time===low||step.time===high)){
+ if(factor===60)return match[1]+'-'+match[2]+' min';
+ if(factor===3600)return match[1]+'-'+match[2]+' h';
+ return match[1]+'-'+match[2]+' s';}}
+ if(max<=step.time)return base;
+ if(step.time<3600&&max<3600)return Math.floor(step.time/60)+'-'+Math.floor(max/60)+' min';return base+' - '+timerLabel(max);}
+
+function timerRangeReminder(max){return max?(currentLang==='en'?' (check: up to '+timerLabel(max)+')':' (vérifie : jusqu’à '+timerLabel(max)+')'):'';}
+function timerLongRestNotice(seconds){return seconds>=21600?'<div class="timer-long-rest" style="font-size:12px;opacity:.75;margin-top:5px">'+(currentLang==='en'?'Long rest: the timer stops if you close the app.':'Repos long : le chrono s’arrête si tu fermes l’application.')+'</div>':'';}
 function startTimer(i){
   const el=document.getElementById("s"+i);if(!el)return;
   const d=el.querySelector(".td"),p=el.querySelector(".tp"),sb=el.querySelector(".tsb"),cb=el.querySelector(".tcb");
@@ -25129,7 +25202,7 @@ function startTimer(i){
       rem--;timers[i].rem=rem;d.textContent=fmt(rem);p.style.width=(rem/total*100)+"%";
       if(rem<=0){
         clearInterval(timers[i].iv);delete timers[i];
-        d.textContent="Pret !";d.classList.add("done");
+        d.textContent=(currentLang==='en'?"Done!":"Prêt !")+timerRangeReminder(+el.dataset.tmax);d.classList.add("done");
         el.classList.remove("step-active");el.classList.add("step-done");
         cb.textContent="R";cb.classList.add("restart");cb.onclick=()=>resetTimer(i);p.style.width="0%";
         showToast("Etape "+(+i+1)+" terminee !");
@@ -25565,7 +25638,7 @@ function shoppingEntries(state){
  state.manual.forEach(x=>{const key='manual:'+x.id;entries.set(key,{key,label:x.text,qty:null,max:null,unit:'',raw:'',valid:false,manual:true});});
  return [...entries.values()].sort((a,b)=>a.label.localeCompare(b.label,'fr'));
 }
-function shoppingItemText(entry){return (entry.valid?shoppingFormatQty(entry.qty,entry.unit,entry.max)+' ':'')+entry.label+(entry.valid?'':entry.raw?' ('+entry.raw+')':'');}
+function shoppingItemText(entry){return (entry.valid?shoppingFormatQty(entry.qty,entry.unit,entry.max)+' ':'')+shoppingDisplayName(entry,entry.label)+(entry.valid?'':entry.raw?' ('+entry.raw+')':'');}
 function openShopping(){const el=document.getElementById('shopping-overlay');if(!el)return;el.classList.add('open');renderShopping();}
 function closeShopping(){document.getElementById('shopping-overlay').classList.remove('open');}
 function shoppingRemoveRecipe(title){
@@ -25582,7 +25655,16 @@ function shoppingIngredientCache(){
  try{const data=JSON.parse(localStorage.getItem(SHOPPING_ING_EN_KEY)||'{}');return data&&typeof data==='object'&&!Array.isArray(data)?data:{};}
  catch(e){return {};}
 }
-async function shoppingTranslateIngredient(name){
+const shoppingTranslationPending=new Map();
+const shoppingTranslationQueue=[];
+let shoppingTranslationActive=0;
+function shoppingTranslationPump(){
+ while(shoppingTranslationActive<3&&shoppingTranslationQueue.length){
+  const job=shoppingTranslationQueue.shift();shoppingTranslationActive++;
+  job().finally(()=>{shoppingTranslationActive--;shoppingTranslationPump();});
+ }
+}
+async function shoppingTranslateIngredientRequest(name){
  const cache=shoppingIngredientCache();
  if(typeof cache[name]==='string'&&cache[name].trim())return cache[name];
  try{
@@ -25596,6 +25678,36 @@ async function shoppingTranslateIngredient(name){
   try{localStorage.setItem(SHOPPING_ING_EN_KEY,JSON.stringify(latest));}catch(e){}
   return translation;
  }catch(e){return name;}
+}
+function shoppingTranslateIngredient(name){
+ const cache=shoppingIngredientCache();
+ if(typeof cache[name]==='string'&&cache[name].trim())return Promise.resolve(cache[name]);
+ if(shoppingTranslationPending.has(name))return shoppingTranslationPending.get(name);
+ const promise=new Promise(resolve=>{
+  shoppingTranslationQueue.push(async()=>{try{resolve(await shoppingTranslateIngredientRequest(name));}catch(e){resolve(name);}finally{shoppingTranslationPending.delete(name);}});
+  shoppingTranslationPump();
+ });
+ shoppingTranslationPending.set(name,promise);
+ return promise;
+}
+function shoppingDisplayName(entry,name){
+ if(entry.manual||!entry.valid||entry.qty<2||entry.unit)return name;
+ const words=name.trim().split(/\s+/);
+ const plural=word=>/[sxz]$/i.test(word)?word:word+'s';
+ if(/^(?:poivre|sel|sucre|lait|farine)$/i.test(name.trim()))return name;
+ if(/^jaune d[’']œuf$/i.test(name))return name.replace(/^jaune/i,part=>plural(part));
+ if(/^pain pita$/i.test(name))return name.replace(/^pain/i,part=>plural(part));
+ if(/^piment jalapeño$/i.test(name))return name.replace(/^piment/i,part=>plural(part));
+ if(/^piment ancho séché$/i.test(name))return name.replace(/^piment/i,part=>plural(part)).replace(/séché$/i,part=>plural(part));
+ if(words.length===1)return plural(words[0]);
+ if(/^pomme de terre$/i.test(name))return name.replace(/^pomme/i,part=>plural(part));
+ // Preserve existing multiword ingredient names unless the ending is a known adjective.
+ const adjectives={vert:'verts',confit:'confits',rouge:'rouges',blanc:'blancs',jaune:'jaunes',noir:'noirs',frais:'frais',mûr:'mûrs',doux:'doux',émincé:'émincés',émincée:'émincées',haché:'hachés',hachée:'hachées',coupé:'coupés',coupée:'coupées',séché:'séchés',séchée:'séchées',râpé:'râpés',râpée:'râpées',douce:'douces',plantain:'plantains'};
+ if(words.length===2&&adjectives[words[1].toLowerCase()]){
+  const adj=adjectives[words[1].toLowerCase()];
+  return plural(words[0])+' '+(words[1][0]===words[1][0].toUpperCase()?adj[0].toUpperCase()+adj.slice(1):adj);
+ }
+ return name;
 }
 function renderShopping(){
  const version=++shoppingRenderVersion;
@@ -25626,10 +25738,10 @@ function renderShopping(){
  if(currentLang==='en'&&entries.length){
   const rows=new Map();
   body.querySelectorAll('.shopping-line').forEach((row,i)=>{if(entries[i])rows.set(entries[i].key,row.querySelector('label'));});
-  const names=[...new Set(entries.map(e=>e.label))];
+  const names=[...new Set(entries.filter(e=>!e.manual).map(e=>shoppingDisplayName(e,e.label)))];
   names.forEach(name=>shoppingTranslateIngredient(name).then(translated=>{
    if(version!==shoppingRenderVersion||currentLang!=='en')return;
-   entries.filter(e=>e.label===name).forEach(e=>{
+   entries.filter(e=>!e.manual&&shoppingDisplayName(e,e.label)===name).forEach(e=>{
     const el=rows.get(e.key);if(!el||!el.isConnected)return;
     const cb=el.querySelector('input');let qty=e.valid?shoppingFormatQty(e.qty,e.unit,e.max):'';
     qty=qty.replace(/\bpièces\b/g,'pieces').replace(/\bpièce\b/g,'piece').replace(/\bgousses\b/g,'cloves').replace(/\bgousse\b/g,'clove').replace(/c\. à soupe/g,'tbsp').replace(/c\. à café/g,'tsp');
@@ -25641,7 +25753,24 @@ function renderShopping(){
 function addManualShopping(){const input=document.getElementById('shopping-manual');const value=input.value.trim();if(!value)return;const state=shoppingLoad();state.manual.push({id:Date.now()+'-'+Math.random().toString(36).slice(2),text:value});shoppingSave(state);input.value='';renderShopping();}
 function clearCheckedShopping(){const state=shoppingLoad();shoppingEntries(state).filter(x=>state.checked[x.key]).forEach(x=>{if(x.manual)state.manual=state.manual.filter(m=>'manual:'+m.id!==x.key);else if(!state.removed.includes(x.key))state.removed.push(x.key);});state.checked={};if(!shoppingEntries(state).length){state.recipes=[];state.removed=[];}shoppingSave(state);renderShopping();}
 function shoppingCopyFallback(text){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy');}catch(e){}ta.remove();if(!ok)window.prompt(shoppingT('copyError'),text);else showToast(shoppingT('copied'));}
-function copySmartShopping(){const state=shoppingLoad();const text=shoppingT('title')+'\n'+shoppingEntries(state).map(x=>(state.checked[x.key]?'[x] ':'[ ] ')+shoppingItemText(x)).join('\n');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(()=>showToast(shoppingT('copied'))).catch(()=>shoppingCopyFallback(text));else shoppingCopyFallback(text);}
+async function copySmartShopping(){
+ const state=shoppingLoad(),entries=shoppingEntries(state);
+ let lines=entries.map(x=>(state.checked[x.key]?'[x] ':'[ ] ')+shoppingItemText(x));
+ if(currentLang==='en'){
+  const names=[...new Set(entries.filter(e=>!e.manual).map(e=>shoppingDisplayName(e,e.label)))];
+  const translations=await Promise.all(names.map(name=>shoppingTranslateIngredient(name)));
+  const byName=new Map(names.map((name,i)=>[name,translations[i]]));
+  lines=entries.map(e=>{
+   if(e.manual)return (state.checked[e.key]?'[x] ':'[ ] ')+e.label;
+   let qty=e.valid?shoppingFormatQty(e.qty,e.unit,e.max):'';
+   qty=qty.replace(/\bpièces\b/g,'pieces').replace(/\bpièce\b/g,'piece').replace(/\bgousses\b/g,'cloves').replace(/\bgousse\b/g,'clove').replace(/c\. à soupe/g,'tbsp').replace(/c\. à café/g,'tsp');
+   const fr=shoppingDisplayName(e,e.label);
+   return (state.checked[e.key]?'[x] ':'[ ] ')+(qty?qty+' ':'')+(byName.get(fr)||fr)+(!e.valid&&e.raw?' ('+e.raw+')':'');
+  });
+ }
+ const text=shoppingT('title')+'\n'+lines.join('\n');
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(()=>showToast(shoppingT('copied'))).catch(()=>shoppingCopyFallback(text));else shoppingCopyFallback(text);
+}
 
 // ===== RECIPE METADATA TRANSLATION =====
 const recipeMetaEN = {
@@ -25950,6 +26079,8 @@ function applyLang() {
   const langBtn = document.getElementById('lang-btn');
   if (langBtn) langBtn.textContent = currentLang === 'fr' ? 'EN' : 'FR';
   document.documentElement.lang = currentLang;
+  const recipeCount=document.getElementById('rc');
+  if(recipeCount)recipeCount.textContent=recipes.length+(currentLang==='en'?' recipes':' recettes');
 }
 
 function toggleLang() {
@@ -26002,14 +26133,10 @@ function toggleLang() {
           const step = cur.steps[i];
           if (step) el.textContent = typeof step === 'string' ? step : step.text;
         });
-        translatedStepTexts = [];
         const _cm = document.getElementById('cook-mode');
-        if (_cm && _cm.classList.contains('open')) renderCookStep();
+        if (_cm && _cm.classList.contains('visible')) cookRefreshStepText();
       } else {
-        translateRecipeSteps(cur.steps).then(() => {
-          const _cm = document.getElementById('cook-mode');
-          if (_cm && _cm.classList.contains('open')) renderCookStep();
-        });
+        translateRecipeSteps(cur.steps);
       }
     }
     // Mettre a jour section meta (portions, diff)
@@ -26022,6 +26149,7 @@ function toggleLang() {
     const _rdiff = document.getElementById('r-diff');
     if (_rdiff && cur.diff) _rdiff.textContent = translateMeta('diff', cur.diff);
   }
+  cookRefreshStepText();
   // Refresh plan if it's currently open (re-renders day names + regions in current lang)
   const planOverlay = document.getElementById('plan-overlay');
   if (planOverlay && planOverlay.classList.contains('open')) {
@@ -26195,8 +26323,8 @@ function show(recipe){
     const text=typeof step==="string"?step:step.text;
     const time=(typeof step==="object"&&step.time>0)?step.time:0;
     const{html:iconHtml}=getIcon(step);
-    const timer=time>0?"<div class=\"step-timer\"><button class=\"tsb\" onclick=\"startTimer("+i+")\">⏱ "+Math.round(time/60)+" min</button><span class=\"td\" hidden>"+fmt(time)+"</span><button class=\"tcb\" hidden onclick=\"togglePause("+i+")\" style=\"font-size:11px;padding:0 8px;border-radius:12px;height:28px;background:var(--green);border:none;color:#fff;cursor:pointer\">Pause</button></div><div class=\"timer-progress-wrap\"><div class=\"tp\" style=\"height:100%;background:var(--green);border-radius:2px;width:100%;transition:width 1s linear\"></div></div>":"";
-    return "<div class=\"step\" id=\"s"+i+"\"" +(time>0?" data-t=\""+time+"\"":"")+"><div class=\"step-icon-wrap\">"+iconHtml+"<span class=\"step-num\">"+(i+1)+"</span></div><div class=\"step-content\"><div class=\"step-text\">"+text+"</div>"+timer+"</div></div>";
+    const timer=time>0?"<div class=\"step-timer\"><button class=\"tsb\" onclick=\"startTimer("+i+")\">⏱ "+timerRangeLabel(step)+"</button><span class=\"td\" hidden>"+fmt(time)+"</span><button class=\"tcb\" hidden onclick=\"togglePause("+i+")\" style=\"font-size:11px;padding:0 8px;border-radius:12px;height:28px;background:var(--green);border:none;color:#fff;cursor:pointer\">Pause</button></div>"+timerLongRestNotice(time)+"<div class=\"timer-progress-wrap\"><div class=\"tp\" style=\"height:100%;background:var(--green);border-radius:2px;width:100%;transition:width 1s linear\"></div></div>":"";
+    return "<div class=\"step\" id=\"s"+i+"\"" +(time>0?" data-t=\""+time+"\""+(step.timeMax?" data-tmax=\""+step.timeMax+"\"":""):"")+"><div class=\"step-icon-wrap\">"+iconHtml+"<span class=\"step-num\">"+(i+1)+"</span></div><div class=\"step-content\"><div class=\"step-text\">"+text+"</div>"+timer+"</div></div>";
   }).join("");
   document.getElementById("result-card").classList.add("visible");
   setTimeout(()=>document.getElementById("result-card").scrollIntoView({behavior:"smooth",block:"start"}),80);
@@ -26212,46 +26340,115 @@ function show(recipe){
 // Separator that won't appear in French recipe text
 const STEP_SEP = ' ⟦|||⟧ ';
 
-async function translateRecipeSteps(steps) {
-  translatedStepTexts = [];
-  const stepsEl = document.getElementById('result-steps');
-  if (!stepsEl) return;
-  const stepDivs = stepsEl.querySelectorAll('.step-text');
-  if (!stepDivs.length) return;
-  const cacheKey = 'marmito-tr2-' + (cur ? encodeURIComponent(cur.title) : 'r');
-  // Try cache first (instant)
-  try {
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) {
-      const texts = JSON.parse(cached);
-      translatedStepTexts = texts;
-      stepDivs.forEach((el, i) => { if (texts[i]) el.textContent = texts[i]; });
-      return;
-    }
-  } catch(e) {}
-  // No cache, dim all steps, translate in ONE batch call
-  stepDivs.forEach(el => { el.style.opacity = '0.45'; el.style.transition = 'opacity 0.3s'; });
-  const raws = steps.map(s => typeof s === 'string' ? s : s.text);
-  const joined = raws.join(STEP_SEP);
-  try {
-    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=' + encodeURIComponent(joined);
-    const resp = await fetch(url);
-    const json = await resp.json();
-    const fullTranslated = json[0].map(seg => seg[0]).join('');
-    // Split back, tolerate small spacing variations around separator
-    const parts = fullTranslated.split(/\s*⟦\|\|\|⟧\s*/);
-    const texts = raws.map((raw, i) => (parts[i] && parts[i].trim()) ? parts[i].trim() : raw);
-    translatedStepTexts = texts;
-    stepDivs.forEach((el, i) => { el.textContent = texts[i]; el.style.opacity = '1'; });
-    try { localStorage.setItem(cacheKey, JSON.stringify(texts)); } catch(e) {}
-  } catch(e) {
-    // API failed, restore French text with full opacity
-    stepDivs.forEach((el, i) => { el.textContent = raws[i]; el.style.opacity = '1'; translatedStepTexts[i] = raws[i]; });
-  }
+const COOK_STEP_EN_KEY='marmito-cook-steps-en-v1';
+const cookStepTranslationPending=new Map();
+const cookStepTranslationQueue=[];
+let cookStepTranslationActive=0;
+function cookStepTranslationPump(){
+ while(cookStepTranslationActive<3&&cookStepTranslationQueue.length){
+  const job=cookStepTranslationQueue.shift();cookStepTranslationActive++;
+  job().finally(()=>{cookStepTranslationActive--;cookStepTranslationPump();});
+ }
 }
-
+function cookStepTranslationCache(){
+ try{const data=JSON.parse(localStorage.getItem(COOK_STEP_EN_KEY)||'{}');return data&&typeof data==='object'&&!Array.isArray(data)?data:{};}catch(e){return {};}
+}
+function cookTranslateOneStep(text){
+ const cache=cookStepTranslationCache();if(typeof cache[text]==='string'&&cache[text].trim())return Promise.resolve(cache[text]);
+ if(cookStepTranslationPending.has(text))return cookStepTranslationPending.get(text);
+ const promise=new Promise(resolve=>{
+  cookStepTranslationQueue.push(async()=>{
+   try{
+    const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q='+encodeURIComponent(text);
+    const response=await fetch(url);if(!response.ok)throw new Error('Translation unavailable');
+    const data=await response.json();const result=data[0].map(x=>x[0]).join('').trim();
+    if(!result)throw new Error('Empty translation');
+    const latest=cookStepTranslationCache();latest[text]=result;
+    try{localStorage.setItem(COOK_STEP_EN_KEY,JSON.stringify(latest));}catch(e){}
+    resolve(result);
+   }catch(e){resolve(null);}
+   finally{cookStepTranslationPending.delete(text);}
+  });cookStepTranslationPump();
+ });
+ cookStepTranslationPending.set(text,promise);return promise;
+}
+async function translateRecipeSteps(steps) {
+ const recipeTitle=cur?.title;
+ const stepsEl=document.getElementById('result-steps');if(!stepsEl)return;
+ const stepDivs=stepsEl.querySelectorAll('.step-text');if(!stepDivs.length)return;
+ const raws=steps.map(s=>typeof s==='string'?s:s.text);
+ const cacheKey='marmito-tr2-'+(recipeTitle?encodeURIComponent(recipeTitle):'r');
+ const sameRecipe=()=>cur?.title===recipeTitle&&cur?.steps===steps;
+ const update=texts=>{
+  if(!sameRecipe())return;
+  translatedStepTexts=texts;
+  stepDivs.forEach((el,i)=>{el.textContent=currentLang==='en'?(texts[i]||raws[i]):raws[i];el.style.opacity=currentLang==='en'&&!texts[i]?'0.6':'1';});
+  cookRefreshStepText();
+ };
+ const individual=cookStepTranslationCache();
+ const texts=raws.map(raw=>typeof individual[raw]==='string'&&individual[raw].trim()?individual[raw]:null);
+ update(texts);
+ if(currentLang!=='en'||texts.every(Boolean))return;
+ // Translate only missing steps; never depend on a fragile multi-step separator.
+ await Promise.all(raws.map(async(raw,i)=>{
+  if(texts[i])return;
+  const translation=await cookTranslateOneStep(raw);
+  if(!sameRecipe())return;
+  if(translation){texts[i]=translation;update(texts.slice());}
+ }));
+ if(!sameRecipe())return;
+ if(texts.every(Boolean))try{localStorage.setItem(cacheKey,JSON.stringify(texts));}catch(e){}
+ update(texts.slice());
+}
 // ===== COOKING MODE CAROUSEL =====
 let cookSteps=[], cookIdx=0, cookTimer=null;
+const COOK_PROGRESS_KEY='marmito-cook-progress-v1';
+let cookSpeechActive=false;
+let cookUtterance=null;
+let cookStepDisplayedLang=null;
+function cookProgressLoad(){try{const x=JSON.parse(localStorage.getItem(COOK_PROGRESS_KEY)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{};}catch(e){return {};}}
+function cookProgressSave(){if(!cur||!Array.isArray(cookSteps)||!cookSteps.length)return;const x=cookProgressLoad();x[cur.title]=cookIdx;try{localStorage.setItem(COOK_PROGRESS_KEY,JSON.stringify(x));}catch(e){}}
+function cookProgressFinish(){if(!cur)return;const x=cookProgressLoad();delete x[cur.title];try{localStorage.setItem(COOK_PROGRESS_KEY,JSON.stringify(x));}catch(e){}}
+function cookSpeechStop(){cookUtterance=null;cookSpeechActive=false;try{if('speechSynthesis'in window)window.speechSynthesis.cancel();}catch(e){}cookSpeechButton();}
+function cookSpeechButton(){const b=document.getElementById('cook-speak-btn');if(!b)return;b.textContent=cookSpeechActive?(currentLang==='en'?'⏹ Stop reading':'⏹ Arrêter la lecture'):(currentLang==='en'?'🔊 Listen to step':'🔊 Écouter l’étape');b.disabled=!(('speechSynthesis'in window)&&('SpeechSynthesisUtterance'in window));}
+function cookSpeakToggle(){
+ if(cookSpeechActive){cookSpeechStop();return;}
+ if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window))return;
+ const step=cookSteps[cookIdx];if(!step)return;
+ const original=typeof step==='string'?step:step.text;
+ if(currentLang==='en'&&!translatedStepTexts[cookIdx]){showToast('Translation not yet available');return;}
+ const text=(currentLang==='en'?translatedStepTexts[cookIdx]:original).trim();if(!text)return;
+ cookSpeechStop();
+ const u=new SpeechSynthesisUtterance(text);u.lang=currentLang==='en'?'en-US':'fr-FR';
+ cookUtterance=u;
+ u.onend=()=>{if(cookUtterance!==u)return;cookUtterance=null;cookSpeechActive=false;cookSpeechButton();};
+ u.onerror=()=>{if(cookUtterance!==u)return;cookUtterance=null;cookSpeechActive=false;cookSpeechButton();};
+ cookSpeechActive=true;cookSpeechButton();window.speechSynthesis.speak(u);
+}
+window.addEventListener('pagehide',cookSpeechStop);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)cookSpeechStop();});
+function cookRefreshStepText(){
+ const mode=document.getElementById('cook-mode');
+ if(!mode||!mode.classList.contains('visible')||!cookSteps.length)return;
+ const step=cookSteps[cookIdx];if(!step)return;
+ const original=typeof step==='string'?step:step.text;
+ const text=currentLang==='en'?(translatedStepTexts[cookIdx]||original):original;
+ const display=document.getElementById('cook-step-text');
+ const languageChanged=cookStepDisplayedLang!==currentLang;
+ if(display.textContent===text&&!languageChanged)return;
+ cookSpeechStop();
+ display.textContent=text;
+ cookStepDisplayedLang=currentLang;
+ const total=cookSteps.length;
+ document.getElementById('cook-progress-text').textContent=currentLang==='en'?('Step '+(cookIdx+1)+' of '+total):('Étape '+(cookIdx+1)+' sur '+total);
+ document.getElementById('cook-prev').disabled=(cookIdx===0);
+ const nextBtn=document.getElementById('cook-next');
+ if(cookIdx===total-1)nextBtn.innerHTML=currentLang==='en'?'Done! &#127869;&#65039;':'C&rsquo;est pr&ecirc;t ! &#127869;&#65039;';
+ else nextBtn.innerHTML=currentLang==='en'?'Next &#8594;':'Suivante &#8594;';
+ const notice=document.getElementById('cook-long-rest-notice');if(notice&&cookSteps[cookIdx]&&cookSteps[cookIdx].time>=21600)notice.textContent=currentLang==='en'?'Long rest: the timer stops if you close the app.':'Repos long : le chrono s’arrête si tu fermes l’application.';
+ cookSpeechButton();
+}
+
 let translatedStepTexts=[];
 let translatedTitle = null;
 
@@ -26280,7 +26477,13 @@ async function translateTitles(frTitles) {
 
 function startCookMode(){
   if(!cur)return;
+  cookSpeechStop();
   cookSteps=cur.steps;cookIdx=0;
+  const previous=cookProgressLoad()[cur.title];
+  if(Number.isInteger(previous)&&previous>0&&previous<cookSteps.length){
+    if(confirm(currentLang==='en'?`Resume at step ${previous+1}? Cancel to restart.`:`Reprendre à l’étape ${previous+1} ? Annuler pour recommencer.`))cookIdx=previous;
+  }
+  cookProgressSave();
   // Clear any active timers
   if(cookTimer){clearInterval(cookTimer.iv);cookTimer=null;}
   document.getElementById("cook-recipe-name").textContent=cur.title;
@@ -26291,6 +26494,7 @@ function startCookMode(){
   document.getElementById("cook-mode").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function closeCookMode(){
+  cookSpeechStop();
   if(cookTimer){clearInterval(cookTimer.iv);cookTimer=null;}
   document.getElementById("cook-mode").classList.remove("visible");
 }
@@ -26307,6 +26511,7 @@ function updateDots(){
   }
 }
 function renderCookStep(){
+  cookSpeechStop();
   if(cookTimer){clearInterval(cookTimer.iv);cookTimer=null;}
   const step=cookSteps[cookIdx];
   const total=cookSteps.length;
@@ -26322,10 +26527,14 @@ function renderCookStep(){
   document.getElementById("cook-icon-big").innerHTML=iconHtml;
   document.getElementById("cook-icon-big").classList.remove("timer-running");
   // Text, use cached translation if available
-  const displayText = (currentLang==='en' && translatedStepTexts[cookIdx]) ? translatedStepTexts[cookIdx] : text;
+  const displayText = currentLang==='en' ? (translatedStepTexts[cookIdx] || text) : text;
+  cookStepDisplayedLang=currentLang;
   document.getElementById("cook-step-text").textContent=displayText;
+  cookSpeechButton();
   // Timer
   const tz=document.getElementById("cook-timer-zone");
+  let longNotice=document.getElementById("cook-long-rest-notice");if(!longNotice){longNotice=document.createElement("div");longNotice.id="cook-long-rest-notice";longNotice.style.cssText="font-size:12px;opacity:.75;margin-top:6px";tz.appendChild(longNotice);}
+  longNotice.textContent=time>=21600?(currentLang==='en'?'Long rest: the timer stops if you close the app.':'Repos long : le chrono s’arrête si tu fermes l’application.'):"";
   if(time>0){
     tz.style.display="";
     const disp=document.getElementById("cook-timer-disp");
@@ -26347,10 +26556,12 @@ function renderCookStep(){
   updateDots();
 }
 function cookNav(dir){
+  cookSpeechStop();
   if(cookTimer){clearInterval(cookTimer.iv);cookTimer=null;}
   const next=cookIdx+dir;
   if(next<0)return;
   if(next>=cookSteps.length){
+    cookProgressFinish();
     // Show ready screen
     document.getElementById("cook-step-view").style.display="none";
     document.getElementById("cook-ready").classList.add("visible");
@@ -26359,7 +26570,7 @@ function cookNav(dir){
     showToast(t('toast-bon-appetit'));
     return;
   }
-  cookIdx=next;renderCookStep();
+  cookIdx=next;cookProgressSave();renderCookStep();
 }
 function cookTimerStart(){
   if(!cookTimer||cookTimer.iv)return;
@@ -26377,7 +26588,7 @@ function cookTimerStart(){
     prog.style.width=(rem/cookTimer.total*100)+"%";
     if(rem<=0){
       clearInterval(cookTimer.iv);cookTimer=null;
-      disp.textContent=currentLang==='en'?'Done!':'Prêt !';disp.classList.add("done");
+      disp.textContent=(currentLang==='en'?'Done!':'Prêt !')+timerRangeReminder((typeof cookSteps[cookIdx]==='object'&&cookSteps[cookIdx].timeMax)||0);disp.classList.add("done");
       ctrlBtn.textContent="R";ctrlBtn.classList.add("restart");
       ctrlBtn.onclick=cookTimerReset;
       document.getElementById("cook-icon-big").classList.remove("timer-running");
@@ -26409,7 +26620,7 @@ function cookTimerReset(){
   document.getElementById("cook-icon-big").classList.remove("timer-running");
 }
 
-document.getElementById("rc").textContent="295+ recettes";
+document.getElementById("rc").textContent=recipes.length+(currentLang==='en'?' recipes':' recettes');
 initDailyRecipe();
 checkDirectLink();
 applyLang();
