@@ -892,6 +892,7 @@
       </div>
       <div class="result-section-title" data-i18n="sec-ingredients">Ingr&eacute;dients</div>
         <div class="ingredient-list" id="result-ingredients"></div>
+        <div id="marmito-substitution-panel" hidden aria-live="polite" style="margin-top:12px;padding:12px;border:1px solid var(--accent);border-radius:10px;font-size:13px;line-height:1.5"></div>
       </div>
       <div>
         <div class="result-section-title" data-i18n="sec-preparation">Pr&eacute;paration : Chrono int&eacute;gr&eacute;</div>
@@ -1910,10 +1911,42 @@
     const explicit = recipe.ingredientQuantities && recipe.ingredientQuantities[idx];
     return explicit || qtyMap[recipe.ingredients[idx]] || '';
   }
+  // Optional substitutions for common ingredients. Suggestions never alter recipe data.
+  const MARMITO_SUBSTITUTIONS = [
+    {names:['lait','lait entier','lait demi-écrémé'],fr:'Lait',en:'Milk',options:[['Boisson de soja non sucrée','Unsweetened soy milk','Souvent 1:1 en cuisine ou pâtisserie; le goût change.','Often 1:1 in cooking or baking; flavor differs.'],['Boisson d’avoine','Oat drink','Souvent 1:1; moins adaptée aux préparations nécessitant beaucoup de protéines.','Often 1:1; less suitable when protein structure matters.']]},
+    {names:['beurre','beurre fondu','beurre doux'],fr:'Beurre',en:'Butter',options:[['Margarine adaptée à la cuisson','Baking margarine','Souvent 1:1; vérifier la teneur en matières grasses.','Often 1:1; check fat content.'],['Huile neutre','Neutral oil','Environ 80 ml pour 100 g de beurre, selon la recette.','About 80 ml per 100 g of butter, recipe dependent.']]},
+    {names:['œuf','œufs','oeuf','oeufs'],fr:'Œuf',en:'Egg',options:[['Graines de lin moulues et eau','Ground flaxseed and water','1 c. à soupe de lin + 3 c. à soupe d’eau par œuf pour lier certains gâteaux; pas pour les omelettes.','1 tbsp flaxseed + 3 tbsp water per egg to bind some baked goods; not for omelets.'],['Compote de pommes','Applesauce','Environ 60 g par œuf dans certains gâteaux moelleux; texture différente.','About 60 g per egg in some soft cakes; texture changes.']]},
+    {names:['crème fraîche','crème liquide','crème épaisse','crème'],fr:'Crème',en:'Cream',options:[['Crème végétale de cuisine','Plant-based cooking cream','Souvent 1:1 dans les sauces; vérifier si elle supporte la chaleur.','Often 1:1 in sauces; check heat stability.'],['Yogourt nature','Plain yogurt','Pour sauces tièdes ou froides; risque de trancher à forte ébullition.','For warm or cold sauces; may split if boiled.']]},
+    {names:['farine','farine de blé','farine tout usage'],fr:'Farine de blé',en:'Wheat flour',options:[['Farine d’épeautre','Spelt flour','Souvent proche de 1:1, mais absorption et gluten différents.','Often near 1:1, but absorption and gluten differ.'],['Mélange sans gluten pour pâtisserie','Gluten-free baking blend','Choisir un mélange prévu pour remplacer la farine 1:1; pas universel pour le pain.','Use a blend labeled 1:1 for baking; not universal for bread.']]},
+    {names:['huile d’olive',"huile d'olive"],fr:'Huile d’olive',en:'Olive oil',options:[['Huile de tournesol','Sunflower oil','1:1 pour la cuisson; goût moins prononcé.','1:1 for cooking; milder taste.'],['Huile de colza','Canola oil','1:1 pour la plupart des cuissons.','1:1 for most cooking.']]},
+    {names:['huile végétale','huile neutre','huile de tournesol'],fr:'Huile végétale',en:'Vegetable oil',options:[['Huile de colza','Canola oil','1:1 pour la plupart des préparations.','1:1 for most recipes.'],['Huile de tournesol','Sunflower oil','1:1 si elle n’est pas déjà utilisée.','1:1 if not already used.']]},
+    {names:['lait de coco'],fr:'Lait de coco',en:'Coconut milk',options:[['Crème végétale et eau','Plant-based cream and water','Diluer selon l’épaisseur voulue; la saveur de coco disparaît.','Dilute to desired thickness; coconut flavor is lost.']]},
+    {names:['citron','jus de citron'],fr:'Citron',en:'Lemon',options:[['Citron vert','Lime','Jus souvent 1:1; goût différent.','Juice often 1:1; flavor differs.']]},
+    {names:['persil','persil frais'],fr:'Persil',en:'Parsley',options:[['Coriandre fraîche','Fresh cilantro','Même volume pour la garniture, goût très différent.','Same volume for garnish; very different taste.'],['Ciboulette','Chives','Même volume pour la finition, saveur plus douce.','Same volume for garnish; milder flavor.']]},
+    {names:['coriandre','coriandre fraîche'],fr:'Coriandre fraîche',en:'Fresh cilantro',options:[['Persil frais','Fresh parsley','Même volume pour la garniture; saveur différente.','Same volume for garnish; different flavor.']]},
+    {names:['oignon','oignons'],fr:'Oignon',en:'Onion',options:[['Échalote','Shallot','Utiliser une quantité comparable en volume; goût plus doux.','Use a similar volume; milder flavor.']]},
+    {names:['tomate','tomates','tomates fraîches'],fr:'Tomate',en:'Tomato',options:[['Tomates concassées en conserve','Canned chopped tomatoes','À poids comparable pour une sauce; texture différente.','Similar weight for sauces; texture differs.']]}
+  ];
+  function marmitoSubstitutionFor(name){
+    const norm=String(name||'').trim().toLocaleLowerCase('fr').replace(/\s+/g,' ').replace(/[’]/g,"'");
+    return MARMITO_SUBSTITUTIONS.find(item=>item.names.some(n=>n.replace(/[’]/g,"'")===norm))||null;
+  }
+  function marmitoShowSubstitution(recipe,index){
+    if(!recipe||recipe!==cur)return;
+    const rule=marmitoSubstitutionFor(recipe.ingredients[index]);if(!rule)return;
+    const panel=document.getElementById('marmito-substitution-panel');if(!panel)return;
+    const en=currentLang==='en';panel.replaceChildren();
+    const title=document.createElement('strong');title.textContent=(en?'Alternatives for ':'Remplacer : ')+(en?rule.en:rule.fr);panel.appendChild(title);
+    const list=document.createElement('ul');list.style.cssText='margin:8px 0;padding-left:20px';
+    rule.options.forEach(option=>{const li=document.createElement('li');li.style.marginBottom='8px';const b=document.createElement('strong');b.textContent=en?option[1]:option[0];li.append(b,document.createTextNode(' : '+(en?option[3]:option[2])));list.appendChild(li);});panel.appendChild(list);
+    const note=document.createElement('small');note.textContent=en?'Suggestions only: check allergies and suitability for this recipe. Original ingredients stay unchanged.':'Suggestions uniquement : vérifie les allergies et la compatibilité avec cette recette. Les ingrédients d’origine restent inchangés.';panel.appendChild(note);
+    const close=document.createElement('button');close.type='button';close.textContent=en?'Close':'Fermer';close.style.cssText='display:block;margin-top:10px;cursor:pointer';close.onclick=()=>{panel.hidden=true;};panel.appendChild(close);panel.hidden=false;
+  }
   function renderRecipeIngredients(recipe, names) {
     const el = document.getElementById('result-ingredients');
     if (!el || !recipe) return;
     el.replaceChildren();
+    const subPanel=document.getElementById('marmito-substitution-panel');if(subPanel)subPanel.hidden=true;
     (names || recipe.ingredients).forEach((name, idx) => {
       const pill = document.createElement('span');
       pill.className = 'ingredient-pill';
@@ -1925,6 +1958,12 @@
         pill.appendChild(amount);
       }
       pill.appendChild(document.createTextNode(name));
+      if(marmitoSubstitutionFor(recipe.ingredients[idx])){
+        pill.setAttribute('role','button');pill.setAttribute('tabindex','0');pill.style.cursor='pointer';
+        pill.setAttribute('aria-label',(currentLang==='en'?'See substitutions for ':'Voir les substitutions pour ')+name);
+        pill.onclick=()=>marmitoShowSubstitution(recipe,idx);
+        pill.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();marmitoShowSubstitution(recipe,idx);}};
+      }
       el.appendChild(pill);
     });
   }
@@ -2860,7 +2899,7 @@ const recipes=[
       {
         "text": "Embroche les lamelles sur des brochettes. Grille sur la braise ou sous le gril du four à 220°C, 3-4 minutes de chaque côté. Surveille bien, ça cuit vite.",
         "icon": "fry",
-        "time": 480
+        "time": 480, "timeMax": 480
       },
       {
         "text": "Sers immédiatement avec des oignons crus coupés en rondelles, des tomates fraîches et du pain.",
@@ -3325,7 +3364,7 @@ const recipes=[
       {
         "text": "Fouette la pâte 3 à 5 minutes pour l'aérer. Elle doit rester assez ferme pour tenir sur une cuillère.",
         "icon": "mix",
-        "time": 240
+        "time": 240, "timeMax": 300
       },
       {
         "text": "Chauffe l'huile à 170-175°C. Dépose des petites cuillerées de pâte et fais frire 4 à 6 minutes en les retournant.",
@@ -3648,7 +3687,7 @@ const recipes=[
       {
         "text": "Fais griller les légumes 4 à 6 minutes par face, selon leur épaisseur. Réserve au chaud.",
         "icon": "fry",
-        "time": 600
+        "time": 600, "timeMax": 720
       },
       {
         "text": "Fais cuire les merguez sur un gril à feu moyen pendant 10 à 12 minutes en les retournant régulièrement, jusqu'à cuisson complète.",
@@ -5067,7 +5106,7 @@ const recipes=[
       {
         "text": "Cuis 5-6 minutes de chaque côté sans toucher, la croûte se forme seule. Retourne délicatement quand le dessous est bien doré.",
         "icon": "fry",
-        "time": 600
+        "time": 600, "timeMax": 720
       },
       {
         "text": "Égoutte sur du papier absorbant. Sers chaud avec de la crème fraîche, du saumon fumé ou un œuf au plat.",
@@ -5120,7 +5159,7 @@ const recipes=[
       {
         "text": "Pose sur une plaque recouverte de papier cuisson. Enfourne à 180°C pendant 12-15 minutes. Elles doivent rester pâles.",
         "icon": "oven",
-        "time": 840
+        "time": 840, "timeMax": 900
       },
       {
         "text": "Laisse refroidir. Roule dans du sucre glace ou trempe dans l'eau de fleur d'oranger puis roule dans le sucre.",
@@ -5594,7 +5633,7 @@ const recipes=[
       {
         "text": "Fais fondre 30 g de beurre dans une grande poêle à feu moyen. Fais dorer les tranches 3-4 minutes de chaque côté. Elles doivent être bien caramélisées.",
         "icon": "fry",
-        "time": 480
+        "time": 480, "timeMax": 480
       },
       {
         "text": "Sers immédiatement avec du sirop d'érable, du sucre glace, des fruits rouges ou de la confiture.",
@@ -20881,7 +20920,7 @@ const recipes=[
       {
         "text": "Chauffer l'huile et frire le thon 5 à 7 min par face selon l'épaisseur, jusqu'à cuisson complète",
         "icon": "cook",
-        "time": 600
+        "time": 600, "timeMax": 840
       },
       {
         "text": "Réchauffer l'attiéké à la vapeur pendant 5 min",
@@ -21228,7 +21267,7 @@ const recipes=[
       {
         "text": "Faire dorer dans l'huile chaude 3 à 4 min par face puis égoutter",
         "icon": "serve",
-        "time": 360
+        "time": 360, "timeMax": 480
       }
     ],
     "time": "45 min",
@@ -21813,7 +21852,7 @@ const recipes=[
         "icon": "cook"
       },
       {"text": "Cuire 20 min, ajouter les pâtes", "icon": "cook", "time": 1200},
-      {"text": "puis poursuivre 10 à 12 min", "icon": "cook", "time": 600, "timeMax": 720},
+      {"text": "Poursuis la cuisson 10 à 12 min", "icon": "cook", "time": 600, "timeMax": 720},
       {
         "text": "Rectifier l'assaisonnement et servir bien chaud",
         "icon": "serve"
@@ -22040,7 +22079,7 @@ const recipes=[
       {
         "text": "Cuire 6 à 8 min par face à feu moyen jusqu'à ce qu'elles soient fermes et dorées",
         "icon": "cook",
-        "time": 720
+        "time": 720, "timeMax": 960
       },
       {
         "text": "Servir tiède",
@@ -22441,7 +22480,7 @@ const recipes=[
         "icon": "cook"
       },
       {"text": "Cuire 5 min à 220 °C", "icon": "serve", "time": 300},
-      {"text": "puis 6 à 8 min à 180 °C", "icon": "cook", "time": 360, "timeMax": 480}
+      {"text": "Poursuis la cuisson 6 à 8 min à 180 °C", "icon": "cook", "time": 360, "timeMax": 480}
     ],
     "time": "30 min (+ repos)",
     "serves": "4 pers.",
@@ -22586,7 +22625,7 @@ const recipes=[
     ],
     "steps": [
       {"text": "Rincer le riz jusqu'à ce que l'eau soit presque claire, puis cuire avec l'eau pendant 15 min", "icon": "mix", "time": 900},
-      {"text": "et laisser reposer 10 min", "icon": "cook", "time": 600},
+      {"text": "Laisse reposer 10 min", "icon": "cook", "time": 600},
       {
         "text": "Émietter le saumon cuit et vérifier qu'il ne reste pas d'arêtes",
         "icon": "cook"
@@ -22801,7 +22840,7 @@ const recipes=[
         "time": 600
       },
       {"text": "Cuire de petits pancakes 2 min sur la première face", "icon": "cook", "time": 120},
-      {"text": "et 1 min sur l'autre dans une poêle légèrement huilée", "icon": "cook", "time": 60},
+      {"text": "Poursuis la cuisson 1 min sur l'autre face dans une poêle légèrement huilée", "icon": "cook", "time": 60},
       {
         "text": "Garnir un pancake d'anko et recouvrir d'un second",
         "icon": "serve"
@@ -23017,7 +23056,7 @@ const recipes=[
         "icon": "cook"
       },
       {"text": "Cuire au four à 190 °C pendant 25 min", "icon": "serve", "time": 1500},
-      {"text": "puis laisser reposer 10 min", "icon": "cook", "time": 600}
+      {"text": "Laisse reposer 10 min", "icon": "cook", "time": 600}
     ],
     "time": "1h10",
     "serves": "4 pers.",
@@ -25188,7 +25227,7 @@ function timerRangeLabel(step){const base=timerLabel(step.time);if(!step.timeMax
  if(max<=step.time)return base;
  if(step.time<3600&&max<3600)return Math.floor(step.time/60)+'-'+Math.floor(max/60)+' min';return base+' - '+timerLabel(max);}
 
-function timerRangeReminder(max){return max?(currentLang==='en'?' (check: up to '+timerLabel(max)+')':' (vérifie : jusqu’à '+timerLabel(max)+')'):'';}
+function timerRangeReminder(max,base){return max>base?(currentLang==='en'?' (check: up to '+timerLabel(max)+')':' (vérifie : jusqu’à '+timerLabel(max)+')'):'';}
 function timerLongRestNotice(seconds){return seconds>=21600?'<div class="timer-long-rest" style="font-size:12px;opacity:.75;margin-top:5px">'+(currentLang==='en'?'Long rest: the timer stops if you close the app.':'Repos long : le chrono s’arrête si tu fermes l’application.')+'</div>':'';}
 function startTimer(i){
   const el=document.getElementById("s"+i);if(!el)return;
@@ -25202,7 +25241,7 @@ function startTimer(i){
       rem--;timers[i].rem=rem;d.textContent=fmt(rem);p.style.width=(rem/total*100)+"%";
       if(rem<=0){
         clearInterval(timers[i].iv);delete timers[i];
-        d.textContent=(currentLang==='en'?"Done!":"Prêt !")+timerRangeReminder(+el.dataset.tmax);d.classList.add("done");
+        d.textContent=(currentLang==='en'?"Done!":"Prêt !")+timerRangeReminder(+el.dataset.tmax,+el.dataset.t);d.classList.add("done");
         el.classList.remove("step-active");el.classList.add("step-done");
         cb.textContent="R";cb.classList.add("restart");cb.onclick=()=>resetTimer(i);p.style.width="0%";
         showToast("Etape "+(+i+1)+" terminee !");
@@ -25695,6 +25734,8 @@ function shoppingDisplayName(entry,name){
  const words=name.trim().split(/\s+/);
  const plural=word=>/[sxz]$/i.test(word)?word:word+'s';
  if(/^(?:poivre|sel|sucre|lait|farine)$/i.test(name.trim()))return name;
+ if(/^pâte (?:brisée|sablée)$/i.test(name))return name.replace(/^pâte/i,part=>plural(part));
+ if(/^piment facultatif$/i.test(name))return name.replace(/^piment/i,part=>plural(part)).replace(/facultatif$/i,'facultatifs');
  if(/^jaune d[’']œuf$/i.test(name))return name.replace(/^jaune/i,part=>plural(part));
  if(/^pain pita$/i.test(name))return name.replace(/^pain/i,part=>plural(part));
  if(/^piment jalapeño$/i.test(name))return name.replace(/^piment/i,part=>plural(part));
@@ -26124,6 +26165,7 @@ function toggleLang() {
         }
       }
     }
+    document.querySelectorAll('#result-steps .timer-long-rest').forEach(el=>{el.textContent=currentLang==='en'?'Long rest: the timer stops if you close the app.':'Repos long : le chrono s’arrête si tu fermes l’application.';});
     // Update step texts
     const stepsEl = document.getElementById('result-steps');
     if (stepsEl) {
@@ -26588,7 +26630,7 @@ function cookTimerStart(){
     prog.style.width=(rem/cookTimer.total*100)+"%";
     if(rem<=0){
       clearInterval(cookTimer.iv);cookTimer=null;
-      disp.textContent=(currentLang==='en'?'Done!':'Prêt !')+timerRangeReminder((typeof cookSteps[cookIdx]==='object'&&cookSteps[cookIdx].timeMax)||0);disp.classList.add("done");
+      disp.textContent=(currentLang==='en'?'Done!':'Prêt !')+timerRangeReminder((typeof cookSteps[cookIdx]==='object'&&cookSteps[cookIdx].timeMax)||0,(typeof cookSteps[cookIdx]==='object'&&cookSteps[cookIdx].time)||0);disp.classList.add("done");
       ctrlBtn.textContent="R";ctrlBtn.classList.add("restart");
       ctrlBtn.onclick=cookTimerReset;
       document.getElementById("cook-icon-big").classList.remove("timer-running");
