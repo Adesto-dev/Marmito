@@ -413,7 +413,7 @@
     @media(min-width:640px){.hero-banner{max-height:450px}}
     .hero-img{width:100%;height:auto;display:block}
     footer{text-align:center;padding:20px 16px;font-size:12px;color:var(--fg2)}
-    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,#4A2C10,#6A3E18);color:#F5EDE0;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transition:all 0.3s;z-index:100;pointer-events:none;white-space:nowrap;box-shadow:0 4px 18px rgba(40,20,4,0.32)}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,#4A2C10,#6A3E18);color:#F5EDE0;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transition:all 0.3s;z-index:500;pointer-events:none;white-space:nowrap;box-shadow:0 4px 18px rgba(40,20,4,0.32)}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     /* PROFILE MODAL */
     .profile-overlay{position:fixed;inset:0;z-index:350;display:none;overflow:hidden}
@@ -687,7 +687,18 @@
     .hero-title{font-family:"Playfair Display",Georgia,serif;font-size:2rem;color:#fff;margin:0 0 4px;text-shadow:0 2px 8px rgba(0,0,0,0.5);line-height:1.1}
     .hero-subtitle{font-family:Raleway,sans-serif;font-size:1rem;color:rgba(255,255,255,0.92);margin:0;letter-spacing:0.02em;text-shadow:0 1px 4px rgba(0,0,0,0.5)}
     @media(min-width:640px){.hero-title{font-size:2.6rem}.hero-subtitle{font-size:1.2rem}.hero-overlay{padding:28px 36px 32px}}
-  </style>
+  
+/* Liste de courses intelligente : styles isolés */
+.shopping-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:350;display:none;align-items:flex-end;justify-content:center}
+.shopping-overlay.open{display:flex}
+.shopping-sheet{background:var(--card,#fff);color:var(--fg);width:min(600px,100%);max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:20px;box-shadow:var(--shadow)}
+.shopping-head,.shopping-foot,.shopping-actions{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:12px}
+.shopping-head strong{font-size:19px}.shopping-head button,.shopping-foot button,.shopping-actions button,.shopping-remove{border:1px solid var(--border);background:var(--bg);color:var(--fg);border-radius:9px;padding:9px;cursor:pointer}
+.shopping-actions input{flex:1;min-width:0;font-size:16px;padding:10px;border:1px solid var(--border);border-radius:9px;background:var(--bg);color:var(--fg)}
+.shopping-group{font-weight:700;margin:18px 0 7px}.shopping-line{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.shopping-line label{flex:1;cursor:pointer}.shopping-line.checked label{text-decoration:line-through;opacity:.6}.shopping-line small{color:var(--fg2)}
+.shopping-foot{margin-top:16px}.shopping-empty{color:var(--fg2);padding:20px 0}
+</style>
 </head>
 <body>
 <header class="header">
@@ -718,6 +729,7 @@
     <div class="drawer-section-label" data-i18n="section-nav">Navigation</div>
     <button class="drawer-item" onclick="drawerAction('home')" data-i18n="nav-home">Accueil</button>
     <button class="drawer-item drawer-item-plan" onclick="closeDrawer();setTimeout(openPlanRepas,200)" data-i18n="nav-plan">Plan 7 jours <span class="pro-chip">PRO</span></button>
+    <button class="drawer-item" onclick="closeDrawer();setTimeout(openShopping,200)" id="shopping-drawer-link">Ma liste de courses</button>
     <button class="drawer-item" onclick="drawerAction('profile')" data-i18n="nav-profile">Mon profil</button>
 
     <div id="drawer-sub-section">
@@ -868,6 +880,7 @@
     <div class="share-bar">
       <button class="share-btn share-copy" onclick="copyRecipe()" data-i18n="btn-copy">&#128203; Copier</button>
       <button class="share-btn share-wa" onclick="shareRecipe()" data-i18n="btn-share">&#10548; Partager la recette</button>
+      <button class="share-btn" id="grocery-add-recipe" onclick="addCurrentRecipeToShopping()">🛒 Ajouter aux courses</button>
       <button class="share-btn" id="cooked-btn" onclick="toggleCooked()" style="background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)">&#10003; Cuisiné</button>
     </div>
     <div class="result-body">
@@ -945,6 +958,15 @@
       </div>
     </div>
     <div class="plan-sheet-body" id="plan-body"></div>
+  </div>
+</div>
+<!-- LISTE DE COURSES LOCALE -->
+<div class="shopping-overlay" id="shopping-overlay" role="dialog" aria-modal="true" aria-labelledby="shopping-title" onclick="if(event.target===this)closeShopping()">
+  <div class="shopping-sheet">
+    <div class="shopping-head"><strong id="shopping-title"></strong><button type="button" onclick="closeShopping()" id="shopping-close" aria-label="Fermer">✕</button></div>
+    <div class="shopping-actions"><input id="shopping-manual" type="text" maxlength="120" placeholder="Ajouter un article" onkeydown="if(event.key==='Enter'){event.preventDefault();addManualShopping()}"><button type="button" id="shopping-manual-add" onclick="addManualShopping()"></button></div>
+    <div id="shopping-recipes"></div><div id="shopping-contents"></div>
+    <div class="shopping-foot"><button type="button" id="shopping-clear-all" onclick="clearAllShopping()"></button><button type="button" id="shopping-clear-checked" onclick="clearCheckedShopping()"></button><button type="button" id="shopping-copy" onclick="copySmartShopping()"></button></div>
   </div>
 </div>
 
@@ -25379,6 +25401,7 @@ function openPlanRepas() {
     recipe: shuffled[i % shuffled.length]
   }));
 
+  shoppingWeekPlan = plan.map(day => day.recipe).filter(Boolean);
   // Liste d'épicerie fusionnée
   const allIngs = {};
   plan.forEach(({ recipe: r }) => {
@@ -25409,23 +25432,9 @@ function openPlanRepas() {
   }
 }
 function buildGroceryHTML(allIngs) {
-  const ings = Object.keys(allIngs);
-  const title = currentLang === 'en' ? '🛒 Grocery list' : '🛒 Liste d\'épicerie';
-  const copyBtn = currentLang === 'en' ? '📋 Copy list' : '📋 Copier la liste';
-  const uncheckBtn = currentLang === 'en' ? 'Uncheck all' : 'Tout décocher';
-  return '<div class="plan-grocery"><div class="plan-grocery-title">' + title + '</div>' +
-    '<div class="plan-grocery-list" id="grocery-checklist">' +
-    ings.map((ing, idx) =>
-      '<div class="plan-grocery-item">' +
-      '<input type="checkbox" id="gi' + idx + '">' +
-      '<label for="gi' + idx + '">' + ing + '</label>' +
-      '</div>'
-    ).join('') +
-    '</div>' +
-    '<div class="plan-grocery-copy">' +
-    '<button class="btn-grocery-copy" onclick="copyGroceryList()">' + copyBtn + '</button>' +
-    '<button class="btn-grocery-uncheck" onclick="uncheckGrocery()">' + uncheckBtn + '</button>' +
-    '</div></div>';
+  return '<div class="plan-grocery"><div class="plan-grocery-title">' + (currentLang==='en'?'🛒 Shopping list':'🛒 Liste de courses') + '</div>' +
+    '<div class="plan-grocery-copy"><button class="btn-grocery-copy" onclick="addWeekToShopping()">' + (currentLang==='en'?'Add week to my list':'Ajouter la semaine à ma liste') + '</button>' +
+    '<button class="btn-grocery-uncheck" onclick="openShopping()">' + (currentLang==='en'?'Open my list':'Ouvrir ma liste') + '</button></div></div>';
 }
 function updateGroceryItem(cb) { /* visual handled by CSS :has */ }
 function uncheckGrocery() {
@@ -25443,6 +25452,196 @@ function copyGroceryList() {
 function closePlanRepas() {
   document.getElementById('plan-overlay').classList.remove('open');
 }
+
+
+// ===== LISTE DE COURSES INTELLIGENTE : stockage local uniquement =====
+const SHOPPING_KEY = 'marmito-smart-shopping-v1';
+let shoppingWeekPlan = [];
+let shoppingRenderVersion = 0;
+const shoppingLabels = {
+ fr:{title:'Ma liste de courses',add:'Ajouter',placeholder:'Ajouter un article',clear:'Retirer les articles cochés',clearAll:'Vider la liste',empty:'Aucun article. Ajoute une recette ou ton plan de 7 jours.',added:'Liste de courses mise à jour',already:'Cette recette est déjà dans la liste',close:'Fermer',remove:'Retirer',removeRecipe:'Retirer la recette',recipes:'Recettes ajoutées',copied:'Liste copiée',copyError:'Impossible de copier automatiquement',confirmClear:'Vider toute la liste de courses ?',copy:'Copier la liste'},
+ en:{title:'My shopping list',add:'Add',placeholder:'Add an item',clear:'Remove checked items',clearAll:'Clear list',empty:'No items yet. Add a recipe or your 7-day plan.',added:'Shopping list updated',already:'This recipe is already in the list',close:'Close',remove:'Remove',removeRecipe:'Remove recipe',recipes:'Added recipes',copied:'List copied',copyError:'Automatic copy unavailable',confirmClear:'Clear the entire shopping list?',copy:'Copy list'}
+};
+function shoppingT(key){return shoppingLabels[currentLang==='en'?'en':'fr'][key];}
+function shoppingEmptyState(){return {recipes:[],manual:[],checked:{},removed:[]};}
+function shoppingLoad(){
+ const empty=shoppingEmptyState();
+ try{
+  const x=JSON.parse(localStorage.getItem(SHOPPING_KEY)||'{}');
+  if(!x||typeof x!=='object'||Array.isArray(x))return empty;
+  const validTitles=new Set(recipes.map(r=>r.title));
+  const saved=new Map();
+  if(Array.isArray(x.recipes))x.recipes.forEach(r=>{
+   if(!r||typeof r!=='object'||typeof r.title!=='string'||!validTitles.has(r.title))return;
+   const portions=Number(r.portions);
+   if(!Number.isFinite(portions)||portions<=0||portions>100)return;
+   saved.set(r.title,{title:r.title,portions});
+  });
+  const manual=Array.isArray(x.manual)?x.manual.filter(m=>m&&typeof m==='object'&&typeof m.id==='string'&&typeof m.text==='string'&&m.text.trim()).map(m=>({id:m.id.slice(0,100),text:m.text.trim().slice(0,120)})):[];
+  const checked=x.checked&&typeof x.checked==='object'&&!Array.isArray(x.checked)?Object.fromEntries(Object.entries(x.checked).filter(([k,v])=>typeof k==='string'&&k.length<500&&v===true)):{};
+  const removed=Array.isArray(x.removed)?[...new Set(x.removed.filter(k=>typeof k==='string'&&k.length<500))]:[];
+  return {recipes:[...saved.values()],manual,checked,removed};
+ }catch(e){return empty;}
+}
+function shoppingSave(state){try{localStorage.setItem(SHOPPING_KEY,JSON.stringify(state));return true;}catch(e){showToast(currentLang==='en'?'Unable to save locally':'Impossible d’enregistrer localement','error');return false;}}
+function shoppingRecipeKey(recipe){return recipe.title;}
+function shoppingAddRecipes(list){
+ const state=shoppingLoad();let changed=0;
+ const weekly=Array.isArray(list)&&list===shoppingWeekPlan;
+ (Array.isArray(list)?list:[]).forEach(recipe=>{
+  if(!recipe||typeof recipe.title!=='string')return;
+  const ratio=!weekly&&recipe===cur&&list.length===1?Number(portionsMultiplier)||1:1;
+  const existing=state.recipes.find(x=>x.title===recipe.title);
+  // The weekly plan must never overwrite a recipe already added individually.
+  if(weekly&&existing)return;
+  const recipeKeys=shoppingEntries({recipes:[{title:recipe.title,portions:ratio}],manual:[],checked:{},removed:[]}).map(e=>e.key);
+  const previouslyRemoved=state.removed.length;
+  state.removed=state.removed.filter(key=>!recipeKeys.includes(key));
+  const restored=state.removed.length!==previouslyRemoved;
+  if(existing){
+   if(existing.portions!==ratio){
+    const before=new Map(shoppingEntries(state).map(e=>[e.key,e]));
+    existing.portions=ratio;
+    const after=new Map(shoppingEntries(state).map(e=>[e.key,e]));
+    // Only uncheck ingredient rows whose totals changed due to this recipe.
+    new Set([...before.keys(),...after.keys()]).forEach(key=>{
+     const old=before.get(key),next=after.get(key);
+     if(!old||!next||old.qty!==next.qty||old.max!==next.max||old.raw!==next.raw)delete state.checked[key];
+    });
+    changed++;
+   }else if(restored)changed++;
+  }else{
+   state.recipes.push({title:recipe.title,portions:ratio});
+   // Newly introduced or increased ingredient rows are no longer purchased.
+   recipeKeys.forEach(key=>{delete state.checked[key];});
+   changed++;
+  }
+ });
+ if(changed){shoppingSave(state);showToast(shoppingT('added'));}
+ else showToast(shoppingT('already'));
+ openShopping();
+}
+function addCurrentRecipeToShopping(){if(cur)shoppingAddRecipes([cur]);}
+function addWeekToShopping(){shoppingAddRecipes(shoppingWeekPlan);}
+function shoppingParseQty(raw){
+ const str=String(raw??'').trim().replace(/,/g,'.').replace(/\s*[–—]\s*/g,'-');
+ const m=str.match(/^((?:\d+\s*\/\s*\d+|\d+(?:\.\d+)?|[½¼¾]))(?:\s*(?:-|à|to)\s*(\d+(?:\.\d+)?))?\s*(.*)$/i);
+ if(!m)return {num:null,unit:str};
+ const fractions={'½':.5,'¼':.25,'¾':.75};
+ const val=x=>x in fractions?fractions[x]:x.includes('/')?Number(x.split('/')[0])/Number(x.split('/')[1]):Number(x);
+ const first=val(m[1]),second=m[2]?Number(m[2]):null;
+ let unit=m[3].trim().toLowerCase().replace(/\.$/,'').replace(/\s+/g,' ');
+ const equivalents={'kg':['g',1000],'kilogramme':['g',1000],'kilogrammes':['g',1000],'g':['g',1],'gramme':['g',1],'grammes':['g',1],'l':['ml',1000],'litre':['ml',1000],'litres':['ml',1000],'ml':['ml',1],'cl':['ml',10],'pièce':['piece',1],'pièces':['piece',1],'piece':['piece',1],'pieces':['piece',1],'gousse':['gousse',1],'gousses':['gousse',1],'c.s':['c. à soupe',1],'c.s.':['c. à soupe',1],'c.soupe':['c. à soupe',1],'c. soupe':['c. à soupe',1],'c. à soupe':['c. à soupe',1],'cuillère à soupe':['c. à soupe',1],'cuillères à soupe':['c. à soupe',1],'c.c':['c. à café',1],'c.c.':['c. à café',1],'c.café':['c. à café',1],'c. café':['c. à café',1],'c. à café':['c. à café',1],'cuillère à café':['c. à café',1],'cuillères à café':['c. à café',1]};
+ const match=equivalents[unit];const factor=match?match[1]:1;
+ return {num:Number.isFinite(first)?first*factor:null,max:second!==null&&Number.isFinite(second)?second*factor:null,unit:match?match[0]:unit};
+}
+function shoppingFormatQty(num,unit,max){
+ const format=(v,u)=>{
+  const n=Math.round(v*100)/100;
+  if(u==='g'&&n>=1000)return [String(Math.round(n/10)/100).replace('.',','),'kg'];
+  if(u==='ml'&&n>=1000)return [String(Math.round(n/10)/100).replace('.',','),'l'];
+  return [String(n).replace('.',','),u==='piece'?(n>1?'pièces':'pièce'):u==='gousse'?(n>1?'gousses':'gousse'):u];
+ };
+ const a=format(num,unit);
+ if(max!==null&&max!==undefined){const b=format(max,unit);if(a[1]===b[1])return a[0]+'-'+b[0]+(a[1]?' '+a[1]:'');return a.join(' ')+' - '+b.join(' ');}
+ return a[0]+(a[1]?' '+a[1]:'');
+}
+function shoppingEntries(state){
+ const entries=new Map();
+ state.recipes.forEach(saved=>{
+  const recipe=recipes.find(r=>r.title===saved.title);if(!recipe)return;
+  recipe.ingredients.forEach((name,i)=>{
+   const canonical=typeof canonicalIngredient==='function'?canonicalIngredient(name):String(name).trim();
+   const label=String(name).trim();
+   const raw=scaleQty(recipeIngredientQty(recipe,i),saved.portions);
+   const parsed=shoppingParseQty(raw);
+   const unitKey=parsed.num===null?'raw:'+raw:parsed.unit+(parsed.max!==null?':range':'');
+   const key=canonical.toLocaleLowerCase('fr')+'|'+unitKey;
+   if(state.removed.includes(key))return;
+   if(!entries.has(key))entries.set(key,{key,label,qty:0,max:parsed.max!==null?0:null,unit:parsed.unit,raw,valid:parsed.num!==null});
+   if(parsed.num!==null){entries.get(key).qty+=parsed.num;if(parsed.max!==null)entries.get(key).max+=parsed.max;}
+  });
+ });
+ state.manual.forEach(x=>{const key='manual:'+x.id;entries.set(key,{key,label:x.text,qty:null,max:null,unit:'',raw:'',valid:false,manual:true});});
+ return [...entries.values()].sort((a,b)=>a.label.localeCompare(b.label,'fr'));
+}
+function shoppingItemText(entry){return (entry.valid?shoppingFormatQty(entry.qty,entry.unit,entry.max)+' ':'')+entry.label+(entry.valid?'':entry.raw?' ('+entry.raw+')':'');}
+function openShopping(){const el=document.getElementById('shopping-overlay');if(!el)return;el.classList.add('open');renderShopping();}
+function closeShopping(){document.getElementById('shopping-overlay').classList.remove('open');}
+function shoppingRemoveRecipe(title){
+ const state=shoppingLoad(),before=shoppingEntries(state);
+ state.recipes=state.recipes.filter(r=>r.title!==title);
+ const after=new Map(shoppingEntries(state).map(e=>[e.key,e]));
+ before.forEach(e=>{if(!after.has(e.key))delete state.checked[e.key];});
+ if(!state.recipes.length){state.removed=[];state.checked={};}
+ shoppingSave(state);renderShopping();
+}
+function clearAllShopping(){if(!confirm(shoppingT('confirmClear')))return;shoppingSave(shoppingEmptyState());renderShopping();}
+const SHOPPING_ING_EN_KEY='marmito-ing-en-v1';
+function shoppingIngredientCache(){
+ try{const data=JSON.parse(localStorage.getItem(SHOPPING_ING_EN_KEY)||'{}');return data&&typeof data==='object'&&!Array.isArray(data)?data:{};}
+ catch(e){return {};}
+}
+async function shoppingTranslateIngredient(name){
+ const cache=shoppingIngredientCache();
+ if(typeof cache[name]==='string'&&cache[name].trim())return cache[name];
+ try{
+  const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q='+encodeURIComponent(name);
+  const response=await fetch(url);
+  if(!response.ok)throw new Error('Translation unavailable');
+  const json=await response.json();
+  const translation=json[0].map(segment=>segment[0]).join('').trim();
+  if(!translation)throw new Error('Empty translation');
+  const latest=shoppingIngredientCache();latest[name]=translation;
+  try{localStorage.setItem(SHOPPING_ING_EN_KEY,JSON.stringify(latest));}catch(e){}
+  return translation;
+ }catch(e){return name;}
+}
+function renderShopping(){
+ const version=++shoppingRenderVersion;
+ const state=shoppingLoad(),entries=shoppingEntries(state),body=document.getElementById('shopping-contents');
+ document.getElementById('shopping-title').textContent=shoppingT('title');
+ document.getElementById('shopping-manual').placeholder=shoppingT('placeholder');
+ document.getElementById('shopping-manual-add').textContent=shoppingT('add');
+ document.getElementById('shopping-clear-checked').textContent=shoppingT('clear');
+ document.getElementById('shopping-clear-all').textContent=shoppingT('clearAll');
+ document.getElementById('shopping-copy').textContent=shoppingT('copy');
+ document.getElementById('shopping-close').setAttribute('aria-label',shoppingT('close'));
+ const drawer=document.getElementById('shopping-drawer-link');if(drawer)drawer.textContent=shoppingT('title');
+ const recipeBox=document.getElementById('shopping-recipes');recipeBox.replaceChildren();
+ if(state.recipes.length){
+  const heading=document.createElement('div');heading.className='shopping-group';heading.textContent=shoppingT('recipes');recipeBox.appendChild(heading);
+  state.recipes.forEach(r=>{const row=document.createElement('div');row.className='shopping-line';const name=document.createElement('span');name.style.flex='1';name.textContent=r.title;const remove=document.createElement('button');remove.type='button';remove.className='shopping-remove';remove.textContent='✕';remove.setAttribute('aria-label',shoppingT('removeRecipe'));remove.onclick=()=>shoppingRemoveRecipe(r.title);row.append(name,remove);recipeBox.appendChild(row);});
+ }
+ body.replaceChildren();
+ if(!entries.length){const p=document.createElement('p');p.className='shopping-empty';p.textContent=shoppingT('empty');body.appendChild(p);}
+ entries.forEach(entry=>{
+  const row=document.createElement('div');row.className='shopping-line'+(state.checked[entry.key]?' checked':'');
+  const cb=document.createElement('input');cb.type='checkbox';cb.checked=!!state.checked[entry.key];cb.addEventListener('change',()=>{const next=shoppingLoad();if(cb.checked)next.checked[entry.key]=true;else delete next.checked[entry.key];shoppingSave(next);renderShopping();});
+  const label=document.createElement('label');label.textContent=shoppingItemText(entry);label.prepend(cb);
+  const del=document.createElement('button');del.type='button';del.className='shopping-remove';del.textContent='✕';del.setAttribute('aria-label',shoppingT('remove'));del.addEventListener('click',()=>{const next=shoppingLoad();if(entry.manual)next.manual=next.manual.filter(x=>'manual:'+x.id!==entry.key);else if(!next.removed.includes(entry.key))next.removed.push(entry.key);delete next.checked[entry.key];shoppingSave(next);renderShopping();});
+  row.append(label,del);body.appendChild(row);
+ });
+ // Translate each ingredient independently, keyed by its French name, not by row index.
+ if(currentLang==='en'&&entries.length){
+  const rows=new Map();
+  body.querySelectorAll('.shopping-line').forEach((row,i)=>{if(entries[i])rows.set(entries[i].key,row.querySelector('label'));});
+  const names=[...new Set(entries.map(e=>e.label))];
+  names.forEach(name=>shoppingTranslateIngredient(name).then(translated=>{
+   if(version!==shoppingRenderVersion||currentLang!=='en')return;
+   entries.filter(e=>e.label===name).forEach(e=>{
+    const el=rows.get(e.key);if(!el||!el.isConnected)return;
+    const cb=el.querySelector('input');let qty=e.valid?shoppingFormatQty(e.qty,e.unit,e.max):'';
+    qty=qty.replace(/\bpièces\b/g,'pieces').replace(/\bpièce\b/g,'piece').replace(/\bgousses\b/g,'cloves').replace(/\bgousse\b/g,'clove').replace(/c\. à soupe/g,'tbsp').replace(/c\. à café/g,'tsp');
+    el.textContent=(qty?qty+' ':'')+translated+(!e.valid&&e.raw?' ('+e.raw+')':'');el.prepend(cb);
+   });
+  }));
+ }
+}
+function addManualShopping(){const input=document.getElementById('shopping-manual');const value=input.value.trim();if(!value)return;const state=shoppingLoad();state.manual.push({id:Date.now()+'-'+Math.random().toString(36).slice(2),text:value});shoppingSave(state);input.value='';renderShopping();}
+function clearCheckedShopping(){const state=shoppingLoad();shoppingEntries(state).filter(x=>state.checked[x.key]).forEach(x=>{if(x.manual)state.manual=state.manual.filter(m=>'manual:'+m.id!==x.key);else if(!state.removed.includes(x.key))state.removed.push(x.key);});state.checked={};if(!shoppingEntries(state).length){state.recipes=[];state.removed=[];}shoppingSave(state);renderShopping();}
+function shoppingCopyFallback(text){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy');}catch(e){}ta.remove();if(!ok)window.prompt(shoppingT('copyError'),text);else showToast(shoppingT('copied'));}
+function copySmartShopping(){const state=shoppingLoad();const text=shoppingT('title')+'\n'+shoppingEntries(state).map(x=>(state.checked[x.key]?'[x] ':'[ ] ')+shoppingItemText(x)).join('\n');if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(()=>showToast(shoppingT('copied'))).catch(()=>shoppingCopyFallback(text));else shoppingCopyFallback(text);}
 
 // ===== RECIPE METADATA TRANSLATION =====
 const recipeMetaEN = {
@@ -25744,6 +25943,10 @@ function applyLang() {
     const key = el.getAttribute('data-i18n-placeholder');
     if (dict[key] !== undefined) el.placeholder = dict[key];
   });
+  const shoppingRecipeBtn = document.getElementById('grocery-add-recipe');
+  if(shoppingRecipeBtn) shoppingRecipeBtn.textContent = currentLang === 'en' ? '🛒 Add to shopping list' : '🛒 Ajouter aux courses';
+  if(document.getElementById('shopping-drawer-link')) document.getElementById('shopping-drawer-link').textContent = currentLang === 'en' ? 'My shopping list' : 'Ma liste de courses';
+  if(document.getElementById('shopping-overlay')?.classList.contains('open')) renderShopping();
   const langBtn = document.getElementById('lang-btn');
   if (langBtn) langBtn.textContent = currentLang === 'fr' ? 'EN' : 'FR';
   document.documentElement.lang = currentLang;
