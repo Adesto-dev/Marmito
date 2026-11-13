@@ -7,16 +7,16 @@
   <meta name="description" content="Découvre 418 recettes du monde entier. Japonaise, Italienne, Mexicaine, Antilles, Afrique, Maghreb et plus, avec les quantités et un chrono intégré. Gratuit.">
   <meta name="robots" content="index, follow">
   <meta name="google-site-verification" content="kLyMC1fyFzjpTg4H0h26HL2rCfn3QQM__gxJg6Kd4yo" />
-  <link rel="canonical" href="https://marmito-one.vercel.app/">
+  <link rel="canonical" href="https://marmito.ca/">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_CA">
-  <meta property="og:url" content="https://marmito-one.vercel.app/">
+  <meta property="og:url" content="https://marmito.ca/">
   <meta property="og:site_name" content="Marmito">
   <meta property="og:title" content="Marmito : Recettes du monde entier avec chrono intégré">
   <meta property="og:description" content="Découvre 418 recettes du monde entier. Japonaise, Italienne, Mexicaine, Antilles, Afrique, Maghreb et plus, avec les quantités et un chrono intégré. Gratuit.">
-  <meta property="og:image" content="https://marmito-one.vercel.app/og-image.png">
+  <meta property="og:image" content="https://marmito.ca/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Marmito : Recettes du monde entier">
@@ -25,7 +25,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Marmito : Recettes du monde entier">
   <meta name="twitter:description" content="418 recettes avec chrono intégré. Couscous, tajine, chorba, yassa et plus.">
-  <meta name="twitter:image" content="https://marmito-one.vercel.app/og-image.png">
+  <meta name="twitter:image" content="https://marmito.ca/og-image.png">
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
@@ -42,7 +42,7 @@
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Marmito",
-    "url": "https://marmito-one.vercel.app/",
+    "url": "https://marmito.ca/",
     "description": "Générateur de 418 recettes du monde entier avec chrono intégré.",
     "applicationCategory": "FoodApplication",
     "operatingSystem": "Web",
@@ -666,7 +666,7 @@
     .plan-features{list-style:none;padding:0;margin:0 0 14px;display:flex;flex-direction:column;gap:6px}
     .plan-features li{font-size:13.5px;color:var(--text-secondary);padding-left:22px;position:relative}
     .plan-features li::before{content:"✓";position:absolute;left:0;color:var(--accent);font-weight:700}
-    .plan-features li.muted::before{content:"–";color:var(--border)}
+    .plan-features li.muted::before{content:"·";color:var(--border)}
     .plan-features li.muted{opacity:0.5}
     .plan-btn{width:100%;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:opacity 0.15s}
     .plan-btn.free-btn{background:var(--border);color:var(--text-secondary);cursor:default}
@@ -841,6 +841,15 @@
     <div class="chips">
       <button class="chip active" data-group="time" onclick="selectChip(this)">Toute dur&#233;e</button>
       <button class="chip" data-group="time" onclick="selectChip(this)">30 min max</button>
+    </div>
+  </div>
+  <div class="card" id="marmito-diet-card">
+    <div class="card-label" id="marmito-diet-heading">Préférences alimentaires (optionnel)</div>
+    <div id="marmito-diet-options" style="display:flex;flex-wrap:wrap;gap:9px"></div>
+    <div id="marmito-diet-allergens" style="display:none;margin-top:10px"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap">
+      <button type="button" id="marmito-diet-reset" onclick="marmitoDietReset()" style="padding:7px 12px;border:1px solid var(--border);background:var(--bg);color:var(--fg);border-radius:8px;cursor:pointer">Réinitialiser</button>
+      <small id="marmito-diet-note" style="opacity:.8;flex:1">Filtres indicatifs : vérifiez toujours les étiquettes et les traces d'allergènes.</small>
     </div>
   </div>
   <div class="btn-row">
@@ -1297,14 +1306,9 @@
       await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email, plan: 'free', recipe_count: 0, reset_month: currentMonth, referral_code: newCode, referred_by: pendingRef || null });
       userReferralCode = newCode; userPlan = 'free'; recipeCount = 0;
       try { localStorage.setItem('marmito-plan', 'free'); } catch(e){}
-      // Apply referral bonus if the user arrived with a ref code
+      // Referral code is recorded on the profile. Rewards are granted only by the
+      // verified payment flow on the server, never by the signup browser.
       if (pendingRef) {
-        try {
-          await sb.rpc('apply_referral_bonus', { p_referree_id: currentUser.id, p_ref_code: pendingRef });
-          userPlan = 'saveur';
-          userBonusExpires = new Date(Date.now() + 7*24*60*60*1000).toISOString();
-          showToast('🎁 7 jours Saveur offerts grâce au parrainage !');
-        } catch(e) { console.warn('[Marmito] Referral bonus error:', e); }
         try { localStorage.removeItem('marmito-pending-ref'); } catch(e){}
       }
     } else {
@@ -1524,10 +1528,13 @@
       list.innerHTML = '<div style="color:var(--fg2);font-size:14px;padding:16px 0;text-align:center">' + (t['history-empty'] || 'Aucune recette dans l\'historique.') + '</div>';
       return;
     }
-    list.innerHTML = data.map(r => {
+    list.innerHTML = data.map((r,i) => {
       const date = new Date(r.created_at).toLocaleDateString('fr-CA', { day:'numeric', month:'short' });
-      return '<div class="history-item" style="cursor:pointer" onclick="closeHistory();openHistoryRecipe(\'' + r.title.replace(/'/g,"\\'") + '\')" title="Revoir la recette"><span class="history-item-name">' + r.title + (r.region ? ' <span style="color:var(--fg2);font-weight:400;font-size:12px">· ' + r.region + '</span>' : '') + '</span><span class="history-item-date">' + date + ' ›</span></div>';
+      return '<div class="history-item" style="cursor:pointer" data-history-index="' + i + '" title="Revoir la recette"><span class="history-item-name">' + escapeMarmitoHTML(r.title) + (r.region ? ' <span style="color:var(--fg2);font-weight:400;font-size:12px">· ' + escapeMarmitoHTML(r.region) + '</span>' : '') + '</span><span class="history-item-date">' + escapeMarmitoHTML(date) + ' ›</span></div>';
     }).join('');
+    list.querySelectorAll('[data-history-index]').forEach(el => {
+      el.addEventListener('click', () => { const r=data[Number(el.dataset.historyIndex)]; if(r){closeHistory();openHistoryRecipe(r.title);} });
+    });
   }
   function closeHistory() {
     const sheet = document.querySelector('#history-overlay .history-sheet');
@@ -1700,7 +1707,7 @@
 
   async function loadReferralData() {
     if (!currentUser || !userReferralCode) return;
-    const appUrl = 'https://marmito-one.vercel.app';
+    const appUrl = 'https://marmito.ca';
     const link = appUrl + '/auth.html?signup=1&ref=' + userReferralCode;
     const linkEl = document.getElementById('referral-link-display');
     if (linkEl) linkEl.textContent = link;
@@ -1724,7 +1731,7 @@
 
   async function copyReferralLink(btn) {
     if (!userReferralCode) return;
-    const link = 'https://marmito-one.vercel.app/auth.html?signup=1&ref=' + userReferralCode;
+    const link = 'https://marmito.ca/auth.html?signup=1&ref=' + userReferralCode;
     try {
       await navigator.clipboard.writeText(link);
       const orig = btn.textContent; btn.textContent = '✓ Copié !';
@@ -1738,7 +1745,7 @@
 
   function shareReferral() {
     if (!userReferralCode) return;
-    const link = 'https://marmito-one.vercel.app/auth.html?signup=1&ref=' + userReferralCode;
+    const link = 'https://marmito.ca/auth.html?signup=1&ref=' + userReferralCode;
     const msg = 'J\'utilise Marmito pour cuisiner des recettes africaines, antillaises et du monde entier 🍲 Avec mon lien, tu as 50% sur ton 1er mois !\n' + link;
     if (navigator.share) navigator.share({ title: 'Marmito', text: msg, url: link }).catch(() => {});
     else navigator.clipboard.writeText(msg).then(() => showToast('Message copié !')).catch(() => showToast('Copiez ce lien : ' + link));
@@ -1853,14 +1860,17 @@
     if (!q) { drop.classList.remove('open'); drop.innerHTML=''; return; }
     const matches = recipes.filter(r => r.title.toLowerCase().includes(q)).slice(0, 8);
     if (!matches.length) { drop.classList.remove('open'); drop.innerHTML=''; return; }
-    drop.innerHTML = matches.map(r =>
-      `<div class="search-item" onmousedown="pickSearch(event,'${r.title.replace(/'/g,"\'")}')">
-        ${r.title}
-        <div class="search-item-region">${r.region} · ${r.type} · ${r.time}</div>
+    window.marmitoSearchMatches=matches;
+    drop.innerHTML = matches.map((r,i) =>
+      `<div class="search-item" onmousedown="pickSearchIndex(event,${i})">
+        ${escapeMarmitoHTML(r.title)}
+        <div class="search-item-region">${escapeMarmitoHTML(r.region)} · ${escapeMarmitoHTML(r.type)} · ${escapeMarmitoHTML(r.time)}</div>
       </div>`
     ).join('');
     drop.classList.add('open');
   }
+  function escapeMarmitoHTML(v){return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+  function pickSearchIndex(e,i){const r=(window.marmitoSearchMatches||[])[i];if(r)pickSearch(e,r.title);}
   function closeSearch() {
     const drop = document.getElementById('search-dropdown');
     drop.classList.remove('open');
@@ -1919,7 +1929,7 @@
     {names:['crème fraîche','crème liquide','crème épaisse','crème'],fr:'Crème',en:'Cream',options:[['Crème végétale de cuisine','Plant-based cooking cream','Souvent 1:1 dans les sauces; vérifier si elle supporte la chaleur.','Often 1:1 in sauces; check heat stability.'],['Yogourt nature','Plain yogurt','Pour sauces tièdes ou froides; risque de trancher à forte ébullition.','For warm or cold sauces; may split if boiled.']]},
     {names:['farine','farine de blé','farine tout usage'],fr:'Farine de blé',en:'Wheat flour',options:[['Farine d’épeautre','Spelt flour','Souvent proche de 1:1, mais absorption et gluten différents.','Often near 1:1, but absorption and gluten differ.'],['Mélange sans gluten pour pâtisserie','Gluten-free baking blend','Choisir un mélange prévu pour remplacer la farine 1:1; pas universel pour le pain.','Use a blend labeled 1:1 for baking; not universal for bread.']]},
     {names:['huile d’olive',"huile d'olive"],fr:'Huile d’olive',en:'Olive oil',options:[['Huile de tournesol','Sunflower oil','1:1 pour la cuisson; goût moins prononcé.','1:1 for cooking; milder taste.'],['Huile de colza','Canola oil','1:1 pour la plupart des cuissons.','1:1 for most cooking.']]},
-    {names:['huile végétale','huile neutre','huile de tournesol'],fr:'Huile végétale',en:'Vegetable oil',options:[['Huile de colza','Canola oil','1:1 pour la plupart des préparations.','1:1 for most recipes.'],['Huile de tournesol','Sunflower oil','1:1 si elle n’est pas déjà utilisée.','1:1 if not already used.']]},
+    {names:['huile végétale','huile neutre'],fr:'Huile végétale',en:'Vegetable oil',options:[['Huile de colza','Canola oil','1:1 pour la plupart des préparations.','1:1 for most recipes.'],['Huile de tournesol','Sunflower oil','1:1 si elle n’est pas déjà utilisée.','1:1 if not already used.']]},
     {names:['lait de coco'],fr:'Lait de coco',en:'Coconut milk',options:[['Crème végétale et eau','Plant-based cream and water','Diluer selon l’épaisseur voulue; la saveur de coco disparaît.','Dilute to desired thickness; coconut flavor is lost.']]},
     {names:['citron','jus de citron'],fr:'Citron',en:'Lemon',options:[['Citron vert','Lime','Jus souvent 1:1; goût différent.','Juice often 1:1; flavor differs.']]},
     {names:['persil','persil frais'],fr:'Persil',en:'Parsley',options:[['Coriandre fraîche','Fresh cilantro','Même volume pour la garniture, goût très différent.','Same volume for garnish; very different taste.'],['Ciboulette','Chives','Même volume pour la finition, saveur plus douce.','Same volume for garnish; milder flavor.']]},
@@ -1929,28 +1939,66 @@
   ];
   function marmitoSubstitutionFor(name){
     const norm=String(name||'').trim().toLocaleLowerCase('fr').replace(/\s+/g,' ').replace(/[’]/g,"'");
+    if(norm==='coriandre moulue'||norm==='lait fermenté'||norm==='lben')return null;
     return MARMITO_SUBSTITUTIONS.find(item=>item.names.some(n=>n.replace(/[’]/g,"'")===norm))||null;
+  }
+  function marmitoSubstitutionExcluded(recipe,rule,index){
+    if(!recipe||!rule)return true;
+    const title=marmitoDietNorm(recipe.title);
+    const name=marmitoDietNorm(recipe.ingredients[index]||'');
+    const qty=marmitoDietNorm((recipe.ingredientQuantities||[])[index]||'');
+    if(rule.fr==='Œuf'&&/(omelette|chakchouka|shakshuka|brik|quiche|tortilla|creme caramel|flan|crepe|oeuf|pain perdu)/.test(title))return true;
+    if(rule.fr==='Lait'&&/(degue|lben|lait de mil fermente|lait fermente)/.test(title))return true;
+    if(rule.fr==='Coriandre'&&(/\bmoulue?\b/.test(name)||/\b(?:c a cafe|c cafe|c c cafe|cc|c c|c soupe|c a soupe)\b/.test(qty)))return true;
+    return false;
+  }
+  function marmitoSubstitutionOptions(recipe,index,rule){
+    const original=marmitoDietNorm(recipe.ingredients[index]);
+    return rule.options.filter(option=>{
+      const replacement=marmitoDietNorm(option[0]);
+      if(replacement===original||replacement.includes(original)&&original.length>5)return false;
+      if(!marmitoDietActive())return true;
+      const flags=marmitoDietIngredientFlags(option[0]);
+      if(marmitoDietState.filters.includes('vegetarian')&&(flags.has('meat')||flags.has('fish')||flags.has('shellfish')))return false;
+      if(marmitoDietState.filters.includes('vegan')&&(flags.has('meat')||flags.has('fish')||flags.has('shellfish')||flags.has('dairy')||flags.has('egg')||flags.has('honey')))return false;
+      for(const k of ['dairy','egg','gluten','alcohol'])if(marmitoDietState.filters.includes(k)&&flags.has(k))return false;
+      for(const k of marmitoDietState.allergens)if(flags.has(k))return false;
+      // Oat drinks can be contaminated with gluten; avoid recommending unless certified.
+      if((marmitoDietState.filters.includes('gluten'))&&/\bavoine\b/.test(replacement))return false;
+      if(marmitoDietState.filters.includes('dairy')&&/\b(?:margarine|yogourt|yaourt)\b/.test(replacement))return false;
+      return true;
+    });
+  }
+  function marmitoSubstitutionAvailable(recipe,index){
+    const rule=marmitoSubstitutionFor(recipe.ingredients[index]);
+    return rule&&!marmitoSubstitutionExcluded(recipe,rule,index)&&marmitoSubstitutionOptions(recipe,index,rule).length>0;
   }
   function marmitoShowSubstitution(recipe,index){
     if(!recipe||recipe!==cur)return;
-    const rule=marmitoSubstitutionFor(recipe.ingredients[index]);if(!rule)return;
+    const rule=marmitoSubstitutionFor(recipe.ingredients[index]);if(!rule||marmitoSubstitutionExcluded(recipe,rule,index))return;
     const panel=document.getElementById('marmito-substitution-panel');if(!panel)return;
     const en=currentLang==='en';panel.replaceChildren();
     const title=document.createElement('strong');title.textContent=(en?'Alternatives for ':'Remplacer : ')+(en?rule.en:rule.fr);panel.appendChild(title);
     const list=document.createElement('ul');list.style.cssText='margin:8px 0;padding-left:20px';
-    rule.options.forEach(option=>{const li=document.createElement('li');li.style.marginBottom='8px';const b=document.createElement('strong');b.textContent=en?option[1]:option[0];li.append(b,document.createTextNode(' : '+(en?option[3]:option[2])));list.appendChild(li);});panel.appendChild(list);
+    marmitoSubstitutionOptions(recipe,index,rule).forEach(option=>{const li=document.createElement('li');li.style.marginBottom='8px';const b=document.createElement('strong');b.textContent=en?option[1]:option[0];li.append(b,document.createTextNode(' : '+(en?option[3]:option[2])));list.appendChild(li);});panel.appendChild(list);
     const note=document.createElement('small');note.textContent=en?'Suggestions only: check allergies and suitability for this recipe. Original ingredients stay unchanged.':'Suggestions uniquement : vérifie les allergies et la compatibilité avec cette recette. Les ingrédients d’origine restent inchangés.';panel.appendChild(note);
     const close=document.createElement('button');close.type='button';close.textContent=en?'Close':'Fermer';close.style.cssText='display:block;margin-top:10px;cursor:pointer';close.onclick=()=>{panel.hidden=true;};panel.appendChild(close);panel.hidden=false;
+  }
+  function marmitoPluralQty(qty){
+    return String(qty||'').replace(/^(\d+(?:[.,]\d+)?)\s+(pincée|boîte|gousse|tranche|cuillère|feuille|pièce|verre)(?=\s|$)/i,(all,n,unit)=>Number(n.replace(',','.'))>=2?n+' '+unit+'s':all);
   }
   function renderRecipeIngredients(recipe, names) {
     const el = document.getElementById('result-ingredients');
     if (!el || !recipe) return;
     el.replaceChildren();
     const subPanel=document.getElementById('marmito-substitution-panel');if(subPanel)subPanel.hidden=true;
+    if(recipe.ingredients.some((name,idx)=>marmitoSubstitutionAvailable(recipe,idx))){
+      const subHelp=document.createElement('small');subHelp.textContent=currentLang==='en'?'⇄ Select an ingredient to see possible substitutions.':'⇄ Sélectionnez un ingrédient pour voir les substitutions possibles.';subHelp.style.cssText='display:block;width:100%;margin:4px 0 8px;opacity:.75';el.appendChild(subHelp);
+    }
     (names || recipe.ingredients).forEach((name, idx) => {
       const pill = document.createElement('span');
       pill.className = 'ingredient-pill';
-      const qty = scaleQty(recipeIngredientQty(recipe, idx), portionsMultiplier);
+      const qty = marmitoPluralQty(scaleQty(recipeIngredientQty(recipe, idx), portionsMultiplier));
       if (qty) {
         const amount = document.createElement('span');
         amount.className = 'ing-qty';
@@ -1958,9 +2006,10 @@
         pill.appendChild(amount);
       }
       pill.appendChild(document.createTextNode(name));
-      if(marmitoSubstitutionFor(recipe.ingredients[idx])){
+      if(marmitoSubstitutionAvailable(recipe,idx)){
         pill.setAttribute('role','button');pill.setAttribute('tabindex','0');pill.style.cursor='pointer';
         pill.setAttribute('aria-label',(currentLang==='en'?'See substitutions for ':'Voir les substitutions pour ')+name);
+        const hint=document.createElement('span');hint.textContent=' ⇄';hint.setAttribute('aria-hidden','true');hint.style.cssText='text-decoration:underline dotted;text-underline-offset:3px';pill.appendChild(hint);
         pill.onclick=()=>marmitoShowSubstitution(recipe,idx);
         pill.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();marmitoShowSubstitution(recipe,idx);}};
       }
@@ -2344,7 +2393,7 @@ const recipes=[
       "",
       "",
       "",
-      "",
+      "150 g",
       "",
       "",
       "",
@@ -2853,12 +2902,12 @@ const recipes=[
     "serves": "4 pers.",
     "diff": "Moyen",
     "ingredientQuantities": [
+      "250 g",
+      "400 g",
       "",
+      "1",
       "",
-      "",
-      "",
-      "",
-      "",
+      "2 c. à soupe",
       "",
       ""
     ]
@@ -2910,11 +2959,11 @@ const recipes=[
     "serves": "4 pers.",
     "diff": "Moyen",
     "ingredientQuantities": [
-      "",
-      "",
-      "",
-      "",
-      "",
+      "500 g",
+      "100 g",
+      "1 c. à café",
+      "1 c. à café",
+      "1 c. à café",
       "",
       "",
       ""
@@ -2966,11 +3015,11 @@ const recipes=[
     "serves": "2 pers.",
     "diff": "Moyen",
     "ingredientQuantities": [
-      "",
-      "",
-      "",
-      "",
-      "",
+      "2",
+      "250 g",
+      "1",
+      "1",
+      "2 c. à soupe",
       "",
       ""
     ]
@@ -3085,18 +3134,18 @@ const recipes=[
     "serves": "4 pers.",
     "diff": "Facile",
     "ingredientQuantities": [
+      "300 g",
+      "250 g",
+      "1",
+      "2",
+      "1",
+      "3 gousses",
+      "3 c. à soupe",
       "",
       "",
       "",
       "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
+      "1 c. à café"
     ]
   },
   {
@@ -3212,12 +3261,12 @@ const recipes=[
     "serves": "4 pers.",
     "diff": "Moyen",
     "ingredientQuantities": [
+      "200 g",
       "",
-      "",
-      "",
-      "",
-      "",
-      "",
+      "200 g",
+      "1",
+      "3",
+      "4 c. à soupe",
       "",
       "",
       "",
@@ -3364,7 +3413,7 @@ const recipes=[
       {
         "text": "Fouette la pâte 3 à 5 minutes pour l'aérer. Elle doit rester assez ferme pour tenir sur une cuillère.",
         "icon": "mix",
-        "time": 240, "timeMax": 300
+        "time": 180, "timeMax": 300
       },
       {
         "text": "Chauffe l'huile à 170-175°C. Dépose des petites cuillerées de pâte et fais frire 4 à 6 minutes en les retournant.",
@@ -4746,10 +4795,17 @@ const recipes=[
       "Viande hachée",
       "Tomates concassées",
       "Oignons",
-      "Béchamel",
       "Parmesan",
       "Ail",
-      "Huile"
+      "Huile",
+      "Beurre",
+      "Farine",
+      "Lait",
+      "Gruyère râpé",
+      "Concentré de tomate",
+      "Thym",
+      "Sel",
+      "Poivre"
     ],
     "steps": [
       {
@@ -4789,11 +4845,18 @@ const recipes=[
       "",
       "500 g",
       "1 boîte",
+      "1",
       "",
       "",
       "",
-      "",
-      ""
+      "50 g",
+      "50 g",
+      "500 ml",
+      "100 g",
+      "1 c. à soupe",
+      "au goût",
+      "au goût",
+      "au goût"
     ]
   },
   {
@@ -4917,13 +4980,16 @@ const recipes=[
     "title": "Tarte flambée (Flammekueche)",
     "emoji": "🍽️",
     "ingredients": [
-      "Pâte à pain fine",
       "Crème fraîche",
       "Lardons",
       "Oignons",
       "Sel",
       "Poivre",
-      "Noix de muscade"
+      "Noix de muscade",
+      "Farine",
+      "Huile d'olive",
+      "Eau",
+      "Fromage blanc"
     ],
     "steps": [
       {
@@ -4956,13 +5022,16 @@ const recipes=[
     "serves": "2 pers.",
     "diff": "Facile",
     "ingredientQuantities": [
-      "",
       "200 g",
       "150 g",
+      "1",
       "",
       "",
       "",
-      ""
+      "200 g",
+      "4 c. à soupe",
+      "80 ml",
+      "100 g"
     ]
   },
   {
@@ -4974,9 +5043,14 @@ const recipes=[
       "Pain de mie",
       "Jambon",
       "Fromage râpé",
-      "Béchamel",
       "Beurre",
-      "Moutarde"
+      "Moutarde",
+      "Farine",
+      "Lait",
+      "Gruyère en tranches",
+      "Sel",
+      "Poivre",
+      "Noix de muscade"
     ],
     "steps": [
       {
@@ -5012,9 +5086,14 @@ const recipes=[
       "4 tranches",
       "1 tranche",
       "",
+      "20 g",
       "",
       "20 g",
-      ""
+      "200 ml",
+      "4 tranches",
+      "au goût",
+      "au goût",
+      "au goût"
     ]
   },
   {
@@ -5159,7 +5238,7 @@ const recipes=[
       {
         "text": "Pose sur une plaque recouverte de papier cuisson. Enfourne à 180°C pendant 12-15 minutes. Elles doivent rester pâles.",
         "icon": "oven",
-        "time": 840, "timeMax": 900
+        "time": 720, "timeMax": 900
       },
       {
         "text": "Laisse refroidir. Roule dans du sucre glace ou trempe dans l'eau de fleur d'oranger puis roule dans le sucre.",
@@ -6094,7 +6173,9 @@ const recipes=[
       "Levure",
       "Sel",
       "Cannelle",
-      "Noix (facultatif)"
+      "Noix (facultatif)",
+      "Extrait de vanille",
+      "Bicarbonate de soude"
     ],
     "steps": [
       {
@@ -6126,15 +6207,17 @@ const recipes=[
     "serves": "8 tranches",
     "diff": "Facile",
     "ingredientQuantities": [
-      "",
+      "3",
       "180 g",
       "150 g",
+      "1",
+      "80 g",
+      "1 c. à café",
+      "1 pincée",
       "",
       "80 g",
       "1 c. à café",
-      "",
-      "",
-      "80 g"
+      "1/2 c. à café"
     ]
   },
   {
@@ -6231,10 +6314,10 @@ const recipes=[
     "serves": "4 verres",
     "diff": "Très facile",
     "ingredientQuantities": [
-      "",
-      "",
-      "",
-      ""
+      "1 c. à soupe",
+      "1 grosse poignée",
+      "3-4 morceaux",
+      "600 ml"
     ]
   },
   {
@@ -6496,10 +6579,12 @@ const recipes=[
     "emoji": "🍽️",
     "ingredients": [
       "Mil cuit ou couscous de mil",
-      "Lait",
+      "Lait fermenté (lait caillé)",
       "Yaourt nature",
       "Sucre",
-      "Noix de coco râpée"
+      "Noix de coco râpée",
+      "Extrait de vanille",
+      "Lait concentré sucré (facultatif)"
     ],
     "steps": [
       {
@@ -6532,11 +6617,13 @@ const recipes=[
     "serves": "4 portions",
     "diff": "Très facile",
     "ingredientQuantities": [
-      "",
+      "200 g",
       "500 ml",
       "",
       "4 c. à soupe",
-      ""
+      "",
+      "1 c. à café",
+      "100 ml"
     ]
   },
   {
@@ -7209,14 +7296,15 @@ const recipes=[
     "title": "Sellou (Maroc)",
     "emoji": "🍽️",
     "ingredients": [
-      "Semoule grillée",
+      "Farine",
       "Amandes grillées",
       "Graines de sésame",
       "Miel",
       "Beurre fondu",
       "Cannelle",
       "Anis moulu",
-      "Noix de muscade"
+      "Noix de muscade",
+      "Sucre glace"
     ],
     "steps": [
       {
@@ -7251,14 +7339,15 @@ const recipes=[
     "serves": "8 parts",
     "diff": "Facile",
     "ingredientQuantities": [
-      "",
+      "200 g",
       "200 g",
       "200 g",
       "",
       "150 g",
       "1 c. à café",
       "1 pincée",
-      ""
+      "",
+      "150 g"
     ]
   },
   {
@@ -7341,7 +7430,9 @@ const recipes=[
       "Beurre",
       "Noix de muscade",
       "Sel",
-      "Poivre"
+      "Poivre",
+      "Pommes de terre",
+      "Gingembre"
     ],
     "steps": [
       {
@@ -7375,7 +7466,7 @@ const recipes=[
     "diff": "Très facile",
     "ingredientQuantities": [
       "1 kg",
-      "",
+      "1",
       "",
       "100 ml",
       "",
@@ -7384,7 +7475,9 @@ const recipes=[
       "",
       "",
       "",
-      ""
+      "",
+      "2",
+      "1 c. à café"
     ]
   },
   {
@@ -7400,7 +7493,12 @@ const recipes=[
       "Œufs",
       "Crème fraîche",
       "Lait",
-      "Herbes de provence"
+      "Herbes de provence",
+      "Poivron rouge",
+      "Oignon",
+      "Huile d'olive",
+      "Sel",
+      "Poivre"
     ],
     "steps": [
       {
@@ -7435,13 +7533,18 @@ const recipes=[
     "diff": "Facile",
     "ingredientQuantities": [
       "",
-      "",
+      "1",
       "",
       "100 g",
-      "",
+      "3",
       "200 ml",
       "100 ml",
-      ""
+      "",
+      "1",
+      "1",
+      "au goût",
+      "au goût",
+      "au goût"
     ]
   },
   {
@@ -7451,13 +7554,15 @@ const recipes=[
     "emoji": "🥒",
     "ingredients": [
       "Courgettes",
-      "Crème fraîche",
       "Gruyère râpé",
-      "Œufs",
       "Ail",
       "Sel",
       "Poivre",
-      "Huile d'olive"
+      "Huile d'olive",
+      "Beurre",
+      "Farine",
+      "Lait",
+      "Noix de muscade"
     ],
     "steps": [
       {
@@ -7493,13 +7598,15 @@ const recipes=[
     "diff": "Très facile",
     "ingredientQuantities": [
       "600 g",
-      "",
       "80 g",
       "",
       "",
       "",
-      "",
-      ""
+      "2 c. à soupe",
+      "30 g",
+      "30 g",
+      "400 ml",
+      "au goût"
     ]
   },
   {
@@ -7561,7 +7668,9 @@ const recipes=[
       "Oranges",
       "Eau",
       "Sucre (facultatif)",
-      "Glaçons"
+      "Glaçons",
+      "Miel (facultatif)",
+      "Citron (facultatif)"
     ],
     "steps": [
       {
@@ -7593,10 +7702,12 @@ const recipes=[
     "serves": "2 verres",
     "diff": "Très facile",
     "ingredientQuantities": [
+      "6",
       "",
       "",
       "",
-      ""
+      "1 c. à café",
+      "1/2"
     ]
   },
   {
@@ -25197,7 +25308,7 @@ function renderProfileFavs(){
   const l=document.getElementById("profile-fav-list");
   if(!l)return;
   if(!favs.length){l.innerHTML='<div class="fav-empty">Aucun favori. Clique sur ❤️ dans une recette.</div>';return;}
-  l.innerHTML=favs.map(f=>'<div class="fav-item"><div><div class="fav-item-name">'+f.title+'</div><div class="fav-item-region">'+f.region+' · '+f.type+'</div></div><button class="fav-cook-btn" onclick="closeProfile();setTimeout(()=>cookFav('+JSON.stringify(f.title)+'),200)">Cuisiner</button></div>').join("");
+  l.innerHTML=favs.map((f,i)=>'<div class="fav-item"><div><div class="fav-item-name">'+escapeMarmitoHTML(f.title)+'</div><div class="fav-item-region">'+escapeMarmitoHTML(f.region)+' · '+escapeMarmitoHTML(f.type)+'</div></div><button class="fav-cook-btn" onclick="closeProfile();setTimeout(()=>cookFav(favs['+i+'].title),200)">Cuisiner</button></div>').join("");
 }
 async function renderProfileHistory(){
   const l=document.getElementById("profile-history-list");
@@ -25206,9 +25317,10 @@ async function renderProfileHistory(){
   if(!currentUser){l.innerHTML='<div class="fav-empty">Connecte-toi pour voir ton historique.</div>';return;}
   const {data,error}=await sb.from('recipes').select('title,region,created_at').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(10);
   if(error||!data||!data.length){l.innerHTML='<div class="fav-empty">Aucune recette dans l\'historique.</div>';return;}
-  l.innerHTML=data.map(r=>{
+  window.marmitoHistoryTitles=data.map(r=>r.title);
+  l.innerHTML=data.map((r,i)=>{
     const date=new Date(r.created_at).toLocaleDateString('fr-CA',{day:'numeric',month:'short'});
-    return '<div class="fav-item"><div><div class="fav-item-name">'+r.title+'</div><div class="fav-item-region">'+(r.region||'')+' · '+date+'</div></div><button class="fav-cook-btn" onclick="closeProfile();setTimeout(()=>openHistoryRecipe('+JSON.stringify(r.title)+'),200)">Voir</button></div>';
+    return '<div class="fav-item"><div><div class="fav-item-name">'+escapeMarmitoHTML(r.title)+'</div><div class="fav-item-region">'+escapeMarmitoHTML(r.region||'')+' · '+date+'</div></div><button class="fav-cook-btn" onclick="closeProfile();setTimeout(()=>openHistoryRecipe(window.marmitoHistoryTitles['+i+']),200)">Voir</button></div>';
   }).join("");
 }
 
@@ -25301,7 +25413,7 @@ function toggleFavPanel(){
 function renderFavs(){
   const l=document.getElementById("fav-list");
   if(!favs.length){l.innerHTML="<div class=\"fav-empty\">Aucun favori. Clique sur le coeur d une recette.</div>";return;}
-  l.innerHTML=favs.map(f=>"<div class=\"fav-item\"><div><div class=\"fav-item-name\">"+f.title+"</div><div class=\"fav-item-region\">"+f.region+" · "+f.type+"</div></div><button class=\"fav-cook-btn\" onclick=\"cookFav("+JSON.stringify(f.title)+")\" >Cuisiner</button></div>").join("");
+  l.innerHTML=favs.map((f,i)=>"<div class=\"fav-item\"><div><div class=\"fav-item-name\">"+escapeMarmitoHTML(f.title)+"</div><div class=\"fav-item-region\">"+escapeMarmitoHTML(f.region)+" · "+escapeMarmitoHTML(f.type)+"</div></div><button class=\"fav-cook-btn\" onclick=\"cookFav(favs["+i+"].title)\" >Cuisiner</button></div>").join("");
 }
 function cookFav(t){
   const r=recipes.find(r=>r.title===t);
@@ -25522,12 +25634,17 @@ function openPlanRepas() {
 
   function renderPlanBody(displayTitles) {
     body.innerHTML = plan.map(({ jour, recipe: r }, i) =>
-      '<div class="plan-day" onclick="closePlanRepas();setTimeout(()=>show(recipes.find(x=>x.title===\'' + (r ? r.title.replace(/'/g,"\\'") : '') + '\')),200)">' +
-      '<div><div class="plan-day-label">' + jour + '</div>' +
-      '<div class="plan-day-name">' + (r ? (displayTitles[i] || r.title) : ', ') + '</div>' +
-      '<div class="plan-day-region">' + (r ? translateMeta('region', r.region) + ' · ' + r.time : '') + '</div></div>' +
+      '<div class="plan-day" data-plan-index="' + i + '" role="button" tabindex="0">' +
+      '<div><div class="plan-day-label">' + escapeMarmitoHTML(jour) + '</div>' +
+      '<div class="plan-day-name">' + escapeMarmitoHTML(r ? (displayTitles[i] || r.title) : ', ') + '</div>' +
+      '<div class="plan-day-region">' + (r ? escapeMarmitoHTML(translateMeta('region', r.region) + ' · ' + r.time) : '') + '</div></div>' +
       '<span style="color:var(--fg2);font-size:18px">›</span></div>'
     ).join('') + buildGroceryHTML(allIngs);
+    body.querySelectorAll('[data-plan-index]').forEach(el => {
+      const open = () => { const r=plan[Number(el.dataset.planIndex)]?.recipe; if(r){closePlanRepas();setTimeout(()=>show(r),200);} };
+      el.addEventListener('click',open);
+      el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
+    });
   }
 
   const frTitles = plan.map(({ recipe: r }) => r ? r.title : ', ');
@@ -25734,7 +25851,7 @@ function shoppingDisplayName(entry,name){
  const words=name.trim().split(/\s+/);
  const plural=word=>/[sxz]$/i.test(word)?word:word+'s';
  if(/^(?:poivre|sel|sucre|lait|farine)$/i.test(name.trim()))return name;
- if(/^pâte (?:brisée|sablée)$/i.test(name))return name.replace(/^pâte/i,part=>plural(part));
+ if(/^pâte (?:brisée|sablée)$/i.test(name))return name.replace(/^pâte/i,part=>plural(part)).replace(/(?:brisée|sablée)$/i,part=>plural(part));
  if(/^piment facultatif$/i.test(name))return name.replace(/^piment/i,part=>plural(part)).replace(/facultatif$/i,'facultatifs');
  if(/^jaune d[’']œuf$/i.test(name))return name.replace(/^jaune/i,part=>plural(part));
  if(/^pain pita$/i.test(name))return name.replace(/^pain/i,part=>plural(part));
@@ -26105,6 +26222,7 @@ function t(key) {
 
 function applyLang() {
   const dict = i18n[currentLang];
+  marmitoDietRender();
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (dict[key] !== undefined) el.innerHTML = dict[key];
@@ -26221,10 +26339,100 @@ try {
   const savedLang = localStorage.getItem('marmito-lang');
   if (savedLang === 'en') { currentLang = 'en'; }
 } catch(e) {}
-applyLang();
+// Language and dietary UI are initialized together after dietary constants exist.
 
 // Toast
 function showToast(m,type){const t=document.getElementById("toast");t.textContent=m;t.style.background=type==='error'?'#C0392B':'';t.classList.add("show");setTimeout(()=>{t.classList.remove("show");t.style.background='';},type==='error'?4000:2500);}
+
+// Optional dietary preferences. Conservative ingredient-name matching; no medical safety guarantee.
+const MARMITO_DIET_KEY='marmito-diet-filters-v1';
+const MARMITO_DIET_OPTIONS=[['vegetarian','Végétarien','Vegetarian'],['vegan','Végétalien','Vegan'],['dairy','Sans produits laitiers','Dairy-free'],['egg','Sans œufs','Egg-free'],['gluten','Sans gluten','Gluten-free'],['alcohol','Sans alcool','Alcohol-free']];
+const MARMITO_ALLERGENS=[['peanut','Arachides','Peanuts'],['nuts','Fruits à coque','Tree nuts'],['soy','Soja','Soy'],['fish','Poisson','Fish'],['shellfish','Crustacés et mollusques','Shellfish'],['sesame','Sésame','Sesame']];
+// Ingredient-first classification. Accent-insensitive matching with word boundaries and plurals.
+// These are indicative filters, not a guarantee of allergen absence.
+function marmitoDietNorm(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/œ/g,'oe').replace(/æ/g,'ae').toLowerCase().replace(/[’']/g,' ').replace(/[^a-z0-9]+/g,' ').trim();}
+const MARMITO_DIET_PATTERNS={
+ meat:/\b(?:poulets?|dindes?|canards?|pintades?|boeufs?|veaux?|porcs?|lardons?|lards?|guanciale|pancetta|jambons?|bacons?|agneaux?|moutons?|chevres?|viandes?|merguez|saucisses?|chorizos?|charcuteries?|gelatines?|foies?|tripes?|bouillons? de (?:viande|poulet|boeuf)|bouillon de volaille)\b/,
+ fish:/\b(?:poissons?|thons?|saumons?|sardines?|anchois|morues?|cabillauds?|maquereaux?|harengs?|tilapias?|dorades?|daurades?|bonites?|dashis?|crevettes?|lambis?|conques?|crabes?|homards?|langoustines?|moules?|huitres?|calamars?|seiches?|poulpes?|fruits? de mer|nuoc mam|sauce (?:de )?poisson|fumet de poisson|rascasses?|grondins?|filet de bar|bar entier|bars? frais)\b/,
+ shellfish:/\b(?:crevettes?|lambis?|conques?|crabes?|homards?|langoustines?|langoustes?|moules?|huitres?|calamars?|seiches?|poulpes?|coquilles? saint jacques?|palourdes?|coques?|fruits? de mer|gambas?)\b/,
+ dairy:/\b(?:laits?|beurres?|cremes?|fromages?|yaourts?|yogourts?|yoghourts?|parmesans?|pecorinos?|mozzarellas?|ricottas?|fetas?|cheddars?|gruyeres?|emmentals?|mascarpones?|paneers?|lbens?|babeurres?|lactoserums?|ghee|petits? suisses?|lactose)\b/,
+ egg:/\b(?:oeufs?|jaunes? d oeufs?|blancs? d oeufs?|mayonnaises?|meringues?)\b/,
+ gluten:/\b(?:ble|froment|frik|farines?|semoules?|couscous|boulgour|bulgur|orges?|seigles?|epeautres?|pates?|spaghettis?|macaronis?|lasagnes?|vermicelles?|nouilles?|pains?|chapatis?|naans?|pitas?|tortillas?|chapelures?|biscuits?|brioches?|croissants?|bricks?|feuilles? de brick|biere|bieres|seitan|malts?)\b/,
+ alcohol:/\b(?:vins?|bieres?|rhums?|whiskys?|whiskeys?|vodkas?|gins?|liqueurs?|cognacs?|brandys?|portos?|cidres?|sakes?|mirins?|marsalas?|champagnes?|proseccos?|kirschs?|amarettos?|alcools?|pastis|vermouths?|bourbons?|grand marnier|cointreau|calvados)\b/,
+ peanut:/\b(?:arachides?|cacahuetes?|beurre de cacahuete|beurre d arachide)\b/,
+ nuts:/\b(?:amandes?|noisettes?|pistaches?|cajous?|pecans?|macadamias?|pignons?|pralines?|massepain|noix(?: de (?:cajou|pecan|macadamia|grenoble|brazil|bresil))?)\b/,
+ soy:/\b(?:sojas?|soyas?|tofus?|tempehs?|misos?|edamames?|tamaris?)\b/,
+ sesame:/\b(?:sesames?|tahinis?|tahins?|halvas?|zaatars?)\b/,
+ honey:/\b(?:miels?)\b/
+};
+function marmitoDietIngredientFlags(value){
+ const v=marmitoDietNorm(value), flags=new Set();
+ if(!v)return flags;
+ // Mask only non-allergenic phrases, never clear an allergen flag from the whole recipe.
+ // This preserves dairy in "lait entier ou lait de coco" and nuts in "amandes et noix de coco".
+ const masked=v
+  .replace(/\b(?:laits? (?:de |d )?(?:coco|soja|soya|riz|amande|avoine|noisette))\b/g,' ')
+  .replace(/\bnoix de (?:coco|muscade)\b/g,' ')
+  .replace(/\b(?:pour le moule|dans le moule|moule a|moule beurre|moule farine|moules a|moules beurres|moules farines)\b/g,' ');
+ for(const [key,re] of Object.entries(MARMITO_DIET_PATTERNS))if(re.test(masked))flags.add(key);
+ // Plant milks may still contain soy or tree nuts, despite not being dairy.
+ if(/\blaits? (?:de |d )?(?:soja|soya)\b/.test(v))flags.add('soy');
+ if(/\blaits? (?:de |d )?(?:amande|noisette)\b/.test(v))flags.add('nuts');
+ // Known gluten-free flours and millet semolina are not wheat flour.
+ if(/\bfarine (?:de |d )?(?:riz|mais|manioc|mil|sorgho|pois chiche|coco|amande|chataigne|sarrasin)\b/.test(v)&&! /\b(?:ble|froment|gluten|epeautre|orge|seigle|autre farine)\b/.test(v))flags.delete('gluten');
+ if(/\b(?:couscous|semoule) de mil\b/.test(v)&&! /\b(?:ble|froment|orge|seigle|epeautre)\b/.test(v))flags.delete('gluten');
+ if(/\b(?:sans gluten|gluten free)\b/.test(v)&&! /\b(?:ble|froment|epeautre|orge|seigle)\b/.test(v))flags.delete('gluten');
+ if(/\b(?:sauce soja|sauce soya|shoyu)\b/.test(v)&&! /\bsans gluten\b/.test(v)){flags.add('soy');flags.add('gluten');}
+ if(/\bzaatar\b/.test(v))flags.add('sesame');
+ return flags;
+}
+function marmitoDietRecipeFlags(recipe){
+ const flags=new Set();
+ (recipe.ingredients||[]).forEach(ing=>marmitoDietIngredientFlags(ing).forEach(x=>flags.add(x)));
+ // Steps may mention missing ingredients. Classify each step without removing flags
+ // already found in ingredients or in other steps.
+ (recipe.steps||[]).forEach(step=>{
+  const v=marmitoDietNorm(typeof step==='string'?step:step.text);
+  const masked=v
+   .replace(/\blaits? (?:de |d )?(?:coco|soja|soya|riz|amande|avoine|noisette)\b/g,' ')
+   .replace(/\bnoix de (?:coco|muscade)\b/g,' ')
+   .replace(/\bmoules?\b/g,match=>/\b(?:cuire les moules|ajoute les moules|moules doivent etre ouvertes|moules fraiches|moules nettoyees)\b/.test(v)?match:'');
+  for(const [key,re] of Object.entries(MARMITO_DIET_PATTERNS)){
+   if(re.test(masked))flags.add(key);
+  }
+  if(/\blaits? (?:de |d )?(?:soja|soya)\b/.test(v))flags.add('soy');
+  if(/\blaits? (?:de |d )?(?:amande|noisette)\b/.test(v))flags.add('nuts');
+  if(/\brouille\b/.test(v))flags.add('egg');
+  if(/\bzaatar\b/.test(v))flags.add('sesame');
+ });
+ return flags;
+}
+let marmitoDietState={filters:[],allergens:[]};
+try{const d=JSON.parse(localStorage.getItem(MARMITO_DIET_KEY)||'{}');if(d&&typeof d==='object')marmitoDietState={filters:Array.isArray(d.filters)?d.filters.filter(x=>MARMITO_DIET_OPTIONS.some(y=>y[0]===x)):[],allergens:Array.isArray(d.allergens)?d.allergens.filter(x=>MARMITO_ALLERGENS.some(y=>y[0]===x)):[]};}catch(e){}
+function marmitoDietActive(){return marmitoDietState.filters.length>0||marmitoDietState.allergens.length>0;}
+function marmitoDietMatches(recipe){
+ if(!marmitoDietActive())return true;
+ const flags=marmitoDietRecipeFlags(recipe),has=k=>flags.has(k);
+ if(marmitoDietState.filters.includes('vegetarian')&&(has('meat')||has('fish')||has('shellfish')))return false;
+ if(marmitoDietState.filters.includes('vegan')&&(has('meat')||has('fish')||has('shellfish')||has('dairy')||has('egg')||has('honey')))return false;
+ for(const k of ['dairy','egg','gluten','alcohol'])if(marmitoDietState.filters.includes(k)&&has(k))return false;
+ for(const k of marmitoDietState.allergens)if(has(k))return false;
+ return true;
+}
+function marmitoDietSave(){try{localStorage.setItem(MARMITO_DIET_KEY,JSON.stringify(marmitoDietState));}catch(e){}}
+function marmitoDietToggle(k,allergen){const list=allergen?marmitoDietState.allergens:marmitoDietState.filters;const i=list.indexOf(k);if(i>=0)list.splice(i,1);else list.push(k);marmitoDietSave();marmitoDietRender();if(cur&&document.getElementById('result-card')?.classList.contains('visible'))renderRecipeIngredients(cur,currentLang==='en'&&cur._ingEN?cur._ingEN:cur.ingredients);}
+function marmitoDietReset(){marmitoDietState={filters:[],allergens:[]};marmitoDietSave();marmitoDietRender();if(cur&&document.getElementById('result-card')?.classList.contains('visible'))renderRecipeIngredients(cur,currentLang==='en'&&cur._ingEN?cur._ingEN:cur.ingredients);}
+function marmitoDietRender(){
+ const en=currentLang==='en',host=document.getElementById('marmito-diet-options');if(!host)return;
+ document.getElementById('marmito-diet-heading').textContent=en?'Dietary preferences (optional)':'Préférences alimentaires (optionnel)';
+ document.getElementById('marmito-diet-reset').textContent=en?'Reset':'Réinitialiser';
+ document.getElementById('marmito-diet-note').textContent=en?'Indicative filters only: always check labels, ingredients and allergen traces.':'Filtres indicatifs : vérifiez toujours les étiquettes, ingrédients et traces d’allergènes.';
+ document.getElementById('marmito-diet-note').textContent += en?' Daily recipe and 7-day plan do not apply these preferences.':' Le plat du jour et le plan 7 jours ne tiennent pas compte de ces préférences.';
+ const make=(item,allergen)=>{const b=document.createElement('button');b.type='button';b.textContent=en?item[2]:item[1];const active=(allergen?marmitoDietState.allergens:marmitoDietState.filters).includes(item[0]);b.setAttribute('aria-pressed',String(active));b.style.cssText='padding:8px 11px;border-radius:20px;cursor:pointer;font-size:13px;border:1px solid var(--border);background:'+(active?'var(--accent)':'var(--bg)')+';color:'+(active?'white':'var(--fg)');b.onclick=()=>marmitoDietToggle(item[0],allergen);return b;};
+ host.replaceChildren(...MARMITO_DIET_OPTIONS.map(x=>make(x,false)));
+ const a=document.getElementById('marmito-diet-allergens');a.style.display='block';a.replaceChildren();const h=document.createElement('div');h.textContent=en?'Exclude allergens (select any)':'Exclure des allergènes (au choix)';h.style.cssText='font-size:12px;margin:6px 0';a.appendChild(h);const wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-wrap:wrap;gap:8px';MARMITO_ALLERGENS.forEach(x=>wrap.appendChild(make(x,true)));a.appendChild(wrap);
+}
+function marmitoDietEmpty(){showToast(currentLang==='en'?'No recipe matches these dietary preferences. Adjust or reset them.':'Aucune recette ne correspond à ces préférences. Modifiez ou réinitialisez les filtres.','error');}
 
 // Generate
 function generateWithFilters(){
@@ -26233,7 +26441,7 @@ function generateWithFilters(){
   const cuisine=document.getElementById("cuisine-select").value || "Toutes";
   const type=ty?ty.dataset.type:"Plat principal";
   const userIngs=[...document.querySelectorAll(".ingredient-tag")].map(t=>canonicalIngredient((t.dataset.fr||t.childNodes[0].textContent).trim()).toLowerCase());
-  if(cuisine==="Toutes" && type==="Tout" && userIngs.length===0){
+  if(cuisine==="Toutes" && type==="Tout" && userIngs.length===0 && !marmitoDietActive()){
     // Aucun filtre actif, on informe l'utilisateur
     const btn=document.getElementById("filter-btn");
     const orig=btn.innerHTML;
@@ -26258,9 +26466,11 @@ function generateWithFilters(){
     let pool=recipes;
     if(cuisine!=="Toutes")pool=pool.filter(r=>r.region===cuisine);
     if(type!=="Tout")pool=pool.filter(r=>r.type===type);
-    if(timeFilter==="30 min max"){pool=pool.filter(r=>parseDurationMin(r.time)<=30);if(!pool.length)pool=recipes.filter(r=>parseDurationMin(r.time)<=30);}
-    if(!pool.length)pool=recipes;
-    const filterKey='F|'+(cuisine||'Toutes')+'|'+(type||'Tout')+'|'+timeFilter;
+    if(timeFilter==="30 min max"){pool=pool.filter(r=>parseDurationMin(r.time)<=30);if(!pool.length&&!marmitoDietActive())pool=recipes.filter(r=>parseDurationMin(r.time)<=30);}
+    if(marmitoDietActive())pool=pool.filter(marmitoDietMatches);
+    if(!pool.length&&!marmitoDietActive())pool=recipes;
+    if(!pool.length){marmitoDietEmpty();btn.disabled=false;btn.innerHTML=currentLang==='en'?'&#127859; By my filters':'&#127859; Selon mes filtres';return;}
+    const filterKey='F|'+(cuisine||'Toutes')+'|'+(type||'Tout')+'|'+timeFilter+'|'+JSON.stringify(marmitoDietState);
     let chosen;
     if(userIngs.length){
       const sc=pool.map(r=>({r,s:r.ingredients.filter(i=>userIngs.some(u=>canonicalIngredient(i).toLowerCase().includes(u)||u.includes(canonicalIngredient(i).toLowerCase()))).length}));
@@ -26306,7 +26516,9 @@ function generateRecipe(){
   document.getElementById("result-card").classList.remove("visible");
   setTimeout(()=>{
     // Ignore tous les filtres, pool complet
-    const chosen=pickNoRepeat(recipes,'random-all');
+    const randomPool=marmitoDietActive()?recipes.filter(marmitoDietMatches):recipes;
+    if(!randomPool.length){marmitoDietEmpty();btn.disabled=false;btn.textContent=currentLang==='en'?'Surprise me':'Surprends-moi';return;}
+    const chosen=pickNoRepeat(randomPool,'random-all|'+JSON.stringify(marmitoDietState));
     show(chosen);
     incrementRecipeCount();
     saveRecipeToHistory(chosen.title, chosen.region);
