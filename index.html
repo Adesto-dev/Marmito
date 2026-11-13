@@ -1367,23 +1367,67 @@
     }
   }
 
-  async function saveRecipeToHistory(title, region) {
-    if (!currentUser) { console.warn('[Marmito] saveRecipe: pas de currentUser'); return; }
+  // Historique des consultations : cache local par compte pour affichage immediat,
+  // avec synchronisation Supabase conservee pour les autres appareils.
+  function marmitoHistoryKey() { return currentUser ? 'marmito-view-history-v1:' + currentUser.id : null; }
+  function marmitoLocalHistory() {
+    const key = marmitoHistoryKey();
+    if (!key) return [];
     try {
-      console.log('[Marmito] saveRecipe: tentative INSERT pour', currentUser.id, '|', title);
-      const { data, error } = await sb.from('recipes').insert({
-        user_id: currentUser.id,
-        title,
-        region: region || '',
-        created_at: new Date().toISOString()
-      });
-      if (error) {
-        console.error('[Marmito] saveRecipe erreur:', error.message, '| code:', error.code, '| hint:', error.hint, '| details:', error.details);
-        showToast('Erreur sauvegarde: ' + error.message, 'error');
-      } else {
-        console.log('[Marmito] saveRecipe OK:', title);
+      const entries = JSON.parse(localStorage.getItem(key) || '[]');
+      return Array.isArray(entries) ? entries.filter(r => r && typeof r.title === 'string' && recipes.some(x => x.title === r.title)).slice(0,10) : [];
+    } catch(e) { return []; }
+  }
+  function marmitoMergedHistory(remote) {
+    const entries = [...marmitoLocalHistory(), ...(Array.isArray(remote) ? remote : [])];
+    const titles = new Set();
+    return entries.filter(r => r && typeof r.title === 'string' && recipes.some(x => x.title === r.title))
+      .sort((a,b) => (Date.parse(b.created_at)||0) - (Date.parse(a.created_at)||0))
+      .filter(r => { if(titles.has(r.title)) return false; titles.add(r.title); return true; }).slice(0,10);
+  }
+  // Read enough remote rows to obtain ten DISTINCT titles even when old rows contain duplicates.
+  async function marmitoRemoteHistory(userId) {
+    const distinct = new Map();
+    const pageSize = 100;
+    for (let offset = 0; offset < 1000 && distinct.size < 10; offset += pageSize) {
+      const {data, error} = await sb.from('recipes')
+        .select('title,region,created_at').eq('user_id', userId)
+        .order('created_at', {ascending:false}).range(offset, offset + pageSize - 1);
+      if (error) { console.warn('[Marmito] historique distant:', error.message); break; }
+      const rows = Array.isArray(data) ? data : [];
+      for (const row of rows) {
+        if (row && typeof row.title === 'string' && !distinct.has(row.title)) distinct.set(row.title, row);
+        if (distinct.size >= 10) break;
       }
-    } catch(e) { console.error('[Marmito] saveRecipe exception:', e); }
+      if (rows.length < pageSize) break;
+    }
+    return [...distinct.values()];
+  }
+  async function saveRecipeToHistory(title, region) {
+    if (!currentUser) return;
+    const userId = currentUser.id;
+    const key = marmitoHistoryKey();
+    const timestamp = new Date().toISOString();
+    try {
+      const entry = {title, region: region || '', created_at: timestamp};
+      const updated = [entry, ...marmitoLocalHistory().filter(r => r.title !== title)].slice(0,10);
+      localStorage.setItem(key, JSON.stringify(updated));
+    } catch(e) { console.warn('[Marmito] historique local indisponible:', e); }
+    try {
+      // Update an existing consultation rather than inserting a duplicate row.
+      // Querying by title avoids depending on a database UNIQUE constraint.
+      const {data: existing, error: lookupError} = await sb.from('recipes')
+        .select('id').eq('user_id', userId).eq('title', title).limit(1);
+      if (lookupError) { console.warn('[Marmito] recherche historique distant:', lookupError.message); return; }
+      if (Array.isArray(existing) && existing.length && existing[0].id != null) {
+        const {error} = await sb.from('recipes').update({region: region || '', created_at: timestamp})
+          .eq('id', existing[0].id).eq('user_id', userId);
+        if (error) console.warn('[Marmito] actualisation historique distant:', error.message);
+      } else {
+        const {error} = await sb.from('recipes').insert({user_id: userId, title, region: region || '', created_at: timestamp});
+        if (error) console.warn('[Marmito] ajout historique distant:', error.message);
+      }
+    } catch(e) { console.warn('[Marmito] synchronisation historique indisponible:', e); }
   }
 
   async function openProfile() {
@@ -1523,17 +1567,18 @@
     list.innerHTML = '<div style="color:var(--fg2);font-size:13px;padding:8px 0">' + (t['history-loading'] || 'Chargement...') + '</div>';
     document.getElementById('history-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
-    const { data } = await sb.from('recipes').select('title,region,created_at').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(10);
-    if (!data || data.length === 0) {
+    const data = await marmitoRemoteHistory(currentUser.id);
+    const historyEntries = marmitoMergedHistory(data);
+    if (historyEntries.length === 0) {
       list.innerHTML = '<div style="color:var(--fg2);font-size:14px;padding:16px 0;text-align:center">' + (t['history-empty'] || 'Aucune recette dans l\'historique.') + '</div>';
       return;
     }
-    list.innerHTML = data.map((r,i) => {
+    list.innerHTML = historyEntries.map((r,i) => {
       const date = new Date(r.created_at).toLocaleDateString('fr-CA', { day:'numeric', month:'short' });
       return '<div class="history-item" style="cursor:pointer" data-history-index="' + i + '" title="Revoir la recette"><span class="history-item-name">' + escapeMarmitoHTML(r.title) + (r.region ? ' <span style="color:var(--fg2);font-weight:400;font-size:12px">· ' + escapeMarmitoHTML(r.region) + '</span>' : '') + '</span><span class="history-item-date">' + escapeMarmitoHTML(date) + ' ›</span></div>';
     }).join('');
     list.querySelectorAll('[data-history-index]').forEach(el => {
-      el.addEventListener('click', () => { const r=data[Number(el.dataset.historyIndex)]; if(r){closeHistory();openHistoryRecipe(r.title);} });
+      el.addEventListener('click', () => { const r=historyEntries[Number(el.dataset.historyIndex)]; if(r){closeHistory();openHistoryRecipe(r.title);} });
     });
   }
   function closeHistory() {
@@ -25315,10 +25360,11 @@ async function renderProfileHistory(){
   if(!l)return;
   l.innerHTML='<div class="fav-empty" style="color:var(--fg2)">Chargement...</div>';
   if(!currentUser){l.innerHTML='<div class="fav-empty">Connecte-toi pour voir ton historique.</div>';return;}
-  const {data,error}=await sb.from('recipes').select('title,region,created_at').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(10);
-  if(error||!data||!data.length){l.innerHTML='<div class="fav-empty">Aucune recette dans l\'historique.</div>';return;}
-  window.marmitoHistoryTitles=data.map(r=>r.title);
-  l.innerHTML=data.map((r,i)=>{
+  const data=await marmitoRemoteHistory(currentUser.id);
+  const historyEntries=marmitoMergedHistory(data);
+  if(!historyEntries.length){l.innerHTML='<div class="fav-empty">Aucune recette dans l\'historique.</div>';return;}
+  window.marmitoHistoryTitles=historyEntries.map(r=>r.title);
+  l.innerHTML=historyEntries.map((r,i)=>{
     const date=new Date(r.created_at).toLocaleDateString('fr-CA',{day:'numeric',month:'short'});
     return '<div class="fav-item"><div><div class="fav-item-name">'+escapeMarmitoHTML(r.title)+'</div><div class="fav-item-region">'+escapeMarmitoHTML(r.region||'')+' · '+date+'</div></div><button class="fav-cook-btn" onclick="closeProfile();setTimeout(()=>openHistoryRecipe(window.marmitoHistoryTitles['+i+']),200)">Voir</button></div>';
   }).join("");
@@ -25507,7 +25553,6 @@ function generateSameRegion(){
   const chosen=pickNoRepeat(pool,"region|"+region);
   show(chosen);
   incrementRecipeCount();
-  saveRecipeToHistory(chosen.title,chosen.region);
 }
 
 // ===== BADGE CUISINÉ =====
@@ -26482,7 +26527,6 @@ function generateWithFilters(){
     }
     show(chosen);
     incrementRecipeCount();
-    saveRecipeToHistory(chosen.title, chosen.region);
     btn.disabled=false;btn.innerHTML=currentLang==='en'?'&#127859; By my filters':'&#127859; Selon mes filtres';
   },800);
 }
@@ -26521,13 +26565,13 @@ function generateRecipe(){
     const chosen=pickNoRepeat(randomPool,'random-all|'+JSON.stringify(marmitoDietState));
     show(chosen);
     incrementRecipeCount();
-    saveRecipeToHistory(chosen.title, chosen.region);
     btn.disabled=false;btn.textContent="Trouver une autre recette";
   },1000);
 }
 
 function show(recipe){
   cur=recipe;
+  saveRecipeToHistory(recipe.title, recipe.region);
   translatedStepTexts=[];
   // Visual banner: emoji + gradient
   const gradientMap={
