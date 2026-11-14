@@ -742,6 +742,7 @@
     <button class="drawer-item drawer-item-plan" onclick="closeDrawer();setTimeout(openPlanRepas,200)" data-i18n="nav-plan">Plan 7 jours <span class="pro-chip">PRO</span></button>
     <button class="drawer-item" onclick="closeDrawer();setTimeout(openShopping,200)" id="shopping-drawer-link">Ma liste de courses</button>
     <button class="drawer-item" onclick="drawerAction('profile')" data-i18n="nav-profile">Mon profil</button>
+    <button class="drawer-item" type="button" onclick="closeDrawer();marmitoOpenMyExperiences()">📷 Mes expériences</button>
     <!-- Visible uniquement après vérification du rôle auprès de Supabase -->
     <button class="drawer-item" id="marmito-admin-menu" onclick="drawerAction('admin')" style="display:none" hidden>🛡️ Administration</button>
 
@@ -27629,6 +27630,105 @@ async function marmitoOpenPublishedExperiences(){
   if(request!==marmitoPublishedRequest) return;
   console.error('[Marmito] Expériences publiées',err);
   status.textContent='Impossible de charger les expériences : '+(err?.message||'erreur inconnue');
+ }
+}
+</script>
+
+<!-- V19 : espace personnel des expériences, indépendant des recettes officielles -->
+<style>
+#marmito-myexp-overlay{display:none;position:fixed;inset:0;z-index:100010;background:rgba(24,15,8,.8);overflow:auto;padding:20px 12px}
+#marmito-myexp-overlay.open{display:flex;align-items:flex-start;justify-content:center}
+.marmito-myexp-box{width:min(100%,620px);background:#fff8f0;color:#2a1800;border-radius:18px;padding:22px;margin:auto;box-sizing:border-box}
+.marmito-myexp-box button{border:0;border-radius:9px;padding:10px 14px;background:#7a4820;color:#fff;cursor:pointer;margin:5px 8px 5px 0}
+.marmito-myexp-box button:disabled{opacity:.55;cursor:wait}
+.marmito-myexp-entry{padding:15px 0;border-top:1px solid #d8c7b3;overflow-wrap:anywhere}
+.marmito-myexp-entry img{max-width:100%;max-height:340px;object-fit:contain;border-radius:9px;display:block;margin:10px 0}
+</style>
+<section id="marmito-myexp-overlay" role="dialog" aria-modal="true" aria-labelledby="marmito-myexp-title">
+ <div class="marmito-myexp-box">
+  <h2 id="marmito-myexp-title">📷 Mes expériences</h2>
+  <p>Retrouve tes expériences privées et suis les expériences soumises à la communauté.</p>
+  <p id="marmito-myexp-status" role="status" aria-live="polite"></p>
+  <div id="marmito-myexp-list"></div>
+  <button type="button" onclick="marmitoCloseMyExperiences()">Fermer</button>
+ </div>
+</section>
+<script>
+let marmitoMyExpRequest=0;
+let marmitoMyExpSubmitting=false;
+function marmitoCloseMyExperiences(){
+ if(marmitoMyExpSubmitting)return;
+ ++marmitoMyExpRequest;
+ document.getElementById('marmito-myexp-overlay')?.classList.remove('open');
+ document.getElementById('marmito-myexp-list')?.replaceChildren();
+}
+function marmitoMyExpText(tag,value){
+ const node=document.createElement(tag);node.textContent=String(value);return node;
+}
+async function marmitoOpenMyExperiences(){
+ const overlay=document.getElementById('marmito-myexp-overlay');
+ const list=document.getElementById('marmito-myexp-list');
+ const status=document.getElementById('marmito-myexp-status');
+ if(!overlay||!list||!status)return;
+ const request=++marmitoMyExpRequest;
+ list.replaceChildren();
+ overlay.classList.add('open');
+ if(!currentUser){status.textContent='Connecte-toi pour retrouver tes expériences.';return;}
+ status.textContent='Chargement de tes expériences…';
+ try{
+  const {data:identity,error:authError}=await sb.auth.getUser();
+  if(authError||identity?.user?.id!==currentUser.id)throw new Error('Session expirée. Reconnecte-toi.');
+  const {data,error}=await sb.from('recipe_experiences')
+   .select('id,user_id,recipe_title,rating,comment,tip,photo_path,visibility,moderation_status,created_at')
+   .eq('user_id',identity.user.id).order('created_at',{ascending:false}).limit(100);
+  if(error)throw error;
+  if(request!==marmitoMyExpRequest)return;
+  status.textContent=data.length?`${data.length} expérience(s) retrouvée(s) (maximum 100 affichées).`:'Tu n’as pas encore enregistré d’expérience.';
+  for(const item of data){
+   if(request!==marmitoMyExpRequest)return;
+   const card=document.createElement('article');card.className='marmito-myexp-entry';
+   card.append(marmitoMyExpText('h3',item.recipe_title||'Recette'));
+   const state=item.visibility==='private'?'🔒 Privée':item.visibility==='pending'?'⏳ En attente':item.visibility==='published'?'✓ Publiée':item.visibility==='rejected'?'✕ Refusée':'Statut : '+item.visibility;
+   card.append(marmitoMyExpText('p',state));
+   if(Number.isInteger(item.rating)&&item.rating>=1&&item.rating<=5)card.append(marmitoMyExpText('strong','★'.repeat(item.rating)+'☆'.repeat(5-item.rating)));
+   if(item.comment)card.append(marmitoMyExpText('p',item.comment));
+   if(item.tip)card.append(marmitoMyExpText('p','Suggestion : '+item.tip));
+   if(item.photo_path){
+    const {data:photo,error:photoError}=await sb.storage.from('marmito-experiences').createSignedUrl(item.photo_path,120);
+    if(request!==marmitoMyExpRequest)return;
+    if(!photoError&&photo?.signedUrl){
+     const img=document.createElement('img');img.src=photo.signedUrl;img.alt='Ma photo pour '+(item.recipe_title||'cette recette');img.loading='lazy';card.append(img);
+    }else card.append(marmitoMyExpText('p','Photo indisponible.'));
+   }
+   if(item.visibility==='private'&&item.moderation_status==='pending'){
+    const button=document.createElement('button');button.type='button';button.textContent='Soumettre à la communauté';
+    button.addEventListener('click',async()=>{
+     if(marmitoMyExpSubmitting)return;
+     if(!confirm('Soumettre cette expérience à la modération ? Elle ne sera plus privée.'))return;
+     marmitoMyExpSubmitting=true;button.disabled=true;
+     const original=button.textContent;button.textContent='Soumission…';
+     try{
+      const {data:auth,error:authError}=await sb.auth.getUser();
+      if(authError||auth?.user?.id!==item.user_id)throw new Error('Session expirée.');
+      const {data:ok,error}=await sb.rpc('submit_recipe_experience',{p_experience_id:item.id});
+      if(error||ok!==true)throw error||new Error('Soumission refusée.');
+      if(request===marmitoMyExpRequest){
+       card.querySelector('p').textContent='⏳ En attente';
+       button.remove();
+       status.textContent='Expérience soumise à la modération.';
+      }
+     }catch(err){
+      if(request===marmitoMyExpRequest){button.disabled=false;button.textContent=original;status.textContent='Échec de la soumission : '+(err?.message||'erreur inconnue');}
+     }finally{marmitoMyExpSubmitting=false;}
+    });
+    card.append(button);
+   }
+   list.append(card);
+  }
+ }catch(err){
+  if(request!==marmitoMyExpRequest)return;
+  console.error('[Marmito] Mes expériences',err);
+  status.textContent='Impossible de charger tes expériences : '+(err?.message||'erreur inconnue');
  }
 }
 </script>
