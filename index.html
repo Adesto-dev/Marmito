@@ -698,6 +698,17 @@
 .shopping-group{font-weight:700;margin:18px 0 7px}.shopping-line{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
 .shopping-line label{flex:1;cursor:pointer}.shopping-line.checked label{text-decoration:line-through;opacity:.6}.shopping-line small{color:var(--fg2)}
 .shopping-foot{margin-top:16px}.shopping-empty{color:var(--fg2);padding:20px 0}
+
+/* Marmito Admin : panneau isolé, sans modifier les styles des recettes */
+#marmito-admin-overlay { position:fixed; inset:0; z-index:9999; display:none; background:var(--bg); color:var(--fg); overflow:auto; }
+#marmito-admin-overlay.open { display:block; }
+.marmito-admin-wrap { max-width:760px; margin:0 auto; padding:22px 18px 60px; }
+.marmito-admin-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:28px; }
+.marmito-admin-head h2 { margin:0; font-size:24px; }
+.marmito-admin-back { border:1px solid var(--border); background:var(--bg); color:var(--fg); padding:10px 14px; border-radius:10px; cursor:pointer; font:inherit; }
+.marmito-admin-card { border:1px solid var(--border); border-radius:16px; padding:22px; background:var(--bg); }
+.marmito-admin-card h3 { margin:0 0 12px; }
+.marmito-admin-card p { line-height:1.6; color:var(--fg2); }
 </style>
 </head>
 <body>
@@ -731,6 +742,8 @@
     <button class="drawer-item drawer-item-plan" onclick="closeDrawer();setTimeout(openPlanRepas,200)" data-i18n="nav-plan">Plan 7 jours <span class="pro-chip">PRO</span></button>
     <button class="drawer-item" onclick="closeDrawer();setTimeout(openShopping,200)" id="shopping-drawer-link">Ma liste de courses</button>
     <button class="drawer-item" onclick="drawerAction('profile')" data-i18n="nav-profile">Mon profil</button>
+    <!-- Visible uniquement après vérification du rôle auprès de Supabase -->
+    <button class="drawer-item" id="marmito-admin-menu" onclick="drawerAction('admin')" style="display:none" hidden>🛡️ Administration</button>
 
     <div id="drawer-sub-section">
     <div class="drawer-divider"></div>
@@ -1239,6 +1252,7 @@
   let userPlan = 'free';
   let recipeCount = 0;
   let authReady = false;
+  let marmitoIsAdmin = false;
   const PLAN_LIMITS = { free: 20, saveur: 130, chef: 418 };
   function getPlanLimit() { return PLAN_LIMITS[userPlan] || 20; }
   const FREE_LIMIT = 20; // garde pour compatibilité
@@ -1253,7 +1267,10 @@
     }
     currentUser = session.user;
     await loadUserProfile();
+    // Échec fermé : aucun accès administrateur en cas d'erreur réseau.
+    await marmitoRefreshAdminRole();
     authReady = true;
+    marmitoRenderAdminMenu();
     document.getElementById('auth-loading').classList.add('hidden');
     document.getElementById('user-bar').style.display = '';
     updateUserBar();
@@ -1525,6 +1542,7 @@
 
   // ===== DRAWER MENU =====
   function openDrawer() {
+    marmitoRenderAdminMenu();
     document.getElementById('drawer').classList.add('open');
     document.getElementById('drawer-overlay').classList.add('open');
     // Remplir les infos utilisateur
@@ -1553,6 +1571,50 @@
       document.getElementById('drawer-sub-cta').innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">✨ Passer à Saveur dès 3,99$/mois</button>';
       document.getElementById('drawer-bottom').style.display = 'none';
     }
+  }
+
+
+  // ===== MARMITO ADMIN — BASE DE L'INTERFACE =====
+  // Ne pas utiliser userPlan ou une adresse courriel pour déterminer les droits.
+  function marmitoRenderAdminMenu() {
+    const button = document.getElementById('marmito-admin-menu');
+    if (!button) return;
+    const allowed = !!(authReady && currentUser && marmitoIsAdmin);
+    button.hidden = !allowed;
+    button.style.display = allowed ? '' : 'none';
+  }
+
+  async function marmitoRefreshAdminRole() {
+    marmitoIsAdmin = false;
+    marmitoRenderAdminMenu();
+    if (!currentUser) return false;
+    const requestedId = currentUser.id;
+    try {
+      const { data, error } = await sb.from('admin_users')
+        .select('user_id').eq('user_id', requestedId).maybeSingle();
+      if (error) throw error;
+      // Ignore un résultat tardif si la session a changé.
+      marmitoIsAdmin = !!(currentUser && currentUser.id === requestedId && data && data.user_id === requestedId);
+    } catch (err) {
+      console.warn('[Marmito Admin] Vérification du rôle indisponible', err);
+      marmitoIsAdmin = false;
+    }
+    marmitoRenderAdminMenu();
+    return marmitoIsAdmin;
+  }
+
+  async function marmitoOpenAdmin() {
+    // Nouvelle vérification à chaque ouverture, sans faire confiance au menu.
+    const allowed = await marmitoRefreshAdminRole();
+    if (!allowed) {
+      if (typeof showToast === 'function') showToast('Accès administrateur non autorisé ou indisponible.');
+      return;
+    }
+    document.getElementById('marmito-admin-overlay').classList.add('open');
+  }
+
+  function marmitoCloseAdmin() {
+    document.getElementById('marmito-admin-overlay').classList.remove('open');
   }
 
   function closeDrawer() {
@@ -1843,6 +1905,7 @@
     else if (action === 'favs') { setTimeout(()=>{ openProfile(); setTimeout(()=>switchProfileTab('favs'),100); }, 320); }
     else if (action === 'history') { setTimeout(()=>{ openProfile(); setTimeout(()=>switchProfileTab('history'),100); }, 320); }
     else if (action === 'profile') { setTimeout(()=>openProfile(), 320); }
+    else if (action === 'admin') { setTimeout(()=>marmitoOpenAdmin(), 320); }
     else if (action === 'upgrade') { setTimeout(()=>openPricing(), 320); }
     else if (action === 'manage') { setTimeout(()=>manageSubscription(), 320); }
     else if (action === 'logout') { if(confirm('Se déconnecter ?')) { sb.auth.signOut().then(()=>location.reload()); } }
@@ -27191,5 +27254,21 @@ if ('serviceWorker' in navigator) {
   }
 })();
 </script>
+
+<!-- Espace administrateur : accès vérifié dans Supabase à chaque ouverture -->
+<section id="marmito-admin-overlay" aria-label="Administration Marmito" role="dialog" aria-modal="true">
+  <div class="marmito-admin-wrap">
+    <div class="marmito-admin-head">
+      <h2>🛡️ Marmito Admin</h2>
+      <button class="marmito-admin-back" onclick="marmitoCloseAdmin()">← Retour à Marmito</button>
+    </div>
+    <div class="marmito-admin-card">
+      <h3>Modération des expériences culinaires</h3>
+      <p>Ton espace administrateur est prêt à accueillir les contributions des abonnés.</p>
+      <p><strong>À venir :</strong> photos et commentaires en attente, approbation, refus et retrait des publications.</p>
+      <p>Aucune contribution n'est encore collectée ou publiée par cette interface.</p>
+    </div>
+  </div>
+</section>
 </body>
 </html>
