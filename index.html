@@ -903,7 +903,7 @@
       <button class="share-btn share-copy" onclick="copyRecipe()" data-i18n="btn-copy">&#128203; Copier</button>
       <button class="share-btn share-wa" onclick="shareRecipe()" data-i18n="btn-share">&#10548; Partager la recette</button>
       <button class="share-btn" id="grocery-add-recipe" onclick="addCurrentRecipeToShopping()">🛒 Ajouter aux courses</button>
-      <button class="share-btn" id="cooked-btn" onclick="toggleCooked()" style="background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)">&#10003; Cuisiné</button>
+      <button class="share-btn" id="cooked-btn" onclick="toggleCooked()" style="background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)">&#10003; Cuisiné</button> <button type="button" class="share-btn" onclick="marmitoOpenExperience()" style="background:rgba(250,250,245,0.16);color:#fff">📷 Mon expérience</button> <button type="button" class="share-btn" onclick="marmitoOpenPublishedExperiences()" style="background:rgba(250,250,245,0.16);color:#fff">⭐ Avis de la communauté</button>
     </div>
     <div class="result-body">
       <div>
@@ -1653,6 +1653,7 @@
     const back = panel.querySelector('.marmito-admin-back');
     (back || panel).focus();
     document.addEventListener('keydown', marmitoAdminKeydown, true);
+    marmitoLoadPendingExperiences();
   }
 
   function marmitoCloseAdmin() {
@@ -27331,11 +27332,305 @@ if ('serviceWorker' in navigator) {
     </div>
     <div class="marmito-admin-card">
       <h3>Modération des expériences culinaires</h3>
-      <p>Ton espace administrateur est prêt à accueillir les contributions des abonnés.</p>
-      <p><strong>À venir :</strong> photos et commentaires en attente, approbation, refus et retrait des publications.</p>
-      <p>Aucune contribution n'est encore collectée ou publiée par cette interface.</p>
+      <p>Examine les expériences soumises avant leur publication.</p>
+      <button type="button" class="marmito-admin-back" onclick="marmitoLoadPendingExperiences()">↻ Actualiser</button>
+      <p id="marmito-admin-status" role="status" aria-live="polite">Ouvre cette section pour charger les contributions.</p>
+      <div id="marmito-admin-queue"></div>
     </div>
   </div>
 </section>
+<script>
+// Modération Marmito : données affichées en texte brut pour éviter l'injection HTML.
+let marmitoAdminBusy = false;
+function marmitoAdminMessage(message) {
+  const el = document.getElementById('marmito-admin-status');
+  if (el) el.textContent = message;
+}
+function marmitoAdminNode(tag, value) {
+  const el = document.createElement(tag);
+  el.textContent = String(value ?? '');
+  return el;
+}
+async function marmitoLoadPendingExperiences() {
+  const queue = document.getElementById('marmito-admin-queue');
+  const overlay = document.getElementById('marmito-admin-overlay');
+  if (!queue || !overlay?.classList.contains('open') || marmitoAdminBusy) return;
+  marmitoAdminBusy = true;
+  queue.replaceChildren();
+  marmitoAdminMessage('Chargement des expériences en attente…');
+  try {
+    if (!await marmitoRefreshAdminRole()) {
+      marmitoAdminMessage('Accès administrateur non autorisé.');
+      marmitoCloseAdmin();
+      return;
+    }
+    const {data, error} = await sb.from('recipe_experiences')
+      .select('*').eq('visibility', 'pending').eq('moderation_status', 'pending')
+      .order('created_at', {ascending: true}).limit(100);
+    if (error) throw error;
+    marmitoAdminMessage(data.length ? `${data.length} expérience(s) en attente (maximum 100 affichées).` : 'Aucune expérience en attente.');
+    for (const item of data) {
+      const card = document.createElement('article');
+      card.className = 'marmito-admin-card';
+      card.style.marginTop = '12px';
+      const title = marmitoAdminNode('h3', `Recette : ${item.recipe_title ?? 'non renseignée'}`);
+      card.append(title);
+      if (item.rating != null) card.append(marmitoAdminNode('p', `Note : ${item.rating}/5`));
+      const comment = item.comment;
+      if (comment) card.append(marmitoAdminNode('p', comment));
+      if (item.tip) card.append(marmitoAdminNode('p', `Suggestion : ${item.tip}`));
+      card.append(marmitoAdminNode('p', `Soumis le : ${item.created_at ? new Date(item.created_at).toLocaleString('fr-CA') : 'date inconnue'}`));
+      if (item.photo_path) {
+        const photoBox = document.createElement('div');
+        photoBox.className = 'marmito-admin-photo';
+        const photoStatus = marmitoAdminNode('p', 'Chargement de la photo privée…');
+        photoBox.append(photoStatus);
+        card.append(photoBox);
+        // L'URL temporaire ne fonctionne que si Supabase autorise
+        // explicitement l'administratrice à lire cet objet privé.
+        try {
+          const path = String(item.photo_path);
+          const ownerFolder = path.split('/')[0];
+          if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(ownerFolder)
+              || path.includes('..') || path.startsWith('/')) {
+            throw new Error('Chemin de photo invalide');
+          }
+          const {data: signed, error: photoError} = await sb.storage
+            .from('marmito-experiences').createSignedUrl(path, 120);
+          if (photoError || !signed?.signedUrl) throw photoError || new Error('Lien indisponible');
+          const img = document.createElement('img');
+          img.alt = 'Photo de la réalisation culinaire soumise à modération';
+          img.loading = 'lazy';
+          img.referrerPolicy = 'no-referrer';
+          img.style.cssText = 'display:block;max-width:100%;max-height:340px;object-fit:contain;border-radius:10px;margin:8px 0';
+          img.src = signed.signedUrl;
+          img.addEventListener('error', () => {
+            img.remove();
+            photoStatus.textContent = 'Aperçu indisponible. Vérifie les droits du stockage.';
+          });
+          photoStatus.remove();
+          photoBox.append(img);
+        } catch (photoError) {
+          console.warn('[Marmito Admin] Photo inaccessible', photoError);
+          photoStatus.textContent = 'Photo privée inaccessible. Vérifie la politique de lecture administrateur du stockage.';
+        }
+      }
+      const actions = document.createElement('div');
+      actions.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;margin-top:12px';
+      for (const [label, fn] of [['✓ Approuver', 'approve_recipe_experience'], ['✕ Refuser', 'reject_recipe_experience']]) {
+        const btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'marmito-admin-back'; btn.textContent = label;
+        btn.addEventListener('click', () => marmitoModerateExperience(item.id, fn, label));
+        actions.append(btn);
+      }
+      card.append(actions); queue.append(card);
+    }
+  } catch (err) {
+    console.error('[Marmito Admin] Chargement impossible', err);
+    marmitoAdminMessage('Impossible de charger les expériences. Vérifie les droits de lecture Supabase et réessaie.');
+  } finally { marmitoAdminBusy = false; }
+}
+async function marmitoModerateExperience(id, fn, label) {
+  if (marmitoAdminBusy || !id || !['approve_recipe_experience','reject_recipe_experience'].includes(fn)) return;
+  if (!window.confirm(`${label} cette expérience ?`)) return;
+  marmitoAdminBusy = true;
+  marmitoAdminMessage('Traitement en cours…');
+  try {
+    if (!await marmitoRefreshAdminRole()) throw new Error('Accès administrateur non autorisé');
+    const {data, error} = await sb.rpc(fn, {p_experience_id: id});
+    if (error) throw error;
+    if (data !== true) throw new Error('Expérience déjà traitée ou introuvable');
+    marmitoAdminMessage('Décision enregistrée.');
+  } catch (err) {
+    console.error('[Marmito Admin] Modération impossible', err);
+    marmitoAdminMessage(`Opération impossible : ${err.message || 'erreur inconnue'}`);
+    marmitoAdminBusy = false;
+    return;
+  }
+  marmitoAdminBusy = false;
+  await marmitoLoadPendingExperiences();
+}
+</script>
+
+<!-- Marmito V15 : expérience liée à la recette affichée, sans toucher au bouton Cuisiné -->
+<style>
+#marmito-experience-overlay{display:none;position:fixed;inset:0;z-index:99999;background:rgba(24,15,8,.78);overflow:auto;padding:24px 12px}
+#marmito-experience-overlay.open{display:flex;align-items:flex-start;justify-content:center}
+.marmito-experience-box{width:min(100%,540px);background:#fff8f0;color:#2a1800;border-radius:18px;padding:22px;margin:auto;box-shadow:0 12px 50px #0005}
+.marmito-experience-box label{display:block;font-weight:600;margin:14px 0 5px}
+.marmito-experience-box textarea,.marmito-experience-box input[type=file],.marmito-experience-box select{width:100%;box-sizing:border-box}
+.marmito-experience-box textarea{min-height:95px;border:1px solid #d7bfa4;border-radius:8px;padding:10px}
+.marmito-experience-box button{border:0;border-radius:9px;padding:11px 14px;cursor:pointer;background:#7a4820;color:white;margin:8px 8px 0 0}
+.marmito-experience-box button:disabled{opacity:.55;cursor:wait}
+</style>
+<section id="marmito-experience-overlay" role="dialog" aria-modal="true" aria-labelledby="marmito-experience-title">
+ <div class="marmito-experience-box">
+  <h2 id="marmito-experience-title">📷 Mon expérience culinaire</h2>
+  <p id="marmito-experience-recipe"></p>
+  <label for="marmito-experience-rating">Ma note</label>
+  <select id="marmito-experience-rating"><option value="5">★★★★★ — 5/5</option><option value="4">★★★★☆ — 4/5</option><option value="3">★★★☆☆ — 3/5</option><option value="2">★★☆☆☆ — 2/5</option><option value="1">★☆☆☆☆ — 1/5</option></select>
+  <label for="marmito-experience-comment">Mon commentaire ou ma suggestion</label>
+  <textarea id="marmito-experience-comment" maxlength="2000" placeholder="Comment s'est passée la préparation ?"></textarea>
+  <label for="marmito-experience-photo">Photo facultative (JPEG, PNG, WebP, 5 Mo maximum)</label>
+  <input id="marmito-experience-photo" type="file" accept="image/jpeg,image/png,image/webp">
+  <p>Ton expérience est privée par défaut. Tu peux choisir de la soumettre à l'approbation de l'administration.</p>
+  <label for="marmito-experience-visibility">Enregistrer comme</label>
+  <select id="marmito-experience-visibility"><option value="private">Privée — pour moi uniquement</option><option value="pending">Soumettre à la communauté (après validation)</option></select>
+  <p id="marmito-experience-status" role="status" aria-live="polite"></p>
+  <button id="marmito-experience-save" type="button" onclick="marmitoSaveExperience()">Enregistrer</button>
+  <button type="button" onclick="marmitoCloseExperience()">Fermer</button>
+ </div>
+</section>
+<script>
+let marmitoExperienceRecipe = null;
+let marmitoExperienceBusy = false;
+let marmitoExperienceSaved = false;
+function marmitoExperienceStatus(message) {
+ const el = document.getElementById('marmito-experience-status');
+ if (el) el.textContent = message;
+}
+function marmitoOpenExperience() {
+ if (!currentUser || !cur) { if (typeof showToast === 'function') showToast('Connecte-toi et ouvre une recette.'); return; }
+ marmitoExperienceRecipe = {title: cur.title};
+ marmitoExperienceSaved = false;
+ document.getElementById('marmito-experience-save').disabled = false;
+ const panel = document.getElementById('marmito-experience-overlay');
+ document.getElementById('marmito-experience-recipe').textContent = cur.title;
+ document.getElementById('marmito-experience-comment').value = '';
+ document.getElementById('marmito-experience-photo').value = '';
+ document.getElementById('marmito-experience-visibility').value = 'private';
+ marmitoExperienceStatus('');
+ panel.classList.add('open');
+ document.getElementById('marmito-experience-rating').focus();
+}
+function marmitoCloseExperience() {
+ if (marmitoExperienceBusy) return;
+ document.getElementById('marmito-experience-overlay')?.classList.remove('open');
+}
+async function marmitoSaveExperience() {
+ if (marmitoExperienceBusy || marmitoExperienceSaved || !currentUser || !marmitoExperienceRecipe) return;
+ const userId = currentUser.id;
+ const rating = Number(document.getElementById('marmito-experience-rating').value);
+ const comment = document.getElementById('marmito-experience-comment').value.trim();
+ const photo = document.getElementById('marmito-experience-photo').files[0];
+ const submit = document.getElementById('marmito-experience-visibility').value === 'pending';
+ if (!Number.isInteger(rating) || rating < 1 || rating > 5) return marmitoExperienceStatus('Note invalide.');
+ if (photo && (photo.size > 5242880 || !['image/jpeg','image/png','image/webp'].includes(photo.type))) return marmitoExperienceStatus('Photo non acceptée : JPEG, PNG ou WebP, 5 Mo maximum.');
+ marmitoExperienceBusy = true;
+ document.getElementById('marmito-experience-save').disabled = true;
+ let uploadedPath = null;
+ let inserted = false;
+ try {
+  const {data: sessionData, error: sessionError} = await sb.auth.getUser();
+  if (sessionError || sessionData?.user?.id !== userId) throw new Error('Session expirée. Reconnecte-toi.');
+  if (photo) {
+   const ext = {'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[photo.type];
+   uploadedPath = `${userId}/${crypto.randomUUID()}.${ext}`;
+   marmitoExperienceStatus('Envoi de la photo…');
+   const {error: uploadError} = await sb.storage.from('marmito-experiences').upload(uploadedPath, photo, {contentType:photo.type,upsert:false});
+   if (uploadError) throw uploadError;
+  }
+  marmitoExperienceStatus('Enregistrement privé…');
+  const payload = {user_id:userId,recipe_title:marmitoExperienceRecipe.title,rating,comment,photo_path:uploadedPath,visibility:'private',moderation_status:'pending'};
+  const {data, error} = await sb.from('recipe_experiences').insert(payload).select('id').single();
+  if (error) throw error;
+  inserted = true;
+  if (submit) {
+   marmitoExperienceSaved = true; // La ligne privée existe déjà : ne pas créer de doublon si le RPC échoue.
+   marmitoExperienceStatus('Soumission à la modération…');
+   const {data: accepted,error: submitError} = await sb.rpc('submit_recipe_experience',{p_experience_id:data.id});
+   if (submitError || accepted !== true) throw submitError || new Error('Soumission impossible.');
+  }
+  marmitoExperienceSaved = true;
+  marmitoExperienceStatus(submit ? 'Expérience envoyée à la modération ! Ferme cette fenêtre pour continuer.' : 'Expérience privée enregistrée ! Ferme cette fenêtre pour continuer.');
+  document.getElementById('marmito-experience-photo').value = '';
+ } catch (err) {
+  console.error('[Marmito Experience] Enregistrement impossible',err);
+  marmitoExperienceStatus((inserted ? 'Expérience privée enregistrée, mais non soumise. Contacte le support si nécessaire : ' : 'Enregistrement impossible : ') + (err?.message || 'erreur inconnue'));
+  if (!inserted && uploadedPath) {
+   try { await sb.storage.from('marmito-experiences').remove([uploadedPath]); } catch (_) {}
+  }
+ } finally {
+  marmitoExperienceBusy = false;
+  document.getElementById('marmito-experience-save').disabled = marmitoExperienceSaved;
+ }
+}
+</script>
+
+<!-- V18 : consultation des expériences publiées, réservée aux abonnés Saveur/Chef -->
+<style>
+#marmito-published-overlay{display:none;position:fixed;inset:0;z-index:100000;background:rgba(24,15,8,.8);overflow:auto;padding:20px 12px}
+#marmito-published-overlay.open{display:flex;align-items:flex-start;justify-content:center}
+.marmito-published-box{width:min(100%,620px);background:#fff8f0;color:#2a1800;border-radius:18px;padding:22px;margin:auto;box-sizing:border-box}
+.marmito-published-box button{border:0;border-radius:9px;padding:10px 14px;background:#7a4820;color:#fff;cursor:pointer}
+.marmito-published-entry{padding:14px 0;border-top:1px solid #d8c7b3;overflow-wrap:anywhere}
+.marmito-published-entry img{max-width:100%;max-height:340px;object-fit:contain;border-radius:9px;display:block;margin-top:10px}
+</style>
+<section id="marmito-published-overlay" role="dialog" aria-modal="true" aria-labelledby="marmito-published-title">
+ <div class="marmito-published-box">
+  <h2 id="marmito-published-title">⭐ Expériences de la communauté</h2>
+  <p id="marmito-published-recipe"></p>
+  <p id="marmito-published-status" role="status" aria-live="polite"></p>
+  <div id="marmito-published-list"></div>
+  <button type="button" onclick="marmitoClosePublishedExperiences()">Fermer</button>
+ </div>
+</section>
+<script>
+let marmitoPublishedRequest = 0;
+function marmitoClosePublishedExperiences(){
+ marmitoPublishedRequest++;
+ document.getElementById('marmito-published-overlay')?.classList.remove('open');
+ document.getElementById('marmito-published-list')?.replaceChildren();
+}
+async function marmitoOpenPublishedExperiences(){
+ const overlay=document.getElementById('marmito-published-overlay');
+ const list=document.getElementById('marmito-published-list');
+ const status=document.getElementById('marmito-published-status');
+ if(!overlay||!list||!status) return;
+ const request=++marmitoPublishedRequest;
+ list.replaceChildren();
+ overlay.classList.add('open');
+ const title=cur?.title;
+ document.getElementById('marmito-published-recipe').textContent=title||'';
+ if(!currentUser){status.textContent='Connecte-toi pour consulter les expériences.';return;}
+ if(userPlan!=='saveur' && userPlan!=='chef'){
+  status.textContent='Réservé aux abonnés Saveur et Chef.';return;
+ }
+ if(!title){status.textContent='Ouvre une recette pour consulter ses expériences.';return;}
+ status.textContent='Chargement des expériences publiées…';
+ try{
+  const {data:identity,error:authError}=await sb.auth.getUser();
+  if(authError||identity?.user?.id!==currentUser.id) throw new Error('Session expirée. Reconnecte-toi.');
+  const {data,error}=await sb.from('recipe_experiences')
+   .select('id,recipe_title,rating,comment,tip,photo_path,created_at')
+   .eq('recipe_title',title).eq('visibility','published').eq('moderation_status','published')
+   .order('created_at',{ascending:false}).limit(50);
+  if(error) throw error;
+  if(request!==marmitoPublishedRequest) return;
+  status.textContent=data.length ? `${data.length} expérience(s) publiée(s) (maximum 50 affichées).` : 'Aucune expérience publiée pour cette recette.';
+  for(const item of data){
+   if(request!==marmitoPublishedRequest) return;
+   const card=document.createElement('article');card.className='marmito-published-entry';
+   const rating=document.createElement('strong');
+   rating.textContent=Number.isInteger(item.rating)&&item.rating>=1&&item.rating<=5 ? '★'.repeat(item.rating)+'☆'.repeat(5-item.rating) : 'Expérience partagée';
+   card.append(rating);
+   if(item.comment){const p=document.createElement('p');p.textContent=item.comment;card.append(p);}
+   if(item.tip){const p=document.createElement('p');p.textContent='Suggestion : '+item.tip;card.append(p);}
+   if(item.photo_path){
+    const {data:photo,error:photoError}=await sb.storage.from('marmito-experiences').createSignedUrl(item.photo_path,120);
+    if(request!==marmitoPublishedRequest) return;
+    if(!photoError&&photo?.signedUrl){
+     const img=document.createElement('img');img.src=photo.signedUrl;img.alt='Photo partagée pour '+title;img.loading='lazy';card.append(img);
+    }else{const p=document.createElement('p');p.textContent='Photo indisponible.';card.append(p);}
+   }
+   list.append(card);
+  }
+ }catch(err){
+  if(request!==marmitoPublishedRequest) return;
+  console.error('[Marmito] Expériences publiées',err);
+  status.textContent='Impossible de charger les expériences : '+(err?.message||'erreur inconnue');
+ }
+}
+</script>
 </body>
 </html>
