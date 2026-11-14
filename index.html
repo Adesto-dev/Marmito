@@ -1603,19 +1603,86 @@
     return marmitoIsAdmin;
   }
 
+  // Le panneau est une modale : garder le clavier à l'intérieur et rendre
+  // le focus au déclencheur lorsque l'administratrice revient à Marmito.
+  let marmitoAdminPreviousFocus = null;
+  let marmitoAdminRoleCheckPending = false;
+
+  function marmitoAdminKeydown(event) {
+    const panel = document.getElementById('marmito-admin-overlay');
+    if (!panel || !panel.classList.contains('open')) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      marmitoCloseAdmin();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const items = [...panel.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')]
+      .filter(el => el.getClientRects().length > 0);
+    if (!items.length) {
+      event.preventDefault();
+      panel.focus();
+      return;
+    }
+    const first = items[0], last = items[items.length - 1];
+    if (!panel.contains(document.activeElement)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus();
+    } else if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
   async function marmitoOpenAdmin() {
     // Nouvelle vérification à chaque ouverture, sans faire confiance au menu.
+    const origin = document.activeElement;
     const allowed = await marmitoRefreshAdminRole();
     if (!allowed) {
       if (typeof showToast === 'function') showToast('Accès administrateur non autorisé ou indisponible.');
       return;
     }
-    document.getElementById('marmito-admin-overlay').classList.add('open');
+    const panel = document.getElementById('marmito-admin-overlay');
+    if (!panel) return;
+    marmitoAdminPreviousFocus = origin instanceof HTMLElement ? origin : null;
+    panel.classList.add('open');
+    panel.setAttribute('tabindex', '-1');
+    const back = panel.querySelector('.marmito-admin-back');
+    (back || panel).focus();
+    document.addEventListener('keydown', marmitoAdminKeydown, true);
   }
 
   function marmitoCloseAdmin() {
-    document.getElementById('marmito-admin-overlay').classList.remove('open');
+    const panel = document.getElementById('marmito-admin-overlay');
+    if (!panel || !panel.classList.contains('open')) return;
+    panel.classList.remove('open');
+    document.removeEventListener('keydown', marmitoAdminKeydown, true);
+    const origin = marmitoAdminPreviousFocus;
+    marmitoAdminPreviousFocus = null;
+    if (origin && origin.isConnected && origin.getClientRects().length) origin.focus();
+    else {
+      const menu = document.getElementById('marmito-admin-menu');
+      if (menu && !menu.hidden && menu.getClientRects().length) menu.focus();
+      else document.querySelector('.btn-hamburger')?.focus();
+    }
   }
+
+  // Pas de polling : contrôle ponctuel lorsque l'onglet revient au premier plan.
+  // Chaque future action sensible devra également vérifier ses droits côté Supabase.
+  document.addEventListener('visibilitychange', async function () {
+    const panel = document.getElementById('marmito-admin-overlay');
+    if (document.hidden || !panel?.classList.contains('open') || marmitoAdminRoleCheckPending) return;
+    marmitoAdminRoleCheckPending = true;
+    try {
+      const allowed = await marmitoRefreshAdminRole();
+      if (!allowed) marmitoCloseAdmin();
+    } finally {
+      marmitoAdminRoleCheckPending = false;
+    }
+  });
 
   function closeDrawer() {
     document.getElementById('drawer').classList.remove('open');
@@ -27256,10 +27323,10 @@ if ('serviceWorker' in navigator) {
 </script>
 
 <!-- Espace administrateur : accès vérifié dans Supabase à chaque ouverture -->
-<section id="marmito-admin-overlay" aria-label="Administration Marmito" role="dialog" aria-modal="true">
+<section id="marmito-admin-overlay" aria-labelledby="marmito-admin-title" role="dialog" aria-modal="true" tabindex="-1">
   <div class="marmito-admin-wrap">
     <div class="marmito-admin-head">
-      <h2>🛡️ Marmito Admin</h2>
+      <h2 id="marmito-admin-title">🛡️ Marmito Admin</h2>
       <button class="marmito-admin-back" onclick="marmitoCloseAdmin()">← Retour à Marmito</button>
     </div>
     <div class="marmito-admin-card">
