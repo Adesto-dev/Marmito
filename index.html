@@ -29,7 +29,7 @@
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#D46820">
+  <meta name="theme-color" content="#405525">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -709,6 +709,73 @@
 .marmito-admin-card { border:1px solid var(--border); border-radius:16px; padding:22px; background:var(--bg); }
 .marmito-admin-card h3 { margin:0 0 12px; }
 .marmito-admin-card p { line-height:1.6; color:var(--fg2); }
+
+
+/* V23: recherche d'abord, recette du jour ensuite, sans déplacer les noeuds DOM. */
+.main>.tagline{order:-4}.main>.search-wrap{order:-3}.main>.daily-card{order:-2}.main>.fav-panel{order:-1}
+
+/* ===== MARMITO V23 — IDENTITE OLIVE, PREMIERE ETAPE ACCUEIL / NAV MOBILE =====
+   Ajouts visuels uniquement; le catalogue, les abonnements et les actions restent en place. */
+:root {
+  --bg:#F7F9EE;--fg:#3B2F24;--fg2:#64705A;
+  --accent:#5E6F2F;--accent-light:#E9EFD8;--accent-dark:#3E5124;
+  --green:#405525;--green-mid:#5E6F2F;--green-light:#E9EFD8;
+  --border:#DDE6C8;--card-bg:#FCFCF6;
+  --shadow:0 5px 22px rgba(47,65,30,.075);
+  --timer-bg:#F7F9EE;
+  --grad-dark:linear-gradient(135deg,#344A27,#52692D 65%,#6B7D3B);
+  --grad-accent:linear-gradient(135deg,#53692C,#72843B);
+}
+body{background:var(--bg)}
+.header{background:rgba(247,249,238,.97);color:var(--green);box-shadow:0 2px 12px rgba(38,56,27,.06);border-bottom:1px solid var(--border);backdrop-filter:blur(12px)}
+.header .logo{color:#344A27;font-size:27px}
+.header .logo span{color:#C9A245}
+.header .btn-hamburger span{background:#405525}
+.header .fav-toggle{color:#405525}
+.header .recipe-count{color:#64705A}
+.header #lang-btn{border-color:#C9D4B2!important;color:#405525!important}
+.main{max-width:740px;gap:16px;padding-top:20px}
+.tagline{text-align:left;padding:8px 4px 0}
+.tagline h1{font-style:normal;font-size:clamp(25px,5.7vw,36px);color:#344A27;line-height:1.16}
+.tagline p{color:#64705A;font-size:13px;margin-top:6px}
+.card{border-radius:18px;box-shadow:var(--shadow);border-color:var(--border)}
+.card-label{color:#52692D}
+.search-wrap{order:0}
+.search-input{border-radius:22px!important;background:#FCFCF6!important;border-color:#DDE6C8!important;box-shadow:0 3px 14px rgba(48,65,32,.08)!important}
+.daily-card{background:linear-gradient(120deg,#344A27 0%,#52692D 62%,#788946 100%);border-radius:20px;box-shadow:0 6px 22px rgba(49,69,35,.17);padding:22px 20px;min-height:124px}
+.daily-label{color:#F2D78E;opacity:1}
+.daily-title{font-size:clamp(19px,4vw,26px)}
+.daily-btn{background:#C9A245;color:#2D321D;border:0;border-radius:999px;font-weight:700;padding:10px 16px}
+.daily-btn:hover{background:#E0B95B}
+.chip.active{background:#52692D;border-color:#52692D}
+.btn-generate,.btn-filter,.btn-plan{border-radius:15px}
+.btn-filter{border-color:#52692D;color:#405525;background:#FCFCF6}
+.result-card{border-color:#DDE6C8;border-radius:20px}
+.result-header{background:var(--grad-dark)}
+.share-bar{background:linear-gradient(100deg,#344A27,#52692D)}
+.fav-btn.active{color:#E4BC5B}
+.drawer{background:#FCFCF6}
+.drawer-top{background:var(--grad-dark)}
+/* Navigation mobile: les appels reprennent les fonctions existantes. */
+.marmito-v23-bottom-nav{display:none}
+@media(max-width:700px){
+  .main{padding:15px 14px calc(112px + env(safe-area-inset-bottom));gap:14px}
+  .header{padding:12px 16px}
+  .header .recipe-count{display:none}
+  .hero-banner{display:none!important}
+  .tagline{padding:8px 3px 0}
+  .tagline h1{font-size:clamp(26px,7vw,34px)}
+  .daily-card{margin-bottom:0;min-height:132px}
+  .marmito-v23-bottom-nav{position:fixed;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));bottom:0;left:0;right:0;z-index:45;background:#405525;color:#F7F9EE;border-radius:21px 21px 0 0;padding:10px 7px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -4px 22px rgba(25,40,20,.17)}
+  .marmito-v23-bottom-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:48px;border:0;background:transparent;color:inherit;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;border-radius:13px}
+  .marmito-v23-bottom-nav button[aria-current="page"]{background:#F7F9EE;color:#344A27}
+  .marmito-v23-bottom-nav button:focus-visible{outline:2px solid #C9A245;outline-offset:2px}
+  .marmito-v23-bottom-nav svg{width:21px;height:21px;stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  body:has(.result-card.visible) .marmito-v23-bottom-nav{display:none}
+  body:has(.result-card.visible) .main{padding-bottom:calc(45px + env(safe-area-inset-bottom))}
+}
+@media(min-width:701px){.hero-banner{max-height:240px;overflow:hidden}}
+
 </style>
 </head>
 <body>
@@ -723,6 +790,15 @@
     <button class="fav-toggle" id="fav-toggle" onclick="toggleFavPanel()" title="Mes favoris"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
   </div>
 </header>
+
+
+<!-- V23: navigation mobile visuelle, actions existantes et aucun nouveau droit d'accès -->
+<nav class="marmito-v23-bottom-nav" aria-label="Navigation principale Marmito">
+ <button type="button" aria-current="page" onclick="goHome()" data-v23-tab="home"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v10h-7v-7h-4v7H3z"/></svg><span data-i18n="nav-home">Accueil</span></button>
+ <button type="button" onclick="goHome();document.getElementById('recipe-search')?.focus();document.getElementById('recipe-search')?.scrollIntoView({behavior:'smooth',block:'center'})" data-v23-tab="recipes"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7.3"/><path d="m16.4 16.4 5 5"/></svg><span data-i18n="nav-recipes">Recettes</span></button>
+ <button type="button" onclick="toggleFavPanel()" data-v23-tab="favs"><svg viewBox="0 0 24 24"><path d="M20.8 4.7a5.4 5.4 0 0 0-7.7 0L12 5.8l-1.1-1.1a5.4 5.4 0 0 0-7.7 7.7L12 21l8.8-8.6a5.4 5.4 0 0 0 0-7.7z"/></svg><span data-i18n="fav-title">Favoris</span></button>
+ <button type="button" onclick="openProfile()" data-v23-tab="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 3-8 8-8s8 3 8 8"/></svg><span data-i18n="nav-profile">Mon profil</span></button>
+</nav>
 
 <!-- DRAWER MENU -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
