@@ -26574,6 +26574,7 @@ function applyLang() {
 
 function toggleLang() {
   currentLang = currentLang === 'fr' ? 'en' : 'fr';
+  ++marmitoStepTranslationRun; // Invalidate results from a previous language request.
   try { localStorage.setItem('marmito-lang', currentLang); } catch(e) {}
   applyLang();
   initDailyRecipe();
@@ -26586,8 +26587,10 @@ function toggleLang() {
         titleEl.textContent = cur.title;
         translatedTitle = null;
       } else {
-        translateTitles([cur.title]).then(trs => {
-          translatedTitle = trs[0] || cur.title;
+        const sourceRecipe=cur;
+        translateTitles([sourceRecipe.title]).then(trs => {
+          if(cur!==sourceRecipe||currentLang!=='en')return;
+          translatedTitle = trs[0] || sourceRecipe.title;
           titleEl.textContent = translatedTitle;
         });
       }
@@ -26606,9 +26609,11 @@ function toggleLang() {
         if (cur._ingEN) {
           _renderIngs(cur._ingEN, cur.ingredients);
         } else {
-          translateTitles(cur.ingredients).then(trs => {
-            cur._ingEN = trs;
-            _renderIngs(trs, cur.ingredients);
+          const sourceRecipe=cur;
+          translateTitles(sourceRecipe.ingredients).then(trs => {
+            if(cur!==sourceRecipe||currentLang!=='en')return;
+            sourceRecipe._ingEN = trs;
+            _renderIngs(trs, sourceRecipe.ingredients);
           });
         }
       }
@@ -26857,6 +26862,7 @@ function generateRecipe(){
 function show(recipe){
   cur=recipe;
   saveRecipeToHistory(recipe.title, recipe.region);
+  ++marmitoStepTranslationRun;
   translatedStepTexts=[];
   // Visual banner: emoji + gradient
   const gradientMap={
@@ -26879,6 +26885,7 @@ function show(recipe){
   document.getElementById("result-title").textContent=recipe.title;
   if (currentLang === 'en') {
     translateTitles([recipe.title]).then(trs => {
+      if(cur!==recipe||currentLang!=='en')return;
       translatedTitle = trs[0] || recipe.title;
       document.getElementById("result-title").textContent = translatedTitle;
     });
@@ -26898,6 +26905,7 @@ function show(recipe){
   renderIngredients(recipe.ingredients);
   if (currentLang === 'en') {
     translateTitles(recipe.ingredients).then(trs => {
+      if(cur!==recipe||currentLang!=='en')return;
       recipe._ingEN = trs;
       renderIngredients(trs, recipe.ingredients);
     });
@@ -26943,7 +26951,11 @@ function cookTranslateOneStep(text){
   cookStepTranslationQueue.push(async()=>{
    try{
     const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q='+encodeURIComponent(text);
-    const response=await fetch(url);if(!response.ok)throw new Error('Translation unavailable');
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),12000);
+    let response;
+    try{response=await fetch(url,{signal:controller.signal});}finally{clearTimeout(timeout);}
+    if(!response.ok)throw new Error('Translation unavailable');
     const data=await response.json();const result=data[0].map(x=>x[0]).join('').trim();
     if(!result)throw new Error('Empty translation');
     const latest=cookStepTranslationCache();latest[text]=result;
@@ -26955,33 +26967,57 @@ function cookTranslateOneStep(text){
  });
  cookStepTranslationPending.set(text,promise);return promise;
 }
+// A visible retry state prevents silent mixed-language instructions when the
+// external translation service is unavailable. Source recipe data is untouched.
+let marmitoStepTranslationRun=0;
+function marmitoStepTranslationStatus(host,missing,busy){
+ if(!host||!host.isConnected)return;
+ let notice=host.querySelector('.marmito-step-translation-status');
+ if(!missing){if(notice)notice.remove();return;}
+ if(!notice){
+  notice=document.createElement('div');notice.className='marmito-step-translation-status';
+  notice.style.cssText='padding:12px;margin:10px 0;border:1px solid #C9D4B2;border-radius:12px;background:#F7F9EE;color:#344A37;font-size:13px';
+  host.prepend(notice);
+ }
+ notice.replaceChildren();
+ const msg=document.createElement('span');
+ msg.textContent=busy?'Translating recipe steps… ('+missing+' remaining)':'Translation unavailable for '+missing+' step(s). Original instructions are shown.';
+ notice.appendChild(msg);
+ if(!busy){
+  const retry=document.createElement('button');retry.type='button';retry.textContent='Retry translation';
+  retry.style.cssText='margin-left:10px;padding:6px 10px;border-radius:8px;border:1px solid #526B46;background:transparent;color:#344A37;cursor:pointer';
+  retry.addEventListener('click',()=>{if(cur&&currentLang==='en')translateRecipeSteps(cur.steps);});
+  notice.appendChild(retry);
+ }
+}
 async function translateRecipeSteps(steps) {
  const recipeTitle=cur?.title;
  const stepsEl=document.getElementById('result-steps');if(!stepsEl)return;
- const stepDivs=stepsEl.querySelectorAll('.step-text');if(!stepDivs.length)return;
+ const stepDivs=Array.from(stepsEl.querySelectorAll('.step-text'));if(!stepDivs.length)return;
+ const run=++marmitoStepTranslationRun;
  const raws=steps.map(s=>typeof s==='string'?s:s.text);
- const cacheKey='marmito-tr2-'+(recipeTitle?encodeURIComponent(recipeTitle):'r');
- const sameRecipe=()=>cur?.title===recipeTitle&&cur?.steps===steps;
- const update=texts=>{
-  if(!sameRecipe())return;
-  translatedStepTexts=texts;
-  stepDivs.forEach((el,i)=>{el.textContent=currentLang==='en'?(texts[i]||raws[i]):raws[i];el.style.opacity=currentLang==='en'&&!texts[i]?'0.6':'1';});
-  cookRefreshStepText();
- };
+ const sameView=()=>run===marmitoStepTranslationRun&&cur?.title===recipeTitle&&cur?.steps===steps&&document.getElementById('result-steps')===stepsEl&&stepDivs.every(el=>el.isConnected&&stepsEl.contains(el));
  const individual=cookStepTranslationCache();
  const texts=raws.map(raw=>typeof individual[raw]==='string'&&individual[raw].trim()?individual[raw]:null);
- update(texts);
+ const update=(busy=false)=>{
+  if(!sameView())return;
+  translatedStepTexts=texts.slice();
+  stepDivs.forEach((el,i)=>{
+   el.textContent=currentLang==='en'?(texts[i]||raws[i]):raws[i];
+   el.style.opacity='1';
+  });
+  marmitoStepTranslationStatus(stepsEl,currentLang==='en'?texts.filter(x=>!x).length:0,busy);
+  cookRefreshStepText();
+ };
+ update(currentLang==='en'&&texts.some(x=>!x));
  if(currentLang!=='en'||texts.every(Boolean))return;
- // Translate only missing steps; never depend on a fragile multi-step separator.
  await Promise.all(raws.map(async(raw,i)=>{
   if(texts[i])return;
   const translation=await cookTranslateOneStep(raw);
-  if(!sameRecipe())return;
-  if(translation){texts[i]=translation;update(texts.slice());}
+  if(!sameView())return;
+  if(translation){texts[i]=translation;update(true);}
  }));
- if(!sameRecipe())return;
- if(texts.every(Boolean))try{localStorage.setItem(cacheKey,JSON.stringify(texts));}catch(e){}
- update(texts.slice());
+ update(false);
 }
 // ===== COOKING MODE CAROUSEL =====
 let cookSteps=[], cookIdx=0, cookTimer=null;
