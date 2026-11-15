@@ -1544,7 +1544,7 @@ function marmitoUpdateHomeOffer(){
   const btn=banner.querySelector('.home-pro-btn');
   if(plan==='saveur'){
     if(title)title.textContent=lang==='en'?'Go further with Chef':'Passez au niveau Chef';
-    if(desc)desc.textContent=lang==='en'?'Unlock all 418 recipes and Chef benefits.':'Débloquez les 418 recettes et les avantages Chef.';
+    if(desc)desc.textContent=lang==='en'?`Unlock all ${typeof recipes!=='undefined'?recipes.length:418} recipes and Chef benefits.`:`Débloquez les ${typeof recipes!=='undefined'?recipes.length:418} recettes et les avantages Chef.`;
     if(btn)btn.textContent=lang==='en'?'Upgrade to Chef':'Passer à Chef';
   }else{
     if(title)title.textContent=lang==='en'?'Discover Marmito Saveur & Chef':'Découvrez Saveur et Chef';
@@ -1552,7 +1552,7 @@ function marmitoUpdateHomeOffer(){
     if(btn)btn.textContent=lang==='en'?'Explore plans':'Voir les abonnements';
   }
   const mealBtn=document.querySelector('.v33-meal-plan-button');
-  if(mealBtn)mealBtn.textContent=lang==='en'?'📅 Create my 7-day meal plan':'Voir mon plan de repas sur 7 jours';
+  if(mealBtn)mealBtn.textContent=lang==='en'?'View my 7-day meal plan':'Voir mon plan de repas sur 7 jours';
 }
 
 document.addEventListener('click',function(e){if(e.target.closest('[onclick*="setLang"], [onclick*="switchLang"], [onclick*="toggleLang"]'))setTimeout(marmitoUpdateHomeOffer,0);});
