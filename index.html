@@ -1397,7 +1397,7 @@ document.addEventListener('DOMContentLoaded',function(){
    <button class="page-back-btn" type="button" aria-label="Retour" onclick="marmitoCloseFavoritesPage()">←</button>
    <div class="page-nav-title" data-i18n="nav-favs">Mes favoris</div>
   </div></div></div>
-  <div class="history-sheet-body"><div class="v49-collection-hero"><div class="v49-eyebrow">MA COLLECTION</div><h2>Mes recettes favorites</h2><p>Les recettes que tu aimes, prêtes à retrouver.</p></div><p class="v40-page-subtitle" id="v40-favorites-subtitle">Vos recettes enregistrées, au même endroit.</p><div class="fav-list" id="v40-favorites-list"></div></div>
+  <div class="history-sheet-body"><div class="v49-collection-hero"><div class="v49-eyebrow">MA COLLECTION</div><h2>Mes recettes favorites</h2><p>Les recettes que tu aimes, prêtes à retrouver.</p></div><p class="v40-page-subtitle" id="v40-favorites-subtitle">Vos recettes enregistrées, au même endroit.</p><div class="v51-collection-tools"><label class="v51-search-label"><span>Rechercher</span><input type="search" id="v51-fav-search" placeholder="Rechercher dans mes favoris" oninput="marmitoV51FilterCollection('favorites')"></label><div class="v51-view-toggle"><button type="button" class="active" data-v51-fav-view="grid" onclick="marmitoV51SetView('favorites','grid')">Grille</button><button type="button" data-v51-fav-view="list" onclick="marmitoV51SetView('favorites','list')">Liste</button></div></div><div class="fav-list v51-fav-grid" id="v40-favorites-list"></div></div>
  </div>
 </div>
 <!-- HISTORY SHEET -->
@@ -1412,7 +1412,7 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 </div>
 <div class="history-sheet-body"><div class="v49-collection-hero"><div class="v49-eyebrow">MON PARCOURS</div><h2>Mon historique</h2><p>Retrouve les recettes que tu as consultées.</p></div>
-<div id="h-history-list"></div>
+<div class="v51-collection-tools"><label class="v51-search-label"><span>Rechercher</span><input type="search" id="v51-history-search" placeholder="Rechercher dans mon historique" oninput="marmitoV51FilterCollection('history')"></label><div class="v51-view-toggle"><button type="button" class="active" data-v51-history-view="list" onclick="marmitoV51SetView('history','list')">Liste</button><button type="button" data-v51-history-view="grid" onclick="marmitoV51SetView('history','grid')">Grille</button></div></div><div id="h-history-list"></div>
 </div>
 </div>
 </div>
@@ -27826,7 +27826,7 @@ if ('serviceWorker' in navigator) {
 <h2 id="marmito-admin-title">Administration</h2>
 <button class="marmito-admin-back" onclick="marmitoCloseAdmin()">← Retour à Marmito</button>
 </div>
-<div class="v48-admin-overview"><div class="v48-admin-metric"><span>RECETTES DISPONIBLES</span><strong>418</strong><small>Bibliothèque Marmito</small></div><div class="v48-admin-metric"><span>ESPACE ADMIN</span><strong>Modération</strong><small>Expériences culinaires</small></div><div class="v48-admin-action"><span>ACCÈS RAPIDE</span><button type="button" onclick="marmitoV49OpenQueue()">Voir les contributions à examiner <span aria-hidden="true">→</span></button></div></div><div class="marmito-admin-card" id="v49-admin-moderation">
+<nav class="v51-admin-tabs" aria-label="Sections de l’administration"><button type="button" class="active" data-v51-admin="dashboard" onclick="marmitoV51AdminView('dashboard')">Tableau de bord</button><button type="button" data-v51-admin="queue" onclick="marmitoV51AdminView('queue')">Contributions à examiner</button></nav><div class="v48-admin-overview"><div class="v48-admin-metric"><span>RECETTES DISPONIBLES</span><strong>418</strong><small>Bibliothèque Marmito</small></div><div class="v48-admin-metric"><span>ESPACE ADMIN</span><strong>Modération</strong><small>Expériences culinaires</small></div><div class="v48-admin-action"><span>ACCÈS RAPIDE</span><button type="button" onclick="marmitoV51AdminView('queue')">Voir les contributions à examiner <span aria-hidden="true">→</span></button></div></div><div class="v51-queue-heading"><span class="v47-eyebrow">MODÉRATION</span><h2>Contributions à examiner</h2><p>Consulte et traite les expériences réellement soumises à validation.</p></div><div class="marmito-admin-card" id="v49-admin-moderation">
 <h3>Modération des expériences culinaires</h3>
 <p>Examine les expériences soumises avant leur publication.</p>
 <button class="marmito-admin-back" onclick="marmitoLoadPendingExperiences()" type="button">↻ Actualiser</button>
@@ -28116,7 +28116,7 @@ async function marmitoSaveExperience() {
 <section aria-labelledby="marmito-published-title" aria-modal="true" id="marmito-published-overlay" role="dialog">
 <div class="marmito-published-box">
 <button class="v45-experience-menu" type="button" aria-label="Ouvrir le menu de navigation" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button>
-<h2 id="marmito-published-title">Expériences de la communauté</h2>
+<div class="v51-experience-nav"><button type="button" onclick="marmitoClosePublishedExperiences();marmitoOpenMyExperiences()">Mes expériences</button><button type="button" class="active">Communauté</button></div><h2 id="marmito-published-title">Expériences de la communauté</h2>
 <p id="marmito-published-recipe"></p>
 <p aria-live="polite" id="marmito-published-status" role="status"></p>
 <div id="marmito-published-list"></div>
@@ -28193,10 +28193,10 @@ async function marmitoOpenPublishedExperiences(){
 <section aria-labelledby="marmito-myexp-title" aria-modal="true" id="marmito-myexp-overlay" role="dialog">
 <div class="marmito-myexp-box">
 <button class="v45-experience-menu" type="button" aria-label="Ouvrir le menu de navigation" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button>
-<div class="v49-exp-hero"><div class="v49-eyebrow">MON CARNET CULINAIRE</div><h2 id="marmito-myexp-title">Mes expériences</h2><p>Mes préparations, mes notes et mes partages.</p></div>
+<div class="v51-experience-nav"><button type="button" class="active">Mes expériences</button><button type="button" onclick="marmitoCloseMyExperiences();marmitoOpenPublishedExperiences()">Communauté</button></div><div class="v49-exp-hero"><div class="v49-eyebrow">MON CARNET CULINAIRE</div><h2 id="marmito-myexp-title">Mes expériences</h2><p>Mes préparations, mes notes et mes partages.</p></div>
 <p>Retrouve tes expériences privées et suis les expériences soumises à la communauté.</p>
 <p aria-live="polite" id="marmito-myexp-status" role="status"></p>
-<div id="marmito-myexp-list"></div>
+<div class="v51-experience-list" id="marmito-myexp-list"></div>
 <button onclick="marmitoCloseMyExperiences()" type="button">Fermer</button>
 </div>
 </section>
@@ -29045,11 +29045,142 @@ function marmitoV48ShoppingView(view){
 function marmitoV49OpenQueue(){
  const panel=document.getElementById('marmito-admin-overlay');
  const card=document.getElementById('v49-admin-moderation');
- if(!panel?.classList.contains('open')||!card)return;
- card.scrollIntoView({behavior:'smooth',block:'start'});
+ const status=document.getElementById('marmito-admin-status');
+ if(!panel||!card){if(typeof showToast==='function')showToast('Section de modération introuvable.');return;}
+ if(!panel.classList.contains('open'))panel.classList.add('open');
+ // Scroll the actual admin overlay, not the document hidden beneath it.
+ const top=card.getBoundingClientRect().top-panel.getBoundingClientRect().top+panel.scrollTop-16;
+ panel.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+ card.classList.remove('v50-queue-highlight');
+ void card.offsetWidth;
+ card.classList.add('v50-queue-highlight');
  const heading=card.querySelector('h3');
  if(heading){heading.setAttribute('tabindex','-1');heading.focus({preventScroll:true});}
+ if(status&&(!status.textContent.trim()||status.textContent.includes('Ouvre cette section'))){status.textContent='Chargement des contributions en attente…';}
+ // A real action: refresh the moderation queue (requires verified admin role).
+ if(typeof marmitoLoadPendingExperiences==='function'){
+  if(typeof marmitoAdminBusy!=='undefined'&&marmitoAdminBusy){
+   if(status)status.textContent='Chargement déjà en cours…';
+  }else{
+   try{const pending=marmitoLoadPendingExperiences();if(pending&&typeof pending.catch==='function')pending.catch(err=>{if(status)status.textContent='Impossible de charger les contributions. Réessaie.';console.error(err);});}
+   catch(err){if(status)status.textContent='Impossible de charger les contributions. Réessaie.';console.error(err);}
+  }
+ }else if(status){status.textContent='Le chargement de la modération est indisponible.';}
 }
+
+</script>
+<style id="v50-queue-fix">
+#v49-admin-moderation{scroll-margin-top:24px;transition:border-color .25s,box-shadow .25s}
+#v49-admin-moderation.v50-queue-highlight{border-color:#779954!important;box-shadow:0 0 0 3px #8ba96d55,0 9px 24px #314c2114!important}
+.v48-admin-action button{cursor:pointer;min-height:52px}
+.v48-admin-action button:focus-visible{outline:3px solid #8ba96d;outline-offset:3px}
+</style>
+<style id="v51-comprehensive-layout">
+:root{--v51-cream:#faf7f0;--v51-olive:#31531f;--v51-line:#e3e4d8;--v51-shadow:0 10px 28px #253a1a10}
+/* Shared editorial layout */
+#v40-favorites-overlay .history-sheet,#history-overlay .history-sheet{background:var(--v51-cream)!important}
+#v40-favorites-overlay .history-sheet-body,#history-overlay .history-sheet-body{max-width:1250px!important;width:100%;box-sizing:border-box;margin:0 auto;padding:22px clamp(18px,4vw,45px) 95px!important}
+#v40-favorites-overlay .v49-collection-hero,#history-overlay .v49-collection-hero{padding:30px 35px!important;margin:0 0 20px!important;border-radius:24px!important;background:linear-gradient(110deg,#edf2e5,#faf7ee)!important;border:1px solid #e1e6d8}
+#v40-favorites-overlay .v49-collection-hero h2,#history-overlay .v49-collection-hero h2{font:700 clamp(28px,3.5vw,38px) Georgia,serif!important;color:#2c4b1c!important}
+.v51-collection-tools{display:flex;justify-content:space-between;align-items:flex-end;gap:15px;flex-wrap:wrap;margin:17px 0 20px}
+.v51-search-label{display:flex;flex-direction:column;gap:7px;flex:1;max-width:440px;color:#62705a;font-size:12px;font-weight:750}
+.v51-search-label input{width:100%;border:1px solid #dfe4d6!important;background:#fff!important;border-radius:14px!important;padding:13px 16px!important;color:#273a23;font:inherit;font-size:14px}
+.v51-view-toggle,.v51-admin-tabs,.v51-experience-nav{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.v51-view-toggle button,.v51-admin-tabs button,.v51-experience-nav button{border:1px solid #e1e4d8;border-radius:999px;background:#fff;padding:11px 18px;color:#38502d;font-size:13px;font-weight:750;cursor:pointer}
+.v51-view-toggle button.active,.v51-admin-tabs button.active,.v51-experience-nav button.active{background:var(--v51-olive);border-color:var(--v51-olive);color:#fff}
+#v40-favorites-list.v51-fav-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px!important}
+#v40-favorites-list.v51-fav-grid>.fav-item{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:space-between;min-height:175px;background:#fff!important;border:1px solid var(--v51-line)!important;border-radius:21px!important;padding:22px!important;box-shadow:var(--v51-shadow)!important}
+#v40-favorites-list.v51-fav-grid .fav-item-name{font:700 20px Georgia,serif!important;color:#2b4c20!important;line-height:1.25}
+#v40-favorites-list.v51-fav-grid .fav-item-region{margin-top:9px;color:#6a7562!important}
+#v40-favorites-list.v51-fav-grid .fav-cook-btn{margin-top:18px!important;align-self:flex-start;border-radius:999px!important;padding:10px 20px!important}
+#v40-favorites-list:not(.v51-fav-grid)>.fav-item{background:#fff!important;border:1px solid var(--v51-line)!important;border-radius:17px!important;margin-bottom:10px!important;padding:15px 19px!important}
+#h-history-list{display:grid;grid-template-columns:1fr;gap:10px}
+#h-history-list.v51-history-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+#h-history-list>*{background:#fff!important;border:1px solid var(--v51-line)!important;border-radius:17px!important;box-shadow:0 5px 16px #253a1a0b!important;padding:15px!important;margin:0!important}
+#h-history-list.v51-history-grid>*{min-height:115px;display:flex;flex-direction:column;justify-content:space-between}
+#h-history-list .history-item-name{font-family:Georgia,serif;font-size:17px;color:#2b4c20}
+/* Administration: actual distinct screens */
+#marmito-admin-overlay{background:var(--v51-cream)!important}
+#marmito-admin-overlay .marmito-admin-wrap{max-width:1260px!important;padding:26px clamp(18px,4vw,45px) 90px!important}
+#marmito-admin-overlay .marmito-admin-head{margin-bottom:12px!important}
+#marmito-admin-overlay .marmito-admin-head h2{font:700 37px Georgia,serif!important}
+.v51-admin-tabs{margin:10px 0 23px}
+#marmito-admin-overlay .v48-admin-overview{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+#marmito-admin-overlay .v48-admin-metric,#marmito-admin-overlay .v48-admin-action{min-height:150px!important;padding:24px!important;border-radius:22px!important}
+#marmito-admin-overlay .v48-admin-action button{border-radius:14px!important;font-size:15px!important}
+.v51-queue-heading{display:none;margin:20px 0}
+.v51-queue-heading h2{font:700 31px Georgia,serif;color:var(--v51-olive);margin:8px 0}
+.v51-queue-heading p{color:#6c7864;margin:0}
+#marmito-admin-overlay.v51-admin-queue .v48-admin-overview{display:none!important}
+#marmito-admin-overlay.v51-admin-queue .v51-queue-heading{display:block}
+#marmito-admin-overlay:not(.v51-admin-queue) #v49-admin-moderation{display:none!important}
+#marmito-admin-overlay .marmito-admin-card{border-radius:22px!important;padding:26px!important;background:#fff!important}
+#marmito-admin-overlay #marmito-admin-queue>*{border-radius:14px}
+/* Experiences: gallery layout around real user content */
+#marmito-myexp-overlay,#marmito-published-overlay,#marmito-experience-overlay{background:#f9f6ef!important;align-items:flex-start!important;padding:22px!important}
+#marmito-myexp-overlay .marmito-myexp-box,#marmito-published-overlay .marmito-published-box{width:min(100%,1200px)!important;max-width:1200px!important;min-height:calc(100dvh - 44px);margin:0 auto!important;padding:clamp(18px,3vw,38px)!important;border-radius:24px!important;background:#faf8f2!important;color:#263c20!important;box-shadow:0 14px 40px #263a201a!important}
+#marmito-experience-overlay .marmito-experience-box{width:min(100%,780px)!important;max-width:780px!important;padding:clamp(20px,4vw,40px)!important;background:#fffdf8!important;border-radius:25px!important}
+#marmito-myexp-overlay .v49-exp-hero{padding:27px!important;border-radius:22px!important;background:linear-gradient(100deg,#e8efde,#fbf8f0)!important;margin:18px 0!important}
+#marmito-myexp-overlay .v49-exp-hero h2,#marmito-published-overlay h2{font:700 33px Georgia,serif!important;color:#2e4b20!important}
+.v51-experience-nav{margin:15px 0}
+#marmito-myexp-list,#marmito-published-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:22px 0!important}
+#marmito-myexp-list>* ,#marmito-published-list>*{min-width:0;background:#fff!important;border:1px solid var(--v51-line)!important;border-radius:20px!important;padding:20px!important;box-shadow:var(--v51-shadow)!important;overflow-wrap:anywhere}
+#marmito-myexp-list img,#marmito-published-list img{max-width:100%;border-radius:12px;object-fit:cover}
+#marmito-experience-overlay label{font-weight:750!important;color:#344e29!important;margin:16px 0 7px!important;display:block}
+#marmito-experience-overlay textarea,#marmito-experience-overlay select,#marmito-experience-overlay input{border:1px solid #dce3d5!important;border-radius:13px!important;padding:12px!important;max-width:100%;box-sizing:border-box}
+/* Plan 7 days: enlarge the actual generated day strip and sidebar */
+#plan-overlay .plan-sheet{max-width:1220px!important;width:min(100%,1220px)!important;background:#faf8f2!important}
+#plan-overlay .v49-plan-layout{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(225px,280px)!important;gap:20px!important;align-items:start}
+#plan-overlay .v49-plan-main{min-width:0}
+#plan-overlay .v49-day-strip{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:6px!important;padding:8px!important;border:1px solid #e5e7da;border-radius:18px;background:#fff!important}
+#plan-overlay .v49-day-tab{min-width:0!important;padding:12px 5px!important;border-radius:13px!important}
+#plan-overlay .v49-day-tab.active{background:#416923!important;color:#fff!important}
+#plan-overlay .v49-selected-recipe{border-radius:20px!important;border:1px solid #e1e5d9!important;box-shadow:var(--v51-shadow)!important;padding:22px!important;background:#fff!important}
+#plan-overlay .v49-plan-side{border-radius:20px!important;background:#fff!important;border:1px solid var(--v51-line)!important;padding:20px!important;box-shadow:var(--v51-shadow)!important}
+@media(max-width:850px){#v40-favorites-list.v51-fav-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#h-history-list.v51-history-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#marmito-myexp-list,#marmito-published-list{grid-template-columns:repeat(2,minmax(0,1fr))}#plan-overlay .v49-plan-layout{grid-template-columns:1fr!important}}
+@media(max-width:550px){#v40-favorites-list.v51-fav-grid,#h-history-list.v51-history-grid,#marmito-myexp-list,#marmito-published-list{grid-template-columns:1fr!important}#marmito-admin-overlay .v48-admin-overview{grid-template-columns:1fr!important}#plan-overlay .v49-day-strip{gap:2px!important;padding:4px!important}#plan-overlay .v49-day-tab{font-size:11px!important;padding:9px 2px!important}#v40-favorites-overlay .history-sheet-body,#history-overlay .history-sheet-body{padding:14px 14px 85px!important}.v51-collection-tools{align-items:stretch}.v51-search-label{max-width:none;flex-basis:100%}}
+</style>
+<script id="v51-navigation-and-collections">
+function marmitoV51AdminView(view){
+ const panel=document.getElementById('marmito-admin-overlay');
+ if(!panel||!panel.classList.contains('open'))return;
+ const queue=view==='queue';
+ panel.classList.toggle('v51-admin-queue',queue);
+ panel.querySelectorAll('[data-v51-admin]').forEach(b=>b.classList.toggle('active',b.dataset.v51Admin===view));
+ panel.scrollTo({top:0,behavior:'auto'});
+ if(queue){
+  const status=document.getElementById('marmito-admin-status');
+  if(status)status.textContent='Chargement des contributions à examiner…';
+  if(typeof marmitoLoadPendingExperiences==='function'){
+   try{const result=marmitoLoadPendingExperiences();if(result&&typeof result.catch==='function')result.catch(e=>{if(status)status.textContent='Erreur de chargement : '+(e?.message||'erreur inconnue');});}
+   catch(e){if(status)status.textContent='Erreur de chargement : '+(e?.message||'erreur inconnue');}
+  }else if(status)status.textContent='Fonction de chargement indisponible.';
+ }
+}
+function marmitoV51FilterCollection(which){
+ const fav=which==='favorites',id=fav?'v40-favorites-list':'h-history-list',input=fav?'v51-fav-search':'v51-history-search';
+ const root=document.getElementById(id),field=document.getElementById(input);if(!root||!field)return;
+ const term=field.value.trim().toLocaleLowerCase();
+ Array.from(root.children).forEach(item=>{item.hidden=!!term&&!item.textContent.toLocaleLowerCase().includes(term);});
+}
+function marmitoV51SetView(which,view){
+ const fav=which==='favorites',root=document.getElementById(fav?'v40-favorites-list':'h-history-list');if(!root)return;
+ root.classList.toggle(fav?'v51-fav-grid':'v51-history-grid',view==='grid');
+ document.querySelectorAll(fav?'[data-v51-fav-view]':'[data-v51-history-view]').forEach(btn=>btn.classList.toggle('active',(fav?btn.dataset.v51FavView:btn.dataset.v51HistoryView)===view));
+}
+(function(){
+ // Reapply search when existing Marmito render functions rebuild their lists.
+ function ready(){
+  [['v40-favorites-list','favorites'],['h-history-list','history']].forEach(([id,kind])=>{
+   const root=document.getElementById(id);if(!root)return;
+   const observer=new MutationObserver(()=>marmitoV51FilterCollection(kind));
+   observer.observe(root,{childList:true});
+  });
+  const admin=document.getElementById('marmito-admin-overlay');
+  if(admin){const obs=new MutationObserver(()=>{if(!admin.classList.contains('open')){admin.classList.remove('v51-admin-queue');admin.querySelectorAll('[data-v51-admin]').forEach(b=>b.classList.toggle('active',b.dataset.v51Admin==='dashboard'));}});obs.observe(admin,{attributes:true,attributeFilter:['class']});}
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();
+})();
 </script>
 </body>
 </html>
