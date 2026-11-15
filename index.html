@@ -1300,7 +1300,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <!-- PLAN DE REPAS MODAL -->
 <div class="plan-overlay" id="plan-overlay" onclick="if(event.target===this)closePlanRepas()">
 <div class="plan-sheet" id="plan-sheet">
-<div class="plan-sheet-head">
+<div class="plan-sheet-head"><button class="v46-inline-menu" type="button" aria-label="Ouvrir le menu" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button>
 <div class="plan-handle" style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px"></div>
 <div class="plan-title-row">
 <div class="plan-title" data-i18n="plan-title">Plan de repas sur 7 jours</div>
@@ -1313,7 +1313,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <!-- LISTE DE COURSES LOCALE -->
 <div aria-labelledby="shopping-title" aria-modal="true" class="shopping-overlay" id="shopping-overlay" onclick="if(event.target===this)closeShopping()" role="dialog">
 <div class="shopping-sheet">
-<div class="shopping-head"><strong id="shopping-title"></strong><button aria-label="Fermer" id="shopping-close" onclick="closeShopping()" type="button">✕</button></div>
+<div class="shopping-head"><button class="v46-inline-menu" type="button" aria-label="Ouvrir le menu" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button><strong id="shopping-title"></strong><button aria-label="Fermer" id="shopping-close" onclick="closeShopping()" type="button">✕</button></div>
 <div class="shopping-actions"><input id="shopping-manual" maxlength="120" onkeydown="if(event.key==='Enter'){event.preventDefault();addManualShopping()}" placeholder="Ajouter un article" type="text"/><button id="shopping-manual-add" onclick="addManualShopping()" type="button"></button></div>
 <div id="shopping-recipes"></div><div id="shopping-contents"></div>
 <div class="shopping-foot"><button id="shopping-clear-all" onclick="clearAllShopping()" type="button"></button><button id="shopping-clear-checked" onclick="clearCheckedShopping()" type="button"></button><button id="shopping-copy" onclick="copySmartShopping()" type="button"></button></div>
@@ -1454,7 +1454,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="page-nav-header">
 <div class="page-nav-inner"><button class="v43-page-menu" type="button" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV43OpenMenu(event)"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeAbout()">←</button>
-<div class="page-nav-title">🍲 Marmito</div>
+<div class="page-nav-title">Marmito</div>
 </div>
 </div>
 </div>
@@ -27648,7 +27648,7 @@ applyLang();
 <div class="page-nav-header">
 <div class="page-nav-inner"><button class="v43-page-menu" type="button" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV43OpenMenu(event)"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closePricing()">←</button>
-<div class="page-nav-title">💳 Choisir un abonnement</div>
+<div class="page-nav-title">Choisir un abonnement</div>
 </div>
 </div>
 <div class="pricing-subtitle" style="padding:12px 20px 4px;font-size:0.88rem;color:var(--fg2)">Accède à plus de recettes et de fonctionnalités</div>
@@ -27726,7 +27726,7 @@ applyLang();
 <div class="page-nav-header">
 <div class="page-nav-inner"><button class="v43-page-menu" type="button" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV43OpenMenu(event)"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeReferral()">←</button>
-<div class="page-nav-title">🎁 Inviter un ami</div>
+<div class="page-nav-title">Inviter un ami</div>
 </div>
 </div>
 </div>
@@ -28793,5 +28793,50 @@ function marmitoV45Menu(event){
  if(typeof openDrawer==='function')openDrawer();
 }
 </script>
+
+<style id="v46-secondary-pages-design">
+/* Modernisation des pages secondaires, sans modification de leur logique. */
+:root{--v46-cream:#fbf8f1;--v46-line:#e6e5d9;--v46-olive:#38552f}
+#contact-overlay .contact-sheet,#about-overlay .about-sheet,#tips-overlay .tips-sheet,#pricing-overlay .pricing-sheet,#referral-overlay .referral-sheet{background:var(--v46-cream)!important}
+#contact-overlay .contact-sheet-body,#about-overlay .about-sheet-body,#tips-overlay .tips-sheet-body,#pricing-overlay .pricing-sheet-body,#referral-overlay .referral-sheet-body{max-width:920px;width:100%;box-sizing:border-box;margin:0 auto;padding:25px clamp(16px,4vw,36px) 75px!important}
+#contact-overlay .contact-sheet-head,#about-overlay .about-sheet-head,#tips-overlay .tips-sheet-head,#pricing-overlay .pricing-sheet-head,#referral-overlay .referral-sheet-head{background:#fbf8f1!important;border-bottom:1px solid var(--v46-line)!important}
+#contact-overlay .page-nav-title,#about-overlay .page-nav-title,#tips-overlay .page-nav-title,#pricing-overlay .page-nav-title,#referral-overlay .page-nav-title{font-family:Georgia,serif!important;font-weight:700!important;color:var(--v46-olive)!important;font-size:clamp(19px,3vw,26px)!important}
+#about-overlay .about-section,#tips-overlay .tips-cat-tile,#pricing-overlay .plan-card,#referral-overlay .referral-hero,#referral-overlay .referral-reward-box,#contact-overlay .about-contact-form{
+ background:#fffdf8!important;border:1px solid var(--v46-line)!important;border-radius:20px!important;box-shadow:0 5px 20px #3a4a2d0c!important;
+}
+#about-overlay .about-section{padding:22px!important;margin-bottom:14px!important}
+#about-overlay .about-section-title{font-family:Georgia,serif;color:var(--v46-olive)!important;font-size:20px!important}
+#tips-overlay .tips-cat-grid{gap:13px!important}
+#tips-overlay .tips-cat-tile{padding:18px!important;transition:box-shadow .2s,transform .2s}
+#tips-overlay .tips-cat-tile:hover{transform:translateY(-2px);box-shadow:0 9px 24px #3a4a2d1c!important}
+#tips-overlay .tips-cat-name{font-weight:750!important;color:var(--v46-olive)!important}
+#pricing-overlay .plan-cards{gap:16px!important}
+#pricing-overlay .plan-card{padding:22px!important}
+#pricing-overlay .plan-name{color:var(--v46-olive)!important}
+#referral-overlay .referral-hero{padding:25px!important}
+#referral-overlay .referral-hero-title{font-family:Georgia,serif;color:var(--v46-olive)!important}
+#contact-overlay .about-contact-form{padding:24px!important}
+#contact-overlay input,#contact-overlay textarea{border-radius:12px!important;border:1px solid #d8ddcf!important;background:white!important}
+#contact-overlay input:focus,#contact-overlay textarea:focus{outline:2px solid #8aa078!important;outline-offset:1px}
+#shopping-overlay .shopping-sheet,#plan-overlay .plan-sheet{background:var(--v46-cream)!important}
+#shopping-overlay .shopping-head,#plan-overlay .plan-sheet-head{background:#fbf8f1!important;border-bottom:1px solid var(--v46-line)!important}
+#shopping-overlay .shopping-head{display:flex!important;align-items:center;gap:9px}
+#shopping-overlay .shopping-head strong{flex:1;font-family:Georgia,serif;font-size:20px;color:var(--v46-olive)}
+#shopping-overlay .shopping-actions{gap:10px!important}
+#shopping-overlay .shopping-actions input{border-radius:12px!important}
+#shopping-overlay .shopping-foot button{border-radius:11px!important}
+#plan-overlay .plan-title{font-family:Georgia,serif!important;color:var(--v46-olive)!important}
+.v46-inline-menu{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex:0 0 40px;width:40px;height:40px;padding:10px;margin-right:8px;border:1px solid #dce3d3;border-radius:11px;background:#f2f4e9;cursor:pointer;vertical-align:middle}
+.v46-inline-menu span{display:block;width:18px;height:2px;background:#3c5b31;border-radius:2px}
+#plan-overlay .v46-inline-menu{margin-bottom:8px}
+#marmito-admin-overlay .marmito-admin-wrap{background:#fbf8f1!important}
+#marmito-admin-overlay .marmito-admin-card{background:#fffdf9!important;border:1px solid var(--v46-line)!important;border-radius:19px!important;box-shadow:0 6px 22px #3a4a2d0e!important}
+#marmito-admin-overlay .marmito-admin-head h2{font-family:Georgia,serif;color:var(--v46-olive)!important}
+#marmito-admin-overlay .marmito-admin-card h3{color:var(--v46-olive)!important}
+@media(max-width:580px){
+ #contact-overlay .contact-sheet-body,#about-overlay .about-sheet-body,#tips-overlay .tips-sheet-body,#pricing-overlay .pricing-sheet-body,#referral-overlay .referral-sheet-body{padding:16px 14px 65px!important}
+ #contact-overlay .about-contact-form,#about-overlay .about-section,#pricing-overlay .plan-card{padding:17px!important}
+}
+</style>
 </body>
 </html>
