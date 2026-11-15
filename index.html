@@ -27815,6 +27815,7 @@ if ('serviceWorker' in navigator) {
 <!-- Espace administrateur : accès vérifié dans Supabase à chaque ouverture -->
 <section aria-labelledby="marmito-admin-title" aria-modal="true" id="marmito-admin-overlay" role="dialog" tabindex="-1">
 <div class="marmito-admin-wrap">
+<button class="v45-experience-menu" type="button" aria-label="Ouvrir le menu de navigation" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button>
 <div class="marmito-admin-head">
 <h2 id="marmito-admin-title">Administration</h2>
 <button class="marmito-admin-back" onclick="marmitoCloseAdmin()">← Retour à Marmito</button>
@@ -28005,6 +28006,7 @@ async function marmitoModerateExperience(id, fn, label) {
 </style>
 <section aria-labelledby="marmito-experience-title" aria-modal="true" id="marmito-experience-overlay" role="dialog">
 <div class="marmito-experience-box">
+<button class="v45-experience-menu" type="button" aria-label="Ouvrir le menu de navigation" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button>
 <h2 id="marmito-experience-title">Mon expérience culinaire</h2>
 <p id="marmito-experience-recipe"></p>
 <label for="marmito-experience-rating">Ma note</label>
@@ -28107,6 +28109,7 @@ async function marmitoSaveExperience() {
 </style>
 <section aria-labelledby="marmito-published-title" aria-modal="true" id="marmito-published-overlay" role="dialog">
 <div class="marmito-published-box">
+<button class="v45-experience-menu" type="button" aria-label="Ouvrir le menu de navigation" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button>
 <h2 id="marmito-published-title">Expériences de la communauté</h2>
 <p id="marmito-published-recipe"></p>
 <p aria-live="polite" id="marmito-published-status" role="status"></p>
@@ -28183,6 +28186,7 @@ async function marmitoOpenPublishedExperiences(){
 </style>
 <section aria-labelledby="marmito-myexp-title" aria-modal="true" id="marmito-myexp-overlay" role="dialog">
 <div class="marmito-myexp-box">
+<button class="v45-experience-menu" type="button" aria-label="Ouvrir le menu de navigation" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button>
 <h2 id="marmito-myexp-title">Mes expériences</h2>
 <p>Retrouve tes expériences privées et suis les expériences soumises à la communauté.</p>
 <p aria-live="polite" id="marmito-myexp-status" role="status"></p>
@@ -28771,6 +28775,23 @@ function marmitoV41SyncProfile(){
   });
  }
 })();
+</script>
+
+<style id="v45-experience-admin-navigation">
+/* Menu commun au-dessus des fenêtres d'expérience et de l'administration. */
+#drawer-overlay{z-index:110100!important}
+#drawer{z-index:110101!important}
+.v45-experience-menu{display:flex;flex-direction:column;justify-content:center;gap:4px;align-items:center;width:40px;height:40px;padding:10px;margin:0 0 12px;border-radius:12px;border:1px solid #d7e0cd;background:#f3f5e9;cursor:pointer}
+.v45-experience-menu span{display:block;width:19px;height:2px;border-radius:2px;background:#3c5b31}
+.v45-experience-menu:hover{background:#e5edda}
+#marmito-admin-overlay .v45-experience-menu{margin-bottom:10px}
+@media(max-width:600px){.v45-experience-menu{width:44px;height:44px}}
+</style>
+<script id="v45-experience-admin-navigation-script">
+function marmitoV45Menu(event){
+ if(event)event.stopPropagation();
+ if(typeof openDrawer==='function')openDrawer();
+}
 </script>
 </body>
 </html>
