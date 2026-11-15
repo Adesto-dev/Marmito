@@ -1260,18 +1260,58 @@
   // Charge le compteur local pour les utilisateurs pas connectés
   try { recipeCount = parseInt(localStorage.getItem('marmito-count') || '0'); } catch(e){}
 
+  // V21 : notification de récupération, sans déconnexion ni faux plan autorisé.
+  function marmitoClearAuthError() {
+    document.getElementById('marmito-auth-retry')?.remove();
+  }
+  function marmitoShowAuthError() {
+    if (document.getElementById('marmito-auth-retry')) return;
+    const panel = document.createElement('div');
+    panel.id = 'marmito-auth-retry';
+    panel.setAttribute('role', 'alert');
+    panel.style.cssText = 'position:fixed;z-index:100100;inset:auto 12px 20px;max-width:440px;margin:auto;background:#fff8f0;color:#2a1800;border:2px solid #a9683e;border-radius:12px;padding:16px;box-shadow:0 6px 30px #0004';
+    const msg = document.createElement('p');
+    msg.textContent = 'Connexion temporairement indisponible. Vérifie ta connexion puis réessaie.';
+    const retry = document.createElement('button');
+    retry.type = 'button';
+    retry.textContent = 'Réessayer';
+    retry.style.cssText = 'padding:9px 16px;border:0;border-radius:8px;background:#7a4820;color:white;cursor:pointer';
+    retry.addEventListener('click', async () => {
+      retry.disabled = true;
+      try { await initAuth(); } finally { retry.disabled = false; }
+    });
+    panel.append(msg, retry);
+    document.body.append(panel);
+  }
+
   async function initAuth() {
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) {
-      window.location.href = '/landing.html';
+    // V21 : distinguer une session absente d'une panne de réseau.
+    // Ne jamais laisser un chargement partiel autoriser l'administration.
+    authReady = false;
+    marmitoIsAdmin = false;
+    try {
+      const { data, error } = await sb.auth.getSession();
+      if (error) throw error;
+      const session = data?.session;
+      if (!session) {
+        window.location.href = '/landing.html';
+        return;
+      }
+      currentUser = session.user;
+      await loadUserProfile();
+      // Échec fermé : aucun accès administrateur en cas d'erreur réseau.
+      await marmitoRefreshAdminRole();
+      authReady = true;
+      marmitoRenderAdminMenu();
+      marmitoClearAuthError();
+    } catch (error) {
+      console.error('[Marmito] Initialisation de session impossible', error);
+      authReady = false;
+      marmitoIsAdmin = false;
+      marmitoRenderAdminMenu();
+      marmitoShowAuthError();
       return;
     }
-    currentUser = session.user;
-    await loadUserProfile();
-    // Échec fermé : aucun accès administrateur en cas d'erreur réseau.
-    await marmitoRefreshAdminRole();
-    authReady = true;
-    marmitoRenderAdminMenu();
     // V20: ces anciens éléments n'existent plus dans l'interface actuelle.
     document.getElementById('auth-loading')?.classList.add('hidden');
     const legacyUserBar = document.getElementById('user-bar');
@@ -27338,12 +27378,15 @@ if ('serviceWorker' in navigator) {
       <button type="button" class="marmito-admin-back" onclick="marmitoLoadPendingExperiences()">↻ Actualiser</button>
       <p id="marmito-admin-status" role="status" aria-live="polite">Ouvre cette section pour charger les contributions.</p>
       <div id="marmito-admin-queue"></div>
+      <div id="marmito-admin-pagination" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px" aria-label="Pages des expériences en attente"></div>
     </div>
   </div>
 </section>
 <script>
 // Modération Marmito : données affichées en texte brut pour éviter l'injection HTML.
 let marmitoAdminBusy = false;
+let marmitoAdminPage = 0;
+const MARMITO_ADMIN_PAGE_SIZE = 50;
 function marmitoAdminMessage(message) {
   const el = document.getElementById('marmito-admin-status');
   if (el) el.textContent = message;
@@ -27353,12 +27396,35 @@ function marmitoAdminNode(tag, value) {
   el.textContent = String(value ?? '');
   return el;
 }
+function marmitoAdminRenderPagination(total) {
+  const host = document.getElementById('marmito-admin-pagination');
+  if (!host) return;
+  host.replaceChildren();
+  const pages = Math.ceil(total / MARMITO_ADMIN_PAGE_SIZE);
+  if (pages <= 1) return;
+  const previous = document.createElement('button');
+  previous.type = 'button'; previous.className = 'marmito-admin-back';
+  previous.textContent = '← Précédent'; previous.disabled = marmitoAdminPage === 0;
+  previous.addEventListener('click', () => marmitoAdminChangePage(-1));
+  const info = marmitoAdminNode('span', `Page ${marmitoAdminPage + 1} / ${pages}`);
+  const next = document.createElement('button');
+  next.type = 'button'; next.className = 'marmito-admin-back';
+  next.textContent = 'Suivant →'; next.disabled = marmitoAdminPage >= pages - 1;
+  next.addEventListener('click', () => marmitoAdminChangePage(1));
+  host.append(previous, info, next);
+}
+function marmitoAdminChangePage(delta) {
+  if (marmitoAdminBusy || marmitoAdminPage + delta < 0) return;
+  marmitoAdminPage += delta;
+  marmitoLoadPendingExperiences();
+}
 async function marmitoLoadPendingExperiences() {
   const queue = document.getElementById('marmito-admin-queue');
   const overlay = document.getElementById('marmito-admin-overlay');
   if (!queue || !overlay?.classList.contains('open') || marmitoAdminBusy) return;
   marmitoAdminBusy = true;
   queue.replaceChildren();
+  document.getElementById('marmito-admin-pagination')?.replaceChildren();
   marmitoAdminMessage('Chargement des expériences en attente…');
   try {
     if (!await marmitoRefreshAdminRole()) {
@@ -27366,11 +27432,15 @@ async function marmitoLoadPendingExperiences() {
       marmitoCloseAdmin();
       return;
     }
-    const {data, error} = await sb.from('recipe_experiences')
-      .select('*').eq('visibility', 'pending').eq('moderation_status', 'pending')
-      .order('created_at', {ascending: true}).limit(100);
+    const start = marmitoAdminPage * MARMITO_ADMIN_PAGE_SIZE;
+    const {data, error, count} = await sb.from('recipe_experiences')
+      .select('*', {count:'exact'}).eq('visibility', 'pending').eq('moderation_status', 'pending')
+      .order('created_at', {ascending: true}).order('id', {ascending:true})
+      .range(start, start + MARMITO_ADMIN_PAGE_SIZE - 1);
     if (error) throw error;
-    marmitoAdminMessage(data.length ? `${data.length} expérience(s) en attente (maximum 100 affichées).` : 'Aucune expérience en attente.');
+    if (marmitoAdminPage > 0 && !data.length) { marmitoAdminPage--; marmitoAdminBusy = false; return marmitoLoadPendingExperiences(); }
+    marmitoAdminMessage(count ? `${count} expérience(s) en attente. Page ${marmitoAdminPage + 1} sur ${Math.ceil(count / MARMITO_ADMIN_PAGE_SIZE)}.` : 'Aucune expérience en attente.');
+    marmitoAdminRenderPagination(count || 0);
     for (const item of data) {
       const card = document.createElement('article');
       card.className = 'marmito-admin-card';
@@ -27731,6 +27801,67 @@ async function marmitoOpenMyExperiences(){
   console.error('[Marmito] Mes expériences',err);
   status.textContent='Impossible de charger tes expériences : '+(err?.message||'erreur inconnue');
  }
+}
+</script>
+
+<script>
+// V21 : clavier et restitution du focus pour les trois fenêtres d'expériences.
+// L'administration possède déjà son propre gestionnaire de focus.
+const marmitoExperienceDialogs = [
+  ['marmito-experience-overlay', 'marmitoOpenExperience', 'marmitoCloseExperience'],
+  ['marmito-published-overlay', 'marmitoOpenPublishedExperiences', 'marmitoClosePublishedExperiences'],
+  ['marmito-myexp-overlay', 'marmitoOpenMyExperiences', 'marmitoCloseMyExperiences']
+];
+let marmitoDialogFocusOrigin = null;
+function marmitoDialogKeydown(event) {
+  const panel = marmitoExperienceDialogs.map(x => document.getElementById(x[0]))
+    .find(x => x?.classList.contains('open'));
+  if (!panel) return;
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    const config = marmitoExperienceDialogs.find(x => x[0] === panel.id);
+    window[config[2]]();
+    return;
+  }
+  if (event.key !== 'Tab') return;
+  const items = [...panel.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')]
+    .filter(el => el.getClientRects().length > 0);
+  if (!items.length) { event.preventDefault(); panel.focus(); return; }
+  const first = items[0], last = items[items.length - 1];
+  if (!panel.contains(document.activeElement)) { event.preventDefault(); (event.shiftKey ? last : first).focus(); }
+  else if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+}
+for (const [id, openName, closeName] of marmitoExperienceDialogs) {
+  const originalOpen = window[openName];
+  const originalClose = window[closeName];
+  if (typeof originalOpen !== 'function' || typeof originalClose !== 'function') continue;
+  window[openName] = function(...args) {
+    const origin = document.activeElement;
+    const result = originalOpen.apply(this, args);
+    const panel = document.getElementById(id);
+    if (panel?.classList.contains('open')) {
+      marmitoDialogFocusOrigin = origin instanceof HTMLElement ? origin : null;
+      panel.setAttribute('tabindex', '-1');
+      const first = panel.querySelector('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])');
+      (first || panel).focus();
+      document.removeEventListener('keydown', marmitoDialogKeydown, true);
+      document.addEventListener('keydown', marmitoDialogKeydown, true);
+    }
+    return result;
+  };
+  window[closeName] = function(...args) {
+    const result = originalClose.apply(this, args);
+    const panel = document.getElementById(id);
+    if (panel && !panel.classList.contains('open')) {
+      document.removeEventListener('keydown', marmitoDialogKeydown, true);
+      const origin = marmitoDialogFocusOrigin;
+      marmitoDialogFocusOrigin = null;
+      if (origin?.isConnected && origin.getClientRects().length) origin.focus();
+      else document.querySelector('.btn-hamburger')?.focus();
+    }
+    return result;
+  };
 }
 </script>
 </body>
