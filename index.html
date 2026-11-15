@@ -29282,5 +29282,114 @@ function marmitoV51SetView(which,view){
  },true);
 })();
 </script>
+
+<style id="v54-navigation-refresh-css">
+/* Make drawer usable even while admin (z-index 9999) is open. */
+#drawer-overlay.open{z-index:120000!important}
+#drawer.open{z-index:120001!important}
+#v54-refresh-button{position:fixed;right:17px;bottom:calc(82px + env(safe-area-inset-bottom,0px));z-index:120050;border:1px solid #d6e1cc;background:#315322;color:white;border-radius:50%;width:46px;height:46px;display:grid;place-items:center;box-shadow:0 5px 19px #213c2250;cursor:pointer;font-size:22px;touch-action:manipulation}
+#v54-refresh-indicator{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translate(-50%,-140px);transition:transform .18s;z-index:120100;border-radius:999px;background:#f7f8f1;color:#315322;border:1px solid #dbe2d1;padding:11px 19px;box-shadow:0 7px 22px #18291025;font-size:13px;font-weight:750;pointer-events:none}
+#v54-refresh-indicator.visible{transform:translate(-50%,0)}
+@media(min-width:900px){#v54-refresh-button{bottom:25px;right:25px}}
+@media(prefers-reduced-motion:reduce){#v54-refresh-indicator{transition:none}}
+</style>
+<button type="button" id="v54-refresh-button" title="Actualiser Marmito" aria-label="Actualiser Marmito" onclick="marmitoV54Refresh()">↻</button>
+<div id="v54-refresh-indicator" role="status" aria-live="polite">↓ Tirer pour actualiser</div>
+<script id="v54-navigation-refresh-js">
+(function(){
+ 'use strict';
+ let fromAdminMenu=false;
+ function adminVisible(){return !!document.getElementById('marmito-admin-overlay')?.classList.contains('open');}
+ function leaveAdmin(){
+   const admin=document.getElementById('marmito-admin-overlay');
+   if(!admin)return;
+   if(admin.classList.contains('open')){
+     if(typeof marmitoCloseAdmin==='function'){
+       try{marmitoCloseAdmin();}catch(e){console.warn('Fermeture administration',e);}
+     }
+     admin.classList.remove('open');
+   }
+   admin.classList.remove('v51-admin-queue');
+   // If the focus trap was attached, remove it even when the admin was hidden by an older wrapper.
+   if(typeof marmitoAdminKeydown==='function')document.removeEventListener('keydown',marmitoAdminKeydown,true);
+ }
+ // When opening the drawer from admin, temporarily release the focus trap and put the drawer above admin.
+ document.addEventListener('click',function(e){
+   if(e.target.closest('#marmito-admin-overlay .v45-experience-menu')){
+     fromAdminMenu=true;
+     if(typeof marmitoAdminKeydown==='function')document.removeEventListener('keydown',marmitoAdminKeydown,true);
+   }
+ },true);
+ // All drawer destinations use one consistent exit from administration, not only the plan.
+ // Capture phase runs before legacy inline handlers and before the V53 plan interception.
+ document.addEventListener('click',function(e){
+   const item=e.target.closest('#drawer .drawer-item');
+   if(!item)return;
+   if(fromAdminMenu||adminVisible()){
+     leaveAdmin();
+     fromAdminMenu=false;
+   }
+ },true);
+ // Backdrop closure: do not leave admin focus trap detached while admin is still visible.
+ document.addEventListener('click',function(e){
+   if(e.target.closest('#drawer-overlay')&&fromAdminMenu){
+     fromAdminMenu=false;
+     if(adminVisible()&&typeof marmitoAdminKeydown==='function')document.addEventListener('keydown',marmitoAdminKeydown,true);
+   }
+ },true);
+ // Handle a direct route from admin when navigation is not via the drawer.
+ const oldNav=window.marmitoNavigate;
+ if(typeof oldNav==='function')window.marmitoNavigate=function(page){
+   if(adminVisible()&&page!=='admin')leaveAdmin();
+   return oldNav.apply(this,arguments);
+ };
+ // Revalidate updates through the registered SW, then reload the entire document.
+ // A reload cannot guarantee a fresh HTML if the deployed sw.js caches an old app shell.
+ let refreshing=false;
+ window.marmitoV54Refresh=async function(){
+   if(refreshing)return;
+   refreshing=true;
+   const label=document.getElementById('v54-refresh-indicator');
+   if(label){label.textContent='Actualisation de Marmito…';label.classList.add('visible');}
+   try{
+     if('serviceWorker' in navigator){
+       const reg=await Promise.race([navigator.serviceWorker.getRegistration(),new Promise(resolve=>setTimeout(()=>resolve(null),1200))]);
+       if(reg)await Promise.race([reg.update().catch(()=>{}),new Promise(resolve=>setTimeout(resolve(),2500))]);
+     }
+   }catch(e){console.warn('Marmito: contrôle de mise à jour',e);}
+   window.location.reload();
+ };
+ // iOS standalone does not have browser pull-to-refresh. Use a top-of-page touch gesture.
+ // Do not interfere with normal scrolling, forms, menus, or overlays.
+ let y0=0,x0=0,tracking=false,ready=false;
+ function canPull(target){
+   if(document.querySelector('#drawer.open,#marmito-admin-overlay.open,.history-overlay.open,#profile-overlay.open,#plan-overlay.open,#shopping-overlay.open'))return false;
+   if(target.closest('input,textarea,select,button,[contenteditable="true"]'))return false;
+   const scrolling=target.closest('[style*="overflow"],.scrollable,[data-scroll]');
+   if(scrolling&&scrolling.scrollTop>0)return false;
+   return window.scrollY<=2&&document.documentElement.scrollTop<=2;
+ }
+ document.addEventListener('touchstart',function(e){
+   tracking=false;ready=false;
+   if(e.touches.length!==1||!canPull(e.target))return;
+   y0=e.touches[0].clientY;x0=e.touches[0].clientX;tracking=true;
+ },{passive:true});
+ document.addEventListener('touchmove',function(e){
+   if(!tracking||e.touches.length!==1)return;
+   const dy=e.touches[0].clientY-y0,dx=e.touches[0].clientX-x0;
+   if(dy<0||Math.abs(dx)>Math.abs(dy)*.8){tracking=false;return;}
+   ready=dy>=95;
+   const indicator=document.getElementById('v54-refresh-indicator');
+   if(indicator){indicator.classList.toggle('visible',dy>30);indicator.textContent=ready?'Relâcher pour actualiser':'↓ Tirer pour actualiser';}
+ },{passive:true});
+ document.addEventListener('touchend',function(){
+   if(!tracking)return;
+   tracking=false;
+   if(ready){ready=false;window.marmitoV54Refresh();return;}
+   document.getElementById('v54-refresh-indicator')?.classList.remove('visible');
+ },{passive:true});
+ document.addEventListener('touchcancel',function(){tracking=false;ready=false;document.getElementById('v54-refresh-indicator')?.classList.remove('visible');},{passive:true});
+})();
+</script>
 </body>
 </html>
