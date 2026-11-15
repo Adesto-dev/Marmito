@@ -1307,7 +1307,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <button class="sheet-close-x" onclick="closePlanRepas()">✕</button>
 </div>
 </div>
-<div class="plan-sheet-body" id="plan-body"><div class="v47-plan-intro"><div class="v47-eyebrow">ORGANISATION DE LA SEMAINE</div><p>Retrouve tes repas et prépare ta semaine, sans changer ton plan actuel.</p></div></div>
+<div class="plan-sheet-body" id="plan-body"><div class="v48-plan-header"><div class="v48-plan-kicker">MON ORGANISATION</div><h2>Plan de repas</h2><p>Organise tes repas pour les sept prochains jours.</p></div><div class="v47-plan-intro"><div class="v47-eyebrow">ORGANISATION DE LA SEMAINE</div><p>Retrouve tes repas et prépare ta semaine, sans changer ton plan actuel.</p></div></div>
 </div>
 </div>
 <!-- LISTE DE COURSES LOCALE -->
@@ -1315,7 +1315,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="shopping-sheet">
 <div class="shopping-head"><button class="v46-inline-menu" type="button" aria-label="Ouvrir le menu" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button><strong id="shopping-title"></strong><button aria-label="Fermer" id="shopping-close" onclick="closeShopping()" type="button">✕</button></div>
 <div class="shopping-actions"><div class="v47-shopping-intro"><div class="v47-eyebrow">MA LISTE</div><p>Tout ce qu’il te faut pour tes recettes, au même endroit.</p></div><input id="shopping-manual" maxlength="120" onkeydown="if(event.key==='Enter'){event.preventDefault();addManualShopping()}" placeholder="Ajouter un article" type="text"/><button id="shopping-manual-add" onclick="addManualShopping()" type="button"></button></div>
-<div id="shopping-recipes"></div><div id="shopping-contents"></div>
+<div id="shopping-recipes"></div><div class="v48-shopping-view" role="group" aria-label="Affichage de la liste"><button type="button" class="active" data-v48-view="list" onclick="marmitoV48ShoppingView('list')">Par liste</button><button type="button" data-v48-view="compact" onclick="marmitoV48ShoppingView('compact')">Vue compacte</button></div><div id="shopping-contents"></div>
 <div class="shopping-foot"><button id="shopping-clear-all" onclick="clearAllShopping()" type="button"></button><button id="shopping-clear-checked" onclick="clearCheckedShopping()" type="button"></button><button id="shopping-copy" onclick="copySmartShopping()" type="button"></button></div>
 </div>
 </div>
@@ -1458,7 +1458,7 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 </div>
 </div>
-<div class="about-sheet-body"><section class="v47-hero v47-about-intro"><div class="v47-eyebrow">NOTRE HISTOIRE</div><h2>Bienvenue dans la cuisine Marmito</h2><p>Des recettes de différentes cultures, pensées pour la vraie vie et pour le plaisir de cuisiner.</p></section>
+<div class="about-sheet-body v48-about-layout"><section class="v47-hero v47-about-intro"><div class="v47-eyebrow">NOTRE HISTOIRE</div><h2>Bienvenue dans la cuisine Marmito</h2><p>Des recettes de différentes cultures, pensées pour la vraie vie et pour le plaisir de cuisiner.</p></section>
 <!-- Section: C'est quoi -->
 <div class="about-section">
 <div class="about-section-title">C’est quoi</div>
@@ -27576,7 +27576,7 @@ applyLang();
 <div class="tips-sheet-body"><section class="v47-hero"><div class="v47-eyebrow">LE CARNET CULINAIRE</div><h2>Les bons gestes en cuisine</h2><p>Conservation, cuisson, épices et astuces du quotidien : explore les conseils déjà disponibles dans Marmito.</p></section>
 <div style="padding:16px 0 8px">
 <p style="font-size:13px;color:var(--fg2);margin:0 0 16px;line-height:1.5">Choisis une catégorie pour voir les conseils.</p>
-<div class="tips-cat-grid">
+<div class="v48-tip-filters" role="group" aria-label="Filtrer les catégories"><button type="button" class="v48-tip-filter active" data-v48-filter="all" onclick="marmitoV48FilterTips('all')">Tous</button><button type="button" class="v48-tip-filter" data-v48-filter="cook" onclick="marmitoV48FilterTips('cook')">Cuisine</button><button type="button" class="v48-tip-filter" data-v48-filter="organize" onclick="marmitoV48FilterTips('organize')">Organisation</button><button type="button" class="v48-tip-filter" data-v48-filter="safe" onclick="marmitoV48FilterTips('safe')">Sécurité</button></div><div class="tips-cat-grid">
 <button class="tips-cat-tile" onclick="openTipsCategory('conservation')">
 <div class="tips-cat-icon">🧊</div>
 <div class="tips-cat-body">
@@ -27820,7 +27820,7 @@ if ('serviceWorker' in navigator) {
 <h2 id="marmito-admin-title">Administration</h2>
 <button class="marmito-admin-back" onclick="marmitoCloseAdmin()">← Retour à Marmito</button>
 </div>
-<div class="marmito-admin-card">
+<div class="v48-admin-overview"><div class="v48-admin-metric"><span>RECETTES DISPONIBLES</span><strong>418</strong><small>Bibliothèque Marmito</small></div><div class="v48-admin-metric"><span>ESPACE ADMIN</span><strong>Modération</strong><small>Expériences culinaires</small></div><div class="v48-admin-action"><span>ACCÈS RAPIDE</span><button type="button" onclick="document.getElementById('marmito-admin-queue')?.scrollIntoView({behavior:'smooth',block:'start'})">Voir les contributions à examiner <span aria-hidden="true">→</span></button></div></div><div class="marmito-admin-card">
 <h3>Modération des expériences culinaires</h3>
 <p>Examine les expériences soumises avant leur publication.</p>
 <button class="marmito-admin-back" onclick="marmitoLoadPendingExperiences()" type="button">↻ Actualiser</button>
@@ -28899,5 +28899,99 @@ function marmitoV45Menu(event){
  #marmito-admin-overlay .marmito-admin-head{align-items:flex-start!important;flex-direction:column}
 }
 </style>
+
+<style id="v48-structural-redesign">
+:root{--v48-bg:#faf7f0;--v48-forest:#284715;--v48-border:#e6e4d9;--v48-gold:#c69d42}
+#tips-overlay .tips-sheet-body,#pricing-overlay .pricing-sheet-body,#about-overlay .about-sheet-body{max-width:1220px!important;padding:24px clamp(18px,3vw,42px) 85px!important}
+#tips-overlay .v47-hero,#pricing-overlay .v47-hero,#about-overlay .v47-hero{min-height:158px;display:flex;flex-direction:column;justify-content:center;padding:30px 38px!important;border:0!important;background:linear-gradient(100deg,#eef2e6 0%,#f9f5ec 80%)!important;border-radius:25px!important}
+.v48-tip-filters{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 23px}
+.v48-tip-filter{padding:10px 21px;border:1px solid #e1e1d7;border-radius:999px;background:#fff;color:#303b2a;font-size:13px;font-weight:700;cursor:pointer}
+.v48-tip-filter.active{background:var(--v48-forest);color:white;border-color:var(--v48-forest)}
+#tips-overlay .tips-cat-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:20px!important}
+#tips-overlay .tips-cat-tile{min-height:242px!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;overflow:hidden;isolation:isolate;border-radius:21px!important;padding:22px!important;background:linear-gradient(155deg,#e6ebd9 0%,#fdf9ef 72%)!important;box-shadow:0 9px 20px #24391813!important}
+#tips-overlay .tips-cat-tile:before{content:"";position:absolute;z-index:-1;right:-27px;top:-40px;width:175px;height:175px;border-radius:50%;background:radial-gradient(circle at 40% 45%,#bdcb9e 0%,#e5ead9 55%,transparent 73%)}
+#tips-overlay .tips-cat-icon{width:65px!important;height:65px!important;font-size:33px!important;background:#fff9!important;border:1px solid #ffffffbb;box-shadow:0 4px 18px #253e1910}
+#tips-overlay .tips-cat-body{flex:0 0 auto!important}
+#tips-overlay .tips-cat-name{font-family:Georgia,serif;font-size:20px!important}
+#tips-overlay .tips-cat-tile[hidden]{display:none!important}
+#pricing-overlay .plan-cards{grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:stretch!important;gap:19px!important;margin-top:25px!important}
+#pricing-overlay .plan-card{min-height:420px!important;box-shadow:0 9px 27px #24391812!important}
+#pricing-overlay .plan-card.featured{border:2px solid #a1b48b!important;transform:translateY(-6px)}
+#pricing-overlay .plan-card:last-child{background:linear-gradient(150deg,#3c611f,#203b13)!important;transform:translateY(-6px);box-shadow:0 16px 29px #213c2440!important}
+#pricing-overlay .plan-card:last-child .plan-btn{background:#f2e3b9!important;color:#284516!important}
+#pricing-overlay .plan-card .plan-price{font-size:26px!important}
+#pricing-overlay .plan-card-top{margin-bottom:20px!important}
+#marmito-admin-overlay .marmito-admin-wrap{max-width:1220px!important}
+#marmito-admin-overlay .marmito-admin-head{border-bottom:1px solid #e3e5d9;padding-bottom:25px!important;margin-bottom:22px}
+.v48-admin-overview{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:15px;margin:14px 0 26px}
+.v48-admin-metric,.v48-admin-action{display:flex;flex-direction:column;gap:10px;min-height:125px;padding:22px;background:#fff;border:1px solid #e4e6dc;border-radius:20px;box-shadow:0 8px 22px #30451e0c}
+.v48-admin-metric span,.v48-admin-action>span{font-size:10px;font-weight:850;letter-spacing:.12em;color:#6d845e}
+.v48-admin-metric strong{font:700 30px Georgia,serif;color:#2b4c1c}
+.v48-admin-metric small{font-size:12px;color:#687464}
+.v48-admin-action button{flex:1;display:flex;align-items:center;justify-content:space-between;text-align:left;border:0;border-radius:12px;background:#eff3e8;color:#2e4b23;padding:12px 15px;font-weight:750;cursor:pointer}
+#plan-overlay .plan-sheet{width:min(100%,1050px)!important;max-width:1050px!important;max-height:94dvh!important}
+#plan-overlay .plan-sheet-body{padding:0 22px 30px!important}
+.v48-plan-header{padding:24px 24px 18px;margin:0 -22px 0;background:linear-gradient(110deg,#eef1e4,#fcf9f2);border-bottom:1px solid #e3e6dc}
+.v48-plan-kicker{font-size:10px;font-weight:800;letter-spacing:.16em;color:#728955}
+.v48-plan-header h2{font:700 28px Georgia,serif;color:#2c4b20;margin:7px 0}
+.v48-plan-header p{font-size:13px;color:#64715d;margin:0}
+#plan-overlay .v47-plan-intro{padding:12px 0;background:transparent;border:0}
+#shopping-overlay .shopping-sheet{width:min(100%,960px)!important;max-width:960px!important;max-height:94dvh!important}
+#shopping-overlay .shopping-head{padding:19px 23px!important}
+#shopping-overlay .shopping-actions{padding:20px 25px!important}
+#shopping-overlay .v47-shopping-intro{background:transparent;border:0;padding:0 0 13px}
+.v48-shopping-view{display:flex;gap:0;width:max-content;max-width:calc(100% - 35px);border:1px solid #dfe4d6;border-radius:14px;overflow:hidden;margin:12px 24px}
+.v48-shopping-view button{border:0;background:#fff;padding:10px 18px;color:#45553b;font-size:13px;font-weight:750;cursor:pointer}
+.v48-shopping-view button.active{background:#456c2a;color:#fff}
+#shopping-overlay.v48-compact #shopping-contents{font-size:13px!important}
+#shopping-overlay.v48-compact #shopping-contents>*{padding-top:5px!important;padding-bottom:5px!important}
+#about-overlay .v48-about-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px 24px}
+#about-overlay .v48-about-layout>.v47-hero{grid-column:1/-1;min-height:210px!important}
+#about-overlay .v48-about-layout>.about-section{border:1px solid #e5e6dc!important;border-radius:22px!important;background:#fff!important;padding:25px!important;margin:0!important;align-self:start}
+#about-overlay .v48-about-layout>.about-section:has(.about-regions){grid-column:1/-1}
+#about-overlay .about-regions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#about-overlay .about-region-item{margin:0!important}
+#contact-overlay .contact-sheet-body,#referral-overlay .referral-sheet-body{max-width:980px!important;margin:auto!important}
+#contact-overlay .about-contact-form{max-width:700px;margin:18px auto;padding:30px!important}
+#referral-overlay .referral-hero{border-radius:24px!important;background:linear-gradient(105deg,#edf1e4,#fff9ec)!important}
+@media(max-width:850px){
+ #tips-overlay .tips-cat-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #pricing-overlay .plan-cards{grid-template-columns:1fr!important;max-width:570px;margin-inline:auto}
+ #pricing-overlay .plan-card,#pricing-overlay .plan-card:last-child,#pricing-overlay .plan-card.featured{transform:none!important;min-height:unset!important}
+ .v48-admin-overview{grid-template-columns:1fr 1fr}
+ .v48-admin-action{grid-column:1/-1}
+ #about-overlay .v48-about-layout{grid-template-columns:1fr}
+ #about-overlay .v48-about-layout>.about-section:has(.about-regions){grid-column:auto}
+ #about-overlay .about-regions{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:550px){
+ #tips-overlay .tips-cat-grid{grid-template-columns:1fr!important}
+ #tips-overlay .tips-cat-tile{min-height:180px!important}
+ .v48-admin-overview{grid-template-columns:1fr 1fr;gap:9px}
+ .v48-admin-metric,.v48-admin-action{padding:14px;min-height:100px}
+ .v48-admin-metric strong{font-size:24px}
+ #about-overlay .about-regions{grid-template-columns:1fr}
+ #about-overlay .v48-about-layout>.about-section{padding:18px!important}
+ #plan-overlay .plan-sheet-body{padding:0 13px 22px!important}
+ .v48-plan-header{margin:0 -13px;padding:20px 15px}
+ #shopping-overlay .shopping-head{padding:13px!important}
+}
+</style>
+<script id="v48-ui-interactions">
+function marmitoV48FilterTips(filter){
+ const map={cook:['Astuces de cuisson','Épices par cuisine','Substitutions'],organize:['Conservation','Utiliser Marmito'],safe:['Hygiène & Sécurité']};
+ document.querySelectorAll('#tips-overlay .tips-cat-tile').forEach(tile=>{
+  const name=(tile.querySelector('.tips-cat-name')?.textContent||'').trim();
+  tile.hidden=filter!=='all'&&!(map[filter]||[]).includes(name);
+ });
+ document.querySelectorAll('.v48-tip-filter').forEach(btn=>btn.classList.toggle('active',btn.dataset.v48Filter===filter));
+}
+function marmitoV48ShoppingView(view){
+ const overlay=document.getElementById('shopping-overlay');
+ if(!overlay)return;
+ overlay.classList.toggle('v48-compact',view==='compact');
+ overlay.querySelectorAll('[data-v48-view]').forEach(btn=>btn.classList.toggle('active',btn.dataset.v48View===view));
+}
+</script>
 </body>
 </html>
