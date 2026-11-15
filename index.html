@@ -26594,7 +26594,9 @@ function toggleLang() {
         translatedTitle = null;
       } else {
         const sourceRecipe=cur;
-        translateTitles([sourceRecipe.title]).then(trs => {
+        const curated=marmitoCatalogForRecipe(sourceRecipe);
+        if(curated){translatedTitle=curated.title;titleEl.textContent=curated.title;}
+        else translateTitles([sourceRecipe.title]).then(trs => {
           if(cur!==sourceRecipe||currentLang!=='en')return;
           translatedTitle = trs[0] || sourceRecipe.title;
           titleEl.textContent = translatedTitle;
@@ -26612,7 +26614,9 @@ function toggleLang() {
         _renderIngs(cur.ingredients);
         cur._ingEN = null;
       } else {
-        if (cur._ingEN) {
+        const curated=marmitoCatalogForRecipe(cur);
+        if(curated?.ingredients){cur._ingEN=curated.ingredients;_renderIngs(curated.ingredients,cur.ingredients);}
+        else if (cur._ingEN) {
           _renderIngs(cur._ingEN, cur.ingredients);
         } else {
           const sourceRecipe=cur;
@@ -26889,7 +26893,10 @@ function show(recipe){
   document.getElementById("result-region").textContent=translateMeta('region',recipe.region);
   translatedTitle = null;
   document.getElementById("result-title").textContent=recipe.title;
-  if (currentLang === 'en') {
+  if (currentLang === 'en' && marmitoCatalogForRecipe(recipe)) {
+    translatedTitle=marmitoCatalogForRecipe(recipe).title;
+    document.getElementById('result-title').textContent=translatedTitle;
+  } else if (currentLang === 'en') {
     translateTitles([recipe.title]).then(trs => {
       if(cur!==recipe||currentLang!=='en')return;
       translatedTitle = trs[0] || recipe.title;
@@ -26909,13 +26916,17 @@ function show(recipe){
     renderRecipeIngredients(recipe, displayNames);
   }
   renderIngredients(recipe.ingredients);
-  if (currentLang === 'en') {
+  if (currentLang === 'en' && marmitoCatalogForRecipe(recipe)?.ingredients) {
+    recipe._ingEN=marmitoCatalogForRecipe(recipe).ingredients;
+    renderIngredients(recipe._ingEN,recipe.ingredients);
+  } else if (currentLang === 'en') {
     translateTitles(recipe.ingredients).then(trs => {
       if(cur!==recipe||currentLang!=='en')return;
       recipe._ingEN = trs;
       renderIngredients(trs, recipe.ingredients);
     });
   }
+  translatedStepTexts=[];
   document.getElementById("result-steps").innerHTML=recipe.steps.map((step,i)=>{
     const text=typeof step==="string"?step:step.text;
     const time=(typeof step==="object"&&step.time>0)?step.time:0;
@@ -26931,6 +26942,87 @@ function show(recipe){
   // Badge cuisiné
   updateCookedUI();
   if(currentLang==="en") translateRecipeSteps(recipe.steps);
+}
+
+
+// Curated English recipe translations: first reviewed batch. French source recipes are unchanged.
+const MARMITO_EN_CATALOG_V1={
+  "Poulet Yassa": {
+    "title": "Chicken Yassa",
+    "ingredients": [
+      "Chicken",
+      "Onions",
+      "Lemon",
+      "Mustard",
+      "Garlic",
+      "Oil",
+      "Salt",
+      "Pepper"
+    ],
+    "steps": [
+      "In a large bowl, mix the sliced onions with the juice of 2 lemons, 2 tablespoons of mustard, 3 crushed garlic cloves, salt and pepper. Add the chicken pieces and toss well to coat.",
+      "Marinate in the refrigerator for at least 2 hours. The longer the chicken marinates, the more flavorful it will be.",
+      "Heat 3 tablespoons of oil in a frying pan over high heat. Remove the chicken from the marinade (set the onions aside). Brown the chicken for about 5 minutes on each side, until golden. Set aside.",
+      "Add the marinated onions to the same pan. Cook over medium heat for about 15 minutes, stirring, until very soft and lightly caramelized.",
+      "Return the chicken to the pan with the onions. Add 100 ml of water. Cover and simmer over low heat for 25–30 minutes, until the chicken is fully cooked.",
+      "Serve hot with white rice. Spoon the onion sauce over the chicken."
+    ],
+    "sourceSteps": [
+      "Dans un grand bol, mélange les oignons émincés avec le jus de 2 citrons, 2 c. à soupe de moutarde, 3 gousses d'ail écrasées, sel et poivre. Ajoute les morceaux de poulet et mélange bien pour tout enrober.",
+      "Laisse mariner au réfrigérateur pendant 2 heures minimum. Plus tu marines longtemps, plus le poulet sera savoureux.",
+      "Fais chauffer 3 c. à soupe d'huile dans une poêle à feu vif. Sors le poulet de la marinade (garde les oignons de côté). Fais dorer le poulet environ 5 minutes de chaque côté jusqu'à belle couleur dorée. Réserve.",
+      "Dans la même poêle, verse les oignons marinés. Fais-les compoter à feu moyen environ 15 minutes en remuant, jusqu'à ce qu'ils soient bien fondants et légèrement caramélisés.",
+      "Remets le poulet dans la poêle avec les oignons. Ajoute 100 ml d'eau. Couvre et laisse mijoter à feu doux pendant 25 à 30 minutes, jusqu'à cuisson complète du poulet.",
+      "Sers bien chaud avec du riz blanc. Verse la sauce aux oignons par-dessus le poulet."
+    ]
+  },
+  "Riz Jollof pimenté": {
+    "title": "Spicy Jollof Rice",
+    "ingredients": null,
+    "steps": [
+      "Cut 3 tomatoes, 1 red bell pepper and 1 onion into large pieces. Blend them together until smooth.",
+      "Heat 4 tablespoons of oil in a large saucepan over medium heat. Add the purée and cook for 10 minutes, stirring often, until it reduces and darkens slightly.",
+      "Add salt, pepper, seasoning and 1 chili pepper (whole or chopped, to taste). Stir and cook for another 5 minutes.",
+      "Rinse 300 g of long-grain rice under cold water until the water runs clear. Add it to the sauce. Pour in 450 ml of water (1.5 times the volume of rice). Stir once, then cover tightly.",
+      "Cook over very low heat for 25 minutes, checking whether the rice needs more water.",
+      "After 20 minutes, check whether the rice has absorbed all the liquid. It should be cooked and not sticky. Serve hot."
+    ],
+    "sourceSteps": [
+      "Coupe 3 tomates, 1 poivron rouge et 1 oignon en gros morceaux. Mixe-les ensemble jusqu'à obtenir une purée lisse.",
+      "Fais chauffer 4 c. à soupe d'huile dans une grande casserole à feu moyen. Verse la purée et fais-la revenir 10 minutes en remuant souvent, elle doit réduire et s'assombrir légèrement.",
+      "Ajoute sel, poivre, assaisonnement et 1 piment (entier ou haché selon ton goût). Mélange et laisse cuire encore 5 minutes.",
+      "Rince 300 g de riz long à l'eau froide jusqu'à ce que l'eau soit claire. Verse-le dans la sauce. Ajoute 450 ml d'eau (1,5x le volume du riz). Mélange une fois, puis couvre hermétiquement.",
+      "Cuis à feu très doux pendant 25 minutes à feu doux, en vérifiant si le riz manque d'eau. ",
+      "Au bout de 20 minutes, vérifie que le riz a absorbé tout le liquide. Il doit être cuit et non collant. Sers chaud."
+    ]
+  },
+  "Thiéboudienne": {
+    "title": "Thiéboudienne (Senegalese Fish and Rice)",
+    "ingredients": null,
+    "steps": [
+      "Make the stuffing: crush 3 garlic cloves with chili pepper and chopped parsley. Cut small slits in the fish and fill them with the stuffing. Season both sides of the fish well with salt.",
+      "Heat 5 tablespoons of oil in a large pot over high heat. Fry the fish for about 3 minutes on each side, until golden. Remove and set aside.",
+      "In the same oil, sauté 2 sliced onions for 5 minutes. Add 2 tablespoons of tomato paste. Stir and let caramelize for 3 minutes.",
+      "Add 3 blended tomatoes and 1 chopped green bell pepper. Stir and reduce over medium heat for 10 minutes, stirring occasionally.",
+      "Add turnips, carrots and cassava cut into large chunks. Cover with water (about 1 litre). Bring to a boil, then cook for 30 minutes, until the vegetables are tender.",
+      "Remove the vegetables and fish with a slotted spoon. Add 400 g of broken rice to the broth. Cover and cook over low heat for 20–25 minutes, until the broth is absorbed.",
+      "Serve the rice on a large platter, topped with the vegetables and fried fish. This is a family-style dish!"
+    ],
+    "sourceSteps": [
+      "Prépare la farce : écrase 3 gousses d'ail avec du piment et du persil haché. Fais de petites incisions dans le poisson et fourre-les de cette farce. Sale bien le poisson des deux côtés.",
+      "Dans une grande casserole, fais chauffer 5 c. à soupe d'huile à feu vif. Fais frire le poisson environ 3 minutes de chaque côté jusqu'à dorure. Sors-le et réserve.",
+      "Dans la même huile, fais revenir 2 oignons émincés pendant 5 minutes. Ajoute 2 c. à soupe de concentré de tomate. Remue et laisse caraméliser 3 minutes.",
+      "Ajoute 3 tomates mixées et 1 poivron vert haché. Mélange et laisse réduire à feu moyen 10 minutes en remuant.",
+      "Ajoute navets, carottes et manioc coupés en gros morceaux. Couvre d'eau (environ 1 litre). Porte à ébullition puis laisse cuire 30 minutes, jusqu'à ce que les légumes soient tendres.",
+      "Retire les légumes et le poisson avec une écumoire. Plonge 400 g de riz brisé dans le bouillon. Couvre et cuis à feu doux 20 à 25 minutes, jusqu'à absorption du bouillon.",
+      "Sers le riz dans un grand plat avec les légumes et le poisson frits disposés par-dessus. C'est un plat de famille !"
+    ]
+  }
+};
+function marmitoCatalogForRecipe(recipe){
+ const entry=recipe&&MARMITO_EN_CATALOG_V1[recipe.title];
+ if(!entry||!Array.isArray(entry.sourceSteps)||entry.sourceSteps.length!==recipe.steps.length)return null;
+ return entry.sourceSteps.every((source,i)=>source===(typeof recipe.steps[i]==='string'?recipe.steps[i]:recipe.steps[i].text))?entry:null;
 }
 
 // ===== RECIPE STEP TRANSLATION (FR→EN via Google Translate) =====
@@ -27014,7 +27106,8 @@ async function translateRecipeSteps(steps) {
  const raws=steps.map(s=>typeof s==='string'?s:s.text);
  const sameView=()=>run===marmitoStepTranslationRun&&cur?.title===recipeTitle&&cur?.steps===steps&&document.getElementById('result-steps')===stepsEl&&stepDivs.every(el=>el.isConnected&&stepsEl.contains(el));
  const individual=cookStepTranslationCache();
- const texts=raws.map(raw=>typeof individual[raw]==='string'&&individual[raw].trim()?individual[raw]:null);
+ const curated=marmitoCatalogForRecipe(cur);
+ const texts=raws.map((raw,i)=>curated&&typeof curated.steps[i]==='string'&&curated.steps[i].trim()?curated.steps[i]:(typeof individual[raw]==='string'&&individual[raw].trim()?individual[raw]:null));
  const update=(busy=false)=>{
   if(!sameView())return;
   translatedStepTexts=texts.slice();
