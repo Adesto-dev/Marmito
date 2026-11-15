@@ -966,12 +966,43 @@ body.marmito-filter-open{overflow:hidden}
 #v33-upgrade-banner[hidden]{display:none!important}
 #v33-upgrade-banner .home-pro-btn{white-space:normal}
 @media(max-width:620px){.v33-home-planning{padding:19px 16px;border-radius:20px;margin:20px 0}.v33-planning-heading h2{font-size:25px}#v33-upgrade-banner:not([hidden]){flex-wrap:wrap}#v33-upgrade-banner .home-pro-btn{width:100%}}
+</style><style id="marmito-v34-redesign">
+:root{--m34-olive:#34472e;--m34-cream:#f6f4ec;--m34-gold:#d7b96a}
+.v31-desktop-links{gap:8px!important;background:rgba(255,255,255,.09);padding:6px;border-radius:40px}
+.v31-desktop-links button{border-radius:28px!important;padding:11px 17px!important;transition:background .2s,color .2s}
+.v31-desktop-links button[aria-current="page"]{background:#f6f4ec!important;color:#34472e!important}
+.marmito-v34-page{width:min(1160px,calc(100% - 36px));margin:36px auto 80px;min-height:65vh}
+.marmito-v34-page[hidden]{display:none!important}
+.marmito-v34-page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:22px;padding:32px 0;border-bottom:1px solid #dedfd2;margin-bottom:28px}
+.marmito-v34-kicker{font-size:11px;letter-spacing:.19em;font-weight:800;color:#71804f}
+.marmito-v34-page h1{font-size:clamp(30px,4.8vw,54px);font-family:Georgia,serif;letter-spacing:-.045em;color:#34472e;margin:10px 0}
+.marmito-v34-page-head p{color:#727b6c;font-size:15px}
+.marmito-v34-back{border:1px solid #d7deca;border-radius:30px;padding:12px 20px;background:#fff;color:#34472e;font-weight:700;cursor:pointer}
+.marmito-v34-fav-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.marmito-v34-fav-card{border:1px solid #e4e7dc;background:#fff;border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 30px #34472e0a}
+.marmito-v34-fav-card h3{font:600 23px/1.25 Georgia,serif;color:#34472e;margin:0}
+.marmito-v34-fav-card p{font-size:13px;color:#798170;margin:0}
+.marmito-v34-fav-card button{margin-top:auto;border:0;border-radius:12px;background:#34472e;color:#fff;padding:13px;font-weight:700;cursor:pointer}
+body.marmito-v34-inner main > :not(#marmito-favorites-page){display:none!important}
+body.marmito-v34-inner #marmito-favorites-page{display:block!important}
+body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marmito-v34-inner #v33-home-planning{display:none!important}
+#profile-overlay.visible,#plan-overlay.visible{position:fixed!important;inset:0!important;background:#f6f4ec!important;z-index:1100!important;overflow-y:auto!important;align-items:flex-start!important;justify-content:center!important;padding:0!important}
+#profile-overlay.visible #profile-sheet,#plan-overlay.visible #plan-sheet{position:relative!important;top:auto!important;bottom:auto!important;left:auto!important;right:auto!important;transform:none!important;width:min(1040px,100%)!important;max-width:1040px!important;min-height:100vh!important;height:auto!important;max-height:none!important;margin:auto!important;background:#f6f4ec!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
+#profile-overlay.visible .profile-sheet-body,#plan-overlay.visible .plan-sheet-body{max-height:none!important;overflow:visible!important;padding:28px clamp(18px,5vw,60px) 80px!important}
+#profile-overlay.visible .profile-sheet-head,#plan-overlay.visible .plan-sheet-head{position:sticky!important;top:0!important;background:#f6f4ec!important;z-index:2!important;border-bottom:1px solid #dfe3d5!important;padding:16px clamp(18px,5vw,60px)!important}
+#profile-overlay.visible .profile-avatar-row{padding:30px!important;border-radius:22px!important;background:#fff!important;border:1px solid #e4e8db!important;margin:0 0 20px!important}
+#profile-overlay.visible .profile-plan-card{border-radius:20px!important;padding:24px!important}
+#profile-overlay.visible .profile-tabs{margin-top:26px!important}
+#plan-overlay.visible .plan-handle{display:none!important}
+#plan-overlay.visible .plan-title{font-size:25px!important;font-family:Georgia,serif!important;color:#34472e!important}
+.marmito-v23-bottom-nav button[aria-current="page"]{color:#34472e!important;font-weight:800!important}
+@media(max-width:700px){.marmito-v34-page{width:calc(100% - 32px);margin:16px auto 90px}.marmito-v34-page-head{align-items:flex-start;flex-direction:column;padding:24px 0}.marmito-v34-fav-grid{grid-template-columns:1fr}.marmito-v34-page h1{font-size:34px}#profile-overlay.visible .profile-sheet-body,#plan-overlay.visible .plan-sheet-body{padding:20px 18px 110px!important}}
 </style></head>
 <body>
 <header class="header">
 <button aria-label="Menu" class="btn-hamburger" onclick="openDrawer()" title="Menu">
 <span></span><span></span><span></span>
-</button><div class="v31-desktop-links"><button onclick="goHome()" type="button">Découvrir</button><button onclick="goHome();document.getElementById('recipe-search')?.focus()" type="button">Recettes</button><button onclick="toggleFavPanel()" type="button">Favoris</button><button onclick="openProfile()" type="button">Mon espace</button></div>
+</button><div class="v31-desktop-links"><button onclick="marmitoNavigate('home')" type="button">Accueil</button><button onclick="marmitoNavigate('recipes')" type="button">Recettes</button><button onclick="marmitoNavigate('favorites')" type="button">Favoris</button><button onclick="marmitoNavigate('profile')" type="button">Mon espace</button></div>
 <button class="logo-btn" onclick="goHome()" style="background:none;border:none;cursor:pointer;padding:0"><div class="logo">Marm<span>i</span>to</div></button>
 <div class="header-actions">
 <span class="recipe-count" id="rc"></span>
@@ -981,10 +1012,10 @@ body.marmito-filter-open{overflow:hidden}
 </header>
 <!-- V23: navigation mobile visuelle, actions existantes et aucun nouveau droit d'accès -->
 <nav aria-label="Navigation principale Marmito" class="marmito-v23-bottom-nav">
-<button aria-current="page" data-v23-tab="home" onclick="goHome()" type="button"><svg viewbox="0 0 24 24"><path d="m3 11 9-8 9 8v10h-7v-7h-4v7H3z"></path></svg><span data-i18n="nav-home">Accueil</span></button>
-<button data-v23-tab="recipes" onclick="goHome();document.getElementById('recipe-search')?.focus();document.getElementById('recipe-search')?.scrollIntoView({behavior:'smooth',block:'center'})" type="button"><svg viewbox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7.3"></circle><path d="m16.4 16.4 5 5"></path></svg><span data-i18n="nav-recipes">Recettes</span></button>
-<button data-v23-tab="favs" onclick="toggleFavPanel()" type="button"><svg viewbox="0 0 24 24"><path d="M20.8 4.7a5.4 5.4 0 0 0-7.7 0L12 5.8l-1.1-1.1a5.4 5.4 0 0 0-7.7 7.7L12 21l8.8-8.6a5.4 5.4 0 0 0 0-7.7z"></path></svg><span data-i18n="fav-title">Favoris</span></button>
-<button data-v23-tab="profile" onclick="openProfile()" type="button"><svg viewbox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-5 3-8 8-8s8 3 8 8"></path></svg><span data-i18n="nav-profile">Mon profil</span></button>
+<button aria-current="page" data-v23-tab="home" onclick="marmitoNavigate('home')" type="button"><svg viewbox="0 0 24 24"><path d="m3 11 9-8 9 8v10h-7v-7h-4v7H3z"></path></svg><span data-i18n="nav-home">Accueil</span></button>
+<button data-v23-tab="recipes" onclick="marmitoNavigate('recipes')" type="button"><svg viewbox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7.3"></circle><path d="m16.4 16.4 5 5"></path></svg><span data-i18n="nav-recipes">Recettes</span></button>
+<button data-v23-tab="favs" onclick="marmitoNavigate('favorites')" type="button"><svg viewbox="0 0 24 24"><path d="M20.8 4.7a5.4 5.4 0 0 0-7.7 0L12 5.8l-1.1-1.1a5.4 5.4 0 0 0-7.7 7.7L12 21l8.8-8.6a5.4 5.4 0 0 0 0-7.7z"></path></svg><span data-i18n="fav-title">Favoris</span></button>
+<button data-v23-tab="profile" onclick="marmitoNavigate('profile')" type="button"><svg viewbox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-5 3-8 8-8s8 3 8 8"></path></svg><span data-i18n="nav-profile">Mon profil</span></button>
 </nav>
 <script>
 /* V24: état visuel de la navigation mobile, sans modifier les actions existantes. */
@@ -1031,13 +1062,13 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 <div class="drawer-nav">
 <div class="drawer-section-label" data-i18n="section-nav">Navigation</div>
-<button class="drawer-item" data-i18n="nav-home" onclick="drawerAction('home')">Accueil</button>
-<button class="drawer-item drawer-item-plan" data-i18n="nav-plan" onclick="closeDrawer();setTimeout(openPlanRepas,200)">Plan 7 jours <span class="pro-chip">PRO</span></button>
-<button class="drawer-item" id="shopping-drawer-link" onclick="closeDrawer();setTimeout(openShopping,200)">Ma liste de courses</button>
-<button class="drawer-item" data-i18n="nav-profile" onclick="drawerAction('profile')">Mon profil</button>
-<button class="drawer-item" onclick="closeDrawer();marmitoOpenMyExperiences()" type="button">📷 Mes expériences</button>
+<button class="drawer-item" data-i18n="nav-home" onclick="marmitoNavigate('home')">Accueil</button>
+<button class="drawer-item drawer-item-plan" data-i18n="nav-plan" onclick="marmitoNavigate('plan')">Plan 7 jours <span class="pro-chip">PRO</span></button>
+<button class="drawer-item" id="shopping-drawer-link" onclick="marmitoNavigate('shopping')">Ma liste de courses</button>
+<button class="drawer-item" data-i18n="nav-profile" onclick="marmitoNavigate('profile')">Mon profil</button>
+<button class="drawer-item" onclick="marmitoNavigate('experiences')" type="button">Mes expériences</button>
 <!-- Visible uniquement après vérification du rôle auprès de Supabase -->
-<button class="drawer-item" hidden="" id="marmito-admin-menu" onclick="drawerAction('admin')" style="display:none">🛡️ Administration</button>
+<button class="drawer-item" hidden="" id="marmito-admin-menu" onclick="marmitoNavigate('admin')" style="display:none">Administration</button>
 <div id="drawer-sub-section">
 <div class="drawer-divider"></div>
 <div class="drawer-section-label" data-i18n="section-sub">Abonnement</div>
@@ -1072,7 +1103,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <span class="search-icon">🔍</span>
 <input autocomplete="off" autocorrect="off" class="search-input" id="recipe-search" onblur="setTimeout(closeSearch,200)" oninput="onSearchInput(this.value)" placeholder="Chercher une recette..." spellcheck="false" type="text"/>
 <div class="search-dropdown" id="search-dropdown"></div>
-</div><div class="v32-discovery-actions"><button aria-controls="marmito-filters-panel" aria-expanded="false" class="v32-open-filters" onclick="marmitoFiltersOpen()" type="button">⚙️ Affiner ma recherche <span>→</span></button><button class="v32-surprise" onclick="generateRecipe()" type="button">✦ Surprends-moi</button></div><div class="v31-quick"><button class="v31-quick-chip" data-cuisine="Afrique" type="button">🌍 Afrique</button><button class="v31-quick-chip" data-cuisine="Antilles" type="button">🌴 Caraïbes</button><button class="v31-quick-chip" data-cuisine="Italienne" type="button">🍝 Italie</button><button class="v31-quick-chip" data-cuisine="Chinoise" type="button">🥢 Asie</button><button class="v31-quick-chip" data-cuisine="Mexicaine" type="button">🌮 Mexique</button></div><section aria-label="Planification et abonnement" class="v33-home-planning" id="v33-home-planning"><div class="v33-planning-heading"><span class="v33-eyebrow">ORGANISEZ VOTRE SEMAINE</span><h2>Votre semaine, vos saveurs.</h2><p>Un menu complet en quelques instants, adapté à vos envies.</p></div><button class="v33-meal-plan-button" onclick="openPlanRepas()">📅 Créer mon plan de repas sur 7 jours</button><div aria-live="polite" class="home-pro-banner" hidden="" id="v33-upgrade-banner">
+</div><div class="v32-discovery-actions"><button aria-controls="marmito-filters-panel" aria-expanded="false" class="v32-open-filters" onclick="marmitoFiltersOpen()" type="button">⚙️ Affiner ma recherche <span>→</span></button><button class="v32-surprise" onclick="generateRecipe()" type="button">✦ Surprends-moi</button></div><div class="v31-quick"><button class="v31-quick-chip" data-cuisine="Afrique" type="button">🌍 Afrique</button><button class="v31-quick-chip" data-cuisine="Antilles" type="button">🌴 Caraïbes</button><button class="v31-quick-chip" data-cuisine="Italienne" type="button">🍝 Italie</button><button class="v31-quick-chip" data-cuisine="Chinoise" type="button">🥢 Asie</button><button class="v31-quick-chip" data-cuisine="Mexicaine" type="button">🌮 Mexique</button></div><section aria-label="Planification et abonnement" class="v33-home-planning" id="v33-home-planning"><div class="v33-planning-heading"><span class="v33-eyebrow">ORGANISEZ VOTRE SEMAINE</span><h2>Votre plan de repas sur 7 jours</h2><p>Retrouvez votre menu de la semaine, déjà préparé pour vous.</p></div><button class="v33-meal-plan-button" onclick="openPlanRepas()">Voir mon plan de repas sur 7 jours</button><div aria-live="polite" class="home-pro-banner" hidden="" id="v33-upgrade-banner">
 <span class="home-pro-icon">👑</span>
 <div class="home-pro-text">
 <span class="home-pro-label">Fonctionnalité Saveur/Chef</span>
@@ -1106,7 +1137,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <button class="share-btn share-copy" data-i18n="btn-copy" onclick="copyRecipe()">📋 Copier</button>
 <button class="share-btn share-wa" data-i18n="btn-share" onclick="shareRecipe()">⤴ Partager la recette</button>
 <button class="share-btn" id="grocery-add-recipe" onclick="addCurrentRecipeToShopping()">🛒 Ajouter aux courses</button>
-<button class="share-btn" id="cooked-btn" onclick="toggleCooked()" style="background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)">✓ Cuisiné</button> <button class="share-btn" onclick="marmitoOpenExperience()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">📷 Mon expérience</button> <button class="share-btn" onclick="marmitoOpenPublishedExperiences()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">⭐ Avis de la communauté</button>
+<button class="share-btn" id="cooked-btn" onclick="toggleCooked()" style="background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)">✓ Cuisiné</button> <button class="share-btn" onclick="marmitoOpenExperience()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">Mon expérience</button> <button class="share-btn" onclick="marmitoOpenPublishedExperiences()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">⭐ Avis de la communauté</button>
 </div>
 <div class="result-body">
 <div>
@@ -1247,7 +1278,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="plan-sheet-head">
 <div class="plan-handle" style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px"></div>
 <div class="plan-title-row">
-<div class="plan-title" data-i18n="plan-title">📅 Plan 7 jours</div>
+<div class="plan-title" data-i18n="plan-title">Plan de repas sur 7 jours</div>
 <button class="sheet-close-x" onclick="closePlanRepas()">✕</button>
 </div>
 </div>
@@ -1271,7 +1302,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="page-nav-header">
 <div class="page-nav-inner">
 <button aria-label="Retour" class="page-back-btn" onclick="closeProfile()">←</button>
-<div class="page-nav-title" data-i18n="profile-title">👤 Mon profil</div>
+<div class="page-nav-title" data-i18n="profile-title">Mon profil</div>
 </div>
 </div>
 </div>
@@ -1300,8 +1331,8 @@ document.addEventListener('DOMContentLoaded',function(){
 <button id="refresh-plan-btn" onclick="refreshPlanBtn()" style="width:100%;margin:6px 0 2px;padding:9px;background:none;border:1.5px solid var(--border);border-radius:10px;color:var(--fg2);font-family:inherit;font-size:13px;cursor:pointer">Rafraîchir mon plan</button>
 <!-- Tabs: Favoris + Historique -->
 <div class="profile-tabs">
-<button class="profile-tab-btn active" data-tab="favs" onclick="switchProfileTab('favs')">❤️ Favoris</button>
-<button class="profile-tab-btn" data-tab="history" onclick="switchProfileTab('history')">📋 Historique</button>
+<button class="profile-tab-btn active" data-tab="favs" onclick="switchProfileTab('favs')">Favoris</button>
+<button class="profile-tab-btn" data-tab="history" onclick="switchProfileTab('history')">Historique</button>
 </div>
 <div class="profile-tab-content" id="profile-tab-favs">
 <div class="fav-list" id="profile-fav-list"></div>
@@ -1521,7 +1552,7 @@ function marmitoUpdateHomeOffer(){
     if(btn)btn.textContent=lang==='en'?'Explore plans':'Voir les abonnements';
   }
   const mealBtn=document.querySelector('.v33-meal-plan-button');
-  if(mealBtn)mealBtn.textContent=lang==='en'?'📅 Create my 7-day meal plan':'📅 Créer mon plan de repas sur 7 jours';
+  if(mealBtn)mealBtn.textContent=lang==='en'?'📅 Create my 7-day meal plan':'Voir mon plan de repas sur 7 jours';
 }
 
 document.addEventListener('click',function(e){if(e.target.closest('[onclick*="setLang"], [onclick*="switchLang"], [onclick*="toggleLang"]'))setTimeout(marmitoUpdateHomeOffer,0);});
@@ -26526,7 +26557,7 @@ const i18n = {
     'cook-ready-sub': 'Bon appétit !',
     'btn-done': '✓ Terminé',
     'sign-out': 'Déconnexion',
-    'profile-title': '👤 Mon profil',
+    'profile-title': 'Mon profil',
     'p-email-label': 'Courriel',
     'p-plan-label': 'Plan',
     'p-count-label': 'Recettes générées',
@@ -27782,7 +27813,7 @@ if ('serviceWorker' in navigator) {
 <section aria-labelledby="marmito-admin-title" aria-modal="true" id="marmito-admin-overlay" role="dialog" tabindex="-1">
 <div class="marmito-admin-wrap">
 <div class="marmito-admin-head">
-<h2 id="marmito-admin-title">🛡️ Marmito Admin</h2>
+<h2 id="marmito-admin-title">Administration</h2>
 <button class="marmito-admin-back" onclick="marmitoCloseAdmin()">← Retour à Marmito</button>
 </div>
 <div class="marmito-admin-card">
@@ -27971,7 +28002,7 @@ async function marmitoModerateExperience(id, fn, label) {
 </style>
 <section aria-labelledby="marmito-experience-title" aria-modal="true" id="marmito-experience-overlay" role="dialog">
 <div class="marmito-experience-box">
-<h2 id="marmito-experience-title">📷 Mon expérience culinaire</h2>
+<h2 id="marmito-experience-title">Mon expérience culinaire</h2>
 <p id="marmito-experience-recipe"></p>
 <label for="marmito-experience-rating">Ma note</label>
 <select id="marmito-experience-rating"><option value="5">★★★★★ — 5/5</option><option value="4">★★★★☆ — 4/5</option><option value="3">★★★☆☆ — 3/5</option><option value="2">★★☆☆☆ — 2/5</option><option value="1">★☆☆☆☆ — 1/5</option></select>
@@ -28073,7 +28104,7 @@ async function marmitoSaveExperience() {
 </style>
 <section aria-labelledby="marmito-published-title" aria-modal="true" id="marmito-published-overlay" role="dialog">
 <div class="marmito-published-box">
-<h2 id="marmito-published-title">⭐ Expériences de la communauté</h2>
+<h2 id="marmito-published-title">Expériences de la communauté</h2>
 <p id="marmito-published-recipe"></p>
 <p aria-live="polite" id="marmito-published-status" role="status"></p>
 <div id="marmito-published-list"></div>
@@ -28149,7 +28180,7 @@ async function marmitoOpenPublishedExperiences(){
 </style>
 <section aria-labelledby="marmito-myexp-title" aria-modal="true" id="marmito-myexp-overlay" role="dialog">
 <div class="marmito-myexp-box">
-<h2 id="marmito-myexp-title">📷 Mes expériences</h2>
+<h2 id="marmito-myexp-title">Mes expériences</h2>
 <p>Retrouve tes expériences privées et suis les expériences soumises à la communauté.</p>
 <p aria-live="polite" id="marmito-myexp-status" role="status"></p>
 <div id="marmito-myexp-list"></div>
@@ -28318,5 +28349,17 @@ for (const [id, openName, closeName] of marmitoExperienceDialogs) {
   ['gen-btn','filter-btn'].forEach(function(id){document.getElementById(id)?.addEventListener('click',function(){marmitoFiltersClose();});});
 })();
 </script>
-</body>
+<script id="marmito-v34-routing">
+(function(){
+ const originalGoHome=window.goHome;
+ function setTab(tab){document.querySelectorAll('[data-v23-tab]').forEach(b=>{if(b.dataset.v23Tab===tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});document.querySelectorAll('.v31-desktop-links button').forEach(b=>{const txt=b.textContent.trim();const key=txt==='Accueil'?'home':txt==='Recettes'?'recipes':txt==='Favoris'?'favorites':'profile';if(key===tab||tab==='favorites'&&key==='favorites')b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')})}
+ function closeFavorites(){document.body.classList.remove('marmito-v34-inner');const p=document.getElementById('marmito-favorites-page');if(p)p.hidden=true}
+ function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+ function showFavorites(){const p=document.getElementById('marmito-favorites-page'),list=document.getElementById('marmito-v34-fav-content');if(!p||!list)return;const arr=typeof favs!=='undefined'&&Array.isArray(favs)?favs:[];list.replaceChildren();if(!arr.length){const empty=document.createElement('p');empty.textContent='Aucune recette favorite pour le moment. Explorez les recettes et ajoutez celles que vous aimez.';list.appendChild(empty)}else{arr.forEach((f,i)=>{const card=document.createElement('article');card.className='marmito-v34-fav-card';const h=document.createElement('h3');h.textContent=f.title||'Recette';const sub=document.createElement('p');sub.textContent=[f.region,f.type].filter(Boolean).join(' · ');const btn=document.createElement('button');btn.type='button';btn.textContent='Voir la recette';btn.addEventListener('click',()=>{closeFavorites();if(typeof originalGoHome==='function')originalGoHome();setTab('recipes');if(typeof cookFav==='function')cookFav(f.title)});card.append(h,sub,btn);list.appendChild(card)})}p.hidden=false;document.body.classList.add('marmito-v34-inner');window.scrollTo({top:0,behavior:'instant'})}
+ window.marmitoNavigate=function(page){if(typeof closeDrawer==='function')closeDrawer();closeFavorites();if(page==='home'||page==='recipes'){if(typeof originalGoHome==='function')originalGoHome();setTab(page);if(page==='recipes'){const search=document.getElementById('recipe-search');if(search){search.scrollIntoView({block:'center',behavior:'smooth'});search.focus({preventScroll:true})}}else window.scrollTo({top:0,behavior:'smooth'});return}if(page==='favorites'){if(typeof originalGoHome==='function')originalGoHome();showFavorites();setTab('favs');return}if(page==='profile'){if(typeof openProfile==='function')openProfile();setTab('profile');return}setTab('');if(page==='plan'&&typeof openPlanRepas==='function')openPlanRepas();else if(page==='shopping'&&typeof openShopping==='function')openShopping();else if(page==='experiences'&&typeof marmitoOpenMyExperiences==='function')marmitoOpenMyExperiences();else if(page==='admin'&&typeof marmitoOpenAdmin==='function')marmitoOpenAdmin()};
+ // Existing close/back handlers should return to the correct home state
+ if(typeof originalGoHome==='function')window.goHome=function(){closeFavorites();originalGoHome();setTab('home')};
+ setTab('home');
+})();
+</script></body>
 </html>
