@@ -777,6 +777,66 @@ body{background:var(--bg)}
 }
 @media(min-width:701px){.hero-banner{max-height:240px;overflow:hidden}}
 
+
+/* === MARMITO V29 — FICHES RECETTES : RELOOKING CSS UNIQUEMENT ===
+   Aucun identifiant, événement, contenu ou mécanisme de recette modifié. */
+.result-card.visible{
+  border:1px solid #DDE6C8;border-radius:24px;
+  box-shadow:0 12px 38px rgba(43,62,29,.11);background:#F7F9EE;
+}
+.result-card .result-header{
+  background:linear-gradient(145deg,#354A2A 0%,#5E6F2F 65%,#758445 100%);
+}
+.result-card .recipe-visual-banner{
+  min-height:142px;padding:24px 18px 18px;font-size:74px;
+  background:radial-gradient(ellipse at 50% 100%,rgba(255,249,219,.18),transparent 68%);
+}
+.result-card .result-header-info{padding:4px 22px 24px}
+.result-card .result-title{font-size:clamp(24px,5.6vw,34px);line-height:1.18;letter-spacing:-.025em}
+.result-card .result-region{color:#E6DDB8;font-size:11px;letter-spacing:.13em}
+.result-card .result-type{background:#C9A245;color:#302B1E;border-radius:999px;padding:5px 12px}
+.result-card .fav-btn{min-width:44px;min-height:44px;justify-content:center;border-radius:50%;background:rgba(255,255,255,.12);color:#F8F7EA}
+.result-card .fav-btn.active{color:#F4D479}
+.result-card .share-bar{background:#EDF1E3;border-top:0;padding:14px 18px;gap:8px}
+.result-card .share-bar .share-btn{
+  background:#FCFCF6!important;color:#344A27!important;
+  border:1px solid #CFDAB8!important;border-radius:12px;
+  padding:10px 13px;min-height:42px;line-height:1.3;
+}
+.result-card .share-bar .share-btn:focus-visible,
+.result-card .btn-start-cook:focus-visible{outline:3px solid #C9A245;outline-offset:3px}
+.result-card .share-bar #cooked-btn.cooked{background:#DDE6C8!important;color:#344A27!important;border-color:#5E6F2F!important}
+.result-card .result-body{background:#F7F9EE;padding:22px;gap:20px}
+.result-card .result-body>div:nth-child(1),
+.result-card .result-body>div:nth-child(2){background:#FCFCF6;border:1px solid #E1E8D5;border-radius:18px;padding:18px}
+.result-card .result-section-title{color:#40552D;font-size:12px;letter-spacing:.09em;margin-bottom:14px}
+.result-card .portions-row{background:#E9EFDC;border-radius:12px;padding:12px;margin-bottom:18px}
+.result-card .portions-slider{accent-color:#5E6F2F}
+.result-card .portions-val{color:#40552D}
+.result-card .ingredient-list{gap:8px}
+.result-card .ingredient-pill{background:#EAF0E0;border:1px solid #DAE4CA;border-radius:10px;padding:7px 10px;color:#344A27;line-height:1.35}
+.result-card .ing-qty{background:#DDE6C8;color:#344A27;border-radius:6px}
+.result-card .step{padding:14px 8px 14px 0;line-height:1.65}
+.result-card .step:not(:last-child){border-bottom:1px solid #EDF0E8}
+.result-card .step-icon-wrap{background:#E7EBDD}
+.result-card .btn-start-cook{border-radius:15px;min-height:54px;background:linear-gradient(110deg,#344A27,#5E6F2F);box-shadow:0 5px 16px rgba(52,74,39,.19);font-size:16px}
+.result-card .result-footer{border-top:0;gap:10px;padding-top:0}
+.result-card .meta-item{flex:1;min-width:95px;background:#EDF1E3;border:1px solid #DFE8D0;border-radius:12px;padding:12px}
+.result-card .meta-label{color:#667555;font-size:10px}
+.result-card .meta-value{color:#344A27}
+@media(max-width:600px){
+  .result-card.visible{border-radius:20px}
+  .result-card .recipe-visual-banner{min-height:108px;font-size:60px;padding:18px 12px 12px}
+  .result-card .result-header-info{padding:2px 16px 18px}
+  .result-card .result-title{font-size:clamp(22px,6vw,29px)}
+  .result-card .share-bar{padding:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .result-card .share-bar .share-btn{justify-content:center;min-width:0;white-space:normal;text-align:center;font-size:11px;padding:10px 7px}
+  .result-card .result-body{padding:12px;gap:14px}
+  .result-card .result-body>div:nth-child(1),.result-card .result-body>div:nth-child(2){padding:15px 12px}
+  .result-card .ingredient-pill{font-size:12px}
+  .result-card .meta-item{min-width:78px;padding:10px}
+}
+
 </style>
 </head>
 <body>
