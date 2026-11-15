@@ -26331,6 +26331,7 @@ const i18n = {
     'chip-side': 'Accompagnement',
     'chip-all': 'Tout',
     'btn-gen': '🎲 Surprends-moi',
+    'btn-another-recipe': 'Trouver une autre recette',
     'btn-filter': '🍳 Selon mes filtres',
     'limit-title': 'Limite atteinte',
     'limit-text': 'Tu as généré tes 20 recettes gratuites du mois. Passe à Saveur ou Chef pour plus de recettes et toutes les régions.',
@@ -26454,6 +26455,7 @@ const i18n = {
     'chip-side': 'Side dish',
     'chip-all': 'All',
     'btn-gen': '🎲 Surprise me',
+    'btn-another-recipe': 'Find another recipe',
     'btn-filter': '🍳 By my filters',
     'limit-title': 'Limit reached',
     'limit-text': 'You’ve used your 20 free recipes this month. Upgrade to Saveur or Chef for more recipes and all regions.',
@@ -26568,6 +26570,10 @@ function applyLang() {
   const langBtn = document.getElementById('lang-btn');
   if (langBtn) langBtn.textContent = currentLang === 'fr' ? 'EN' : 'FR';
   document.documentElement.lang = currentLang;
+  const anotherBtn=document.getElementById('gen-btn');
+  if(anotherBtn && !anotherBtn.disabled && cur && document.getElementById('result-card')?.classList.contains('visible')) {
+    anotherBtn.textContent=t('btn-another-recipe');
+  }
   const recipeCount=document.getElementById('rc');
   if(recipeCount)recipeCount.textContent=recipes.length+(currentLang==='en'?' recipes':' recettes');
 }
@@ -26855,7 +26861,7 @@ function generateRecipe(){
     const chosen=pickNoRepeat(randomPool,'random-all|'+JSON.stringify(marmitoDietState));
     show(chosen);
     incrementRecipeCount();
-    btn.disabled=false;btn.textContent="Trouver une autre recette";
+    btn.disabled=false;btn.textContent=t('btn-another-recipe');
   },1000);
 }
 
@@ -26951,13 +26957,23 @@ function cookTranslateOneStep(text){
   cookStepTranslationQueue.push(async()=>{
    try{
     const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q='+encodeURIComponent(text);
-    const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),12000);
-    let response;
-    try{response=await fetch(url,{signal:controller.signal});}finally{clearTimeout(timeout);}
-    if(!response.ok)throw new Error('Translation unavailable');
-    const data=await response.json();const result=data[0].map(x=>x[0]).join('').trim();
-    if(!result)throw new Error('Empty translation');
+    let result='';
+    for(let attempt=0;attempt<3;attempt++){
+     try{
+      const controller=new AbortController();
+      const timeout=setTimeout(()=>controller.abort(),12000);
+      let response;
+      try{response=await fetch(url,{signal:controller.signal,cache:'no-store'});}finally{clearTimeout(timeout);}
+      if(!response.ok)throw new Error('Translation unavailable');
+      const data=await response.json();
+      result=Array.isArray(data?.[0])?data[0].map(x=>x[0]||'').join('').trim():'';
+      if(!result)throw new Error('Empty translation');
+      break;
+     }catch(e){
+      if(attempt<2)await new Promise(done=>setTimeout(done,400*(attempt+1)));
+     }
+    }
+    if(!result)throw new Error('Translation unavailable after retries');
     const latest=cookStepTranslationCache();latest[text]=result;
     try{localStorage.setItem(COOK_STEP_EN_KEY,JSON.stringify(latest));}catch(e){}
     resolve(result);
@@ -26981,7 +26997,7 @@ function marmitoStepTranslationStatus(host,missing,busy){
  }
  notice.replaceChildren();
  const msg=document.createElement('span');
- msg.textContent=busy?'Translating recipe steps… ('+missing+' remaining)':'Translation unavailable for '+missing+' step(s). Original instructions are shown.';
+ msg.textContent=busy?'Translating recipe steps… ('+missing+' remaining)':'Translation unavailable for '+missing+' step(s). Original French instructions are shown.';
  notice.appendChild(msg);
  if(!busy){
   const retry=document.createElement('button');retry.type='button';retry.textContent='Retry translation';
