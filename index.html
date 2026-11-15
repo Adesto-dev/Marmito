@@ -7,10 +7,10 @@
 <title>Marmito : Recettes du monde entier</title>
 <meta content="Découvre 418 recettes du monde entier. Japonaise, Italienne, Mexicaine, Antilles, Afrique, Maghreb et plus, avec les quantités et un chrono intégré. Gratuit." name="description"/>
 <meta content="index, follow" name="robots"/>
-<meta content="kLyMC1fyFzjpTg4H0h26HL2rCfn3QQM__gxJg6Kd4yo" name="google-site-verification">
+<meta content="kLyMC1fyFzjpTg4H0h26HL2rCfn3QQM__gxJg6Kd4yo" name="google-site-verification"/>
 <link href="https://marmito.ca/" rel="canonical"/>
 <!-- Open Graph -->
-<meta content="website" property="og:type"/>
+<meta content="website" property="og:type">
 <meta content="fr_CA" property="og:locale"/>
 <meta content="https://marmito.ca/" property="og:url"/>
 <meta content="Marmito" property="og:site_name"/>
@@ -953,6 +953,19 @@ main.main{width:min(1400px,100%)!important;max-width:1400px!important;padding:30
 .v32-filter-top button{border:0;border-radius:50%;background:#edf2e6;color:#34472e;width:38px;height:38px;cursor:pointer;font-size:19px}
 body.marmito-filter-open{overflow:hidden}
 @media(max-width:600px){.v32-discovery-actions{grid-template-columns:1fr 1fr;gap:8px}.v32-discovery-actions button{padding:12px;font-size:13px;min-height:54px}.v31-studio#marmito-filters-panel{border-radius:20px 20px 0 0!important;top:5dvh!important;height:95dvh!important;width:100vw!important;padding:16px 18px 32px!important;transform:translateY(105%)}.v31-studio#marmito-filters-panel.is-open{transform:translateY(0)}.v32-filter-top{top:-16px}}
+</style><style>
+/* V33 : planification et offre contextuelle hors des filtres */
+.v33-home-planning{margin:26px 0 24px;padding:25px;border:1px solid #dce4d0;border-radius:24px;background:linear-gradient(125deg,#f1f5e8,#fffdf7);box-shadow:0 8px 30px rgba(49,66,35,.06)}
+.v33-eyebrow{display:block;font-size:11px;font-weight:800;letter-spacing:.13em;color:#687d42;margin-bottom:8px}
+.v33-planning-heading h2{font-size:clamp(23px,3vw,34px);line-height:1.15;color:#34472e;margin:0 0 8px}
+.v33-planning-heading p{font-size:14px;color:#606a58;margin:0 0 18px}
+.v33-meal-plan-button{display:block;width:100%;border:0;border-radius:15px;background:#34472e;color:white;font-weight:800;font-size:15px;padding:17px 18px;cursor:pointer;box-shadow:0 6px 18px rgba(52,71,46,.18)}
+.v33-meal-plan-button:hover{background:#52673f}
+#v33-upgrade-banner{margin-top:16px;background:#fff;border:1px solid #e3dfcb;border-radius:16px;padding:16px;gap:12px;align-items:center}
+#v33-upgrade-banner:not([hidden]){display:flex}
+#v33-upgrade-banner[hidden]{display:none!important}
+#v33-upgrade-banner .home-pro-btn{white-space:normal}
+@media(max-width:620px){.v33-home-planning{padding:19px 16px;border-radius:20px;margin:20px 0}.v33-planning-heading h2{font-size:25px}#v33-upgrade-banner:not([hidden]){flex-wrap:wrap}#v33-upgrade-banner .home-pro-btn{width:100%}}
 </style></head>
 <body>
 <header class="header">
@@ -1059,7 +1072,14 @@ document.addEventListener('DOMContentLoaded',function(){
 <span class="search-icon">🔍</span>
 <input autocomplete="off" autocorrect="off" class="search-input" id="recipe-search" onblur="setTimeout(closeSearch,200)" oninput="onSearchInput(this.value)" placeholder="Chercher une recette..." spellcheck="false" type="text"/>
 <div class="search-dropdown" id="search-dropdown"></div>
-</div><div class="v32-discovery-actions"><button type="button" class="v32-open-filters" onclick="marmitoFiltersOpen()" aria-controls="marmito-filters-panel" aria-expanded="false">⚙️ Affiner ma recherche <span>→</span></button><button type="button" class="v32-surprise" onclick="generateRecipe()">✦ Surprends-moi</button></div><div class="v31-quick"><button class="v31-quick-chip" data-cuisine="Afrique" type="button">🌍 Afrique</button><button class="v31-quick-chip" data-cuisine="Antilles" type="button">🌴 Caraïbes</button><button class="v31-quick-chip" data-cuisine="Italienne" type="button">🍝 Italie</button><button class="v31-quick-chip" data-cuisine="Chinoise" type="button">🥢 Asie</button><button class="v31-quick-chip" data-cuisine="Mexicaine" type="button">🌮 Mexique</button></div><div class="fav-panel" id="fav-panel">
+</div><div class="v32-discovery-actions"><button aria-controls="marmito-filters-panel" aria-expanded="false" class="v32-open-filters" onclick="marmitoFiltersOpen()" type="button">⚙️ Affiner ma recherche <span>→</span></button><button class="v32-surprise" onclick="generateRecipe()" type="button">✦ Surprends-moi</button></div><div class="v31-quick"><button class="v31-quick-chip" data-cuisine="Afrique" type="button">🌍 Afrique</button><button class="v31-quick-chip" data-cuisine="Antilles" type="button">🌴 Caraïbes</button><button class="v31-quick-chip" data-cuisine="Italienne" type="button">🍝 Italie</button><button class="v31-quick-chip" data-cuisine="Chinoise" type="button">🥢 Asie</button><button class="v31-quick-chip" data-cuisine="Mexicaine" type="button">🌮 Mexique</button></div><section aria-label="Planification et abonnement" class="v33-home-planning" id="v33-home-planning"><div class="v33-planning-heading"><span class="v33-eyebrow">ORGANISEZ VOTRE SEMAINE</span><h2>Votre semaine, vos saveurs.</h2><p>Un menu complet en quelques instants, adapté à vos envies.</p></div><button class="v33-meal-plan-button" onclick="openPlanRepas()">📅 Créer mon plan de repas sur 7 jours</button><div aria-live="polite" class="home-pro-banner" hidden="" id="v33-upgrade-banner">
+<span class="home-pro-icon">👑</span>
+<div class="home-pro-text">
+<span class="home-pro-label">Fonctionnalité Saveur/Chef</span>
+<span class="home-pro-desc">Le plan 7 jours est réservé aux abonnés Saveur et Chef. Passez à Saveur pour débloquer.</span>
+</div>
+<button class="home-pro-btn" onclick="drawerAction('upgrade')">Passer à Saveur</button>
+</div></section><div class="fav-panel" id="fav-panel">
 <div class="fav-panel-header">
 <div class="fav-panel-title" data-i18n="fav-title">Mes favoris</div>
 <div style="display:flex;align-items:center;gap:8px">
@@ -1148,7 +1168,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="cook-ready-sub" data-i18n="cook-ready-sub">Bon appétit !</div>
 <button class="cook-ready-btn" data-i18n="btn-done" onclick="closeCookMode()">✓ Terminé</button>
 </div>
-</div></section><div class="v32-filter-scrim" id="marmito-filter-scrim" onclick="marmitoFiltersClose()" aria-hidden="true"></div><aside class="v31-studio" id="marmito-filters-panel" role="dialog" aria-modal="true" aria-label="Personnaliser les recettes" aria-hidden="true"><div class="v32-filter-top"><span>PERSONNALISER</span><button type="button" onclick="marmitoFiltersClose()" aria-label="Fermer les filtres">✕</button></div><div class="v31-studio-head"><span>VOTRE ATELIER</span><h2>À votre goût</h2><p>Composez une recette selon vos envies.</p></div><div class="card">
+</div></section><div aria-hidden="true" class="v32-filter-scrim" id="marmito-filter-scrim" onclick="marmitoFiltersClose()"></div><aside aria-hidden="true" aria-label="Personnaliser les recettes" aria-modal="true" class="v31-studio" id="marmito-filters-panel" role="dialog"><div class="v32-filter-top"><span>PERSONNALISER</span><button aria-label="Fermer les filtres" onclick="marmitoFiltersClose()" type="button">✕</button></div><div class="v31-studio-head"><span>VOTRE ATELIER</span><h2>À votre goût</h2><p>Composez une recette selon vos envies.</p></div><div class="card">
 <div class="card-label"><span data-i18n="card-ing">Tes ingrédients</span> <span data-i18n="card-ing-opt" style="font-weight:400;text-transform:none;letter-spacing:0">(optionnel)</span></div>
 <div class="ing-autocomplete-wrap">
 <div class="ingredient-field" id="ing-field">
@@ -1216,13 +1236,6 @@ document.addEventListener('DOMContentLoaded',function(){
 </div><div class="btn-row">
 <button class="btn-generate" data-i18n="btn-gen" id="gen-btn" onclick="generateRecipe()">🎲 Surprends-moi</button>
 <button class="btn-filter" data-i18n="btn-filter" id="filter-btn" onclick="generateWithFilters()">🍳 Selon mes filtres</button>
-</div><button class="btn-plan" data-i18n="btn-plan" onclick="openPlanRepas()">📅 Plan de repas 7 jours</button><div class="home-pro-banner">
-<span class="home-pro-icon">👑</span>
-<div class="home-pro-text">
-<span class="home-pro-label" data-i18n="plan-pro-title">Fonctionnalité Saveur/Chef</span>
-<span class="home-pro-desc" data-i18n="plan-pro-desc">Le plan 7 jours est réservé aux abonnés Saveur et Chef. Passez à Saveur pour débloquer.</span>
-</div>
-<button class="home-pro-btn" data-i18n="plan-pro-btn" onclick="drawerAction('upgrade')">Passer à Saveur</button>
 </div><div class="limit-banner" id="limit-banner">
 <h3 data-i18n="limit-title">Limite atteinte</h3>
 <p data-i18n="limit-text">Tu as généré tes 20 recettes gratuites du mois. Passe à Saveur ou Chef pour plus de recettes et toutes les régions.</p>
@@ -1488,6 +1501,31 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 </div>
 <script>
+function marmitoUpdateHomeOffer(){
+  const banner=document.getElementById('v33-upgrade-banner');
+  if(!banner)return;
+  const lang=typeof currentLang!=='undefined' && currentLang==='en'?'en':'fr';
+  const plan=typeof userPlan!=='undefined'?userPlan:'free';
+  if(plan==='chef'){banner.hidden=true;return;}
+  banner.hidden=false;
+  const title=banner.querySelector('.home-pro-label');
+  const desc=banner.querySelector('.home-pro-desc');
+  const btn=banner.querySelector('.home-pro-btn');
+  if(plan==='saveur'){
+    if(title)title.textContent=lang==='en'?'Go further with Chef':'Passez au niveau Chef';
+    if(desc)desc.textContent=lang==='en'?'Unlock all 418 recipes and Chef benefits.':'Débloquez les 418 recettes et les avantages Chef.';
+    if(btn)btn.textContent=lang==='en'?'Upgrade to Chef':'Passer à Chef';
+  }else{
+    if(title)title.textContent=lang==='en'?'Discover Marmito Saveur & Chef':'Découvrez Saveur et Chef';
+    if(desc)desc.textContent=lang==='en'?'Unlock the 7-day meal plan and more recipes with Saveur or Chef.':'Débloquez le plan de 7 jours et davantage de recettes avec Saveur ou Chef.';
+    if(btn)btn.textContent=lang==='en'?'Explore plans':'Voir les abonnements';
+  }
+  const mealBtn=document.querySelector('.v33-meal-plan-button');
+  if(mealBtn)mealBtn.textContent=lang==='en'?'📅 Create my 7-day meal plan':'📅 Créer mon plan de repas sur 7 jours';
+}
+
+document.addEventListener('click',function(e){if(e.target.closest('[onclick*="setLang"], [onclick*="switchLang"], [onclick*="toggleLang"]'))setTimeout(marmitoUpdateHomeOffer,0);});
+</script><script>
 
   // ===== SUPABASE AUTH =====
   const SUPABASE_URL = 'https://kfaabpwvisormfrwceaa.supabase.co';
@@ -1657,6 +1695,7 @@ document.addEventListener('DOMContentLoaded',function(){
       }
       if (upgradeBtn) upgradeBtn.style.display = recipeCount >= getPlanLimit() ? '' : 'none';
     }
+    marmitoUpdateHomeOffer();
     const banner = document.getElementById('limit-banner');
     if (banner) banner.classList.toggle('show', userPlan === 'free' && recipeCount >= getPlanLimit());
   }
