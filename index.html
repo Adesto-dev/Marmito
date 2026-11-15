@@ -28692,5 +28692,85 @@ function marmitoV41SyncProfile(){
  }
 })();
 </script>
+
+<style id="v44-navigation-layer-fix">
+/* The bottom navigation stays reachable above full-page screens. */
+@media(max-width:800px){
+ .marmito-v23-bottom-nav{z-index:1800!important}
+ body.marmito-v24-recipe-open .marmito-v23-bottom-nav{display:none}
+}
+/* Drawer and its scrim must be above the active page and bottom navigation. */
+#drawer,#drawer-overlay{z-index:2300!important}
+</style>
+<script id="v44-navigation-fix">
+(function(){
+ 'use strict';
+ const pageIds=[
+  'profile-overlay','v40-favorites-overlay','history-overlay','plan-overlay',
+  'shopping-overlay','about-overlay','tips-overlay','contact-overlay',
+  'pricing-overlay','referral-overlay','marmito-myexp-overlay',
+  'marmito-published-overlay','marmito-experience-overlay',
+  'marmito-admin-overlay'
+ ];
+ const pageClassNames=['profile-overlay','history-overlay','shopping-overlay','plan-overlay'];
+ function closeScreens(){
+  pageIds.forEach(id=>{
+   const el=document.getElementById(id);
+   if(el)el.classList.remove('open','visible');
+  });
+  document.querySelectorAll('.'+pageClassNames.join(',.')).forEach(el=>{
+   if(!pageIds.includes(el.id))el.classList.remove('open','visible');
+  });
+  const sheet=document.getElementById('profile-sheet');
+  if(sheet)sheet.style.animation='';
+  const fav=document.getElementById('marmito-favorites-page');
+  if(fav)fav.hidden=true;
+  document.body.classList.remove('marmito-v34-inner');
+  document.body.style.overflow='';
+ }
+ // The V34 router powers both the drawer and the bottom navigation.
+ const oldNavigate=window.marmitoNavigate;
+ if(typeof oldNavigate==='function'){
+  window.marmitoNavigate=function(page){
+   closeScreens();
+   return oldNavigate.apply(this,arguments);
+  };
+ }
+ // Legacy drawer items also use drawerAction and open their pages asynchronously.
+ const oldDrawerAction=window.drawerAction;
+ if(typeof oldDrawerAction==='function'){
+  window.drawerAction=function(action){
+   closeScreens();
+   return oldDrawerAction.apply(this,arguments);
+  };
+ }
+ // Direct shortcuts inside the profile use the same page transition behavior.
+ ['marmitoOpenFavoritesPage','marmitoOpenHistoryPage'].forEach(name=>{
+  const old=window[name];
+  if(typeof old==='function')window[name]=function(){
+   closeScreens();
+   return old.apply(this,arguments);
+  };
+ });
+ // Keep bottom navigation's selected state aligned with visible full-page screens.
+ const nav=document.querySelector('.marmito-v23-bottom-nav');
+ if(nav){
+  const sync=()=>{
+   const profile=document.getElementById('profile-overlay')?.classList.contains('open');
+   const favorites=document.getElementById('v40-favorites-overlay')?.classList.contains('open') ||
+      (document.getElementById('marmito-favorites-page')?.hidden===false);
+   const selected=profile?'profile':favorites?'favs':null;
+   if(selected)nav.querySelectorAll('[data-v23-tab]').forEach(b=>{
+    if(b.dataset.v23Tab===selected)b.setAttribute('aria-current','page');
+    else b.removeAttribute('aria-current');
+   });
+  };
+  ['profile-overlay','v40-favorites-overlay','marmito-favorites-page'].forEach(id=>{
+   const el=document.getElementById(id);
+   if(el)new MutationObserver(sync).observe(el,{attributes:true,attributeFilter:['class','hidden']});
+  });
+ }
+})();
+</script>
 </body>
 </html>
