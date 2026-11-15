@@ -930,6 +930,29 @@ main.main{width:min(1400px,100%)!important;max-width:1400px!important;padding:30
 #profile-overlay .profile-card,.profile-overlay .profile-card,.shopping-overlay .shopping-card,.plan-overlay .plan-card{border-radius:24px!important}
 @media(max-width:950px){.v31-desktop-links{display:none}.v31-hero{grid-template-columns:1fr 1fr}.v31-workspace{grid-template-columns:1fr}.v31-studio{position:static;order:0}.v31-discovery{order:1}}
 @media(max-width:650px){.header{min-height:65px!important;padding:10px 17px!important}main.main{padding:18px 14px 100px!important}.v31-hero{grid-template-columns:1fr;gap:12px;margin-bottom:30px}.v31-intro{min-height:240px;border-radius:24px;padding:30px 25px}.v31-intro .tagline h1{font-size:38px!important}.v31-hero .daily-card{min-height:215px!important;border-radius:24px!important;padding:25px!important}.v31-hero .daily-title{font-size:30px!important}.v31-section-head h2{font-size:30px}.v31-workspace{gap:20px}.v31-studio{padding:18px;border-radius:22px}.v31-studio-head h2{font-size:27px}.v31-discovery{gap:12px}.v31-quick-chip{padding:10px 13px;font-size:12px}.v31-studio .btn-row{grid-template-columns:1fr 1fr}.marmito-v23-bottom-nav{border-radius:22px 22px 0 0!important;box-shadow:0 -8px 30px #1e32251a!important}}
+</style><style>
+/* V32 — Accueil aéré et filtres à la demande */
+.v31-workspace{display:block!important;max-width:1080px;margin:0 auto}
+.v31-discovery{gap:22px!important}
+.v31-section-head{max-width:1080px;margin:0 auto 24px!important}
+.v31-discovery .search-wrap{max-width:none}
+.v32-discovery-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.v32-discovery-actions button{min-height:58px;padding:12px 20px;border-radius:18px;font-size:15px;font-weight:750;cursor:pointer;transition:transform .18s,box-shadow .18s}
+.v32-discovery-actions button:hover{transform:translateY(-2px);box-shadow:0 10px 25px #293b2417}
+.v32-open-filters{display:flex;justify-content:space-between;align-items:center;background:#fff;color:#34472e;border:1px solid #dce4d4}
+.v32-open-filters span{font-size:22px}
+.v32-surprise{background:#34472e;color:#fff;border:1px solid #34472e}
+.v31-quick{padding-bottom:4px!important}
+.v32-filter-scrim{position:fixed;inset:0;background:rgba(18,30,18,.55);z-index:99980;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s,visibility .22s}
+.v32-filter-scrim.is-open{opacity:1;visibility:visible;pointer-events:auto}
+.v31-studio# marmito-filters-panel{display:none}
+.v31-studio#marmito-filters-panel{position:fixed!important;right:0!important;top:0!important;bottom:0!important;width:min(500px,100vw)!important;max-width:100vw!important;height:100dvh!important;overflow-y:auto!important;overscroll-behavior:contain;z-index:99981!important;border-radius:26px 0 0 26px!important;box-shadow:-15px 0 70px #12211635!important;transform:translateX(105%);visibility:hidden;pointer-events:none;transition:transform .26s ease,visibility .26s!important;padding:20px 24px 36px!important;display:flex!important;gap:14px!important}
+.v31-studio#marmito-filters-panel.is-open{transform:translateX(0);visibility:visible;pointer-events:auto}
+.v32-filter-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e4e8dd;padding-bottom:12px;position:sticky;top:-20px;background:#fff;z-index:2}
+.v32-filter-top span{font-size:11px;font-weight:850;letter-spacing:2px;color:#7c896f}
+.v32-filter-top button{border:0;border-radius:50%;background:#edf2e6;color:#34472e;width:38px;height:38px;cursor:pointer;font-size:19px}
+body.marmito-filter-open{overflow:hidden}
+@media(max-width:600px){.v32-discovery-actions{grid-template-columns:1fr 1fr;gap:8px}.v32-discovery-actions button{padding:12px;font-size:13px;min-height:54px}.v31-studio#marmito-filters-panel{border-radius:20px 20px 0 0!important;top:5dvh!important;height:95dvh!important;width:100vw!important;padding:16px 18px 32px!important;transform:translateY(105%)}.v31-studio#marmito-filters-panel.is-open{transform:translateY(0)}.v32-filter-top{top:-16px}}
 </style></head>
 <body>
 <header class="header">
@@ -1036,7 +1059,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <span class="search-icon">🔍</span>
 <input autocomplete="off" autocorrect="off" class="search-input" id="recipe-search" onblur="setTimeout(closeSearch,200)" oninput="onSearchInput(this.value)" placeholder="Chercher une recette..." spellcheck="false" type="text"/>
 <div class="search-dropdown" id="search-dropdown"></div>
-</div><div class="v31-quick"><button class="v31-quick-chip" data-cuisine="Afrique" type="button">🌍 Afrique</button><button class="v31-quick-chip" data-cuisine="Antilles" type="button">🌴 Caraïbes</button><button class="v31-quick-chip" data-cuisine="Italienne" type="button">🍝 Italie</button><button class="v31-quick-chip" data-cuisine="Chinoise" type="button">🥢 Asie</button><button class="v31-quick-chip" data-cuisine="Mexicaine" type="button">🌮 Mexique</button></div><div class="fav-panel" id="fav-panel">
+</div><div class="v32-discovery-actions"><button type="button" class="v32-open-filters" onclick="marmitoFiltersOpen()" aria-controls="marmito-filters-panel" aria-expanded="false">⚙️ Affiner ma recherche <span>→</span></button><button type="button" class="v32-surprise" onclick="generateRecipe()">✦ Surprends-moi</button></div><div class="v31-quick"><button class="v31-quick-chip" data-cuisine="Afrique" type="button">🌍 Afrique</button><button class="v31-quick-chip" data-cuisine="Antilles" type="button">🌴 Caraïbes</button><button class="v31-quick-chip" data-cuisine="Italienne" type="button">🍝 Italie</button><button class="v31-quick-chip" data-cuisine="Chinoise" type="button">🥢 Asie</button><button class="v31-quick-chip" data-cuisine="Mexicaine" type="button">🌮 Mexique</button></div><div class="fav-panel" id="fav-panel">
 <div class="fav-panel-header">
 <div class="fav-panel-title" data-i18n="fav-title">Mes favoris</div>
 <div style="display:flex;align-items:center;gap:8px">
@@ -1125,7 +1148,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="cook-ready-sub" data-i18n="cook-ready-sub">Bon appétit !</div>
 <button class="cook-ready-btn" data-i18n="btn-done" onclick="closeCookMode()">✓ Terminé</button>
 </div>
-</div></section><aside class="v31-studio"><div class="v31-studio-head"><span>VOTRE ATELIER</span><h2>À votre goût</h2><p>Composez une recette selon vos envies.</p></div><div class="card">
+</div></section><div class="v32-filter-scrim" id="marmito-filter-scrim" onclick="marmitoFiltersClose()" aria-hidden="true"></div><aside class="v31-studio" id="marmito-filters-panel" role="dialog" aria-modal="true" aria-label="Personnaliser les recettes" aria-hidden="true"><div class="v32-filter-top"><span>PERSONNALISER</span><button type="button" onclick="marmitoFiltersClose()" aria-label="Fermer les filtres">✕</button></div><div class="v31-studio-head"><span>VOTRE ATELIER</span><h2>À votre goût</h2><p>Composez une recette selon vos envies.</p></div><div class="card">
 <div class="card-label"><span data-i18n="card-ing">Tes ingrédients</span> <span data-i18n="card-ing-opt" style="font-weight:400;text-transform:none;letter-spacing:0">(optionnel)</span></div>
 <div class="ing-autocomplete-wrap">
 <div class="ingredient-field" id="ing-field">
@@ -28233,5 +28256,28 @@ for (const [id, openName, closeName] of marmitoExperienceDialogs) {
   };
 }
 </script>
-<script>document.addEventListener('click',function(e){const b=e.target.closest('.v31-quick-chip');if(!b)return;const select=document.getElementById('cuisine-select');if(!select)return;select.value=b.dataset.cuisine;select.dispatchEvent(new Event('change',{bubbles:true}));document.querySelectorAll('.v31-quick-chip').forEach(x=>x.classList.toggle('v31-active',x===b));});</script></body>
+<script>document.addEventListener('click',function(e){const b=e.target.closest('.v31-quick-chip');if(!b)return;const select=document.getElementById('cuisine-select');if(!select)return;select.value=b.dataset.cuisine;select.dispatchEvent(new Event('change',{bubbles:true}));document.querySelectorAll('.v31-quick-chip').forEach(x=>x.classList.toggle('v31-active',x===b));});</script>
+<script>
+(function(){
+  const panel=()=>document.getElementById('marmito-filters-panel');
+  const scrim=()=>document.getElementById('marmito-filter-scrim');
+  const trigger=()=>document.querySelector('.v32-open-filters');
+  window.marmitoFiltersOpen=function(){
+    panel()?.classList.add('is-open');scrim()?.classList.add('is-open');
+    panel()?.setAttribute('aria-hidden','false');trigger()?.setAttribute('aria-expanded','true');
+    document.body.classList.add('marmito-filter-open');
+    panel()?.querySelector('.v32-filter-top button')?.focus();
+  };
+  window.marmitoFiltersClose=function(){
+    panel()?.classList.remove('is-open');scrim()?.classList.remove('is-open');
+    panel()?.setAttribute('aria-hidden','true');trigger()?.setAttribute('aria-expanded','false');
+    document.body.classList.remove('marmito-filter-open');
+    trigger()?.focus();
+  };
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel()?.classList.contains('is-open'))marmitoFiltersClose();});
+  // Close only when the existing filter action is invoked; keep original functions untouched.
+  ['gen-btn','filter-btn'].forEach(function(id){document.getElementById(id)?.addEventListener('click',function(){marmitoFiltersClose();});});
+})();
+</script>
+</body>
 </html>
