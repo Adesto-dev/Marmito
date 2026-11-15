@@ -997,7 +997,26 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 #plan-overlay.visible .plan-title{font-size:25px!important;font-family:Georgia,serif!important;color:#34472e!important}
 .marmito-v23-bottom-nav button[aria-current="page"]{color:#34472e!important;font-weight:800!important}
 @media(max-width:700px){.marmito-v34-page{width:calc(100% - 32px);margin:16px auto 90px}.marmito-v34-page-head{align-items:flex-start;flex-direction:column;padding:24px 0}.marmito-v34-fav-grid{grid-template-columns:1fr}.marmito-v34-page h1{font-size:34px}#profile-overlay.visible .profile-sheet-body,#plan-overlay.visible .plan-sheet-body{padding:20px 18px 110px!important}}
-</style></head>
+</style><style id="marmito-v39-navigation-profile">
+/* V39 — Harmonisation navigation et profil, sans changement de logique */
+#drawer{background:var(--bg,#faf8f1);box-shadow:18px 0 60px rgba(29,45,24,.16)}
+#drawer .drawer-top{background:var(--grad-dark);padding-top:max(22px,env(safe-area-inset-top));border-radius:0 0 22px 0}
+#drawer .drawer-nav{padding:18px 14px 28px}
+#drawer .drawer-section-label{letter-spacing:.1em;font-size:11px;font-weight:750;color:var(--fg2);margin:15px 10px 9px}
+#drawer .drawer-item{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;border-radius:13px;padding:12px 14px;margin:3px 0;text-align:left;transition:background .15s,color .15s}
+#drawer .drawer-item:hover,#drawer .drawer-item:focus-visible{background:rgba(91,112,60,.12);outline-offset:2px}
+#drawer .drawer-divider{margin:18px 8px;border-color:var(--border)}
+#profile-overlay .profile-sheet-body{background:var(--bg);padding-bottom:max(32px,env(safe-area-inset-bottom))}
+#profile-overlay .profile-avatar-row{background:var(--surface,#fff);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 5px 18px rgba(30,48,25,.04)}
+#profile-overlay .profile-avatar{box-shadow:0 0 0 4px rgba(91,112,60,.10)}
+#profile-overlay .profile-plan-card{border-radius:18px;box-shadow:0 5px 18px rgba(30,48,25,.05)}
+#profile-overlay .profile-tabs{border-radius:13px;padding:4px;background:rgba(91,112,60,.08)}
+#profile-overlay .profile-tab-btn{border-radius:10px;min-height:40px}
+#profile-overlay .profile-actions button,#profile-overlay #refresh-plan-btn{min-height:42px}
+#profile-overlay .profile-sheet-body button:focus-visible,#drawer button:focus-visible{outline:2px solid var(--olive,#607747);outline-offset:2px}
+@media(max-width:600px){#drawer .drawer-nav{padding:14px 12px 30px}#profile-overlay .profile-avatar-row{padding:16px}#profile-overlay .profile-sheet-body{padding-left:16px;padding-right:16px}}
+</style>
+</head>
 <body>
 <header class="header">
 <button aria-label="Menu" class="btn-hamburger" onclick="openDrawer()" title="Menu">
@@ -1359,7 +1378,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="page-nav-header">
 <div class="page-nav-inner">
 <button aria-label="Retour" class="page-back-btn" onclick="closeHistory()">←</button>
-<div class="page-nav-title" data-i18n="history-title">📋 Mon historique</div>
+<div class="page-nav-title" data-i18n="history-title">Mon historique</div>
 </div>
 </div>
 </div>
@@ -1375,7 +1394,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="page-nav-header">
 <div class="page-nav-inner">
 <button aria-label="Retour" class="page-back-btn" onclick="closeContact()">←</button>
-<div class="page-nav-title" data-i18n="contact-title">✉️ Nous contacter</div>
+<div class="page-nav-title" data-i18n="contact-title">Nous contacter</div>
 </div>
 </div>
 </div>
