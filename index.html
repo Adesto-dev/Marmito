@@ -1271,10 +1271,10 @@
     panel.setAttribute('role', 'alert');
     panel.style.cssText = 'position:fixed;z-index:100100;inset:auto 12px 20px;max-width:440px;margin:auto;background:#fff8f0;color:#2a1800;border:2px solid #a9683e;border-radius:12px;padding:16px;box-shadow:0 6px 30px #0004';
     const msg = document.createElement('p');
-    msg.textContent = 'Connexion temporairement indisponible. Vérifie ta connexion puis réessaie.';
+    msg.textContent = marmitoV22Text('Connexion temporairement indisponible. Vérifie ta connexion puis réessaie.', 'Connection temporarily unavailable. Check your connection and try again.');
     const retry = document.createElement('button');
     retry.type = 'button';
-    retry.textContent = 'Réessayer';
+    retry.textContent = marmitoV22Text('Réessayer', 'Try again');
     retry.style.cssText = 'padding:9px 16px;border:0;border-radius:8px;background:#7a4820;color:white;cursor:pointer';
     retry.addEventListener('click', async () => {
       retry.disabled = true;
@@ -1695,6 +1695,7 @@
     const back = panel.querySelector('.marmito-admin-back');
     (back || panel).focus();
     document.addEventListener('keydown', marmitoAdminKeydown, true);
+    marmitoAdminPage = 0;
     marmitoLoadPendingExperiences();
   }
 
@@ -27387,6 +27388,9 @@ if ('serviceWorker' in navigator) {
 let marmitoAdminBusy = false;
 let marmitoAdminPage = 0;
 const MARMITO_ADMIN_PAGE_SIZE = 50;
+function marmitoV22Text(fr, en) {
+  return typeof currentLang !== 'undefined' && currentLang === 'en' ? en : fr;
+}
 function marmitoAdminMessage(message) {
   const el = document.getElementById('marmito-admin-status');
   if (el) el.textContent = message;
@@ -27404,14 +27408,25 @@ function marmitoAdminRenderPagination(total) {
   if (pages <= 1) return;
   const previous = document.createElement('button');
   previous.type = 'button'; previous.className = 'marmito-admin-back';
-  previous.textContent = '← Précédent'; previous.disabled = marmitoAdminPage === 0;
+  previous.textContent = marmitoV22Text('← Précédent', '← Previous'); previous.disabled = marmitoAdminPage === 0;
   previous.addEventListener('click', () => marmitoAdminChangePage(-1));
-  const info = marmitoAdminNode('span', `Page ${marmitoAdminPage + 1} / ${pages}`);
+  const info = marmitoAdminNode('span', `${marmitoV22Text('Page', 'Page')} ${marmitoAdminPage + 1} / ${pages}`);
   const next = document.createElement('button');
   next.type = 'button'; next.className = 'marmito-admin-back';
-  next.textContent = 'Suivant →'; next.disabled = marmitoAdminPage >= pages - 1;
+  next.textContent = marmitoV22Text('Suivant →', 'Next →'); next.disabled = marmitoAdminPage >= pages - 1;
   next.addEventListener('click', () => marmitoAdminChangePage(1));
   host.append(previous, info, next);
+}
+function marmitoAdminShowRetry() {
+  const host = document.getElementById('marmito-admin-pagination');
+  if (!host) return;
+  host.replaceChildren();
+  const retry = document.createElement('button');
+  retry.type = 'button';
+  retry.className = 'marmito-admin-back';
+  retry.textContent = marmitoV22Text('Réessayer', 'Try again');
+  retry.addEventListener('click', () => marmitoLoadPendingExperiences());
+  host.append(retry);
 }
 function marmitoAdminChangePage(delta) {
   if (marmitoAdminBusy || marmitoAdminPage + delta < 0) return;
@@ -27425,21 +27440,28 @@ async function marmitoLoadPendingExperiences() {
   marmitoAdminBusy = true;
   queue.replaceChildren();
   document.getElementById('marmito-admin-pagination')?.replaceChildren();
-  marmitoAdminMessage('Chargement des expériences en attente…');
+  marmitoAdminMessage(marmitoV22Text('Chargement des expériences en attente…', 'Loading pending experiences…'));
   try {
     if (!await marmitoRefreshAdminRole()) {
       marmitoAdminMessage('Accès administrateur non autorisé.');
       marmitoCloseAdmin();
       return;
     }
-    const start = marmitoAdminPage * MARMITO_ADMIN_PAGE_SIZE;
-    const {data, error, count} = await sb.from('recipe_experiences')
-      .select('*', {count:'exact'}).eq('visibility', 'pending').eq('moderation_status', 'pending')
-      .order('created_at', {ascending: true}).order('id', {ascending:true})
-      .range(start, start + MARMITO_ADMIN_PAGE_SIZE - 1);
-    if (error) throw error;
-    if (marmitoAdminPage > 0 && !data.length) { marmitoAdminPage--; marmitoAdminBusy = false; return marmitoLoadPendingExperiences(); }
-    marmitoAdminMessage(count ? `${count} expérience(s) en attente. Page ${marmitoAdminPage + 1} sur ${Math.ceil(count / MARMITO_ADMIN_PAGE_SIZE)}.` : 'Aucune expérience en attente.');
+    let data, count;
+    // Un seul appel de chargement contrôle marmitoAdminBusy, même si la page a été vidée.
+    for (;;) {
+      const start = marmitoAdminPage * MARMITO_ADMIN_PAGE_SIZE;
+      const result = await sb.from('recipe_experiences')
+        .select('*', {count:'exact'}).eq('visibility', 'pending').eq('moderation_status', 'pending')
+        .order('created_at', {ascending: true}).order('id', {ascending:true})
+        .range(start, start + MARMITO_ADMIN_PAGE_SIZE - 1);
+      if (result.error) throw result.error;
+      data = result.data || [];
+      count = result.count || 0;
+      if (marmitoAdminPage === 0 || data.length) break;
+      marmitoAdminPage = Math.max(0, Math.ceil(count / MARMITO_ADMIN_PAGE_SIZE) - 1);
+    }
+    marmitoAdminMessage(count ? marmitoV22Text(`${count} expérience(s) en attente. Page ${marmitoAdminPage + 1} sur ${Math.ceil(count / MARMITO_ADMIN_PAGE_SIZE)}.`, `${count} pending experience(s). Page ${marmitoAdminPage + 1} of ${Math.ceil(count / MARMITO_ADMIN_PAGE_SIZE)}.`) : marmitoV22Text('Aucune expérience en attente.', 'No pending experiences.'));
     marmitoAdminRenderPagination(count || 0);
     for (const item of data) {
       const card = document.createElement('article');
@@ -27499,7 +27521,8 @@ async function marmitoLoadPendingExperiences() {
     }
   } catch (err) {
     console.error('[Marmito Admin] Chargement impossible', err);
-    marmitoAdminMessage('Impossible de charger les expériences. Vérifie les droits de lecture Supabase et réessaie.');
+    marmitoAdminMessage(marmitoV22Text('Impossible de charger les expériences. Vérifie les droits de lecture Supabase et réessaie.', 'Unable to load experiences. Check Supabase read permissions and try again.'));
+    marmitoAdminShowRetry();
   } finally { marmitoAdminBusy = false; }
 }
 async function marmitoModerateExperience(id, fn, label) {
