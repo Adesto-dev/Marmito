@@ -1332,33 +1332,53 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 </div>
 <div class="profile-sheet-body">
-<!-- Avatar + email + membre depuis -->
-<div class="profile-avatar-row">
-<div class="profile-avatar" id="p-avatar">?</div>
-<div class="profile-avatar-info">
-<div class="profile-avatar-email" id="p-email">—</div>
-<div class="profile-avatar-since" id="p-since">—</div>
-</div>
-</div>
-<!-- Plan card with progress bar -->
-<div class="profile-plan-card plan-card-free" id="p-plan-card">
-<div class="profile-plan-top">
-<span class="profile-plan-badge badge-free" id="p-plan-badge">Gratuit</span>
-<span class="profile-plan-count" id="p-plan-count">0 recettes</span>
-</div>
-<div class="profile-plan-bar-wrap">
-<div class="profile-plan-bar" id="p-plan-bar" style="width:0%"></div>
-</div>
-<div class="profile-plan-bar-label" id="p-plan-bar-label">0 / 5</div>
-</div>
-<!-- Action buttons (upgrade or manage) -->
-<div class="profile-actions" id="p-actions"></div>
-<button id="refresh-plan-btn" onclick="refreshPlanBtn()" style="width:100%;margin:6px 0 2px;padding:9px;background:none;border:1.5px solid var(--border);border-radius:10px;color:var(--fg2);font-family:inherit;font-size:13px;cursor:pointer">Rafraîchir mon plan</button>
-<!-- V40 : accès indépendants, sans listes intégrées au profil -->
-<div class="v40-profile-links">
-  <button type="button" class="v40-profile-link" onclick="marmitoOpenFavoritesPage()"><span><strong data-i18n="nav-favs">Mes favoris</strong><small>Retrouvez les recettes enregistrées</small></span><span aria-hidden="true">→</span></button>
-  <button type="button" class="v40-profile-link" onclick="marmitoOpenHistoryPage()"><span><strong data-i18n="history-title">Mon historique</strong><small>Consultez vos dernières recettes</small></span><span aria-hidden="true">→</span></button>
-</div>
+<!-- V41 : profil premium, inspiré des maquettes 2 et 3 -->
+<section class="v41-hero" aria-label="Compte Marmito">
+ <div class="v41-hero-decor" aria-hidden="true"><span class="v41-leaf v41-leaf-a"></span><span class="v41-leaf v41-leaf-b"></span></div>
+ <div class="v41-hero-top">
+  <div class="v41-avatar-ring"><div class="profile-avatar" id="p-avatar">?</div></div>
+  <div class="v41-hero-identity">
+   <div class="v41-eyebrow" id="v41-welcome">MON ESPACE CULINAIRE</div>
+   <h2 class="v41-greeting" id="v41-greeting">Bienvenue</h2>
+   <div class="profile-avatar-email" id="p-email">—</div>
+   <div class="profile-avatar-since" id="p-since">—</div>
+  </div>
+ </div>
+ <p class="v41-hero-caption" id="v41-caption">Vos recettes et vos découvertes, au même endroit.</p>
+</section>
+<section class="v41-membership" aria-label="Abonnement">
+ <div class="v41-section-kicker" id="v41-subscription-label">MON ABONNEMENT</div>
+ <div class="profile-plan-card plan-card-free" id="p-plan-card">
+  <div class="profile-plan-top">
+   <span class="profile-plan-badge badge-free" id="p-plan-badge">Gratuit</span>
+   <span class="v41-plan-status" id="v41-plan-status">Marmito</span>
+  </div>
+  <div class="profile-plan-count" id="p-plan-count">0 recettes</div>
+  <div class="profile-plan-bar-wrap"><div class="profile-plan-bar" id="p-plan-bar" style="width:0%"></div></div>
+  <div class="profile-plan-bar-label" id="p-plan-bar-label">0 %</div>
+ </div>
+ <div class="profile-actions" id="p-actions"></div>
+ <button id="refresh-plan-btn" class="v41-refresh" onclick="refreshPlanBtn()" type="button">Rafraîchir mon plan</button>
+</section>
+<section class="v41-personal" aria-label="Espaces personnels">
+ <div class="v41-section-heading"><h3 id="v41-personal-heading">Mes espaces</h3><p id="v41-personal-subheading">Retrouvez votre univers culinaire</p></div>
+ <div class="v41-feature-grid">
+  <button type="button" class="v41-feature-card v41-favorites" onclick="marmitoOpenFavoritesPage()">
+   <span class="v41-feature-art" aria-hidden="true"><svg viewBox="0 0 160 95" fill="none"><ellipse cx="80" cy="70" rx="62" ry="16" fill="#D7C7A8"/><ellipse cx="80" cy="61" rx="55" ry="23" fill="#F8F1E4" stroke="#B99E72" stroke-width="3"/><path d="M36 60c15-26 66-28 88 0" fill="#628044"/><circle cx="63" cy="52" r="12" fill="#D7743D"/><circle cx="91" cy="51" r="10" fill="#E8B44B"/><path d="M55 37c12 1 20 6 26 15M101 39c-7 4-12 9-16 14" stroke="#2E5D35" stroke-width="5" stroke-linecap="round"/></svg></span>
+   <span class="v41-feature-copy"><strong data-i18n="nav-favs">Mes favoris</strong><small id="v41-favs-desc">Vos recettes enregistrées</small></span>
+   <span class="v41-feature-arrow" aria-hidden="true">→</span>
+  </button>
+  <button type="button" class="v41-feature-card v41-history" onclick="marmitoOpenHistoryPage()">
+   <span class="v41-feature-art" aria-hidden="true"><svg viewBox="0 0 160 95" fill="none"><ellipse cx="79" cy="70" rx="58" ry="15" fill="#C8D1B3"/><rect x="37" y="37" width="86" height="35" rx="14" fill="#486A42"/><path d="M47 37c0-16 15-25 33-25s33 9 33 25" fill="#83A06C" stroke="#486A42" stroke-width="4"/><circle cx="80" cy="40" r="7" fill="#D8B46C"/><path d="M80 20v-7" stroke="#D8B46C" stroke-width="4" stroke-linecap="round"/></svg></span>
+   <span class="v41-feature-copy"><strong data-i18n="history-title">Mon historique</strong><small id="v41-history-desc">Les recettes consultées</small></span>
+   <span class="v41-feature-arrow" aria-hidden="true">→</span>
+  </button>
+ </div>
+ <div class="v41-links">
+  <button class="v41-link" type="button" onclick="marmitoV41OpenExperiences()"><span class="v41-link-icon" aria-hidden="true">✎</span><span id="v41-experiences-text">Mes expériences culinaires</span><span aria-hidden="true">›</span></button>
+  <button class="v41-link" type="button" onclick="marmitoV41OpenContact()"><span class="v41-link-icon" aria-hidden="true">?</span><span id="v41-contact-text">Aide et contact</span><span aria-hidden="true">›</span></button>
+ </div>
+</section>
 <!-- Logout -->
 <button class="btn-profile-logout" onclick="signOut()">
 <svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>
@@ -28449,6 +28469,93 @@ function marmitoOpenHistoryPage(){
  marmitoV40CloseProfileNow();
  if(typeof openHistory==='function')openHistory();
 }
+</script>
+
+<style id="v41-profile-premium">
+#profile-overlay .profile-sheet{background:#fbf8f1!important}
+#profile-overlay .profile-sheet-body{max-width:850px;width:100%;margin:0 auto;padding:24px clamp(16px,4vw,36px) 70px;box-sizing:border-box}
+#profile-overlay .page-nav-header{background:#fbf8f1}
+.v41-hero{position:relative;overflow:hidden;background:linear-gradient(125deg,#f1e7d4 0%,#fbf6eb 55%,#e8edda 100%);border:1px solid #e5ddca;border-radius:26px;padding:28px 26px 22px;box-shadow:0 9px 30px rgba(57,72,38,.055)}
+.v41-hero-decor{position:absolute;right:0;top:0;width:130px;height:110px;opacity:.45;pointer-events:none}
+.v41-leaf{position:absolute;display:block;background:#7f9864;border-radius:85% 0 85% 0;transform:rotate(-30deg)}
+.v41-leaf-a{width:80px;height:28px;top:22px;right:-10px}.v41-leaf-b{width:70px;height:24px;top:65px;right:23px;transform:rotate(23deg)}
+.v41-hero-top{display:flex;align-items:center;gap:22px;position:relative;z-index:1}
+.v41-avatar-ring{width:112px;height:112px;flex:0 0 112px;border-radius:50%;background:#fffaf0;padding:7px;box-shadow:0 4px 20px #3b4c301f;box-sizing:border-box}
+#profile-overlay .v41-avatar-ring .profile-avatar{width:100%;height:100%;font-size:34px;background:linear-gradient(140deg,#36552d,#829a5d);color:#fff;border:2px solid #e8e1cf}
+.v41-hero-identity{min-width:0}.v41-eyebrow,.v41-section-kicker{font-size:11px;letter-spacing:.13em;font-weight:800;color:#6d7955}
+.v41-greeting{font-family:"Playfair Display",Georgia,serif;font-size:clamp(23px,4vw,34px);line-height:1.2;color:#2f482d;margin:7px 0 9px}
+#profile-overlay .v41-hero .profile-avatar-email{font-size:14px;color:#465246;white-space:normal;overflow-wrap:anywhere}
+#profile-overlay .v41-hero .profile-avatar-since{font-size:12px;margin-top:7px}
+.v41-hero-caption{position:relative;z-index:1;margin:20px 0 0;font-size:13px;color:#5c6556}
+.v41-membership{margin-top:24px}
+.v41-membership .v41-section-kicker{margin:0 0 10px 4px}
+#profile-overlay .v41-membership .profile-plan-card{border-radius:20px;padding:23px 24px;margin:0;background:linear-gradient(115deg,#37582f,#688549)!important;border:1px solid #567442!important;color:white!important;box-shadow:0 9px 22px #344c3222}
+#profile-overlay .v41-membership .profile-plan-top{align-items:center;gap:10px}
+#profile-overlay .v41-membership .profile-plan-badge{background:#f4f1d9!important;color:#35532c!important;border-radius:999px;padding:8px 14px;font-size:15px;font-weight:800}
+.v41-plan-status{font-size:12px;color:#f4f4df;opacity:.95}
+#profile-overlay .v41-membership .profile-plan-count{color:#fff!important;font-size:14px;margin:17px 0 10px}
+#profile-overlay .v41-membership .profile-plan-bar-wrap{background:#ffffff45}
+#profile-overlay .v41-membership .profile-plan-bar-label{color:#f1f4e9!important}
+#profile-overlay .v41-membership .profile-actions{margin:13px 0 0}
+#profile-overlay .v41-membership .profile-actions button{border-radius:13px;min-height:46px}
+#profile-overlay .v41-refresh{display:block;width:100%;margin:8px 0 0;padding:10px;background:transparent;border:0;color:#60734f;font:inherit;font-size:12px;text-decoration:underline;cursor:pointer}
+.v41-personal{margin-top:28px}.v41-section-heading{margin:0 0 14px}
+.v41-section-heading h3{font-family:"Playfair Display",Georgia,serif;font-size:24px;color:#2e432e;margin:0 0 3px}
+.v41-section-heading p{font-size:13px;color:#73766a;margin:0}
+.v41-feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.v41-feature-card{position:relative;display:flex;flex-direction:column;text-align:left;padding:0;overflow:hidden;border:1px solid #e8e1d3;background:#fffdf8;border-radius:20px;box-shadow:0 5px 17px #544a3712;cursor:pointer;color:#283c2b;font:inherit;min-width:0}
+.v41-feature-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px #544a3722}
+.v41-feature-art{height:112px;width:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f0dfc6,#e4e9d6)}
+.v41-history .v41-feature-art{background:linear-gradient(135deg,#e3e9d7,#f1e6d6)}
+.v41-feature-art svg{height:100%;max-width:200px;width:100%}
+.v41-feature-copy{display:flex;flex-direction:column;gap:5px;padding:15px 38px 18px 17px}
+.v41-feature-copy strong{font-family:"Playfair Display",Georgia,serif;font-size:20px;line-height:1.2}
+.v41-feature-copy small{font-size:12px;color:#747568;line-height:1.4}
+.v41-feature-arrow{position:absolute;right:16px;bottom:20px;color:#617e4a;font-size:23px}
+.v41-links{margin-top:19px;background:#fffdf9;border:1px solid #e8e1d3;border-radius:19px;padding:4px 15px;box-shadow:0 5px 16px #544a370c}
+.v41-link{width:100%;display:flex;align-items:center;gap:13px;text-align:left;background:transparent;border:0;border-bottom:1px solid #ece8df;padding:15px 0;font:inherit;font-size:14px;font-weight:650;color:#334431;cursor:pointer}
+.v41-link:last-child{border-bottom:0}.v41-link>span:nth-child(2){flex:1}.v41-link>span:last-child{font-size:24px;color:#6c805c}
+.v41-link-icon{width:34px;height:34px;display:grid;place-items:center;background:#f0f1e7;border-radius:11px;color:#46613b;font-size:18px}
+#profile-overlay .btn-profile-logout{margin-top:22px}
+@media(max-width:520px){#profile-overlay .profile-sheet-body{padding:18px 14px 64px}.v41-hero{padding:22px 17px}.v41-hero-top{gap:13px}.v41-avatar-ring{width:80px;height:80px;flex-basis:80px}#profile-overlay .v41-avatar-ring .profile-avatar{font-size:25px}.v41-feature-grid{gap:10px}.v41-feature-art{height:95px}.v41-feature-copy{padding:13px 24px 15px 12px}.v41-feature-copy strong{font-size:17px}.v41-feature-arrow{right:9px;bottom:15px}}
+</style>
+<script id="v41-profile-script">
+function marmitoV41OpenExperiences(){
+ if(typeof closeProfile==='function')closeProfile();
+ setTimeout(()=>{if(typeof marmitoNavigate==='function')marmitoNavigate('experiences');},220);
+}
+function marmitoV41OpenContact(){
+ if(typeof closeProfile==='function')closeProfile();
+ setTimeout(()=>{if(typeof openContact==='function')openContact();},220);
+}
+function marmitoV41SyncProfile(){
+ const en=typeof currentLang!=='undefined'&&currentLang==='en';
+ const tr={
+  'v41-welcome':en?'MY CULINARY SPACE':'MON ESPACE CULINAIRE',
+  'v41-greeting':en?'Welcome back':'Bienvenue',
+  'v41-caption':en?'Your recipes and discoveries, all in one place.':'Vos recettes et vos découvertes, au même endroit.',
+  'v41-subscription-label':en?'MY SUBSCRIPTION':'MON ABONNEMENT',
+  'v41-plan-status':en?'Your current plan':'Votre forfait actuel',
+  'v41-personal-heading':en?'My spaces':'Mes espaces',
+  'v41-personal-subheading':en?'Explore your personal cooking space':'Retrouvez votre univers culinaire',
+  'v41-favs-desc':en?'Your saved recipes':'Vos recettes enregistrées',
+  'v41-history-desc':en?'Recently viewed recipes':'Les recettes consultées',
+  'v41-experiences-text':en?'My culinary experiences':'Mes expériences culinaires',
+  'v41-contact-text':en?'Help and contact':'Aide et contact'
+ };
+ Object.entries(tr).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.textContent=v;});
+}
+(function(){
+ const original=window.openProfile;
+ if(typeof original==='function'){
+  window.openProfile=function(){
+   original.apply(this,arguments);
+   marmitoV41SyncProfile();
+   const sheet=document.getElementById('profile-sheet');
+   if(sheet){sheet.style.height='min(94dvh, 980px)';sheet.style.maxHeight='94dvh';}
+  };
+ }
+})();
 </script>
 </body>
 </html>
