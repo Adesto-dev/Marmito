@@ -1272,8 +1272,10 @@
     await marmitoRefreshAdminRole();
     authReady = true;
     marmitoRenderAdminMenu();
-    document.getElementById('auth-loading').classList.add('hidden');
-    document.getElementById('user-bar').style.display = '';
+    // V20: ces anciens éléments n'existent plus dans l'interface actuelle.
+    document.getElementById('auth-loading')?.classList.add('hidden');
+    const legacyUserBar = document.getElementById('user-bar');
+    if (legacyUserBar) legacyUserBar.style.display = '';
     updateUserBar();
 
     // Handle ?upgraded=1 from Stripe success
@@ -1354,25 +1356,24 @@
   }
 
   function updateUserBar() {
-    document.getElementById('user-email').textContent = currentUser.email;
+    // Compatibilité avec l'ancienne barre utilisateur, absente du HTML actuel.
+    const email = document.getElementById('user-email');
+    if (email && currentUser) email.textContent = currentUser.email || '';
     const badge = document.getElementById('plan-badge');
     const upgradeBtn = document.getElementById('btn-upgrade-top');
     if (userPlan === 'saveur' || userPlan === 'chef') {
       const planLabel = userPlan === 'chef' ? '👨‍🍳 Chef' : '🍽️ Saveur';
-      badge.textContent = planLabel; badge.className = 'plan-badge pro';
-      upgradeBtn.style.display = 'none';
+      if (badge) { badge.textContent = planLabel; badge.className = 'plan-badge pro'; }
+      if (upgradeBtn) upgradeBtn.style.display = 'none';
     } else {
-      badge.textContent = 'GRATUIT (' + recipeCount + '/' + getPlanLimit() + ')';
-      badge.className = 'plan-badge free';
-      upgradeBtn.style.display = recipeCount >= getPlanLimit() ? '' : 'none';
+      if (badge) {
+        badge.textContent = 'GRATUIT (' + recipeCount + '/' + getPlanLimit() + ')';
+        badge.className = 'plan-badge free';
+      }
+      if (upgradeBtn) upgradeBtn.style.display = recipeCount >= getPlanLimit() ? '' : 'none';
     }
-    // Show limit banner if at limit
     const banner = document.getElementById('limit-banner');
-    if (userPlan === 'free' && recipeCount >= getPlanLimit()) {
-      banner.classList.add('show');
-    } else {
-      banner.classList.remove('show');
-    }
+    if (banner) banner.classList.toggle('show', userPlan === 'free' && recipeCount >= getPlanLimit());
   }
 
   async function incrementRecipeCount() {
