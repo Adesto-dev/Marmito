@@ -28557,5 +28557,82 @@ function marmitoV41SyncProfile(){
  }
 })();
 </script>
+
+<style id="v42-profile-compact">
+#profile-overlay .v41-membership{margin-top:17px}
+#profile-overlay .v41-membership .profile-plan-card{
+ padding:14px 17px!important;border-radius:16px!important;
+ box-shadow:0 5px 13px #344c3218!important
+}
+#profile-overlay .v41-membership .profile-plan-badge{font-size:13px!important;padding:6px 11px!important}
+#profile-overlay .v41-membership .profile-plan-count{font-size:11px!important;opacity:.82;margin:8px 0 5px!important;line-height:1.35}
+#profile-overlay .v41-membership .profile-plan-bar-wrap{height:3px!important;margin-bottom:4px!important;max-width:260px}
+#profile-overlay .v41-membership .profile-plan-bar-label{font-size:10px!important;opacity:.7}
+#profile-overlay .v41-membership .profile-actions{margin-top:7px!important}
+#profile-overlay .v41-membership .profile-actions button{min-height:37px!important;padding:7px 12px!important;font-size:12px!important}
+#profile-overlay .v41-refresh{font-size:11px!important;padding:6px!important;margin-top:3px!important}
+</style>
+<script id="v42-navigation-history">
+(function(){
+ 'use strict';
+ const ids=['profile-overlay','v40-favorites-overlay','history-overlay','contact-overlay','about-overlay','tips-overlay','pricing-overlay','referral-overlay'];
+ const stack=[];
+ let restoring=false;
+ function visible(){
+  return ids.filter(id=>{const e=document.getElementById(id);return e&&e.classList.contains('open');});
+ }
+ function enter(id){
+  if(restoring)return;
+  const previous=visible().filter(x=>x!==id);
+  // Each new page remembers the page that was visible immediately before it.
+  stack.push({id,previous});
+ }
+ function leave(id){
+  const i=stack.map(x=>x.id).lastIndexOf(id);
+  if(i<0)return;
+  const item=stack[i];stack.splice(i,1);
+  if(!item.previous.length)return;
+  setTimeout(()=>{
+   // Don't bring an old page forward if the user has already navigated elsewhere.
+   if(visible().length)return;
+   restoring=true;
+   item.previous.forEach(x=>{
+    const el=document.getElementById(x);
+    if(el)el.classList.add('open');
+   });
+   document.body.style.overflow='hidden';
+   restoring=false;
+  },230);
+ }
+ function wrap(openName,closeName,id){
+  const open=window[openName],close=window[closeName];
+  if(typeof open==='function'){
+   window[openName]=function(){
+    const already=visible().includes(id);
+    if(!already)enter(id);
+    return open.apply(this,arguments);
+   };
+  }
+  if(typeof close==='function'){
+   window[closeName]=function(){
+    const result=close.apply(this,arguments);
+    leave(id);
+    return result;
+   };
+  }
+ }
+ wrap('openProfile','closeProfile','profile-overlay');
+ wrap('marmitoOpenFavoritesPage','marmitoCloseFavoritesPage','v40-favorites-overlay');
+ wrap('marmitoOpenHistoryPage','closeHistory','history-overlay');
+ wrap('openContact','closeContact','contact-overlay');
+ wrap('openAbout','closeAbout','about-overlay');
+ wrap('openTips','closeTips','tips-overlay');
+ wrap('openPricing','closePricing','pricing-overlay');
+ wrap('openReferral','closeReferral','referral-overlay');
+ // The V40 navigation deliberately hides the profile before showing favorites/history.
+ // Remember it and restore it on back, including the scroll position.
+ window.marmitoV42ReturnToPrevious=leave;
+})();
+</script>
 </body>
 </html>
