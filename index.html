@@ -1397,7 +1397,7 @@ document.addEventListener('DOMContentLoaded',function(){
    <button class="page-back-btn" type="button" aria-label="Retour" onclick="marmitoCloseFavoritesPage()">←</button>
    <div class="page-nav-title" data-i18n="nav-favs">Mes favoris</div>
   </div></div></div>
-  <div class="history-sheet-body"><p class="v40-page-subtitle" id="v40-favorites-subtitle">Vos recettes enregistrées, au même endroit.</p><div class="fav-list" id="v40-favorites-list"></div></div>
+  <div class="history-sheet-body"><div class="v49-collection-hero"><div class="v49-eyebrow">MA COLLECTION</div><h2>Mes recettes favorites</h2><p>Les recettes que tu aimes, prêtes à retrouver.</p></div><p class="v40-page-subtitle" id="v40-favorites-subtitle">Vos recettes enregistrées, au même endroit.</p><div class="fav-list" id="v40-favorites-list"></div></div>
  </div>
 </div>
 <!-- HISTORY SHEET -->
@@ -1411,7 +1411,7 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 </div>
 </div>
-<div class="history-sheet-body">
+<div class="history-sheet-body"><div class="v49-collection-hero"><div class="v49-eyebrow">MON PARCOURS</div><h2>Mon historique</h2><p>Retrouve les recettes que tu as consultées.</p></div>
 <div id="h-history-list"></div>
 </div>
 </div>
@@ -1993,9 +1993,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
   }
 
   async function marmitoRefreshAdminRole() {
-    marmitoIsAdmin = false;
-    marmitoRenderAdminMenu();
-    if (!currentUser) return false;
+    if (!currentUser) { marmitoIsAdmin = false; marmitoRenderAdminMenu(); return false; }
     const requestedId = currentUser.id;
     try {
       const { data, error } = await sb.from('admin_users')
@@ -26193,8 +26191,8 @@ function openPlanRepas() {
   const sheet = document.getElementById('plan-sheet');
   const body = document.getElementById('plan-body');
   const vh = window.innerHeight;
-  sheet.style.height = Math.round(vh * 0.88) + 'px';
-  sheet.style.maxHeight = Math.round(vh * 0.88) + 'px';
+  sheet.style.height = Math.round(vh * 0.94) + 'px';
+  sheet.style.maxHeight = Math.round(vh * 0.94) + 'px';
 
   if (userPlan === 'free') {
     body.innerHTML = '<div class="plan-pro-lock"><div style="font-size:48px;margin-bottom:12px">🔒</div><h3>' + t('plan-pro-title') + '</h3><p>' + t('plan-pro-text') + '</p><button class="btn-generate" onclick="closePlanRepas();startUpgrade()" style="margin-top:16px">' + t('plan-pro-btn') + '</button></div>';
@@ -26220,17 +26218,25 @@ function openPlanRepas() {
   });
 
   function renderPlanBody(displayTitles) {
-    body.innerHTML = plan.map(({ jour, recipe: r }, i) =>
-      '<div class="plan-day" data-plan-index="' + i + '" role="button" tabindex="0">' +
-      '<div><div class="plan-day-label">' + escapeMarmitoHTML(jour) + '</div>' +
-      '<div class="plan-day-name">' + escapeMarmitoHTML(r ? (displayTitles[i] || r.title) : ', ') + '</div>' +
-      '<div class="plan-day-region">' + (r ? escapeMarmitoHTML(translateMeta('region', r.region) + ' · ' + r.time) : '') + '</div></div>' +
-      '<span style="color:var(--fg2);font-size:18px">›</span></div>'
-    ).join('') + buildGroceryHTML(allIngs);
-    body.querySelectorAll('[data-plan-index]').forEach(el => {
-      const open = () => { const r=plan[Number(el.dataset.planIndex)]?.recipe; if(r){closePlanRepas();setTimeout(()=>show(r),200);} };
+    const en = currentLang === 'en';
+    const today = new Date().getDay();
+    const activeIndex = Number.isInteger(window.marmitoV49PlanDay) ? window.marmitoV49PlanDay : (today + 6) % 7;
+    const index = Math.min(6, Math.max(0, activeIndex));
+    const days = plan.map(({jour},i) => '<button type="button" class="v49-day-tab'+(i===index?' active':'')+'" data-v49-day="'+i+'"><span>'+escapeMarmitoHTML(jour)+'</span><small>'+(i+1)+'</small></button>').join('');
+    const r = plan[index]?.recipe;
+    const title = r ? (displayTitles[index] || r.title) : '';
+    const detail = r ? escapeMarmitoHTML(translateMeta('region',r.region) + ' · ' + r.time) : '';
+    body.innerHTML = '<div class="v49-plan-layout">' +
+      '<section class="v49-plan-main"><div class="v49-plan-eyebrow">'+(en?'MY WEEK':'MA SEMAINE')+'</div><h2>'+(en?'7-day meal plan':'Plan de repas sur 7 jours')+'</h2>'+
+      '<div class="v49-day-strip">'+days+'</div>'+
+      '<div class="v49-selected-heading">'+escapeMarmitoHTML(plan[index]?.jour||'')+'</div>'+
+      '<button type="button" class="v49-selected-recipe" data-plan-index="'+index+'"><span class="v49-meal-icon" aria-hidden="true">♨</span><span class="v49-meal-copy"><small>'+(en?'MAIN MEAL':'PLAT PRINCIPAL')+'</small><strong>'+escapeMarmitoHTML(title)+'</strong><span>'+detail+'</span></span><span class="v49-meal-arrow">›</span></button>'+
+      '<div class="v49-plan-all-title">'+(en?'Other days':'Les autres jours')+'</div><div class="v49-plan-other">'+plan.map(({jour,recipe},i)=>i===index?'':'<button type="button" class="v49-plan-mini" data-v49-day="'+i+'"><span>'+escapeMarmitoHTML(jour)+'</span><strong>'+escapeMarmitoHTML(recipe?(displayTitles[i]||recipe.title):'—')+'</strong><span>›</span></button>').join('')+'</div></section>'+
+      '<aside class="v49-plan-aside"><div class="v49-plan-aside-icon">▦</div><h3>'+(en?'My week':'Ma semaine')+'</h3><div class="v49-plan-aside-stat"><strong>7</strong><span>'+(en?'days':'jours')+'</span></div><div class="v49-plan-aside-stat"><strong>'+plan.filter(p=>p.recipe).length+'</strong><span>'+(en?'recipes':'recettes')+'</span></div>'+buildGroceryHTML(allIngs)+'</aside></div>';
+    body.querySelectorAll('[data-v49-day]').forEach(el=>el.addEventListener('click',()=>{window.marmitoV49PlanDay=Number(el.dataset.v49Day);renderPlanBody(displayTitles)}));
+    body.querySelectorAll('[data-plan-index]').forEach(el=>{
+      const open=()=>{const item=plan[Number(el.dataset.planIndex)]?.recipe;if(item){closePlanRepas();setTimeout(()=>show(item),200)}};
       el.addEventListener('click',open);
-      el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
     });
   }
 
@@ -27820,7 +27826,7 @@ if ('serviceWorker' in navigator) {
 <h2 id="marmito-admin-title">Administration</h2>
 <button class="marmito-admin-back" onclick="marmitoCloseAdmin()">← Retour à Marmito</button>
 </div>
-<div class="v48-admin-overview"><div class="v48-admin-metric"><span>RECETTES DISPONIBLES</span><strong>418</strong><small>Bibliothèque Marmito</small></div><div class="v48-admin-metric"><span>ESPACE ADMIN</span><strong>Modération</strong><small>Expériences culinaires</small></div><div class="v48-admin-action"><span>ACCÈS RAPIDE</span><button type="button" onclick="document.getElementById('marmito-admin-queue')?.scrollIntoView({behavior:'smooth',block:'start'})">Voir les contributions à examiner <span aria-hidden="true">→</span></button></div></div><div class="marmito-admin-card">
+<div class="v48-admin-overview"><div class="v48-admin-metric"><span>RECETTES DISPONIBLES</span><strong>418</strong><small>Bibliothèque Marmito</small></div><div class="v48-admin-metric"><span>ESPACE ADMIN</span><strong>Modération</strong><small>Expériences culinaires</small></div><div class="v48-admin-action"><span>ACCÈS RAPIDE</span><button type="button" onclick="marmitoV49OpenQueue()">Voir les contributions à examiner <span aria-hidden="true">→</span></button></div></div><div class="marmito-admin-card" id="v49-admin-moderation">
 <h3>Modération des expériences culinaires</h3>
 <p>Examine les expériences soumises avant leur publication.</p>
 <button class="marmito-admin-back" onclick="marmitoLoadPendingExperiences()" type="button">↻ Actualiser</button>
@@ -28007,7 +28013,7 @@ async function marmitoModerateExperience(id, fn, label) {
 <section aria-labelledby="marmito-experience-title" aria-modal="true" id="marmito-experience-overlay" role="dialog">
 <div class="marmito-experience-box">
 <button class="v45-experience-menu" type="button" aria-label="Ouvrir le menu de navigation" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button>
-<h2 id="marmito-experience-title">Mon expérience culinaire</h2>
+<div class="v49-exp-hero"><div class="v49-eyebrow">PARTAGER UN SOUVENIR</div><h2 id="marmito-experience-title">Mon expérience culinaire</h2></div>
 <p id="marmito-experience-recipe"></p>
 <label for="marmito-experience-rating">Ma note</label>
 <select id="marmito-experience-rating"><option value="5">★★★★★ — 5/5</option><option value="4">★★★★☆ — 4/5</option><option value="3">★★★☆☆ — 3/5</option><option value="2">★★☆☆☆ — 2/5</option><option value="1">★☆☆☆☆ — 1/5</option></select>
@@ -28187,7 +28193,7 @@ async function marmitoOpenPublishedExperiences(){
 <section aria-labelledby="marmito-myexp-title" aria-modal="true" id="marmito-myexp-overlay" role="dialog">
 <div class="marmito-myexp-box">
 <button class="v45-experience-menu" type="button" aria-label="Ouvrir le menu de navigation" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button>
-<h2 id="marmito-myexp-title">Mes expériences</h2>
+<div class="v49-exp-hero"><div class="v49-eyebrow">MON CARNET CULINAIRE</div><h2 id="marmito-myexp-title">Mes expériences</h2><p>Mes préparations, mes notes et mes partages.</p></div>
 <p>Retrouve tes expériences privées et suis les expériences soumises à la communauté.</p>
 <p aria-live="polite" id="marmito-myexp-status" role="status"></p>
 <div id="marmito-myexp-list"></div>
@@ -28991,6 +28997,58 @@ function marmitoV48ShoppingView(view){
  if(!overlay)return;
  overlay.classList.toggle('v48-compact',view==='compact');
  overlay.querySelectorAll('[data-v48-view]').forEach(btn=>btn.classList.toggle('active',btn.dataset.v48View===view));
+}
+</script>
+
+<style id="v49-complete-redesign">
+:root{--v49-cream:#fbf8f1;--v49-olive:#31521f;--v49-line:#e3e5d9}
+/* Plan de repas : véritable nouvelle interface générée par JavaScript */
+#plan-overlay .plan-sheet{max-width:1080px!important;width:min(100%,1080px)!important;background:var(--v49-cream)!important}
+#plan-overlay .plan-sheet-head{background:var(--v49-cream)!important;padding:12px 24px 0!important}
+#plan-overlay .plan-sheet-body{padding:10px 26px 35px!important}
+.v49-plan-layout{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:22px;align-items:start}
+.v49-plan-main{min-width:0}.v49-plan-eyebrow,.v49-eyebrow{font-size:10px;font-weight:850;letter-spacing:.17em;color:#789051}
+.v49-plan-main h2{font:700 clamp(25px,3vw,34px) Georgia,serif;color:var(--v49-olive);margin:8px 0 23px}
+.v49-day-strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;background:#fff;border:1px solid var(--v49-line);border-radius:19px;padding:7px;margin-bottom:26px}
+.v49-day-tab{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:0;padding:12px 3px;border:0;border-radius:13px;background:transparent;color:#3b4c33;font-size:12px;cursor:pointer}
+.v49-day-tab span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.v49-day-tab small{font-weight:800;font-size:13px}
+.v49-day-tab.active{background:#476e27;color:white;box-shadow:0 5px 12px #476e2733}
+.v49-selected-heading{font:700 20px Georgia,serif;color:#293c21;margin-bottom:13px}
+.v49-selected-recipe{width:100%;display:flex;align-items:center;gap:16px;padding:18px;border:1px solid var(--v49-line);border-radius:19px;background:white;text-align:left;cursor:pointer;box-shadow:0 6px 19px #293c210d}
+.v49-meal-icon{display:grid;place-items:center;flex:0 0 75px;height:75px;border-radius:15px;background:linear-gradient(140deg,#e4ecd7,#f5ead4);color:#53773b;font-size:33px}
+.v49-meal-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:6px}.v49-meal-copy small{color:#738a59;font-size:10px;font-weight:800;letter-spacing:.12em}.v49-meal-copy strong{font:700 18px Georgia,serif;color:#263d20}.v49-meal-copy>span{color:#65705e;font-size:12px}.v49-meal-arrow{font-size:27px;color:#587849}
+.v49-plan-all-title{font-size:13px;font-weight:800;color:#38512e;margin:23px 0 10px}.v49-plan-other{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.v49-plan-mini{display:grid;grid-template-columns:75px minmax(0,1fr) 12px;gap:8px;align-items:center;padding:12px;background:#fff;border:1px solid var(--v49-line);border-radius:12px;text-align:left;cursor:pointer}.v49-plan-mini>span:first-child{font-size:12px;color:#698054}.v49-plan-mini strong{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#35462d}.v49-plan-mini>span:last-child{color:#6d8654}
+.v49-plan-aside{padding:24px 19px;background:white;border:1px solid var(--v49-line);border-radius:21px;box-shadow:0 5px 20px #243b190b}.v49-plan-aside-icon{font-size:28px;color:#567a3a}.v49-plan-aside h3{font:700 22px Georgia,serif;color:#2d4c21;margin:8px 0 20px}.v49-plan-aside-stat{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid #e9ebe2}.v49-plan-aside-stat strong{font-size:23px;color:#42642c}.v49-plan-aside-stat span{font-size:12px;color:#63705d}
+.v49-plan-aside .plan-grocery{border:0!important;padding:16px 0 0!important;margin:0!important;background:transparent!important}.v49-plan-aside .plan-grocery-title{font-size:14px!important}.v49-plan-aside .plan-grocery-copy{display:flex;flex-direction:column;gap:8px}.v49-plan-aside .plan-grocery-copy button{width:100%;border-radius:11px!important}
+/* Collections : vraies pages avec introduction et cartes */
+#v40-favorites-overlay .history-sheet,#history-overlay .history-sheet{background:var(--v49-cream)!important}
+#v40-favorites-overlay .history-sheet-body,#history-overlay .history-sheet-body{width:100%;max-width:1100px;box-sizing:border-box;margin:0 auto;padding:25px clamp(16px,4vw,40px) 80px!important}
+.v49-collection-hero{padding:26px 30px;border-radius:24px;background:linear-gradient(115deg,#e9efdf,#fdf9f0);border:1px solid #e2e7d8;margin-bottom:22px}
+.v49-collection-hero h2{font:700 clamp(25px,3vw,34px) Georgia,serif;color:#2d4c20;margin:8px 0}.v49-collection-hero p{font-size:13px;color:#61705a;margin:0}
+#v40-favorites-list,#h-history-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;align-content:start}
+#v40-favorites-list>*,#h-history-list>*{min-width:0;margin:0!important;border:1px solid var(--v49-line)!important;border-radius:19px!important;background:#fff!important;box-shadow:0 6px 19px #243b190b!important;overflow:hidden}
+#v40-favorites-overlay .history-sheet-head,#history-overlay .history-sheet-head{background:#fbf8f1!important;border-bottom:1px solid var(--v49-line)}
+/* Experiences: full-height editorial page rather than cramped dialog */
+#marmito-myexp-overlay,#marmito-experience-overlay,#marmito-published-overlay{background:#f9f7f0!important}
+#marmito-myexp-overlay .marmito-myexp-box,#marmito-experience-overlay .marmito-experience-box,#marmito-published-overlay .marmito-published-box{width:min(100%,1000px)!important;max-width:1000px!important;box-sizing:border-box;background:#fbf9f3!important;border-radius:23px!important;border:1px solid #e2e5d9!important;padding:clamp(18px,3vw,35px)!important}
+.v49-exp-hero{background:linear-gradient(105deg,#eaf0df,#f9f5ec);padding:23px 25px;border-radius:19px;margin:9px 0 22px}.v49-exp-hero h2{font:700 clamp(23px,3vw,32px) Georgia,serif!important;color:#2d4c20!important;margin:8px 0!important}.v49-exp-hero p{font-size:13px;color:#68755f;margin:7px 0 0}
+#marmito-myexp-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}#marmito-myexp-list>*{min-width:0;border-radius:17px!important;background:#fff!important;border:1px solid #e4e6da!important;padding:17px!important;box-shadow:0 5px 18px #243b190b}
+#marmito-experience-overlay input,#marmito-experience-overlay textarea,#marmito-experience-overlay select{border-radius:12px!important;background:white!important;border:1px solid #dce2d4!important}
+/* Admin and shared secondary pages */
+#marmito-admin-overlay .marmito-admin-card{scroll-margin-top:22px}
+#tips-overlay .tips-cat-tile,#pricing-overlay .plan-card,#about-overlay .about-section,#contact-overlay .about-contact-form{box-shadow:0 9px 24px #243b1910!important}
+@media(max-width:740px){.v49-plan-layout{grid-template-columns:1fr}.v49-plan-aside{display:grid;grid-template-columns:1fr 1fr;gap:8px}.v49-plan-aside h3,.v49-plan-aside-icon{grid-column:1/-1}.v49-plan-aside .plan-grocery{grid-column:1/-1}#v40-favorites-list,#h-history-list,#marmito-myexp-list{grid-template-columns:1fr}}
+@media(max-width:480px){#plan-overlay .plan-sheet-body{padding:9px 12px 30px!important}.v49-day-strip{gap:1px;padding:4px}.v49-day-tab{font-size:10px;padding:9px 1px}.v49-plan-other{grid-template-columns:1fr}.v49-meal-icon{flex-basis:52px;height:58px}.v49-collection-hero{padding:20px}.v49-plan-aside{display:block}}
+</style>
+<script id="v49-fixes">
+function marmitoV49OpenQueue(){
+ const panel=document.getElementById('marmito-admin-overlay');
+ const card=document.getElementById('v49-admin-moderation');
+ if(!panel?.classList.contains('open')||!card)return;
+ card.scrollIntoView({behavior:'smooth',block:'start'});
+ const heading=card.querySelector('h3');
+ if(heading){heading.setAttribute('tabindex','-1');heading.focus({preventScroll:true});}
 }
 </script>
 </body>
