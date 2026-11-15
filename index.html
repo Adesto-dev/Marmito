@@ -771,8 +771,9 @@ body{background:var(--bg)}
   .marmito-v23-bottom-nav button[aria-current="page"]{background:#F7F9EE;color:#344A27}
   .marmito-v23-bottom-nav button:focus-visible{outline:2px solid #C9A245;outline-offset:2px}
   .marmito-v23-bottom-nav svg{width:21px;height:21px;stroke:currentColor;stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
-  body:has(.result-card.visible) .marmito-v23-bottom-nav{display:none}
-  body:has(.result-card.visible) .main{padding-bottom:calc(45px + env(safe-area-inset-bottom))}
+  /* V24: classe synchronisée en JS, compatible sans :has() */
+  body.marmito-v24-recipe-open .marmito-v23-bottom-nav{display:none}
+  body.marmito-v24-recipe-open .main{padding-bottom:calc(45px + env(safe-area-inset-bottom))}
 }
 @media(min-width:701px){.hero-banner{max-height:240px;overflow:hidden}}
 
@@ -799,6 +800,38 @@ body{background:var(--bg)}
  <button type="button" onclick="toggleFavPanel()" data-v23-tab="favs"><svg viewBox="0 0 24 24"><path d="M20.8 4.7a5.4 5.4 0 0 0-7.7 0L12 5.8l-1.1-1.1a5.4 5.4 0 0 0-7.7 7.7L12 21l8.8-8.6a5.4 5.4 0 0 0 0-7.7z"/></svg><span data-i18n="fav-title">Favoris</span></button>
  <button type="button" onclick="openProfile()" data-v23-tab="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-5 3-8 8-8s8 3 8 8"/></svg><span data-i18n="nav-profile">Mon profil</span></button>
 </nav>
+<script>
+/* V24: état visuel de la navigation mobile, sans modifier les actions existantes. */
+document.addEventListener('DOMContentLoaded',function(){
+  const nav=document.querySelector('.marmito-v23-bottom-nav');
+  if(!nav)return;
+  const tabs=[...nav.querySelectorAll('[data-v23-tab]')];
+  let preferred='home';
+  function sync(){
+    const recipe=document.getElementById('result-card')?.classList.contains('visible')===true;
+    const fav=document.getElementById('fav-panel')?.classList.contains('visible')===true;
+    const profile=document.getElementById('profile-overlay')?.classList.contains('open')===true;
+    document.body.classList.toggle('marmito-v24-recipe-open',recipe);
+    if(preferred==='profile'&&!profile)preferred='home';
+    if(preferred==='favs'&&!fav)preferred='home';
+    const active=profile?'profile':fav?'favs':preferred;
+    tabs.forEach(btn=>{
+      if(btn.dataset.v23Tab===active)btn.setAttribute('aria-current','page');
+      else btn.removeAttribute('aria-current');
+    });
+  }
+  tabs.forEach(btn=>btn.addEventListener('click',()=>{
+    preferred=btn.dataset.v23Tab;
+    // Le onclick existant s'exécute avant ce gestionnaire.
+    sync();
+  }));
+  ['result-card','fav-panel','profile-overlay'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)new MutationObserver(sync).observe(el,{attributes:true,attributeFilter:['class']});
+  });
+  sync();
+})();
+</script>
 
 <!-- DRAWER MENU -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
@@ -26268,6 +26301,7 @@ const i18n = {
     'tagline-p': 'Choisis ta cuisine et cuisine avec le chrono intégré.',
     'section-nav': 'Navigation',
     'nav-home': 'Accueil',
+    'nav-recipes': 'Recettes',
     'nav-favs': 'Mes favoris',
     'nav-history': 'Mon historique',
     'nav-plan': 'Plan 7 jours',
@@ -26390,6 +26424,7 @@ const i18n = {
     'tagline-p': 'Pick your cuisine and cook with the built-in timer.',
     'section-nav': 'Navigation',
     'nav-home': 'Home',
+    'nav-recipes': 'Recipes',
     'nav-favs': 'My favorites',
     'nav-history': 'My history',
     'nav-plan': '7-Day Plan',
