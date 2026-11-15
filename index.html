@@ -29216,5 +29216,71 @@ function marmitoV51SetView(which,view){
  }
 })();
 </script>
+
+<style id="v53-admin-plan-route-style">
+/* Plan above every non-navigation surface, including stale admin layers. */
+#plan-overlay.open{z-index:110090!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+#plan-overlay.open #plan-sheet{visibility:visible!important;opacity:1!important}
+</style>
+<script id="v53-admin-plan-route">
+(function(){
+ 'use strict';
+ // Handle the exact admin -> drawer -> weekly-plan route before legacy navigation wrappers.
+ // Home -> plan keeps its original path unchanged.
+ let fromAdmin=false;
+ function closeAdminProperly(){
+   const admin=document.getElementById('marmito-admin-overlay');
+   if(!admin)return;
+   if(admin.classList.contains('open')){
+     if(typeof marmitoCloseAdmin==='function')marmitoCloseAdmin();
+     admin.classList.remove('open');
+   }
+   admin.classList.remove('v51-admin-queue');
+ }
+ function startPlan(){
+   closeAdminProperly();
+   if(typeof closeDrawer==='function')closeDrawer();
+   document.querySelectorAll('#drawer,#drawer-overlay').forEach(el=>el.classList.remove('open'));
+   const plan=document.getElementById('plan-overlay');
+   if(!plan)return;
+   try{
+     // Use the original plan renderer rather than routing through multiple historic wrappers.
+     if(typeof openPlanRepas!=='function')throw new Error('Fonction du plan indisponible');
+     openPlanRepas();
+     // If a navigation overlay remains active, make it noninteractive.
+     const admin=document.getElementById('marmito-admin-overlay');
+     if(admin)admin.classList.remove('open');
+     if(!plan.classList.contains('open'))throw new Error('Le plan ne s’est pas ouvert');
+     requestAnimationFrame(()=>{
+       if(!plan.classList.contains('open'))return;
+       plan.style.zIndex='110090';
+       const sheet=document.getElementById('plan-sheet');
+       if(sheet)sheet.scrollTop=0;
+     });
+   }catch(err){
+     console.error('Marmito V53 : ouverture plan depuis administration',err);
+     if(typeof showToast==='function')showToast('Impossible d’ouvrir le plan : '+(err.message||'erreur inconnue'),'error');
+   }
+ }
+ document.addEventListener('click',function(event){
+   const trigger=event.target.closest('#marmito-admin-overlay .v45-experience-menu');
+   if(trigger)fromAdmin=true;
+ },true);
+ document.addEventListener('click',function(event){
+   const trigger=event.target.closest('#drawer .drawer-item-plan');
+   if(!trigger)return;
+   const admin=document.getElementById('marmito-admin-overlay');
+   if(!fromAdmin&&!admin?.classList.contains('open'))return;
+   fromAdmin=false;
+   event.preventDefault();
+   event.stopImmediatePropagation();
+   startPlan();
+ },true);
+ document.addEventListener('click',function(event){
+   const choice=event.target.closest('#drawer .drawer-item');
+   if(choice&&!choice.classList.contains('drawer-item-plan'))fromAdmin=false;
+ },true);
+})();
+</script>
 </body>
 </html>
