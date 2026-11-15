@@ -29182,5 +29182,39 @@ function marmitoV51SetView(which,view){
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();
 })();
 </script>
+
+<script id="v52-admin-plan-navigation-fix">
+/* Close the admin screen through its own lifecycle before opening the weekly plan.
+   Merely removing .open leaves the admin keydown focus trap registered. */
+(function(){
+ 'use strict';
+ function exitAdmin(){
+   const admin=document.getElementById('marmito-admin-overlay');
+   if(!admin||!admin.classList.contains('open'))return;
+   if(typeof marmitoCloseAdmin==='function')marmitoCloseAdmin();
+   else admin.classList.remove('open');
+   admin.classList.remove('v51-admin-queue');
+ }
+ const originalNavigate=window.marmitoNavigate;
+ if(typeof originalNavigate==='function'){
+   window.marmitoNavigate=function(page){
+     if(page==='plan'){
+       exitAdmin();
+       const old=document.getElementById('plan-overlay');
+       if(old)old.classList.remove('open');
+     }
+     return originalNavigate.apply(this,arguments);
+   };
+ }
+ // Admin-to-plan navigation via any direct shortcut, including future menu links.
+ const originalPlan=window.openPlanRepas;
+ if(typeof originalPlan==='function'){
+   window.openPlanRepas=function(){
+     exitAdmin();
+     return originalPlan.apply(this,arguments);
+   };
+ }
+})();
+</script>
 </body>
 </html>
