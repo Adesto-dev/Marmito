@@ -1197,7 +1197,11 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="cook-ready-emoji">🍽️</div>
 <div class="cook-ready-title" data-i18n="cook-ready-title">C’est prêt !</div>
 <div class="cook-ready-sub" data-i18n="cook-ready-sub">Bon appétit !</div>
-<button class="cook-ready-btn" data-i18n="btn-done" onclick="closeCookMode()">✓ Terminé</button>
+<div class="marmito-v37-finish-actions" style="display:flex;flex-direction:column;gap:10px;max-width:380px;margin:20px auto 0;padding:0 16px">
+<button class="cook-ready-btn" id="marmito-finish-cooked" type="button" onclick="marmitoFinishMarkCooked()">Marquer comme cuisinée</button>
+<button class="cook-ready-btn" id="marmito-finish-experience" type="button" onclick="marmitoFinishExperience()" style="background:transparent;color:var(--green);border:1.5px solid var(--green)">Partager mon expérience</button>
+<button class="cook-ready-btn" id="marmito-finish-close" type="button" onclick="closeCookMode()" style="background:transparent;color:var(--fg);border:1px solid var(--border)">Terminé — Retour à la recette</button>
+</div>
 </div>
 </div></section><div aria-hidden="true" class="v32-filter-scrim" id="marmito-filter-scrim" onclick="marmitoFiltersClose()"></div><aside aria-hidden="true" aria-label="Personnaliser les recettes" aria-modal="true" class="v31-studio" id="marmito-filters-panel" role="dialog"><div class="v32-filter-top"><span>PERSONNALISER</span><button aria-label="Fermer les filtres" onclick="marmitoFiltersClose()" type="button">✕</button></div><div class="v31-studio-head"><span>VOTRE ATELIER</span><h2>À votre goût</h2><p>Composez une recette selon vos envies.</p></div><div class="card">
 <div class="card-label"><span data-i18n="card-ing">Tes ingrédients</span> <span data-i18n="card-ing-opt" style="font-weight:400;text-transform:none;letter-spacing:0">(optionnel)</span></div>
@@ -27355,6 +27359,27 @@ function startCookMode(){
   buildDots();renderCookStep();
   document.getElementById("cook-mode").scrollIntoView({behavior:"smooth",block:"start"});
 }
+function marmitoFinishUpdateLabels(){
+  const en=currentLang==='en';
+  const cooked=!!(cur&&getCookedList().includes(cur.title));
+  const mark=document.getElementById('marmito-finish-cooked');
+  const experience=document.getElementById('marmito-finish-experience');
+  const back=document.getElementById('marmito-finish-close');
+  if(mark){mark.textContent=cooked?(en?'Already cooked':'Déjà cuisinée'):(en?'Mark as cooked':'Marquer comme cuisinée');mark.disabled=cooked;mark.style.opacity=cooked?'0.7':'1';}
+  if(experience)experience.textContent=en?'Share my experience':'Partager mon expérience';
+  if(back)back.textContent=en?'Done — Back to recipe':'Terminé — Retour à la recette';
+}
+function marmitoFinishMarkCooked(){
+  if(!cur)return;
+  if(!getCookedList().includes(cur.title))toggleCooked();
+  marmitoFinishUpdateLabels();
+}
+function marmitoFinishExperience(){
+  if(!cur)return;
+  if(!currentUser){showToast(currentLang==='en'?'Sign in to share your experience.':'Connecte-toi pour partager ton expérience.');return;}
+  closeCookMode();
+  marmitoOpenExperience();
+}
 function closeCookMode(){
   cookSpeechStop();
   if(cookTimer){clearInterval(cookTimer.iv);cookTimer=null;}
@@ -27427,6 +27452,7 @@ function cookNav(dir){
     // Show ready screen
     document.getElementById("cook-step-view").style.display="none";
     document.getElementById("cook-ready").classList.add("visible");
+    marmitoFinishUpdateLabels();
     document.getElementById("cook-progress-fill").style.width="100%";
     document.getElementById("cook-progress-text").textContent=currentLang==='en'?'Done!':'Terminé !';
     showToast(t('toast-bon-appetit'));
@@ -28289,5 +28315,59 @@ for (const [id, openName, closeName] of marmitoExperienceDialogs) {
  if(typeof originalGoHome==='function')window.goHome=function(){closeFavorites();originalGoHome();setTab('home')};
  setTab('home');
 })();
-</script></body>
+</script>
+<!-- V38 — Harmonisation visuelle des trois espaces d’expérience, sans changement fonctionnel -->
+<style id="marmito-v38-experiences-theme">
+/* Ces trois écrans reprennent la présentation des pages Profil et Plan. */
+#marmito-experience-overlay.open,#marmito-published-overlay.open,#marmito-myexp-overlay.open{
+  display:flex;align-items:flex-start;justify-content:center;
+  background:#f6f4ec; padding:0;overflow-y:auto;overscroll-behavior:contain;
+}
+#marmito-experience-overlay .marmito-experience-box,
+#marmito-published-overlay .marmito-published-box,
+#marmito-myexp-overlay .marmito-myexp-box{
+  width:min(100%,1040px);max-width:1040px;min-height:100vh;
+  margin:0 auto;padding:clamp(22px,4vw,56px);
+  background:#f6f4ec;color:#252c23;border:0;border-radius:0;
+  box-shadow:none;box-sizing:border-box;font-family:"Raleway",system-ui,sans-serif;
+}
+#marmito-experience-overlay h2,#marmito-published-overlay h2,#marmito-myexp-overlay h2{
+  font-family:Georgia,"Times New Roman",serif;color:#34472e;
+  font-size:clamp(25px,3vw,36px);line-height:1.2;margin:0 0 20px;
+}
+#marmito-experience-overlay p,#marmito-published-overlay p,#marmito-myexp-overlay p{line-height:1.65;color:#586452}
+#marmito-experience-overlay label{color:#34472e;font-weight:700}
+#marmito-experience-overlay textarea,#marmito-experience-overlay select,
+#marmito-experience-overlay input[type=file]{
+  display:block;width:100%;max-width:100%;background:#fffdf8;color:#252c23;
+  border:1px solid #dfe3d5;border-radius:12px;padding:12px 14px;
+  font:inherit;box-sizing:border-box;
+}
+#marmito-experience-overlay textarea:focus,#marmito-experience-overlay select:focus{
+  outline:2px solid #738658;outline-offset:2px;
+}
+#marmito-experience-overlay button,#marmito-published-overlay button,#marmito-myexp-overlay button{
+  background:#34472e;color:#fffdf8;border:1px solid #34472e;
+  border-radius:12px;padding:12px 19px;font:inherit;font-weight:700;
+  cursor:pointer;box-shadow:none;max-width:100%;
+}
+#marmito-experience-overlay button:hover,#marmito-published-overlay button:hover,#marmito-myexp-overlay button:hover{
+  background:#465d39;border-color:#465d39;
+}
+#marmito-experience-overlay button:focus-visible,#marmito-published-overlay button:focus-visible,#marmito-myexp-overlay button:focus-visible{
+  outline:3px solid #d7b96a;outline-offset:3px;
+}
+#marmito-experience-overlay button:disabled,#marmito-myexp-overlay button:disabled{opacity:.55;cursor:wait}
+#marmito-published-overlay .marmito-published-entry,#marmito-myexp-overlay .marmito-myexp-entry{
+  border-top:1px solid #dfe3d5;padding:22px 0;color:#252c23;
+}
+#marmito-published-overlay img,#marmito-myexp-overlay img{border-radius:14px}
+@media(max-width:600px){
+  #marmito-experience-overlay .marmito-experience-box,
+  #marmito-published-overlay .marmito-published-box,
+  #marmito-myexp-overlay .marmito-myexp-box{padding:24px 18px 80px}
+  #marmito-experience-overlay button,#marmito-published-overlay button,#marmito-myexp-overlay button{min-height:44px}
+}
+</style>
+</body>
 </html>
