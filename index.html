@@ -1325,7 +1325,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="profile-sheet" id="profile-sheet">
 <div class="profile-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner">
+<div class="page-nav-inner"><button class="v43-page-menu" type="button" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV43OpenMenu(event)"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeProfile()">←</button>
 <div class="page-nav-title" data-i18n="profile-title">Mon profil</div>
 </div>
@@ -1354,11 +1354,14 @@ document.addEventListener('DOMContentLoaded',function(){
    <span class="v41-plan-status" id="v41-plan-status">Marmito</span>
   </div>
   <div class="profile-plan-count" id="p-plan-count">0 recettes</div>
-  <div class="profile-plan-bar-wrap"><div class="profile-plan-bar" id="p-plan-bar" style="width:0%"></div></div>
-  <div class="profile-plan-bar-label" id="p-plan-bar-label">0 %</div>
+  <details class="v43-sub-details" id="v43-sub-details">
+   <summary id="v43-sub-summary">Détails de mon abonnement</summary>
+   <div class="profile-plan-bar-wrap"><div class="profile-plan-bar" id="p-plan-bar" style="width:0%"></div></div>
+   <div class="profile-plan-bar-label" id="p-plan-bar-label">0 %</div>
+   <div class="profile-actions" id="p-actions"></div>
+   <button id="refresh-plan-btn" class="v41-refresh" onclick="refreshPlanBtn()" type="button">Rafraîchir mon plan</button>
+  </details>
  </div>
- <div class="profile-actions" id="p-actions"></div>
- <button id="refresh-plan-btn" class="v41-refresh" onclick="refreshPlanBtn()" type="button">Rafraîchir mon plan</button>
 </section>
 <section class="v41-personal" aria-label="Espaces personnels">
  <div class="v41-section-heading"><h3 id="v41-personal-heading">Mes espaces</h3><p id="v41-personal-subheading">Retrouvez votre univers culinaire</p></div>
@@ -1390,7 +1393,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <!-- V40 : page Favoris autonome -->
 <div class="history-overlay" id="v40-favorites-overlay">
  <div class="history-sheet">
-  <div class="history-sheet-head"><div class="page-nav-header"><div class="page-nav-inner">
+  <div class="history-sheet-head"><div class="page-nav-header"><div class="page-nav-inner"><button class="v43-page-menu" type="button" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV43OpenMenu(event)"><span></span><span></span><span></span></button>
    <button class="page-back-btn" type="button" aria-label="Retour" onclick="marmitoCloseFavoritesPage()">←</button>
    <div class="page-nav-title" data-i18n="nav-favs">Mes favoris</div>
   </div></div></div>
@@ -1402,7 +1405,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="history-sheet">
 <div class="history-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner">
+<div class="page-nav-inner"><button class="v43-page-menu" type="button" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV43OpenMenu(event)"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeHistory()">←</button>
 <div class="page-nav-title" data-i18n="history-title">Mon historique</div>
 </div>
@@ -1418,7 +1421,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="contact-sheet">
 <div class="contact-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner">
+<div class="page-nav-inner"><button class="v43-page-menu" type="button" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV43OpenMenu(event)"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeContact()">←</button>
 <div class="page-nav-title" data-i18n="contact-title">Nous contacter</div>
 </div>
@@ -1449,7 +1452,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="about-sheet">
 <div class="about-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner">
+<div class="page-nav-inner"><button class="v43-page-menu" type="button" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV43OpenMenu(event)"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeAbout()">←</button>
 <div class="page-nav-title">🍲 Marmito</div>
 </div>
@@ -27564,7 +27567,7 @@ applyLang();
 <div class="tips-sheet">
 <div class="tips-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner">
+<div class="page-nav-inner"><button class="v43-page-menu" type="button" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV43OpenMenu(event)"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeTips()">←</button>
 <div class="page-nav-title" data-i18n="tips-title">Conseils &amp; Astuces</div>
 </div>
@@ -27643,7 +27646,7 @@ applyLang();
 <div class="pricing-sheet">
 <div class="pricing-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner">
+<div class="page-nav-inner"><button class="v43-page-menu" type="button" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV43OpenMenu(event)"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closePricing()">←</button>
 <div class="page-nav-title">💳 Choisir un abonnement</div>
 </div>
@@ -27721,7 +27724,7 @@ applyLang();
 <div class="referral-sheet">
 <div class="referral-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner">
+<div class="page-nav-inner"><button class="v43-page-menu" type="button" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV43OpenMenu(event)"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeReferral()">←</button>
 <div class="page-nav-title">🎁 Inviter un ami</div>
 </div>
@@ -28632,6 +28635,61 @@ function marmitoV41SyncProfile(){
  // The V40 navigation deliberately hides the profile before showing favorites/history.
  // Remember it and restore it on back, including the scroll position.
  window.marmitoV42ReturnToPrevious=leave;
+})();
+</script>
+
+<style id="v43-compact-subscription-and-menu">
+/* Sidebar remains the original Marmito drawer, shared by all pages. */
+#drawer,#drawer-overlay{z-index:2200!important}
+.v43-page-menu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;flex:0 0 38px;width:38px;height:38px;padding:9px;border:1px solid #dfe4d5;border-radius:11px;background:#f7f6ed;cursor:pointer;vertical-align:middle;margin-right:9px}
+.v43-page-menu span{height:2px;width:100%;background:#3d5d32;border-radius:2px}
+.v43-page-menu:hover{background:#e9efdd}
+#profile-overlay .v41-membership{margin-top:14px}
+#profile-overlay .v41-membership .profile-plan-card{padding:13px 16px!important;border-radius:15px!important;background:#f5f6ec!important;border:1px solid #dce4d0!important;box-shadow:none!important;color:#2f482d!important}
+#profile-overlay .v41-membership .profile-plan-top{gap:9px}
+#profile-overlay .v41-membership .profile-plan-badge{background:#e0e8cc!important;color:#35512f!important;font-size:12px!important;padding:5px 10px!important}
+#profile-overlay .v41-membership .v41-plan-status{color:#64735b!important;font-size:11px}
+#profile-overlay .v41-membership .profile-plan-count{color:#64735b!important;font-size:11px!important;margin:5px 0 0!important;font-weight:500}
+#profile-overlay .v41-membership .v43-sub-details{margin-top:8px;padding-top:7px;border-top:1px solid #dce4d0}
+#profile-overlay .v41-membership .v43-sub-details summary{cursor:pointer;font-size:11px;color:#4c6840;list-style-position:inside;line-height:1.7}
+#profile-overlay .v41-membership .v43-sub-details .profile-plan-bar-wrap{margin-top:10px!important;background:#dce5d3}
+#profile-overlay .v41-membership .v43-sub-details .profile-plan-bar-label{color:#64735b!important}
+#profile-overlay .v41-membership .v43-sub-details .profile-actions{margin-top:12px!important}
+#profile-overlay .v41-membership .v43-sub-details .v41-refresh{color:#536b49!important}
+@media(max-width:480px){.v43-page-menu{width:36px;height:36px;flex-basis:36px;margin-right:5px}}
+</style>
+<script id="v43-global-navigation">
+(function(){
+ 'use strict';
+ // Existing drawer is reused rather than creating a second navigation system.
+ window.marmitoV43OpenMenu=function(event){
+  if(event)event.stopPropagation();
+  if(typeof openDrawer==='function')openDrawer();
+ };
+ const original=window.drawerAction;
+ if(typeof original==='function'){
+  window.drawerAction=function(action){
+   const destination=['home','favs','history','profile','admin','upgrade','about','tips','contact','share-app'].includes(action);
+   if(destination){
+    // Switching pages through the menu should not leave the previous full-screen overlay on top.
+    const overlays=document.querySelectorAll('.profile-overlay.open,.history-overlay.open,.v40-favorites-overlay.open,.contact-overlay.open,.about-overlay.open,.tips-overlay.open,.pricing-overlay.open,.referral-overlay.open');
+    overlays.forEach(el=>el.classList.remove('open'));
+    const profile=document.getElementById('profile-sheet');
+    if(profile)profile.style.animation='';
+    document.body.style.overflow='';
+   }
+   return original.apply(this,arguments);
+  };
+ }
+ const oldSync=window.marmitoV41SyncProfile;
+ if(typeof oldSync==='function'){
+  window.marmitoV41SyncProfile=function(){
+   oldSync.apply(this,arguments);
+   const en=typeof currentLang!=='undefined'&&currentLang==='en';
+   const summary=document.getElementById('v43-sub-summary');
+   if(summary)summary.textContent=en?'Subscription details':'Détails de mon abonnement';
+  };
+ }
 })();
 </script>
 </body>
