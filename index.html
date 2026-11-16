@@ -2084,8 +2084,10 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
 
   function marmitoCloseAdmin() {
     const panel = document.getElementById('marmito-admin-overlay');
-    if (!panel || !panel.classList.contains('open')) return;
-    panel.classList.remove('open');
+    if (!panel) return;
+    // V63: toujours nettoyer le cycle de vie, même si un ancien routeur a déjà
+    // retiré 'open' sans libérer le focus et les couches de navigation.
+    panel.classList.remove('open', 'v51-admin-queue');
     document.removeEventListener('keydown', marmitoAdminKeydown, true);
     const origin = marmitoAdminPreviousFocus;
     marmitoAdminPreviousFocus = null;
@@ -28883,6 +28885,9 @@ function marmitoV41SyncProfile(){
 <script id="v45-experience-admin-navigation-script">
 function marmitoV45Menu(event){
  if(event)event.stopPropagation();
+ // V63: ne jamais superposer le tiroir de navigation à l'écran Administration.
+ const admin=document.getElementById('marmito-admin-overlay');
+ if(admin?.classList.contains('open') && typeof marmitoCloseAdmin==='function')marmitoCloseAdmin();
  if(typeof openDrawer==='function')openDrawer();
 }
 </script>
@@ -29344,8 +29349,8 @@ function marmitoV51SetView(which,view){
  // When opening the drawer from admin, temporarily release the focus trap and put the drawer above admin.
  document.addEventListener('click',function(e){
    if(e.target.closest('#marmito-admin-overlay .v45-experience-menu')){
+     // V63: l'administration sera fermée par marmitoV45Menu, sans focus trap orphelin.
      fromAdminMenu=true;
-     if(typeof marmitoAdminKeydown==='function')document.removeEventListener('keydown',marmitoAdminKeydown,true);
    }
  },true);
  // All drawer destinations use one consistent exit from administration, not only the plan.
@@ -29434,6 +29439,40 @@ function marmitoV51SetView(which,view){
  }
  document.addEventListener('click',function(e){
    if(e.target.closest('#marmito-admin-overlay'))syncScrim();
+ },true);
+})();
+</script>
+
+<script id="v63-admin-exit-stability">
+(function(){
+ 'use strict';
+ // L'ancien menu peut conserver une couche transparente qui intercepte les clics.
+ // Garder ces couches synchronisées avec l'état réel du tiroir.
+ function cleanDrawer(){
+   const drawer=document.getElementById('drawer');
+   const scrim=document.getElementById('drawer-overlay');
+   if(!drawer?.classList.contains('open'))scrim?.classList.remove('open');
+ }
+ window.addEventListener('click',function(event){
+   const target=event.target;
+   if(!(target instanceof Element))return;
+   const back=target.closest('#marmito-admin-overlay .marmito-admin-head .marmito-admin-back');
+   if(!back)return;
+   // Capturer avant les anciens gestionnaires document et l'onclick historique.
+   event.preventDefault();
+   event.stopImmediatePropagation();
+   if(typeof marmitoCloseAdmin==='function')marmitoCloseAdmin();
+   else document.getElementById('marmito-admin-overlay')?.classList.remove('open');
+   if(typeof closeDrawer==='function')closeDrawer();
+   cleanDrawer();
+ },true);
+ // Sur une transition de menu, supprimer toute couche d'administration restante.
+ document.addEventListener('click',function(event){
+   const target=event.target;
+   if(!(target instanceof Element))return;
+   if(!target.closest('#drawer .drawer-item'))return;
+   const admin=document.getElementById('marmito-admin-overlay');
+   if(admin?.classList.contains('open') && typeof marmitoCloseAdmin==='function')marmitoCloseAdmin();
  },true);
 })();
 </script>
