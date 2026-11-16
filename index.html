@@ -1611,8 +1611,8 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
 </script><script>
 
   // ===== SUPABASE AUTH =====
-  const SUPABASE_URL = 'https://osfhpzgfqpbzyrbjkajk.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_HAduBBuXWYfdKvOnfZ7X-Q_liL5Xj7h';
+  const SUPABASE_URL = 'https://kfaabpwvisormfrwceaa.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_n8HXWNlgaJ5Ck749-k8_XQ_HsZ7-BRX';
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   let currentUser = null;
@@ -2053,10 +2053,6 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
     }
     const panel = document.getElementById('marmito-admin-overlay');
     if (!panel) return;
-    // V57: no invisible drawer backdrop may intercept clicks inside Administration.
-    if (typeof closeDrawer === 'function') closeDrawer();
-    document.getElementById('drawer')?.classList.remove('open');
-    document.getElementById('drawer-overlay')?.classList.remove('open');
     marmitoAdminPreviousFocus = origin instanceof HTMLElement ? origin : null;
     panel.classList.add('open');
     panel.setAttribute('tabindex', '-1');
@@ -2379,13 +2375,6 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
   }
 
   function drawerAction(action) {
-    if (action !== 'admin') {
-      const adminPanel = document.getElementById('marmito-admin-overlay');
-      if (adminPanel?.classList.contains('open') && typeof marmitoCloseAdmin === 'function') {
-        try { marmitoCloseAdmin(); } catch (err) { console.error('Fermeture admin', err); }
-        adminPanel.classList.remove('open');
-      }
-    }
     closeDrawer();
     if (action === 'home') { setTimeout(()=>goHome(), 320); }
     else if (action === 'favs') { setTimeout(()=>marmitoOpenFavoritesPage(), 320); }
@@ -2404,10 +2393,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
   async function manageSubscription() {
     const { data } = await sb.from('profiles').select('stripe_customer_id').eq('id', currentUser.id).single();
     if (!data || !data.stripe_customer_id) { showToast(t('toast-no-sub')); return; }
-    const { data: authSession } = await sb.auth.getSession();
-    const token = authSession?.session?.access_token;
-    if (!token) { showToast('Session expirée, reconnecte-toi.', 'error'); return; }
-    const r = await fetch('/api/create-portal', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({}) });
+    const r = await fetch('/api/create-portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customerId: data.stripe_customer_id }) });
     const json = await r.json();
     if (json.url) window.location.href = json.url;
     else showToast(t('toast-error-retry'), 'error');
@@ -2431,13 +2417,10 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
     const orig = btnEl ? btnEl.textContent : '';
     if (btnEl) { btnEl.disabled = true; btnEl.textContent = 'Chargement...'; }
     try {
-      const { data: authSession } = await sb.auth.getSession();
-      const token = authSession?.session?.access_token;
-      if (!token) throw new Error('Session expirée, reconnecte-toi.');
       const res = await fetch('/api/create-checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ plan })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: currentUser.id, email: currentUser.email, plan, referredBy: (await sb.from('profiles').select('referred_by').eq('id', currentUser.id).single()).data?.referred_by || '' })
       });
       const { url, error } = await res.json();
       if (error) throw new Error(error);
@@ -29239,7 +29222,66 @@ function marmitoV51SetView(which,view){
 #plan-overlay.open{z-index:110090!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
 #plan-overlay.open #plan-sheet{visibility:visible!important;opacity:1!important}
 </style>
-
+<script id="v53-admin-plan-route">
+(function(){
+ 'use strict';
+ // Handle the exact admin -> drawer -> weekly-plan route before legacy navigation wrappers.
+ // Home -> plan keeps its original path unchanged.
+ let fromAdmin=false;
+ function closeAdminProperly(){
+   const admin=document.getElementById('marmito-admin-overlay');
+   if(!admin)return;
+   if(admin.classList.contains('open')){
+     if(typeof marmitoCloseAdmin==='function')marmitoCloseAdmin();
+     admin.classList.remove('open');
+   }
+   admin.classList.remove('v51-admin-queue');
+ }
+ function startPlan(){
+   closeAdminProperly();
+   if(typeof closeDrawer==='function')closeDrawer();
+   document.querySelectorAll('#drawer,#drawer-overlay').forEach(el=>el.classList.remove('open'));
+   const plan=document.getElementById('plan-overlay');
+   if(!plan)return;
+   try{
+     // Use the original plan renderer rather than routing through multiple historic wrappers.
+     if(typeof openPlanRepas!=='function')throw new Error('Fonction du plan indisponible');
+     openPlanRepas();
+     // If a navigation overlay remains active, make it noninteractive.
+     const admin=document.getElementById('marmito-admin-overlay');
+     if(admin)admin.classList.remove('open');
+     if(!plan.classList.contains('open'))throw new Error('Le plan ne s’est pas ouvert');
+     requestAnimationFrame(()=>{
+       if(!plan.classList.contains('open'))return;
+       plan.style.zIndex='110090';
+       const sheet=document.getElementById('plan-sheet');
+       if(sheet)sheet.scrollTop=0;
+     });
+   }catch(err){
+     console.error('Marmito V53 : ouverture plan depuis administration',err);
+     if(typeof showToast==='function')showToast('Impossible d’ouvrir le plan : '+(err.message||'erreur inconnue'),'error');
+   }
+ }
+ document.addEventListener('click',function(event){
+   const trigger=event.target.closest('#marmito-admin-overlay .v45-experience-menu');
+   if(trigger)fromAdmin=true;
+ },true);
+ document.addEventListener('click',function(event){
+   const trigger=event.target.closest('#drawer .drawer-item-plan');
+   if(!trigger)return;
+   const admin=document.getElementById('marmito-admin-overlay');
+   if(!fromAdmin&&!admin?.classList.contains('open'))return;
+   fromAdmin=false;
+   event.preventDefault();
+   event.stopImmediatePropagation();
+   startPlan();
+ },true);
+ document.addEventListener('click',function(event){
+   const choice=event.target.closest('#drawer .drawer-item');
+   if(choice&&!choice.classList.contains('drawer-item-plan'))fromAdmin=false;
+ },true);
+})();
+</script>
 
 <style id="v54-navigation-refresh-css">
 /* Make drawer usable even while admin (z-index 9999) is open. */
@@ -29347,24 +29389,6 @@ function marmitoV51SetView(which,view){
    document.getElementById('v54-refresh-indicator')?.classList.remove('visible');
  },{passive:true});
  document.addEventListener('touchcancel',function(){tracking=false;ready=false;document.getElementById('v54-refresh-indicator')?.classList.remove('visible');},{passive:true});
-})();
-</script>
-
-<!-- V56 TEST — Single admin-to-drawer routing before legacy document capture handlers. -->
-
-
-<script id="v57-admin-interaction-safety">
-(function(){
- 'use strict';
- // The drawer scrim must never remain above Administration unless the drawer is open.
- function syncScrim(){
-   const drawer=document.getElementById('drawer');
-   const scrim=document.getElementById('drawer-overlay');
-   if(scrim && !drawer?.classList.contains('open'))scrim.classList.remove('open');
- }
- document.addEventListener('click',function(e){
-   if(e.target.closest('#marmito-admin-overlay'))syncScrim();
- },true);
 })();
 </script>
 </body>
