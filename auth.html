@@ -249,7 +249,13 @@ async function doSignup(){
   if(pass.length<8){showMsg('Le mot de passe doit avoir au moins 8 caracteres.','error');return;}
   const btn=document.getElementById('btn-signup');
   btn.disabled=true;btn.textContent='Creation...';
-  const{error}=await sb.auth.signUp({email,password:pass});
+  // V61 : transmettre le code en métadonnées, en plus du stockage local.
+  // La validation et l'association définitive restent du ressort de la RPC Supabase.
+  let referralCode = null;
+  try { referralCode = localStorage.getItem('marmito-pending-ref'); } catch(e) {}
+  if (referralCode && !/^[A-Z0-9]{6,24}$/.test(referralCode)) referralCode = null;
+  const signupOptions = referralCode ? { data: { marmito_referral_code: referralCode } } : {};
+  const{error}=await sb.auth.signUp({email,password:pass,options:signupOptions});
   if(error){showMsg(error.message,'error');btn.disabled=false;btn.textContent='Creer mon compte';}
   else showMsg('Compte cree ! Verifiez votre courriel pour confirmer.','success');
 }
