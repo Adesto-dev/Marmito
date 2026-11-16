@@ -29405,51 +29405,48 @@ function marmitoV51SetView(which,view){
 })();
 </script>
 
-<!-- V55 TEST ONLY — Admin -> drawer navigation: consume the click once, exit modal, then route. -->
-<script id="v55-admin-drawer-navigation-fix">
+<!-- V56 TEST — Single admin-to-drawer routing before legacy document capture handlers. -->
+<script id="v56-admin-drawer-navigation-fix">
 (function(){
-  'use strict';
-  let openedFromAdmin = false;
-  const admin = () => document.getElementById('marmito-admin-overlay');
-  const drawer = () => document.getElementById('drawer');
-  const backdrop = () => document.getElementById('drawer-overlay');
-  function dismissDrawer(){
-    if(typeof closeDrawer === 'function') closeDrawer();
-    drawer()?.classList.remove('open');
-    backdrop()?.classList.remove('open');
-  }
-  function dismissAdmin(){
-    const panel=admin();
-    if(!panel?.classList.contains('open')) return;
-    if(typeof marmitoCloseAdmin === 'function') marmitoCloseAdmin();
-    panel.classList.remove('open','v51-admin-queue');
-    if(typeof marmitoAdminKeydown === 'function')
-      document.removeEventListener('keydown',marmitoAdminKeydown,true);
-  }
-  // Remember that the drawer was opened from Administration.
-  document.addEventListener('click',function(event){
-    if(event.target.closest('#marmito-admin-overlay .v45-experience-menu'))
-      openedFromAdmin = true;
-  },true);
-  document.addEventListener('click',function(event){
-    const item=event.target.closest('#drawer .drawer-item');
-    if(!item || (!openedFromAdmin && !admin()?.classList.contains('open'))) return;
-    // Prevent older V53/V54 capture listeners and inline handlers from racing.
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    openedFromAdmin=false;
-    dismissAdmin();
-    dismissDrawer();
-    // Execute the original destination once, after both layers are closed.
-    // All drawer buttons have their existing onclick handlers.
-    if(typeof item.onclick === 'function'){
-      try { item.onclick.call(item,event); }
-      catch(error){ console.error('Marmito V55: navigation du menu',error); }
-    }
-  },true);
-  document.addEventListener('click',function(event){
-    if(event.target.closest('#drawer-overlay')) openedFromAdmin=false;
-  },true);
+ 'use strict';
+ let fromAdmin=false;
+ const admin=()=>document.getElementById('marmito-admin-overlay');
+ function closeAdmin(){
+   const el=admin();
+   if(!el)return;
+   if(el.classList.contains('open') && typeof marmitoCloseAdmin==='function'){
+     try{marmitoCloseAdmin();}catch(err){console.error('V56 admin close',err);}
+   }
+   el.classList.remove('open','v51-admin-queue');
+   if(typeof marmitoAdminKeydown==='function')document.removeEventListener('keydown',marmitoAdminKeydown,true);
+ }
+ function closeMenu(){
+   if(typeof closeDrawer==='function')closeDrawer();
+   document.getElementById('drawer')?.classList.remove('open');
+   document.getElementById('drawer-overlay')?.classList.remove('open');
+ }
+ // Window capture executes before all document capture listeners (V53/V54).
+ window.addEventListener('click',function(e){
+   if(e.target.closest('#marmito-admin-overlay .v45-experience-menu')){
+     fromAdmin=true;
+     return;
+   }
+   if(e.target.closest('#drawer-overlay')){
+     fromAdmin=false;
+     return;
+   }
+   const item=e.target.closest('#drawer .drawer-item');
+   if(!item || (!fromAdmin && !admin()?.classList.contains('open')))return;
+   e.preventDefault();
+   e.stopImmediatePropagation();
+   fromAdmin=false;
+   closeAdmin();
+   closeMenu();
+   // Existing inline onclick is the authoritative destination handler.
+   if(typeof item.onclick==='function'){
+     try{item.onclick.call(item,e);}catch(err){console.error('V56 menu route',err);}
+   }
+ },true);
 })();
 </script>
 </body>
