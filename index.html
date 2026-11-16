@@ -885,6 +885,10 @@ body{background:var(--bg)}
 @media(prefers-reduced-motion:reduce){.result-card .cook-progress-fill,.result-card .cook-prog-inner{transition:none}}
 /* === FIN V30 === */
 
+
+/* V59: indication visuelle du forfait actif */
+#pricing-overlay .plan-card.is-current-plan{outline:2px solid #517744!important;outline-offset:2px}
+#pricing-overlay .plan-card.is-current-plan .plan-btn{cursor:default!important;opacity:1!important}
 </style>
 </meta><style id="marmito-v31-relooking">
 /* MARMITO V31 — Structural redesign */
@@ -1715,6 +1719,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
       }
       // Cache le plan en localStorage pour resilience offline/erreur reseau
       try { localStorage.setItem('marmito-plan', userPlan); } catch(e){}
+      syncPricingCurrentPlan();
       // Le serveur est seul responsable du reset mensuel et du quota.
       // Ne jamais remettre a zero localement ni reutiliser un compteur local pour autoriser une generation.
       recipeCount = Number(data.recipe_count) || 0;
@@ -2435,7 +2440,37 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
     openPricing();
   }
 
+  // V59: le plan courant est determine par le profil charge, jamais fixe dans le HTML.
+  function syncPricingCurrentPlan() {
+    const active = ['free', 'saveur', 'chef'].includes(userPlan) ? userPlan : 'free';
+    const config = [
+      ['free', 'btn-free', 'Découverte'],
+      ['saveur', 'btn-saveur', 'Saveur'],
+      ['chef', 'btn-chef', 'Chef']
+    ];
+    for (const [plan, id, name] of config) {
+      const btn = document.getElementById(id);
+      if (!btn) continue;
+      const current = plan === active;
+      btn.disabled = current || plan === 'free';
+      btn.classList.toggle('free-btn', current || plan === 'free');
+      btn.classList.toggle('pro-btn', !current && plan !== 'free');
+      btn.textContent = current
+        ? (currentLang === 'en' ? 'Your current plan' : 'Ton plan actuel')
+        : plan === 'free'
+          ? (currentLang === 'en' ? 'Free plan' : 'Forfait gratuit')
+          : (currentLang === 'en' ? 'Choose ' : 'Choisir ') + name + ' →';
+      const card = btn.closest('.plan-card');
+      if (card) {
+        card.classList.toggle('is-current-plan', current);
+        if (current) card.setAttribute('aria-label', name + (currentLang === 'en' ? ', current plan' : ', abonnement actuel'));
+        else card.removeAttribute('aria-label');
+      }
+    }
+  }
+
   function openPricing() {
+    syncPricingCurrentPlan();
     document.getElementById('pricing-overlay').classList.add('open');
   }
 
@@ -27698,7 +27733,7 @@ applyLang();
 <li class="muted">Plan de repas 7 jours</li>
 <li class="muted">Conseils &amp; Astuces (plan Chef)</li>
 </ul>
-<button class="plan-btn free-btn" disabled="">Ton plan actuel</button>
+<button class="plan-btn free-btn" id="btn-free" type="button" disabled>Ton plan actuel</button>
 </div>
 <!-- Saveur (5.99/mois) -->
 <div class="plan-card featured">
