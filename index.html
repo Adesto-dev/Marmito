@@ -1715,16 +1715,11 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
       }
       // Cache le plan en localStorage pour resilience offline/erreur reseau
       try { localStorage.setItem('marmito-plan', userPlan); } catch(e){}
-      // Reset mensuel : si le mois a change, on repart a 0
-      if (data.reset_month !== currentMonth) {
-        recipeCount = 0;
-        try { localStorage.setItem('marmito-count', '0'); } catch(e){}
-        await sb.from('profiles').update({ recipe_count: 0, reset_month: currentMonth }).eq('id', currentUser.id);
-        console.log('[Marmito] Reset mensuel effectue pour', currentMonth);
-      } else {
-        const localCount = parseInt(localStorage.getItem('marmito-count') || '0');
-        recipeCount = Math.max(data.recipe_count || 0, localCount);
-      }
+      // Le serveur est seul responsable du reset mensuel et du quota.
+      // Ne jamais remettre a zero localement ni reutiliser un compteur local pour autoriser une generation.
+      recipeCount = Number(data.recipe_count) || 0;
+      try { localStorage.setItem('marmito-count', String(recipeCount)); } catch(e){}
+
     } else if (error && error.code === 'PGRST116') {
       // Aucun profil trouve (premiere connexion) - on cree le profil
       const newCode = generateReferralCode(currentUser.email);
@@ -1783,13 +1778,35 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
     if (banner) banner.classList.toggle('show', userPlan === 'free' && recipeCount >= getPlanLimit());
   }
 
-  async function incrementRecipeCount() {
-    recipeCount++;
-    try { localStorage.setItem('marmito-count', recipeCount); } catch(e){}
-    if (currentUser) {
-      const { error } = await sb.from('profiles').update({ recipe_count: recipeCount }).eq('id', currentUser.id);
-      if (error) console.error('[Marmito] incrementCount erreur:', error.message, error.code);
+  // V58 : reservation atomique AVANT l'affichage d'une recette.
+  let marmitoQuotaPending = false;
+  async function marmitoConsumeRecipeQuota() {
+    if (marmitoQuotaPending) return false;
+    if (!authReady || !currentUser) {
+      showToast(currentLang === 'en' ? 'Sign in to generate recipes.' : 'Connectez-vous pour générer des recettes.', 'error');
+      return false;
+    }
+    marmitoQuotaPending = true;
+    try {
+      const { data, error } = await sb.rpc('marmito_consume_recipe_quota');
+      if (error) throw error;
+      if (!data || typeof data.count !== 'number' || typeof data.allowed !== 'boolean') throw new Error('Invalid quota response');
+      recipeCount = data.count;
+      if (typeof data.plan === 'string' && PLAN_LIMITS[data.plan]) userPlan = data.plan;
+      try { localStorage.setItem('marmito-count', String(recipeCount)); } catch(e){}
       updateUserBar();
+      if (!data.allowed) {
+        document.getElementById('limit-banner')?.classList.add('show');
+        showToast(currentLang === 'en' ? 'Monthly recipe limit reached.' : 'Quota mensuel de recettes atteint.', 'error');
+        return false;
+      }
+      return true;
+    } catch (e) {
+      console.error('[Marmito] Quota serveur indisponible', e);
+      showToast(currentLang === 'en' ? 'Cannot verify your quota. Try again.' : 'Impossible de vérifier votre quota. Réessayez.', 'error');
+      return false; // Echec ferme : aucune recette sans validation serveur
+    } finally {
+      marmitoQuotaPending = false;
     }
   }
 
@@ -26101,15 +26118,15 @@ function parseDurationMin(t){
 }
 
 // ===== MÊME RÉGION =====
-function generateSameRegion(){
+async function generateSameRegion(){
   if(!cur)return;
   const region=cur.region;
   let pool=recipes.filter(r=>r.region===region&&r.title!==cur.title);
   if(!pool.length)pool=recipes.filter(r=>r.region===region);
   if(!pool.length)pool=recipes;
+  if (!(await marmitoConsumeRecipeQuota())) return;
   const chosen=pickNoRepeat(pool,"region|"+region);
   show(chosen);
-  incrementRecipeCount();
 }
 
 // ===== BADGE CUISINÉ =====
@@ -27080,13 +27097,7 @@ function generateWithFilters(){
   const btn=document.getElementById("filter-btn");
   btn.disabled=true;btn.innerHTML="<span class=\"loading-dots\"><span></span><span></span><span></span></span>";
   document.getElementById("result-card").classList.remove("visible");
-  setTimeout(()=>{
-    if(recipeCount>=getPlanLimit()){
-      document.getElementById('limit-banner').classList.add('show');
-      document.getElementById('limit-banner').scrollIntoView({behavior:'smooth',block:'center'});
-      btn.disabled=false;btn.innerHTML=currentLang==='en'?'&#127859; By my filters':'&#127859; Selon mes filtres';
-      return;
-    }
+  setTimeout(async ()=>{
     Object.values(timers).forEach(t=>{if(t.iv)clearInterval(t.iv);});timers={};
     const tm=document.querySelector(".chip[data-group='time'].active");
     const timeFilter=tm?tm.textContent.trim():"Toute durée";
@@ -27107,8 +27118,8 @@ function generateWithFilters(){
     } else {
       chosen=pickNoRepeat(pool,filterKey);
     }
+    if (!(await marmitoConsumeRecipeQuota())) { btn.disabled=false;btn.innerHTML=currentLang==='en'?'&#127859; By my filters':'&#127859; Selon mes filtres'; return; }
     show(chosen);
-    incrementRecipeCount();
     btn.disabled=false;btn.innerHTML=currentLang==='en'?'&#127859; By my filters':'&#127859; Selon mes filtres';
   },800);
 }
@@ -27130,23 +27141,18 @@ function pickNoRepeat(pool, key) {
 
 function generateRecipe(){
     // Surprends-moi = 100% aléatoire, ignore les filtres actifs
-    if(recipeCount>=getPlanLimit()){
-      document.getElementById('limit-banner').classList.add('show');
-      document.getElementById('limit-banner').scrollIntoView({behavior:'smooth',block:'center'});
-      return;
-    }
   closeCookMode();
   Object.values(timers).forEach(t=>{if(t.iv)clearInterval(t.iv);});timers={};
   const btn=document.getElementById("gen-btn");
   btn.disabled=true;btn.innerHTML="<span class=\"loading-dots\"><span></span><span></span><span></span></span>";
   document.getElementById("result-card").classList.remove("visible");
-  setTimeout(()=>{
+  setTimeout(async ()=>{
     // Ignore tous les filtres, pool complet
     const randomPool=marmitoDietActive()?recipes.filter(marmitoDietMatches):recipes;
     if(!randomPool.length){marmitoDietEmpty();btn.disabled=false;btn.textContent=currentLang==='en'?'Surprise me':'Surprends-moi';return;}
     const chosen=pickNoRepeat(randomPool,'random-all|'+JSON.stringify(marmitoDietState));
+    if (!(await marmitoConsumeRecipeQuota())) { btn.disabled=false;btn.textContent=t('btn-another-recipe'); return; }
     show(chosen);
-    incrementRecipeCount();
     btn.disabled=false;btn.textContent=t('btn-another-recipe');
   },1000);
 }
