@@ -28804,6 +28804,13 @@ function marmitoV41SyncProfile(){
  ];
  const pageClassNames=['profile-overlay','history-overlay','shopping-overlay','plan-overlay'];
  function closeScreens(){
+  // V62: fermer Administration via son cycle de vie avant de masquer son overlay.
+  // Sans cela, le piège de focus (keydown en capture) reste actif et peut bloquer
+  // la navigation clavier vers Profil, Favoris ou Plan après avoir quitté Admin.
+  const admin=document.getElementById('marmito-admin-overlay');
+  if(admin?.classList.contains('open') && typeof marmitoCloseAdmin==='function'){
+   marmitoCloseAdmin();
+  }
   pageIds.forEach(id=>{
    const el=document.getElementById(id);
    if(el)el.classList.remove('open','visible');
