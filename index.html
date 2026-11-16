@@ -2344,12 +2344,19 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
       } else { bonusBar.classList.remove('show'); }
     }
 
+    // V61 : compteur calculé côté serveur, sans accès direct aux profils des filleuls.
     try {
-      const { count } = await sb.from('profiles').select('id', { count: 'exact', head: true }).eq('referred_by', userReferralCode);
-      const n = count || 0;
-      const cEl = document.getElementById('ref-count-display'); if (cEl) cEl.textContent = n;
+      const { data, error } = await sb.rpc('marmito_referral_count');
+      if (error) throw error;
+      const n = Number(data);
+      if (!Number.isSafeInteger(n) || n < 0) throw new Error('Compteur de parrainage invalide');
+      const cEl = document.getElementById('ref-count-display'); if (cEl) cEl.textContent = String(n);
       const dEl = document.getElementById('ref-days-display'); if (dEl) dEl.textContent = (n * 7) + ' jour' + (n*7 !== 1 ? 's' : '');
-    } catch(e) { console.warn('[Marmito] Referral stats error:', e); }
+    } catch(e) {
+      console.warn('[Marmito] Compteur de parrainage indisponible:', e);
+      const cEl = document.getElementById('ref-count-display'); if (cEl) cEl.textContent = '—';
+      const dEl = document.getElementById('ref-days-display'); if (dEl) dEl.textContent = '—';
+    }
   }
 
   async function copyReferralLink(btn) {
