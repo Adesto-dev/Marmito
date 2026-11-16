@@ -1674,6 +1674,15 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
       authReady = true;
       marmitoRenderAdminMenu();
       marmitoClearAuthError();
+      // V65: route a native admin link only after the authenticated session is ready.
+      const v65Destination = new URLSearchParams(location.search).get('marmitoGo');
+      if (['favorites','profile','plan'].includes(v65Destination)) {
+        history.replaceState(null, '', location.pathname + location.hash);
+        setTimeout(() => {
+          try { if (typeof marmitoNavigate === 'function') marmitoNavigate(v65Destination); }
+          catch (error) { console.error('[Marmito V65] Navigation après retour Administration', error); }
+        }, 0);
+      }
     } catch (error) {
       console.error('[Marmito] Initialisation de session impossible', error);
       authReady = false;
@@ -27906,15 +27915,22 @@ if ('serviceWorker' in navigator) {
     <header class="v64-admin-header">
       <div><div class="v64-admin-eyebrow">ESPACE PRIVÉ · MARMITO</div><h2 id="marmito-admin-title">Administration</h2><p>Gestion et modération des expériences culinaires</p></div>
       <div class="v64-admin-header-actions">
-        <button type="button" class="v64-admin-btn v64-admin-primary" onclick="marmitoV64Exit('home')">← Retour à Marmito</button>
-        <button type="button" class="v64-admin-btn" onclick="marmitoV64Menu()" aria-label="Ouvrir le menu principal">☰ Menu</button>
+        <a class="v64-admin-btn v64-admin-primary" href="./index.html" id="v65-admin-return">← Retour à Marmito</a>
+        <details class="v65-admin-navigation"><summary class="v64-admin-btn">☰ Menu</summary>
+          <nav aria-label="Navigation Marmito depuis Administration">
+            <a href="./index.html">Accueil</a>
+            <a href="./index.html?marmitoGo=favorites">Favoris</a>
+            <a href="./index.html?marmitoGo=profile">Profil</a>
+            <a href="./index.html?marmitoGo=plan">Plan 7 jours</a>
+          </nav>
+        </details>
       </div>
     </header>
     <nav class="v64-admin-shortcuts" aria-label="Navigation Marmito">
-      <button type="button" onclick="marmitoV64Exit('home')">Accueil</button>
-      <button type="button" onclick="marmitoV64Exit('favorites')">Favoris</button>
-      <button type="button" onclick="marmitoV64Exit('profile')">Profil</button>
-      <button type="button" onclick="marmitoV64Exit('plan')">Plan 7 jours</button>
+      <a href="./index.html">Accueil</a>
+      <a href="./index.html?marmitoGo=favorites">Favoris</a>
+      <a href="./index.html?marmitoGo=profile">Profil</a>
+      <a href="./index.html?marmitoGo=plan">Plan 7 jours</a>
     </nav>
     <nav class="v51-admin-tabs" aria-label="Sections de l’administration">
       <button type="button" class="active" data-v51-admin="dashboard" onclick="marmitoV51AdminView('dashboard')">Tableau de bord</button>
@@ -29502,5 +29518,17 @@ function marmitoV64Menu(){
   if(typeof openDrawer==='function')openDrawer();
 }
 </script>
+
+<style id="v65-admin-native-navigation">
+/* Native links bypass legacy SPA routing and reset all overlays on return. */
+#marmito-admin-overlay .v64-admin-header-actions a.v64-admin-btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;box-sizing:border-box}
+#marmito-admin-overlay .v64-admin-shortcuts a{display:inline-flex;align-items:center;justify-content:center;border:1px solid #e0e5d9;background:#fff;border-radius:999px;padding:10px 16px;color:#31531f;font-weight:650;text-decoration:none;min-height:42px;box-sizing:border-box}
+#marmito-admin-overlay .v65-admin-navigation{position:relative;z-index:2}
+#marmito-admin-overlay .v65-admin-navigation summary{list-style:none;display:flex;align-items:center;justify-content:center;user-select:none;cursor:pointer}
+#marmito-admin-overlay .v65-admin-navigation summary::-webkit-details-marker{display:none}
+#marmito-admin-overlay .v65-admin-navigation nav{position:absolute;right:0;top:calc(100% + 6px);width:min(250px,75vw);padding:8px;border:1px solid #dce3d3;border-radius:14px;background:white;box-shadow:0 14px 35px #1c341c2e;display:grid;gap:3px}
+#marmito-admin-overlay .v65-admin-navigation nav a{padding:13px 15px;color:#31531f;text-decoration:none;border-radius:9px;font-weight:650}
+#marmito-admin-overlay .v65-admin-navigation nav a:hover,#marmito-admin-overlay .v65-admin-navigation nav a:focus-visible{background:#eef3e7}
+</style>
 </body>
 </html>
