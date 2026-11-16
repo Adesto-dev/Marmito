@@ -1705,12 +1705,9 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
       // Succes : on charge le profil
       userPlan = data.plan || 'free';
       userReferralCode = data.referral_code || null;
-      // Utilisateur existant sans code de parrainage → en générer un
-      if (!userReferralCode) {
-        const newCode = generateReferralCode(currentUser.email);
-        await sb.from('profiles').update({ referral_code: newCode }).eq('id', currentUser.id);
-        userReferralCode = newCode;
-      }
+      // V60 : seul Supabase attribue et conserve un code unique.
+      await ensureReferralCode();
+      await applyPendingReferral();
       userBonusExpires = data.bonus_expires_at || null;
       // Override plan with active bonus plan if it outranks current plan
       if (data.bonus_plan && data.bonus_expires_at && new Date(data.bonus_expires_at) > new Date()) {
@@ -1727,16 +1724,12 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
 
     } else if (error && error.code === 'PGRST116') {
       // Aucun profil trouve (premiere connexion) - on cree le profil
-      const newCode = generateReferralCode(currentUser.email);
-      const pendingRef = (() => { try { return localStorage.getItem('marmito-pending-ref'); } catch(e) { return null; } })();
-      await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email, plan: 'free', recipe_count: 0, reset_month: currentMonth, referral_code: newCode, referred_by: pendingRef || null });
-      userReferralCode = newCode; userPlan = 'free'; recipeCount = 0;
+      const { error: createError } = await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email, plan: 'free', recipe_count: 0, reset_month: currentMonth });
+      if (createError && createError.code !== '23505') throw createError;
+      await ensureReferralCode();
+      await applyPendingReferral();
+      userPlan = 'free'; recipeCount = 0;
       try { localStorage.setItem('marmito-plan', 'free'); } catch(e){}
-      // Referral code is recorded on the profile. Rewards are granted only by the
-      // verified payment flow on the server, never by the signup browser.
-      if (pendingRef) {
-        try { localStorage.removeItem('marmito-pending-ref'); } catch(e){}
-      }
     } else {
       // Erreur reseau ou Supabase indisponible : on utilise le cache local
       // NE PAS ecraser le plan avec 'free' - utiliser la derniere valeur connue
@@ -2292,12 +2285,33 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
   let userReferralCode = null;
   let userBonusExpires = null;
 
-  function generateReferralCode(email) {
-    const base = email.replace(/[^a-zA-Z]/g, '').substring(0, 4).toUpperCase().padEnd(4, 'X');
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let suffix = '';
-    for (let i = 0; i < 4; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
-    return base + suffix; // e.g. MARC7X2K
+  function referralUrl() {
+    return window.location.origin + '/auth.html?signup=1&ref=' + encodeURIComponent(userReferralCode || '');
+  }
+
+  async function ensureReferralCode() {
+    if (!currentUser) return;
+    const { data, error } = await sb.rpc('marmito_ensure_referral_code');
+    if (error) {
+      console.warn('[Marmito] Code de parrainage indisponible:', error.message);
+      userReferralCode = null;
+      return;
+    }
+    userReferralCode = typeof data === 'string' ? data : null;
+  }
+
+  async function applyPendingReferral() {
+    let pending = null;
+    try { pending = localStorage.getItem('marmito-pending-ref'); } catch(e) {}
+    if (!pending || !currentUser) return;
+    const { data, error } = await sb.rpc('marmito_accept_referral', { p_code: pending });
+    if (error) {
+      console.warn('[Marmito] Parrainage non enregistré:', error.message);
+      return; // garder le code pour un nouvel essai
+    }
+    if (data === true || data === false) {
+      try { localStorage.removeItem('marmito-pending-ref'); } catch(e) {}
+    }
   }
 
   function openReferral() {
@@ -2314,10 +2328,11 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
   }
 
   async function loadReferralData() {
-    if (!currentUser || !userReferralCode) return;
-    const appUrl = 'https://marmito.ca';
-    const link = appUrl + '/auth.html?signup=1&ref=' + userReferralCode;
+    if (!currentUser) return;
+    if (!userReferralCode) await ensureReferralCode();
     const linkEl = document.getElementById('referral-link-display');
+    if (!userReferralCode) { if (linkEl) linkEl.textContent = 'Code indisponible : configuration Supabase requise'; return; }
+    const link = referralUrl();
     if (linkEl) linkEl.textContent = link;
 
     const bonusBar = document.getElementById('referral-bonus-active');
@@ -2339,7 +2354,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
 
   async function copyReferralLink(btn) {
     if (!userReferralCode) return;
-    const link = 'https://marmito.ca/auth.html?signup=1&ref=' + userReferralCode;
+    const link = referralUrl();
     try {
       await navigator.clipboard.writeText(link);
       const orig = btn.textContent; btn.textContent = '✓ Copié !';
@@ -2353,7 +2368,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
 
   function shareReferral() {
     if (!userReferralCode) return;
-    const link = 'https://marmito.ca/auth.html?signup=1&ref=' + userReferralCode;
+    const link = referralUrl();
     const msg = 'J\'utilise Marmito pour cuisiner des recettes africaines, antillaises et du monde entier 🍲 Avec mon lien, tu as 50% sur ton 1er mois !\n' + link;
     if (navigator.share) navigator.share({ title: 'Marmito', text: msg, url: link }).catch(() => {});
     else navigator.clipboard.writeText(msg).then(() => showToast('Message copié !')).catch(() => showToast('Copiez ce lien : ' + link));
