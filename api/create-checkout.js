@@ -1,59 +1,44 @@
+'use strict';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
+const { requireIdentity, sendError } = require('./_auth');
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
+  res.setHeader('Cache-Control', 'no-store');
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Méthode non autorisée' });
   try {
-    const { userId, email, plan, referredBy } = req.body;
-    if (!userId || !email) return res.status(400).json({ error: 'userId and email required' });
-
-    let priceId;
-    if (plan === 'chef') {
-      priceId = process.env.STRIPE_PRICE_ID_CHEF;
-    } else if (plan === 'saveur') {
-      priceId = process.env.STRIPE_PRICE_ID_SAVEUR;
-    } else {
-      priceId = process.env.STRIPE_PRICE_ID;
-    }
-    if (!priceId) return res.status(500).json({ error: 'Price ID not configured for plan: ' + plan });
-
-    const sessionParams = {
-      mode: 'subscription',
-      payment_method_types: ['card'],
-      customer_email: email,
+    const { user, admin } = await requireIdentity(req);
+    const plan = req.body?.plan;
+    if (!['saveur', 'chef'].includes(plan)) return res.status(400).json({ error: 'Formule invalide' });
+    const priceId = plan === 'chef' ? process.env.STRIPE_PRICE_ID_CHEF : process.env.STRIPE_PRICE_ID_SAVEUR;
+    if (!priceId) return res.status(503).json({ error: 'Tarif non configuré' });
+    const { data: profile, error: profileError } = await admin.from('profiles')
+      .select('referred_by,stripe_customer_id').eq('id', user.id).single();
+    if (profileError || !profile) return res.status(409).json({ error: 'Profil introuvable' });
+    const origin = process.env.SITE_URL;
+    if (!origin || !/^https:\/\//.test(origin)) return res.status(503).json({ error: 'SITE_URL HTTPS requis' });
+    const params = {
+      mode: 'subscription', payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${process.env.SITE_URL || 'https://marmito-one.vercel.app'}/?upgraded=1`,
-      cancel_url: `${process.env.SITE_URL || 'https://marmito-one.vercel.app'}/?cancelled=1`,
-      metadata: {
-        supabase_user_id: userId,
-        plan: plan || 'saveur',
-        referred_by: referredBy || '',
-      },
+      success_url: `${origin.replace(/\/$/, '')}/?upgraded=1&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin.replace(/\/$/, '')}/?cancelled=1`,
+      client_reference_id: user.id,
+      metadata: { supabase_user_id: user.id, plan },
+      subscription_data: { metadata: { supabase_user_id: user.id, plan } }
     };
-
-    // Appliquer le coupon selon la priorité : parrainage > offre de lancement
-    if (referredBy && process.env.STRIPE_COUPON_REFERRAL) {
-      // Parrainage : 50% premier mois
-      sessionParams.discounts = [{ coupon: process.env.STRIPE_COUPON_REFERRAL }];
-    } else {
-      // Offre de lancement : -2$ Saveur ou -4$ Chef
-      const launchCoupon = plan === 'chef'
-        ? process.env.STRIPE_COUPON_LAUNCH_CHEF
-        : process.env.STRIPE_COUPON_LAUNCH_SAVEUR;
-      if (launchCoupon) {
-        sessionParams.discounts = [{ coupon: launchCoupon }];
-      }
+    if (profile.stripe_customer_id) params.customer = profile.stripe_customer_id;
+    else params.customer_email = user.email;
+    // Referral discount only if code belongs to a different existing user.
+    let validReferral = false;
+    if (profile.referred_by && process.env.STRIPE_COUPON_REFERRAL) {
+      const { data: referrer, error: refError } = await admin.from('profiles')
+        .select('id').eq('referral_code', profile.referred_by).neq('id', user.id).maybeSingle();
+      if (refError) throw refError;
+      validReferral = !!referrer;
+      if (validReferral) params.metadata.referred_by = profile.referred_by;
     }
-
-    const session = await stripe.checkout.sessions.create(sessionParams);
-
-    res.status(200).json({ url: session.url });
-  } catch (err) {
-    console.error('Stripe checkout error:', err);
-    res.status(500).json({ error: err.message });
-  }
+    const launchCoupon = plan === 'chef' ? process.env.STRIPE_COUPON_LAUNCH_CHEF : process.env.STRIPE_COUPON_LAUNCH_SAVEUR;
+    const coupon = validReferral ? process.env.STRIPE_COUPON_REFERRAL : launchCoupon;
+    if (coupon) params.discounts = [{ coupon }];
+    const session = await stripe.checkout.sessions.create(params, { idempotencyKey: `marmito-checkout-${user.id}-${plan}-${Math.floor(Date.now()/60000)}` });
+    return res.status(200).json({ url: session.url });
+  } catch (error) { return sendError(res, error); }
 };
