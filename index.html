@@ -27901,22 +27901,40 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 <!-- Espace administrateur : accès vérifié dans Supabase à chaque ouverture -->
-<section aria-labelledby="marmito-admin-title" aria-modal="true" id="marmito-admin-overlay" role="dialog" tabindex="-1">
-<div class="marmito-admin-wrap">
-<button class="v45-experience-menu" type="button" aria-label="Ouvrir le menu de navigation" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button>
-<div class="marmito-admin-head"><div class="v47-admin-intro"><div class="v47-eyebrow">ESPACE PRIVÉ</div><p>Gérez les contributions de la communauté depuis votre espace de modération.</p></div>
-<h2 id="marmito-admin-title">Administration</h2>
-<button class="marmito-admin-back" onclick="marmitoCloseAdmin()">← Retour à Marmito</button>
-</div>
-<nav class="v51-admin-tabs" aria-label="Sections de l’administration"><button type="button" class="active" data-v51-admin="dashboard" onclick="marmitoV51AdminView('dashboard')">Tableau de bord</button><button type="button" data-v51-admin="queue" onclick="marmitoV51AdminView('queue')">Contributions à examiner</button></nav><div class="v48-admin-overview"><div class="v48-admin-metric"><span>RECETTES DISPONIBLES</span><strong>418</strong><small>Bibliothèque Marmito</small></div><div class="v48-admin-metric"><span>ESPACE ADMIN</span><strong>Modération</strong><small>Expériences culinaires</small></div><div class="v48-admin-action"><span>ACCÈS RAPIDE</span><button type="button" onclick="marmitoV51AdminView('queue')">Voir les contributions à examiner <span aria-hidden="true">→</span></button></div></div><div class="v51-queue-heading"><span class="v47-eyebrow">MODÉRATION</span><h2>Contributions à examiner</h2><p>Consulte et traite les expériences réellement soumises à validation.</p></div><div class="marmito-admin-card" id="v49-admin-moderation">
-<h3>Modération des expériences culinaires</h3>
-<p>Examine les expériences soumises avant leur publication.</p>
-<button class="marmito-admin-back" onclick="marmitoLoadPendingExperiences()" type="button">↻ Actualiser</button>
-<p aria-live="polite" id="marmito-admin-status" role="status">Ouvre cette section pour charger les contributions.</p>
-<div id="marmito-admin-queue"></div>
-<div aria-label="Pages des expériences en attente" id="marmito-admin-pagination" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px"></div>
-</div>
-</div>
+<section aria-labelledby="marmito-admin-title" id="marmito-admin-overlay" role="region" tabindex="-1">
+  <div class="marmito-admin-wrap v64-admin-shell">
+    <header class="v64-admin-header">
+      <div><div class="v64-admin-eyebrow">ESPACE PRIVÉ · MARMITO</div><h2 id="marmito-admin-title">Administration</h2><p>Gestion et modération des expériences culinaires</p></div>
+      <div class="v64-admin-header-actions">
+        <button type="button" class="v64-admin-btn v64-admin-primary" onclick="marmitoV64Exit('home')">← Retour à Marmito</button>
+        <button type="button" class="v64-admin-btn" onclick="marmitoV64Menu()" aria-label="Ouvrir le menu principal">☰ Menu</button>
+      </div>
+    </header>
+    <nav class="v64-admin-shortcuts" aria-label="Navigation Marmito">
+      <button type="button" onclick="marmitoV64Exit('home')">Accueil</button>
+      <button type="button" onclick="marmitoV64Exit('favorites')">Favoris</button>
+      <button type="button" onclick="marmitoV64Exit('profile')">Profil</button>
+      <button type="button" onclick="marmitoV64Exit('plan')">Plan 7 jours</button>
+    </nav>
+    <nav class="v51-admin-tabs" aria-label="Sections de l’administration">
+      <button type="button" class="active" data-v51-admin="dashboard" onclick="marmitoV51AdminView('dashboard')">Tableau de bord</button>
+      <button type="button" data-v51-admin="queue" onclick="marmitoV51AdminView('queue')">Contributions à examiner</button>
+    </nav>
+    <div class="v48-admin-overview">
+      <div class="v48-admin-metric"><span>RECETTES DISPONIBLES</span><strong>418</strong><small>Bibliothèque Marmito</small></div>
+      <div class="v48-admin-metric"><span>ESPACE ADMIN</span><strong>Modération</strong><small>Expériences culinaires</small></div>
+      <div class="v48-admin-action"><span>ACCÈS RAPIDE</span><button type="button" onclick="marmitoV51AdminView('queue')">Voir les contributions à examiner →</button></div>
+    </div>
+    <div class="v51-queue-heading"><span class="v64-admin-eyebrow">MODÉRATION</span><h2>Contributions à examiner</h2><p>Consultez et traitez les expériences soumises à validation.</p></div>
+    <div class="marmito-admin-card" id="v49-admin-moderation">
+      <h3>Modération des expériences culinaires</h3>
+      <p>Examinez les expériences soumises avant leur publication.</p>
+      <button type="button" class="v64-admin-btn" onclick="marmitoLoadPendingExperiences()">↻ Actualiser</button>
+      <p aria-live="polite" id="marmito-admin-status" role="status">Ouvrez cette section pour charger les contributions.</p>
+      <div id="marmito-admin-queue"></div>
+      <div aria-label="Pages des expériences en attente" id="marmito-admin-pagination" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px"></div>
+    </div>
+  </div>
 </section>
 <script>
 // Modération Marmito : données affichées en texte brut pour éviter l'injection HTML.
@@ -29443,38 +29461,46 @@ function marmitoV51SetView(which,view){
 })();
 </script>
 
-<script id="v63-admin-exit-stability">
-(function(){
- 'use strict';
- // L'ancien menu peut conserver une couche transparente qui intercepte les clics.
- // Garder ces couches synchronisées avec l'état réel du tiroir.
- function cleanDrawer(){
-   const drawer=document.getElementById('drawer');
-   const scrim=document.getElementById('drawer-overlay');
-   if(!drawer?.classList.contains('open'))scrim?.classList.remove('open');
- }
- window.addEventListener('click',function(event){
-   const target=event.target;
-   if(!(target instanceof Element))return;
-   const back=target.closest('#marmito-admin-overlay .marmito-admin-head .marmito-admin-back');
-   if(!back)return;
-   // Capturer avant les anciens gestionnaires document et l'onclick historique.
-   event.preventDefault();
-   event.stopImmediatePropagation();
-   if(typeof marmitoCloseAdmin==='function')marmitoCloseAdmin();
-   else document.getElementById('marmito-admin-overlay')?.classList.remove('open');
-   if(typeof closeDrawer==='function')closeDrawer();
-   cleanDrawer();
- },true);
- // Sur une transition de menu, supprimer toute couche d'administration restante.
- document.addEventListener('click',function(event){
-   const target=event.target;
-   if(!(target instanceof Element))return;
-   if(!target.closest('#drawer .drawer-item'))return;
-   const admin=document.getElementById('marmito-admin-overlay');
-   if(admin?.classList.contains('open') && typeof marmitoCloseAdmin==='function')marmitoCloseAdmin();
- },true);
-})();
+
+<style id="v64-admin-rebuild">
+/* V64: independent, lightweight admin interface; preserve all Supabase/moderation logic. */
+#marmito-admin-overlay{z-index:130000!important;inset:0!important;overflow-y:auto!important;overscroll-behavior:contain;background:#faf7f0!important}
+#marmito-admin-overlay:not(.open){display:none!important;pointer-events:none!important}
+#marmito-admin-overlay.open{display:block!important;pointer-events:auto!important}
+#marmito-admin-overlay .v64-admin-shell{max-width:1080px!important;margin:0 auto!important;padding:24px clamp(16px,4vw,38px) 88px!important}
+#marmito-admin-overlay .v64-admin-header{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:0 0 20px;border-bottom:1px solid #e2e4d8;margin-bottom:16px}
+#marmito-admin-overlay .v64-admin-header h2{font:700 clamp(28px,4vw,39px) Georgia,serif!important;color:#31531f;margin:6px 0}
+#marmito-admin-overlay .v64-admin-header p{margin:0;color:#63705b;font-size:14px}
+#marmito-admin-overlay .v64-admin-eyebrow{font-size:11px;letter-spacing:.12em;font-weight:800;color:#6b805c}
+#marmito-admin-overlay .v64-admin-header-actions{display:flex;flex-wrap:wrap;gap:10px}
+#marmito-admin-overlay .v64-admin-btn{padding:12px 16px;border:1px solid #d7dfcd;border-radius:12px;background:white;color:#31531f;cursor:pointer;font-size:14px;font-weight:600;min-height:44px}
+#marmito-admin-overlay .v64-admin-primary{background:#31531f;color:white;border-color:#31531f}
+#marmito-admin-overlay .v64-admin-shortcuts{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+#marmito-admin-overlay .v64-admin-shortcuts button{border:1px solid #e0e5d9;background:#fff;border-radius:999px;padding:10px 16px;color:#31531f;font-weight:650;cursor:pointer;min-height:42px}
+#marmito-admin-overlay .v64-admin-shortcuts button:hover,#marmito-admin-overlay .v64-admin-btn:hover{filter:brightness(.95)}
+#marmito-admin-overlay .v51-admin-tabs{margin-bottom:18px}
+#marmito-admin-overlay .marmito-admin-card{background:white!important;border:1px solid #e3e6da!important}
+#drawer.open{z-index:130102!important}
+#drawer-overlay.open{z-index:130101!important}
+@media(max-width:650px){#marmito-admin-overlay .v64-admin-header-actions{width:100%}#marmito-admin-overlay .v64-admin-header-actions button{flex:1}#marmito-admin-overlay .v64-admin-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<script id="v64-admin-rebuild-js">
+/* No new document-wide click listeners. Existing admin role checks and moderation remain intact. */
+function marmitoV64Exit(destination){
+  // Close the admin surface using its existing lifecycle before any routing.
+  if(typeof marmitoCloseAdmin==='function')marmitoCloseAdmin();
+  const admin=document.getElementById('marmito-admin-overlay');
+  if(admin)admin.classList.remove('open','v51-admin-queue');
+  if(typeof closeDrawer==='function')closeDrawer();
+  document.getElementById('drawer-overlay')?.classList.remove('open');
+  document.body.style.overflow='';
+  if(destination&&typeof marmitoNavigate==='function')marmitoNavigate(destination);
+}
+function marmitoV64Menu(){
+  // Keep the administration visible underneath the menu. Close it only when
+  // a destination is chosen, so the existing V54 menu routing remains usable.
+  if(typeof openDrawer==='function')openDrawer();
+}
 </script>
 </body>
 </html>
