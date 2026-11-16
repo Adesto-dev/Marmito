@@ -200,6 +200,12 @@ body{background:radial-gradient(ellipse at 15% 10%,#e8efdf 0,transparent 45%),ra
 const SUPABASE_URL = 'https://osfhpzgfqpbzyrbjkajk.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_HAduBBuXWYfdKvOnfZ7X-Q_liL5Xj7h';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// V60 : mémoriser le code d'invitation sur le même domaine que l'application.
+const inviteCode = new URLSearchParams(location.search).get('ref');
+if (inviteCode && /^[A-Z0-9]{6,24}$/i.test(inviteCode)) {
+  try { localStorage.setItem('marmito-pending-ref', inviteCode.toUpperCase()); } catch(e) {}
+}
+
 
 sb.auth.getSession().then(({data:{session}})=>{
   if(session) window.location.href='/';
