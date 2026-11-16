@@ -1,6 +1,7 @@
 {
   "routes": [
     { "src": "/api/stripe-webhook", "dest": "/api/stripe-webhook.js", "methods": ["POST"] },
-    { "src": "/api/create-checkout", "dest": "/api/create-checkout.js", "methods": ["POST", "OPTIONS"] }
+    { "src": "/api/create-checkout", "dest": "/api/create-checkout.js", "methods": ["POST"] },
+    { "src": "/api/create-portal", "dest": "/api/create-portal.js", "methods": ["POST"] }
   ]
 }
