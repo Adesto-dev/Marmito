@@ -1,20 +1,17 @@
+'use strict';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
+const { requireIdentity, sendError } = require('./_auth');
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).end();
+  res.setHeader('Cache-Control', 'no-store');
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Méthode non autorisée' });
   try {
-    const { customerId } = req.body;
-    if (!customerId) return res.status(400).json({ error: 'Missing customerId' });
-    const session = await stripe.billingPortal.sessions.create({
-      customer: customerId,
-      return_url: 'https://marmito-one.vercel.app',
-    });
-    res.json({ url: session.url });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
+    const { user, admin } = await requireIdentity(req);
+    const { data: profile, error } = await admin.from('profiles')
+      .select('stripe_customer_id').eq('id', user.id).single();
+    if (error || !profile?.stripe_customer_id) return res.status(404).json({ error: 'Aucun abonnement Stripe associé à ce compte' });
+    const origin = process.env.SITE_URL;
+    if (!origin || !/^https:\/\//.test(origin)) return res.status(503).json({ error: 'SITE_URL HTTPS requis' });
+    const session = await stripe.billingPortal.sessions.create({ customer: profile.stripe_customer_id, return_url: origin.replace(/\/$/, '') });
+    return res.status(200).json({ url: session.url });
+  } catch (error) { return sendError(res, error); }
 };
