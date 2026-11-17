@@ -1138,6 +1138,61 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 }
 
 </style>
+<style id="marmito-v73-planning-modern">
+
+/* V73 : refonte visuelle isolée du plan de repas et de la liste de courses. */
+#plan-overlay .plan-sheet, #shopping-overlay .shopping-sheet {
+  background: #f8f8f3 !important;
+  color: #263d30;
+  border-radius: 26px 26px 0 0;
+  box-shadow: 0 24px 70px rgba(19, 43, 29, .17);
+}
+#plan-overlay .plan-sheet-head, #shopping-overlay .shopping-head {
+  background: #fdfcf8 !important;
+  border-bottom: 1px solid rgba(43, 75, 51, .12) !important;
+}
+#plan-overlay .plan-sheet-body { padding-bottom: 32px; }
+#plan-overlay .v48-plan-header, #shopping-overlay .v47-shopping-intro {
+  background: linear-gradient(125deg, #e9efe4, #faf6ec);
+  border: 1px solid rgba(54, 91, 61, .12);
+  border-radius: 22px;
+  padding: clamp(16px, 3vw, 28px);
+  margin-bottom: 18px;
+}
+#plan-overlay .v48-plan-header h2 { color: #244732; letter-spacing: -.025em; }
+#plan-overlay .v47-plan-intro { border-radius: 20px; }
+#shopping-overlay .shopping-actions { gap: 12px; }
+#shopping-overlay #shopping-manual {
+  border: 1px solid #d2ddcf;
+  border-radius: 14px;
+  background: #fff;
+  min-height: 44px;
+}
+#shopping-overlay #shopping-manual:focus-visible,
+#shopping-overlay button:focus-visible,
+#plan-overlay button:focus-visible {
+  outline: 3px solid #b47a50;
+  outline-offset: 2px;
+}
+#shopping-overlay .v48-shopping-view {
+  border-radius: 16px;
+  background: #eef2e9;
+  padding: 5px;
+}
+#shopping-overlay .v48-shopping-view button { border-radius: 12px; }
+#shopping-overlay .shopping-foot {
+  border-top: 1px solid rgba(43, 75, 51, .12);
+  background: #fdfcf8;
+}
+/* Ne pas modifier la superposition V70.1 qui permet d'ouvrir la liste depuis le plan. */
+@media (min-width: 760px) {
+  #plan-overlay .plan-sheet, #shopping-overlay .shopping-sheet { border-radius: 26px; }
+}
+@media (max-width: 600px) {
+  #plan-overlay .plan-sheet, #shopping-overlay .shopping-sheet { border-radius: 20px 20px 0 0; }
+  #plan-overlay .v48-plan-header, #shopping-overlay .v47-shopping-intro { border-radius: 16px; padding: 16px; }
+}
+</style>
 </head>
 <body>
 <header class="header">
