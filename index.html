@@ -1234,6 +1234,113 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
  #marmito-published-overlay #marmito-published-list{grid-template-columns:1fr}
 }
 </style>
+<style id="marmito-v77-steps-results">
+
+/* V77 — RECIPE EXPERIENCE: guided steps and calm recipe results */
+#cook-mode.visible{
+  display:block;max-width:1040px;margin:24px auto 44px;
+  border:1px solid #d9e5d7;border-radius:30px;
+  background:#f8f8f2;box-shadow:0 24px 70px rgba(23,52,34,.13);
+}
+#cook-mode .cook-header{
+  padding:26px clamp(20px,4vw,46px);
+  background:linear-gradient(120deg,#173d2d,#315943);
+  gap:18px;flex-wrap:wrap;
+}
+#cook-mode .cook-header-title{font-size:clamp(19px,2.5vw,28px);line-height:1.25;max-width:660px}
+#cook-mode .cook-progress-text{font-size:13px;color:#e0eadf;white-space:nowrap}
+#cook-mode .cook-progress-bar{height:8px;background:#dbe5d9}
+#cook-mode .cook-progress-fill{background:#bd8553;border-radius:0 8px 8px 0}
+#cook-mode .cook-step-body{
+  position:relative;min-height:390px;gap:22px;padding:clamp(28px,5vw,60px) 22px 40px;
+  background:radial-gradient(circle at 50% 12%,#edf2e6 0%,#f8f8f2 64%);
+}
+#cook-mode .cook-icon-big{
+  width:108px;height:108px;font-size:48px;background:#e4ebdb;
+  border:1px solid #d6e3d1;box-shadow:0 14px 32px rgba(35,71,43,.08)
+}
+#cook-mode .cook-step-text{
+  max-width:690px;font-size:clamp(19px,2.5vw,27px);line-height:1.6;
+  color:#273d2d;font-weight:500;text-wrap:pretty
+}
+#cook-mode #cook-speak-btn{
+  min-height:46px;padding:11px 22px!important;border-radius:999px!important;
+  border:1px solid #cbd9c6!important;background:#fff!important;
+  color:#2b5337!important;font-weight:700;box-shadow:0 5px 18px rgba(29,62,40,.06)
+}
+#cook-mode .cook-timer-zone{
+  width:min(100%,440px);margin:2px auto 0;padding:22px;
+  background:white;border:1px solid #e2e8da;border-radius:24px
+}
+#cook-mode .cook-timer-display{font-size:clamp(42px,7vw,64px);color:#234d34}
+#cook-mode .cook-timer-start{min-height:46px;border-radius:14px}
+#cook-mode .cook-nav{
+  padding:24px clamp(18px,4vw,42px);gap:18px;
+  background:#fff;border-top:1px solid #e4e9df
+}
+#cook-mode .cook-nav-btn{
+  min-height:52px;padding:13px clamp(14px,3vw,30px);
+  border-radius:16px;font-weight:700;font-size:15px
+}
+#cook-mode .cook-nav-next{background:#244c35;border-color:#244c35;color:white}
+#cook-mode .cook-dots{flex-wrap:wrap;justify-content:center;max-width:210px;gap:7px}
+#cook-mode .cook-dot{width:9px;height:9px}
+#cook-mode .cook-ready{padding:70px 24px}
+#cook-mode button:focus-visible{outline:3px solid #c08b5c;outline-offset:3px}
+
+/* V77 — search result detail: calm hierarchy and fewer competing panels */
+#result-card.visible{
+  max-width:1100px;margin:24px auto 48px;
+  border:1px solid #dce5d6;border-radius:28px;
+  box-shadow:0 18px 50px rgba(24,53,32,.1)
+}
+#result-card .result-header{
+  border-radius:0;
+}
+#result-card .result-title{font-size:clamp(28px,4.5vw,46px);line-height:1.12}
+#result-card .share-bar{
+  display:flex;flex-wrap:wrap;gap:8px;padding:16px clamp(16px,3vw,30px);
+  background:#f7f8f3;border-bottom:1px solid #e4e8dc
+}
+#result-card .share-bar .share-btn{
+  flex:0 1 auto;min-height:42px;padding:9px 13px;
+  font-size:12px;border-radius:12px;background:#fff!important;
+  color:#36513b!important;border:1px solid #e0e7d9!important;
+  box-shadow:none
+}
+#result-card .share-bar .share-btn:hover{border-color:#9fb49b!important;background:#edf2e9!important}
+#result-card .result-body{padding:clamp(16px,3vw,32px);gap:22px;background:#f9faf5}
+#result-card .result-body>div:nth-child(1),
+#result-card .result-body>div:nth-child(2){
+  padding:clamp(18px,3vw,30px);border:1px solid #e4e9dd;
+  background:white;border-radius:22px;box-shadow:none
+}
+#result-card .result-section-title{
+  font-size:14px;font-weight:800;letter-spacing:.045em;color:#274b34;
+  padding-bottom:12px;border-bottom:1px solid #edf0e9
+}
+#result-card .portions-row{background:#f0f4e9;padding:14px;border-radius:14px}
+#result-card .btn-start-cook{
+  min-height:60px;padding:16px 22px;border-radius:17px;
+  background:linear-gradient(110deg,#214c35,#366849);font-size:17px;
+  box-shadow:0 10px 26px rgba(28,74,47,.15)
+}
+#result-card .result-footer{
+  background:#f0f4e9;border-radius:18px;padding:18px
+}
+@media(max-width:680px){
+ #cook-mode.visible,#result-card.visible{border-radius:20px;margin:14px auto 28px}
+ #cook-mode .cook-step-body{min-height:320px}
+ #cook-mode .cook-nav{padding:16px 12px;gap:9px}
+ #cook-mode .cook-nav-btn{font-size:13px;padding:12px}
+ #cook-mode .cook-dots{max-width:95px}
+ #result-card .share-bar .share-btn{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+ #cook-mode .cook-progress-fill,#cook-mode .cook-dot{transition:none}
+}
+
+</style>
 </head>
 <body>
 <header class="header">
