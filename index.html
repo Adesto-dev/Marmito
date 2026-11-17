@@ -1020,6 +1020,54 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 #profile-overlay .profile-sheet-body button:focus-visible,#drawer button:focus-visible{outline:2px solid var(--olive,#607747);outline-offset:2px}
 @media(max-width:600px){#drawer .drawer-nav{padding:14px 12px 30px}#profile-overlay .profile-avatar-row{padding:16px}#profile-overlay .profile-sheet-body{padding-left:16px;padding-right:16px}}
 </style>
+<style id="marmito-v71-home-redesign">
+/* MARMITO V71 — Refonte visuelle Accueil & découverte. Aucun changement métier. */
+@media (min-width: 761px) {
+  .main:has(.v31-hero) {max-width:1320px!important;padding:34px clamp(22px,4vw,62px) 96px!important;gap:0!important}
+}
+.main:has(.v31-hero) .v31-hero{gap:18px!important;margin-bottom:52px!important}
+.main:has(.v31-hero) .v31-intro{
+ background:radial-gradient(circle at 94% 14%,rgba(228,198,132,.18),transparent 38%),linear-gradient(125deg,#263c30 0%,#3d5541 60%,#627354 100%)!important;
+ border-radius:28px!important;min-height:355px!important;box-shadow:0 18px 42px rgba(36,55,38,.12)!important;
+}
+.main:has(.v31-hero) .v31-intro:after{content:''!important;width:290px;height:290px;border:1px solid rgba(255,255,255,.14);border-radius:50%;right:-85px;bottom:-130px;font-size:0!important;box-shadow:0 0 0 42px rgba(255,255,255,.025),0 0 0 85px rgba(255,255,255,.018)}
+.main:has(.v31-hero) .v31-eyebrow{font-size:11px!important;letter-spacing:2.5px!important;color:#f0d59e!important;margin-bottom:19px!important}
+.main:has(.v31-hero) .v31-intro .tagline h1{font-family:Georgia,serif!important;font-size:clamp(36px,4.5vw,65px)!important;letter-spacing:-1.6px!important;max-width:600px}
+.main:has(.v31-hero) .v31-intro .tagline p{max-width:470px;font-size:16px!important;color:#edf0e6!important}
+.main:has(.v31-hero) .daily-card{background:linear-gradient(140deg,#f8efe1,#eddfc8 70%,#e1cfaf)!important;border:1px solid #eadcc5!important;box-shadow:0 18px 38px rgba(91,65,33,.08)!important;transition:transform .2s ease,box-shadow .2s ease!important}
+.main:has(.v31-hero) .daily-card:hover{transform:translateY(-3px)!important;box-shadow:0 24px 44px rgba(91,65,33,.13)!important}
+.main:has(.v31-hero) .daily-label{color:#86613c!important}
+.main:has(.v31-hero) .daily-title{color:#2d3d2e!important;letter-spacing:-.8px}
+.main:has(.v31-hero) .daily-btn{background:#334a38!important;border-radius:12px!important;font-weight:700!important}
+.main:has(.v31-hero) .v31-section-head{margin:0 0 23px!important;padding-left:2px}
+.main:has(.v31-hero) .v31-section-head h2{font-size:clamp(30px,3.4vw,43px)!important;letter-spacing:-1px!important;color:#293d2f!important}
+.main:has(.v31-hero) .v31-section-head p{font-size:15px!important;color:#6b7569!important}
+.main:has(.v31-hero) .v31-workspace{gap:24px!important}
+.main:has(.v31-hero) .v31-discovery{gap:17px!important}
+.main:has(.v31-hero) .v31-discovery .search-wrap{border-radius:16px!important;border:1px solid #d9dfd5!important;box-shadow:0 8px 26px rgba(43,61,46,.055)!important;transition:box-shadow .2s ease,border-color .2s ease}
+.main:has(.v31-hero) .v31-discovery .search-wrap:focus-within{border-color:#6e856a!important;box-shadow:0 0 0 4px rgba(92,122,90,.10)!important}
+.main:has(.v31-hero) .v32-discovery-actions{gap:12px!important}
+.main:has(.v31-hero) .v32-open-filters,.main:has(.v31-hero) .v32-surprise{border-radius:13px!important;min-height:48px!important;transition:transform .18s ease,box-shadow .18s ease!important}
+.main:has(.v31-hero) .v32-open-filters:hover,.main:has(.v31-hero) .v32-surprise:hover{transform:translateY(-2px)}
+.main:has(.v31-hero) .v31-quick{gap:10px!important;padding-bottom:14px!important}
+.main:has(.v31-hero) .v31-quick-chip{border-radius:12px!important;padding:12px 17px!important;background:#f9faf6!important;border:1px solid #dfe4d8!important;color:#334a38!important;white-space:nowrap}
+.main:has(.v31-hero) .v31-quick-chip:hover,.main:has(.v31-hero) .v31-quick-chip:focus-visible{background:#334a38!important;color:#fff!important}
+.main:has(.v31-hero) .v33-home-planning{border-radius:22px!important}
+.main:has(.v31-hero) .result-card{border-radius:22px!important;overflow:hidden}
+.main:has(.v31-hero) .result-header{border-radius:20px 20px 0 0}
+.main:has(.v31-hero) button:focus-visible,.main:has(.v31-hero) input:focus-visible{outline:3px solid #b98b53!important;outline-offset:3px}
+@media (max-width: 760px){
+ .main:has(.v31-hero){padding-top:18px!important}
+ .main:has(.v31-hero) .v31-hero{gap:12px!important;margin-bottom:34px!important}
+ .main:has(.v31-hero) .v31-intro{min-height:250px!important;padding:30px 25px!important;border-radius:22px!important}
+ .main:has(.v31-hero) .v31-intro .tagline h1{font-size:clamp(31px,8vw,45px)!important}
+ .main:has(.v31-hero) .daily-card{min-height:210px!important;padding:25px!important;border-radius:22px!important}
+ .main:has(.v31-hero) .daily-title{font-size:clamp(26px,7vw,35px)!important;margin-top:12px!important}
+ .main:has(.v31-hero) .v31-section-head{margin-bottom:16px!important}
+ .main:has(.v31-hero) .v31-workspace{gap:16px!important}
+}
+@media (prefers-reduced-motion:reduce){.main:has(.v31-hero) .daily-card,.main:has(.v31-hero) .v32-open-filters,.main:has(.v31-hero) .v32-surprise{transition:none!important}}
+</style>
 </head>
 <body>
 <header class="header">
