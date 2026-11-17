@@ -1341,6 +1341,102 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 }
 
 </style>
+<style id="marmito-v78-real-steps">
+
+/* V78: actual step-card redesign (the prior version styled only the surrounding panel) */
+#result-card #result-steps{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:18px;margin-top:22px;align-items:stretch
+}
+#result-card #result-steps .step{
+ display:flex;flex-direction:column;gap:16px;
+ padding:26px;min-width:0;min-height:205px;
+ border:1px solid #dce6d9;border-radius:24px;
+ background:linear-gradient(155deg,#fff 70%,#f3f7ef);
+ box-shadow:0 12px 32px rgba(27,60,38,.07);
+ transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+#result-card #result-steps .step:not(:last-child)::after{display:none}
+#result-card #result-steps .step:hover{
+ transform:translateY(-3px);border-color:#a9c1aa;
+ box-shadow:0 18px 36px rgba(27,60,38,.12)
+}
+#result-card #result-steps .step-icon-wrap{
+ width:58px;height:58px;min-height:58px;border-radius:18px;
+ background:#eaf0e4;font-size:27px;box-shadow:none
+}
+#result-card #result-steps .step-num{
+ width:25px;height:25px;bottom:-7px;right:-8px;
+ background:#24543b;font-size:12px;border:2px solid white
+}
+#result-card #result-steps .step-content{
+ width:100%;min-width:0;display:flex;flex-direction:column;gap:11px
+}
+#result-card #result-steps .v78-step-label{
+ font-size:11px;font-weight:850;letter-spacing:.17em;color:#a2693e
+}
+#result-card #result-steps .step-text{
+ font-size:clamp(16px,1.7vw,19px);line-height:1.65;
+ color:#253d2d;font-weight:500;overflow-wrap:anywhere
+}
+#result-card #result-steps .step-timer{
+ display:flex;align-items:center;flex-wrap:wrap;gap:10px;
+ padding-top:14px;margin-top:auto;border-top:1px solid #e7eee5
+}
+#result-card #result-steps .tsb{
+ padding:10px 16px;border-radius:12px;font-size:13px;font-weight:750;
+ background:#edf2e8;color:#244b34;border:1px solid #d9e5d6
+}
+#result-card #result-steps .step.step-active{
+ border-color:#c28a56;background:#fff9ef
+}
+#result-card #result-steps .step.step-done{
+ border-color:#b2d3b7;background:#f0f8f0
+}
+/* Cooking mode: turn the step into an immersive centered editorial card */
+#cook-mode.visible{max-width:1050px;border:0;border-radius:30px;overflow:hidden}
+#cook-mode .cook-header{
+ padding:32px clamp(22px,4vw,48px);
+ background:linear-gradient(120deg,#163a2a,#2c6346)
+}
+#cook-mode .cook-header-title{font-family:Georgia,serif;font-size:clamp(22px,3vw,34px)}
+#cook-mode .cook-progress-bar{height:9px;background:#d8e5d6}
+#cook-mode .cook-step-body{
+ padding:clamp(32px,5vw,64px) 24px;
+ background:radial-gradient(circle at 50% 0%,#e7f0e4,#fafaf6 67%);
+ min-height:480px
+}
+#cook-mode .cook-icon-big{
+ width:124px;height:124px;border-radius:32px;background:#e0eadc;
+ border:1px solid #cfdfcc;font-size:58px
+}
+#cook-mode .cook-step-text{
+ max-width:760px;font-family:Georgia,serif;font-size:clamp(24px,3.3vw,36px);
+ line-height:1.55;color:#244430;font-weight:500
+}
+#cook-mode .cook-timer-zone{
+ max-width:440px;padding:24px;border-radius:24px;background:white;
+ border:1px solid #dce7d8;box-shadow:0 12px 32px rgba(30,70,40,.06)
+}
+#cook-mode .cook-nav{
+ padding:24px clamp(20px,4vw,44px);background:white;border-top:1px solid #e1e9de
+}
+#cook-mode .cook-nav-btn{
+ min-height:56px;border-radius:16px;padding:14px clamp(14px,3vw,32px);
+ font-weight:750
+}
+#cook-mode .cook-nav-next{background:#214c35;color:#fff}
+@media(max-width:780px){
+ #result-card #result-steps{grid-template-columns:1fr;gap:14px}
+ #result-card #result-steps .step{min-height:0;padding:22px}
+ #cook-mode .cook-step-body{min-height:360px}
+}
+@media(prefers-reduced-motion:reduce){
+ #result-card #result-steps .step{transition:none}
+ #result-card #result-steps .step:hover{transform:none}
+}
+
+</style>
 </head>
 <body>
 <header class="header">
@@ -27637,7 +27733,7 @@ function show(recipe){
     const time=(typeof step==="object"&&step.time>0)?step.time:0;
     const{html:iconHtml}=getIcon(step);
     const timer=time>0?"<div class=\"step-timer\"><button class=\"tsb\" onclick=\"startTimer("+i+")\">⏱ "+timerRangeLabel(step)+"</button><span class=\"td\" hidden>"+fmt(time)+"</span><button class=\"tcb\" hidden onclick=\"togglePause("+i+")\" style=\"font-size:11px;padding:0 8px;border-radius:12px;height:28px;background:var(--green);border:none;color:#fff;cursor:pointer\">Pause</button></div>"+timerLongRestNotice(time)+"<div class=\"timer-progress-wrap\"><div class=\"tp\" style=\"height:100%;background:var(--green);border-radius:2px;width:100%;transition:width 1s linear\"></div></div>":"";
-    return "<div class=\"step\" id=\"s"+i+"\"" +(time>0?" data-t=\""+time+"\""+(step.timeMax?" data-tmax=\""+step.timeMax+"\"":""):"")+"><div class=\"step-icon-wrap\">"+iconHtml+"<span class=\"step-num\">"+(i+1)+"</span></div><div class=\"step-content\"><div class=\"step-text\">"+text+"</div>"+timer+"</div></div>";
+    return "<div class=\"step\" id=\"s"+i+"\"" +(time>0?" data-t=\""+time+"\""+(step.timeMax?" data-tmax=\""+step.timeMax+"\"":""):"")+"><div class=\"step-icon-wrap\">"+iconHtml+"<span class=\"step-num\">"+(i+1)+"</span></div><div class=\"step-content\"><div class=\"v78-step-label\">"+(currentLang==="en"?"STEP ":"ÉTAPE ")+(i+1)+"</div><div class=\"step-text\">"+text+"</div>"+timer+"</div></div>";
   }).join("");
   document.getElementById("result-card").classList.add("visible");
   setTimeout(()=>document.getElementById("result-card").scrollIntoView({behavior:"smooth",block:"start"}),80);
