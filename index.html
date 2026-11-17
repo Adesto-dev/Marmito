@@ -2366,6 +2366,23 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
       } else { bonusBar.classList.remove('show'); }
     }
 
+    // V68 : les jours affichés proviennent du registre sécurisé, pas de n × 7.
+    // Si le SQL V68 n'est pas installé, afficher « — » plutôt qu'un crédit fictif.
+    try {
+      const { data: rewards, error: rewardsError } = await sb.rpc('marmito_referral_reward_summary');
+      if (rewardsError) throw rewardsError;
+      const summary = Array.isArray(rewards) ? rewards[0] : rewards;
+      if (!summary) throw new Error('Résumé des récompenses indisponible');
+      const earned = Number(summary.signup_days || 0) + Number(summary.paid_days || 0);
+      const pending = Number(summary.pending_days || 0);
+      const dEl = document.getElementById('ref-days-display');
+      if (dEl) dEl.textContent = earned + ' jours' + (pending ? ' (' + pending + ' en attente de prolongation)' : '');
+    } catch (e) {
+      console.warn('[Marmito V68] Récompenses indisponibles : installer le SQL V68.', e);
+      const dEl = document.getElementById('ref-days-display');
+      if (dEl) dEl.textContent = '— (configuration requise)';
+    }
+
     // V61 : compteur calculé côté serveur, sans accès direct aux profils des filleuls.
     try {
       const { data, error } = await sb.rpc('marmito_referral_count');
@@ -2373,11 +2390,11 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
       const n = Number(data);
       if (!Number.isSafeInteger(n) || n < 0) throw new Error('Compteur de parrainage invalide');
       const cEl = document.getElementById('ref-count-display'); if (cEl) cEl.textContent = String(n);
-      const dEl = document.getElementById('ref-days-display'); if (dEl) dEl.textContent = (n * 7) + ' jour' + (n*7 !== 1 ? 's' : '');
+      // V68 : ne pas écraser les jours réellement enregistrés dans Supabase.
     } catch(e) {
       console.warn('[Marmito] Compteur de parrainage indisponible:', e);
       const cEl = document.getElementById('ref-count-display'); if (cEl) cEl.textContent = '—';
-      const dEl = document.getElementById('ref-days-display'); if (dEl) dEl.textContent = '—';
+      // Le statut des récompenses est indépendant du compteur de filleuls.
     }
   }
 
@@ -2398,7 +2415,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
   function shareReferral() {
     if (!userReferralCode) return;
     const link = referralUrl();
-    const msg = 'J\'utilise Marmito pour cuisiner des recettes africaines, antillaises et du monde entier 🍲 Avec mon lien, tu as 50% sur ton 1er mois !\n' + link;
+    const msg = 'Je découvre des recettes avec Marmito 🍲 Inscris-toi avec mon lien ! Une offre de bienvenue sera proposée lors de l’activation des paiements.\n' + link;
     if (navigator.share) navigator.share({ title: 'Marmito', text: msg, url: link }).catch(() => {});
     else navigator.clipboard.writeText(msg).then(() => showToast('Message copié !')).catch(() => showToast('Copiez ce lien : ' + link));
   }
@@ -27841,20 +27858,20 @@ applyLang();
 <div class="referral-sheet-body">
 <div class="referral-hero">
 <div class="referral-hero-icon">🍲</div>
-<div class="referral-hero-title">Partagez Marmito, gagnez 1 mois gratuit</div>
-<div class="referral-hero-sub">Votre ami obtient 50% sur son 1er mois. Vous gagnez 1 mois gratuit dès qu’il souscrit à un plan payé.</div>
+<div class="referral-hero-title">Invitez vos amis et gagnez des jours gratuits</div>
+<div class="referral-hero-sub">Gagnez 7 jours dès l’inscription de votre filleul, puis 14 jours supplémentaires après son premier paiement confirmé. La remise de 50 % du filleul sera disponible lors de l’activation des paiements.</div>
 </div>
 <div class="referral-bonus-bar" id="referral-bonus-active"></div>
 <div class="referral-reward-row">
 <div class="referral-reward-box">
 <div class="referral-reward-box-icon">🎁</div>
 <div class="referral-reward-box-label">Vous gagnez</div>
-<div class="referral-reward-box-val">1 mois gratuit</div>
+<div class="referral-reward-box-val">7 jours + 14 jours*</div>
 </div>
 <div class="referral-reward-box">
 <div class="referral-reward-box-icon">👤</div>
 <div class="referral-reward-box-label">Votre ami gagne</div>
-<div class="referral-reward-box-val">50% sur le 1er mois</div>
+<div class="referral-reward-box-val">50 % sur le 1er mois*</div>
 </div>
 </div>
 <div class="referral-link-label">Votre lien de parrainage</div>
@@ -27870,7 +27887,7 @@ applyLang();
 <span class="referral-stats-val" id="ref-count-display">, </span>
 </div>
 <div class="referral-stats-row">
-<span>Jours bonus gagnés</span>
+<span>Jours enregistrés</span>
 <span class="referral-stats-val" id="ref-days-display">, </span>
 </div>
 </div>
@@ -27886,7 +27903,7 @@ applyLang();
 </div>
 <div class="referral-step">
 <div class="referral-step-num">3</div>
-<div class="referral-step-text">Votre ami bénéficie de 50% sur son 1er mois. Vous recevez automatiquement 1 mois gratuit sur votre plan dès son paiement.</div>
+<div class="referral-step-text">Vous gagnez 7 jours à son inscription. Après son premier paiement confirmé, vous gagnerez 14 jours supplémentaires. *Réduction et bonus de paiement activés ultérieurement avec Stripe.</div>
 </div>
 </div>
 </div>
