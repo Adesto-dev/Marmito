@@ -1193,6 +1193,47 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
   #plan-overlay .v48-plan-header, #shopping-overlay .v47-shopping-intro { border-radius: 16px; padding: 16px; }
 }
 </style>
+<style id="marmito-v74-community">
+/* V74 — refonte visible du fil Communauté, sans toucher aux expériences privées */
+#marmito-published-overlay .marmito-published-box{
+ width:min(100%,1050px);min-height:min(78vh,760px);padding:clamp(20px,4vw,42px);
+ background:#faf9f4;color:#253a29;border:1px solid #e3e8db;border-radius:28px;
+ box-shadow:0 28px 75px rgba(17,34,24,.22)
+}
+#marmito-published-overlay #marmito-published-title{
+ font-family:Georgia,serif;font-size:clamp(30px,4.5vw,46px);line-height:1.13;
+ color:#294b2d;margin:22px 0 8px
+}
+#marmito-published-overlay #marmito-published-recipe{
+ color:#697c66;font-size:15px;margin:0 0 22px
+}
+#marmito-published-overlay #marmito-published-status{
+ padding:14px 18px;border-radius:16px;background:#edf3e9;color:#49664a;
+ margin:18px 0 24px
+}
+#marmito-published-overlay #marmito-published-list{
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:20px;
+ align-items:start
+}
+#marmito-published-overlay .marmito-published-entry{
+ display:flex;flex-direction:column;gap:12px;border:1px solid #e1e7db;
+ background:white;border-radius:22px;padding:20px;box-shadow:0 12px 26px rgba(27,53,32,.07);
+ min-width:0
+}
+#marmito-published-overlay .marmito-published-entry h3{
+ font-family:Georgia,serif;font-size:22px;line-height:1.25;margin:0;color:#294b2d
+}
+#marmito-published-overlay .marmito-published-entry p{margin:0;line-height:1.65;color:#536052}
+#marmito-published-overlay .marmito-published-entry strong{color:#bd8144;letter-spacing:2px}
+#marmito-published-overlay .marmito-published-entry img{
+ width:100%;max-height:260px;object-fit:cover;border-radius:15px;margin:0
+}
+#marmito-published-overlay button:focus-visible{outline:3px solid #bd8144;outline-offset:3px}
+@media(max-width:600px){
+ #marmito-published-overlay .marmito-published-box{border-radius:20px;padding:18px}
+ #marmito-published-overlay #marmito-published-list{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
 <header class="header">
@@ -28452,7 +28493,7 @@ function marmitoClosePublishedExperiences(){
  document.getElementById('marmito-published-overlay')?.classList.remove('open');
  document.getElementById('marmito-published-list')?.replaceChildren();
 }
-async function marmitoOpenPublishedExperiences(){
+async function marmitoOpenPublishedExperiences(showAll=false){
  const overlay=document.getElementById('marmito-published-overlay');
  const list=document.getElementById('marmito-published-list');
  const status=document.getElementById('marmito-published-status');
@@ -28461,20 +28502,30 @@ async function marmitoOpenPublishedExperiences(){
  list.replaceChildren();
  overlay.classList.add('open');
  const title=cur?.title;
- document.getElementById('marmito-published-recipe').textContent=title||'';
-  if(!title){status.textContent='Ouvre une recette pour consulter ses expériences.';return;}
+ document.getElementById('marmito-published-recipe').textContent=showAll
+  ? 'Les partages publics de la communauté Marmito'
+  : (title||'');
+  if(!showAll&&!title){status.textContent='Ouvre une recette pour consulter ses expériences.';return;}
  status.textContent='Chargement des expériences publiées…';
  try{
-  const {data,error}=await sb.from('recipe_experiences')
+  let query=sb.from('recipe_experiences')
    .select('id,recipe_title,rating,comment,tip,photo_path,created_at')
-   .eq('recipe_title',title).eq('visibility','published').eq('moderation_status','published')
-   .order('created_at',{ascending:false}).limit(50);
+   .eq('visibility','published').eq('moderation_status','published');
+  if(!showAll) query=query.eq('recipe_title',title);
+  const {data,error}=await query.order('created_at',{ascending:false}).limit(50);
   if(error) throw error;
   if(request!==marmitoPublishedRequest) return;
-  status.textContent=data.length ? `${data.length} expérience(s) publiée(s) (maximum 50 affichées).` : 'Aucune expérience publiée pour cette recette.';
+  status.textContent=data.length
+   ? `${data.length} expérience(s) publique(s) affichée(s) (maximum 50).`
+   : (showAll?'Aucun partage public pour le moment. Les expériences publiées apparaîtront ici.':'Aucune expérience publiée pour cette recette.');
   for(const item of data){
    if(request!==marmitoPublishedRequest) return;
    const card=document.createElement('article');card.className='marmito-published-entry';
+   if(showAll){
+    const recipeName=document.createElement('h3');
+    recipeName.textContent=item.recipe_title||'Recette partagée';
+    card.append(recipeName);
+   }
    const rating=document.createElement('strong');
    rating.textContent=Number.isInteger(item.rating)&&item.rating>=1&&item.rating<=5 ? '★'.repeat(item.rating)+'☆'.repeat(5-item.rating) : 'Expérience partagée';
    card.append(rating);
@@ -28484,7 +28535,7 @@ async function marmitoOpenPublishedExperiences(){
     const {data:photo,error:photoError}=await sb.storage.from('marmito-experiences').createSignedUrl(item.photo_path,120);
     if(request!==marmitoPublishedRequest) return;
     if(!photoError&&photo?.signedUrl){
-     const img=document.createElement('img');img.src=photo.signedUrl;img.alt='Photo partagée pour '+title;img.loading='lazy';card.append(img);
+     const img=document.createElement('img');img.src=photo.signedUrl;img.alt='Photo partagée pour '+(item.recipe_title||title||'une recette');img.loading='lazy';card.append(img);
     }else{const p=document.createElement('p');p.textContent='Photo indisponible.';card.append(p);}
    }
    list.append(card);
@@ -28509,7 +28560,7 @@ async function marmitoOpenPublishedExperiences(){
 <section aria-labelledby="marmito-myexp-title" aria-modal="true" id="marmito-myexp-overlay" role="dialog">
 <div class="marmito-myexp-box">
 <button class="v45-experience-menu" type="button" aria-label="Ouvrir le menu de navigation" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button>
-<div class="v51-experience-nav"><button type="button" class="active">Mes expériences</button><button type="button" onclick="marmitoCloseMyExperiences();marmitoOpenPublishedExperiences()">Communauté</button></div><div class="v49-exp-hero"><div class="v49-eyebrow">MON CARNET CULINAIRE</div><h2 id="marmito-myexp-title">Mes expériences</h2><p>Mes préparations, mes notes et mes partages.</p></div>
+<div class="v51-experience-nav"><button type="button" class="active">Mes expériences</button><button type="button" onclick="marmitoCloseMyExperiences();marmitoOpenPublishedExperiences(true)">Communauté</button></div><div class="v49-exp-hero"><div class="v49-eyebrow">MON CARNET CULINAIRE</div><h2 id="marmito-myexp-title">Mes expériences</h2><p>Mes préparations, mes notes et mes partages.</p></div>
 <p>Retrouve tes expériences privées et suis les expériences soumises à la communauté.</p>
 <p aria-live="polite" id="marmito-myexp-status" role="status"></p>
 <div class="v51-experience-list" id="marmito-myexp-list"></div>
