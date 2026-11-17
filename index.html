@@ -2311,17 +2311,28 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
     userReferralCode = typeof data === 'string' ? data : null;
   }
 
+  // V67 : récupérer le code lié au compte Supabase après confirmation du courriel,
+  // même si la connexion se fait dans un autre navigateur ou appareil.
   async function applyPendingReferral() {
-    let pending = null;
-    try { pending = localStorage.getItem('marmito-pending-ref'); } catch(e) {}
-    if (!pending || !currentUser) return;
+    if (!currentUser) return;
+    const validCode = value => typeof value === 'string' && /^[A-Z0-9]{6,24}$/.test(value.toUpperCase());
+    const metadataCode = currentUser.user_metadata?.marmito_referral_code;
+    let localCode = null;
+    try { localCode = localStorage.getItem('marmito-pending-ref'); } catch(e) {}
+    // Les métadonnées de CE compte priment sur le stockage local du navigateur.
+    const pending = validCode(metadataCode) ? metadataCode.toUpperCase()
+                  : validCode(localCode) ? localCode.toUpperCase() : null;
+    if (!pending) return;
     const { data, error } = await sb.rpc('marmito_accept_referral', { p_code: pending });
     if (error) {
-      console.warn('[Marmito] Parrainage non enregistré:', error.message);
-      return; // garder le code pour un nouvel essai
+      console.warn('[Marmito] Parrainage non enregistré (nouvelle tentative à la prochaine connexion):', error.message);
+      return;
     }
     if (data === true || data === false) {
+      // La RPC est responsable de la validation, de l'unicité et de la prévention
+      // des auto-parrainages. Le profil Supabase reste la source de vérité.
       try { localStorage.removeItem('marmito-pending-ref'); } catch(e) {}
+      if (data === false) console.warn('[Marmito] Parrainage non appliqué par Supabase : vérifier la RPC et le profil.');
     }
   }
 
