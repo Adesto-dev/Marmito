@@ -26518,7 +26518,7 @@ function shoppingEntries(state){
  return [...entries.values()].sort((a,b)=>a.label.localeCompare(b.label,'fr'));
 }
 function shoppingItemText(entry){return (entry.valid?shoppingFormatQty(entry.qty,entry.unit,entry.max)+' ':'')+shoppingDisplayName(entry,entry.label)+(entry.valid?'':entry.raw?' ('+entry.raw+')':'');}
-function openShopping(){const el=document.getElementById('shopping-overlay');if(!el)return;el.classList.add('open');renderShopping();}
+function openShopping(){const el=document.getElementById('shopping-overlay');if(!el)return;const plan=document.getElementById('plan-overlay');if(plan&&plan.classList.contains('open'))closePlanRepas();el.classList.add('open');renderShopping();}
 function closeShopping(){document.getElementById('shopping-overlay').classList.remove('open');}
 function shoppingRemoveRecipe(title){
  const state=shoppingLoad(),before=shoppingEntries(state);
@@ -29369,6 +29369,11 @@ function marmitoV51SetView(which,view){
  }
 })();
 </script>
+
+<style id="v70-1-shopping-overlay-fix">
+/* Shopping list must be visible above the meal plan when opened from it. */
+#shopping-overlay.open{z-index:110100!important}
+</style>
 
 <style id="v53-admin-plan-route-style">
 /* Plan above every non-navigation surface, including stale admin layers. */
