@@ -1068,6 +1068,76 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 }
 @media (prefers-reduced-motion:reduce){.main:has(.v31-hero) .daily-card,.main:has(.v31-hero) .v32-open-filters,.main:has(.v31-hero) .v32-surprise{transition:none!important}}
 </style>
+<style id="marmito-v72-profile-modern">
+
+/* Marmito V72 — finition premium de l'espace Profil et Abonnements.
+   Styles isolés ; aucune modification des données ou des actions. */
+#profile-overlay .profile-sheet {
+  background: #f7f7f1;
+}
+#profile-overlay .profile-sheet-body {
+  width: min(100%, 1020px);
+  margin-inline: auto;
+  padding: clamp(18px, 3vw, 36px) clamp(16px, 3vw, 36px) 96px;
+}
+#profile-overlay .v41-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  box-shadow: 0 18px 42px rgba(28, 57, 42, .13);
+}
+#profile-overlay .v41-membership,
+#profile-overlay .v41-personal {
+  margin-top: 28px;
+}
+#profile-overlay .profile-plan-card {
+  border: 1px solid rgba(40, 83, 60, .13);
+  border-radius: 24px;
+  box-shadow: 0 12px 32px rgba(34, 65, 44, .07);
+  transition: box-shadow .2s ease;
+}
+#profile-overlay .profile-plan-card:hover {
+  box-shadow: 0 18px 40px rgba(34, 65, 44, .12);
+}
+#profile-overlay .v41-feature-grid {
+  gap: 16px;
+}
+#profile-overlay .v41-feature-card {
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(45, 81, 56, .11);
+  box-shadow: 0 9px 26px rgba(31, 55, 37, .055);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+#profile-overlay .v41-feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 34px rgba(31, 55, 37, .11);
+}
+#profile-overlay .v41-link {
+  border-radius: 16px;
+  transition: background-color .18s ease;
+}
+#profile-overlay .v41-link:hover {
+  background-color: #eef3e9;
+}
+#profile-overlay button:focus-visible,
+#profile-overlay summary:focus-visible {
+  outline: 3px solid #b67a4e;
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  #profile-overlay .profile-sheet-body { padding: 16px 14px 88px; }
+  #profile-overlay .v41-hero { border-radius: 21px; }
+  #profile-overlay .v41-feature-grid { gap: 12px; }
+  #profile-overlay .v41-feature-card { border-radius: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #profile-overlay .v41-feature-card,
+  #profile-overlay .profile-plan-card,
+  #profile-overlay .v41-link { transition: none; }
+}
+
+</style>
 </head>
 <body>
 <header class="header">
