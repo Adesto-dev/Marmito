@@ -3722,6 +3722,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
 
   function openPricing() {
     syncPricingCurrentPlan();
+    if(typeof window.marmitoV95PricingUpdate==='function')window.marmitoV95PricingUpdate();
     document.getElementById('pricing-overlay').classList.add('open');
   }
 
@@ -27649,14 +27650,15 @@ function marmitoV94GoBack(){
   closePlanRepas();return;
  }
 }
-function marmitoV94DeletePlan(id){
+async function marmitoV94DeletePlan(id){
  const en=currentLang==='en';
  if(!confirm(en?'Delete this saved plan? This cannot be undone.':'Supprimer définitivement ce planning ? Cette action est irréversible.'))return;
- const data=marmitoV91Load();data.plans=data.plans.filter(p=>p.id!==id);
- if(marmitoV91Save(data)){
-  // Deletion does not restore the monthly quota; keep a creation ledger.
-  marmitoV91RenderPersonal();showToast(en?'Plan deleted':'Planning supprimé');
- }
+ if(marmitoV95Busy)return;marmitoV95Busy=true;
+ try{
+  const {data,error}=await sb.rpc('marmito_delete_personal_plan',{p_id:id});
+  if(error)throw error;if(!data)throw new Error(en?'Plan not found':'Planning introuvable');
+  await marmitoV95Refresh();marmitoV91RenderPersonal();showToast(en?'Plan deleted':'Planning supprimé');
+ }catch(error){showToast(marmitoV95Error(error))}finally{marmitoV95Busy=false}
 }
 // V91 — personalized plans MVP. Account-scoped local persistence; server-side quota enforcement deferred.
 const marmitoV91OfficialOpenPlan = openPlanRepas;
@@ -27667,20 +27669,51 @@ let marmitoV91EditingId=null;
 function marmitoV91Text(fr,en){return currentLang==='en'?en:fr;}
 function marmitoV91Month(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
 function marmitoV91StorageKey(){return 'marmito-personal-plans-v1:'+(currentUser?.id||'guest');}
-function marmitoV91Load(){
+// V95: Supabase is authoritative; localStorage is not used for new plan writes.
+let marmitoV95State={plans:[],creationCounts:{}};
+let marmitoV95LoadedFor=null;
+let marmitoV95Busy=false;
+function marmitoV91Load(){return marmitoV95State}
+function marmitoV91Save(){throw new Error('V95: use Supabase RPC for plan writes')}
+function marmitoV91MonthCount(data){return Number(data.creationCounts?.[marmitoV91Month()])||0}
+function marmitoV95Error(error){
+ const en=currentLang==='en';const msg=String(error?.message||error||'');
+ if(msg.includes('Monthly plan creation limit'))return en?'Monthly limit reached (2 plans).':'Limite mensuelle atteinte (2 plannings).';
+ if(msg.includes('Plan not eligible'))return en?'Your subscription does not allow this action.':'Votre abonnement ne permet pas cette action.';
+ if(msg.includes('Authentication required')||!currentUser)return en?'Sign in to manage your plans.':'Connectez-vous pour gérer vos plannings.';
+ return (en?'Supabase error: ':'Erreur Supabase : ')+msg.slice(0,180);
+}
+async function marmitoV95Refresh(){
+ if(!currentUser)throw new Error('Authentication required');
+ const uid=currentUser.id;
+ const [plans,usage]=await Promise.all([
+  sb.from('marmito_personal_plans').select('id,name,meals,creation_month,created_at').eq('user_id',uid).order('created_at',{ascending:true}),
+  sb.from('marmito_plan_creation_usage').select('month_start,created_count').eq('user_id',uid)
+ ]);
+ if(plans.error)throw plans.error;if(usage.error)throw usage.error;
+ if(currentUser?.id!==uid)return;
+ const counts={};for(const row of usage.data||[])counts[String(row.month_start).slice(0,7)]=row.created_count;
+ marmitoV95State={plans:(plans.data||[]).map(row=>({id:row.id,name:row.name,month:String(row.creation_month).slice(0,7),meals:row.meals,createdAt:row.created_at})),creationCounts:counts};
+ marmitoV95LoadedFor=uid;
+}
+async function marmitoV95ShowPersonal(){
+ if(userPlan==='free')return;
+ marmitoV91ActiveTab='personal';
+ const body=document.getElementById('plan-body');
+ if(!body)return;
+ body.replaceChildren();
+ const loading=document.createElement('p');loading.className='v95-status';loading.textContent=marmitoV91Text('Chargement de vos plannings…','Loading your plans…');body.append(loading);
+ try{await marmitoV95Refresh();if(marmitoV91ActiveTab==='personal')marmitoV91RenderPersonal()}
+ catch(error){loading.textContent=marmitoV95Error(error);const retry=document.createElement('button');retry.type='button';retry.className='v91-secondary';retry.textContent=marmitoV91Text('Réessayer','Retry');retry.onclick=marmitoV95ShowPersonal;body.append(retry)}
+}
+async function marmitoV95Write(record){
+ if(marmitoV95Busy)return false;marmitoV95Busy=true;
  try{
-  const x=JSON.parse(localStorage.getItem(marmitoV91StorageKey())||'{}');
-  if(!x||!Array.isArray(x.plans))return {plans:[]};
-  return {plans:x.plans.filter(p=>p&&typeof p.id==='string'&&typeof p.month==='string'&&Array.isArray(p.meals)&&p.meals.length===14).slice(-250),creationCounts:x.creationCounts&&typeof x.creationCounts==='object'?x.creationCounts:{}};
- }catch(e){return {plans:[]};}
-}
-function marmitoV91Save(data){
- try{localStorage.setItem(marmitoV91StorageKey(),JSON.stringify(data));return true}
- catch(e){showToast(marmitoV91Text('Impossible de sauvegarder ce planning.','Unable to save this plan.'),'error');return false}
-}
-function marmitoV91MonthCount(data){
- const month=marmitoV91Month(),existing=data.plans.filter(p=>p.month===month).length;
- return Math.max(existing,Number(data.creationCounts?.[month])||0);
+  const {error}=await sb.rpc('marmito_save_personal_plan',{p_id:record.id,p_name:record.name,p_meals:record.meals});
+  if(error)throw error;
+  await marmitoV95Refresh();return true;
+ }catch(error){showToast(marmitoV95Error(error));return false}
+ finally{marmitoV95Busy=false}
 }
 function marmitoV91RenderTabs(){
  const body=document.getElementById('plan-body');
@@ -27691,7 +27724,7 @@ function marmitoV91RenderTabs(){
  [['official',marmitoV91Text('Menu Marmito','Marmito menu')],['personal',marmitoV91Text('Mon planning','My planner')]].forEach(([id,label])=>{
   const b=document.createElement('button');b.type='button';b.textContent=label;b.className=id===marmitoV91ActiveTab?'active':'';
   b.setAttribute('aria-pressed',String(id===marmitoV91ActiveTab));
-  b.onclick=()=>{marmitoV91ActiveTab=id;if(id==='official')marmitoV91OpenOfficial();else marmitoV91RenderPersonal()};
+  b.onclick=()=>{marmitoV91ActiveTab=id;if(id==='official')marmitoV91OpenOfficial();else marmitoV95ShowPersonal()};
   nav.appendChild(b);
  });
 }
@@ -27701,6 +27734,7 @@ function marmitoV91OpenOfficial(){
  marmitoV91RenderTabs();
 }
 function marmitoV91RenderPersonal(){
+ if(marmitoV95LoadedFor!==currentUser?.id){marmitoV95ShowPersonal();return}
  if(userPlan==='free')return;
  marmitoV91ActiveTab='personal';
  const body=document.getElementById('plan-body');
@@ -27777,27 +27811,21 @@ function marmitoV91Edit(id){
  const actions=document.createElement('div');actions.className='v91-editor-actions';
  const back=document.createElement('button');back.type='button';back.className='v91-secondary';back.textContent=en?'Cancel':'Annuler';back.onclick=marmitoV91RenderPersonal;
  const save=document.createElement('button');save.type='submit';save.className='v91-create';save.textContent=en?'Save my plan':'Enregistrer mon planning';actions.append(back,save);form.append(actions);
- form.onsubmit=e=>{
-  e.preventDefault();
-  const latest=marmitoV91Load();
-  const target=existing?latest.plans.find(p=>p.id===existing.id):null;
-  if(existing&&!target){marmitoV91RenderPersonal();return}
-  if(!target&&userPlan!=='chef'&&marmitoV91MonthCount(latest)>=2){marmitoV91RenderPersonal();return}
-  const record={id:target?.id||('p'+Date.now()+'-'+Math.random().toString(36).slice(2,8)),name:name.value.trim().slice(0,80)||'Ma semaine',month:target?.month||marmitoV91Month(),meals:selects.map(sel=>sel.dataset.value||''),createdAt:target?.createdAt||Date.now()};
-  if(target)Object.assign(target,record);else{
-   const month=marmitoV91Month(),prior=marmitoV91MonthCount(latest);
-   latest.creationCounts=latest.creationCounts||{};latest.creationCounts[month]=prior+1;
-   latest.plans.push(record);
-  }
-  if(marmitoV91Save(latest)){marmitoV91RenderPersonal();showToast(en?'Plan saved':'Planning enregistré')}
+ form.onsubmit=async e=>{
+  e.preventDefault();if(marmitoV95Busy)return;
+  const record={id:existing?.id||('p'+Date.now()+'-'+Math.random().toString(36).slice(2,8)),name:name.value.trim().slice(0,80)||'Ma semaine',meals:selects.map(sel=>sel.dataset.value||'')};
+  save.disabled=true;
+  const ok=await marmitoV95Write(record);
+  if(ok){marmitoV91RenderPersonal();showToast(en?'Plan saved':'Planning enregistré')}
+  else save.disabled=false;
  };
  body.append(form);
 }
-function marmitoV91Clone(id){
+async function marmitoV91Clone(id){
  if(userPlan!=='chef')return;
- const data=marmitoV91Load(),source=data.plans.find(p=>p.id===id);if(!source)return;
- data.plans.push({...source,id:'p'+Date.now()+'-'+Math.random().toString(36).slice(2,8),month:marmitoV91Month(),name:source.name+' (copie)',createdAt:Date.now()});
- if(marmitoV91Save(data))marmitoV91RenderPersonal();
+ const source=marmitoV91Load().plans.find(p=>p.id===id);if(!source)return;
+ const record={id:'p'+Date.now()+'-'+Math.random().toString(36).slice(2,8),name:source.name+' (copie)',meals:source.meals.slice()};
+ if(await marmitoV95Write(record))marmitoV91RenderPersonal();
 }
 function marmitoV91Shopping(id){
  const p=marmitoV91Load().plans.find(x=>x.id===id);if(!p)return;
@@ -27810,7 +27838,7 @@ openPlanRepas=function(){
  if(marmitoV91ActiveTab==='personal'){
   const overlay=document.getElementById('plan-overlay'),sheet=document.getElementById('plan-sheet'),vh=window.innerHeight;
   sheet.style.height=Math.round(vh*.94)+'px';sheet.style.maxHeight=Math.round(vh*.94)+'px';
-  marmitoV91RenderPersonal();overlay.classList.add('open');
+  marmitoV95ShowPersonal();overlay.classList.add('open');
  }else marmitoV91OpenOfficial();
 };
 
@@ -29246,60 +29274,38 @@ applyLang();
 <!-- Découverte (Free) -->
 <div class="plan-card">
 <div class="plan-card-top">
-<div class="plan-name">🌿 Découverte</div>
+<div class="plan-name">Découverte</div>
 <div class="plan-price free">Gratuit</div>
 </div>
-<ul class="plan-features">
-<li>20 recettes accessibles</li>
-<li>12 cuisines du monde</li>
-<li>Mode cuisine guidé</li>
-<li>Favoris &amp; historique</li>
-<li class="muted">Plan de repas 7 jours</li>
-<li class="muted">Conseils &amp; Astuces (plan Chef)</li>
-</ul>
+<ul class="plan-features"><li>20 recettes accessibles</li><li>Recherche et filtres de base</li><li>Cuisine guidée, voix et minuteries</li><li>Favoris et historique</li><li>Expériences personnelles et avis</li><li>Liste de courses : 3 recettes maximum</li><li class="muted">Menu Marmito et planning personnalisé réservés aux abonnés</li></ul>
 <button class="plan-btn free-btn" id="btn-free" type="button" disabled>Ton plan actuel</button>
 </div>
 <!-- Saveur (5.99/mois) -->
 <div class="plan-card featured">
 <div class="plan-card-top">
-<div class="plan-name">🍽️ Saveur</div>
+<div class="plan-name">Saveur</div>
 </div>
-<div class="launch-badge">✨ Prix spécial</div>
+<div class="launch-badge">Prix spécial</div>
 <div class="plan-price-launch">
 <span class="plan-price-old">5,99$</span>
 <div class="plan-price-new">3,99$<span>/mois</span></div>
 </div>
 <div class="launch-note">Premier mois seulement</div>
-<ul class="plan-features">
-<li>130 recettes accessibles</li>
-<li>Recherche par région et type</li>
-<li>Mode cuisine guidé</li>
-<li>Plan de repas 7 jours</li>
-<li>Historique de recettes cuisinées</li>
-<li class="muted">418 recettes (plan Chef)</li>
-</ul>
+<ul class="plan-features"><li>130 recettes accessibles</li><li>Recherche et filtres par région et type</li><li>Cuisine guidée, voix et minuteries</li><li>Favoris, historique, expériences et avis</li><li>Menu Marmito renouvelé chaque semaine</li><li>2 plannings personnalisés créés par mois</li><li>Liste de courses : 7 recettes maximum</li></ul>
 <button class="plan-btn pro-btn" id="btn-saveur" onclick="startCheckout('saveur',this)">Choisir Saveur →</button>
 </div>
 <!-- Chef (10.99/mois) -->
 <div class="plan-card">
 <div class="plan-card-top">
-<div class="plan-name">👨‍🍳 Chef</div>
+<div class="plan-name">Chef</div>
 </div>
-<div class="launch-badge">✨ Prix spécial</div>
+<div class="launch-badge">Prix spécial</div>
 <div class="plan-price-launch">
 <span class="plan-price-old">10,99$</span>
 <div class="plan-price-new">6,99$<span>/mois</span></div>
 </div>
 <div class="launch-note">Premier mois seulement</div>
-<ul class="plan-features">
-<li>418 recettes accessibles</li>
-<li>Recherche par région et type</li>
-<li>Mode cuisine guidé</li>
-<li>Plan de repas 7 jours</li>
-<li>Historique de recettes cuisinées</li>
-<li>Nouvelles fonctionnalités en avant-première</li>
-<li>💡 Conseils &amp; astuces pour chaque recette</li>
-</ul>
+<ul class="plan-features"><li>418 recettes accessibles</li><li>Recherche et filtres par région et type</li><li>Cuisine guidée, voix et minuteries</li><li>Favoris, historique, expériences et avis</li><li>Menu Marmito renouvelé chaque semaine</li><li>Plannings personnalisés illimités et duplication</li><li>Liste de courses : 14 recettes maximum</li><li>Conseils et astuces</li></ul>
 <button class="plan-btn pro-btn" id="btn-chef" onclick="startCheckout('chef',this)">Choisir Chef →</button>
 </div>
 </div>
@@ -31164,5 +31170,20 @@ function marmitoV64Menu(){
   observer.observe(drawer,{attributes:true,attributeFilter:["class"]});
  }
 })();
-</script></body>
+</script>
+<script id="marmito-v95-pricing-i18n">
+(function(){
+ const labels={en:[
+ ['20 accessible recipes','Basic search and filters','Guided cooking, voice and timers','Favorites and history','Personal cooking experiences and reviews','Shopping list: up to 3 recipes','Marmito weekly menu and custom planning require a subscription'],
+ ['130 accessible recipes','Search by region and category','Guided cooking, voice and timers','Favorites, history, experiences and reviews','Marmito menu refreshed weekly','2 custom weekly plans created per month','Shopping list: up to 7 recipes'],
+ ['418 accessible recipes','Search by region and category','Guided cooking, voice and timers','Favorites, history, experiences and reviews','Marmito menu refreshed weekly','Unlimited custom plans and duplication','Shopping list: up to 14 recipes','Tips and advice']
+ ]};
+ const fr=Array.from(document.querySelectorAll('#pricing-overlay .plan-card .plan-features')).map(ul=>Array.from(ul.querySelectorAll('li')).map(li=>li.textContent));
+ function update(){const en=typeof currentLang!=='undefined'&&currentLang==='en';document.querySelectorAll('#pricing-overlay .plan-card .plan-features').forEach((ul,i)=>ul.querySelectorAll('li').forEach((li,j)=>{li.textContent=en?labels.en[i][j]:fr[i][j]}));}
+ window.marmitoV95PricingUpdate=update;
+ document.addEventListener('click',e=>{if(e.target.closest('[onclick*="openPricing"],#pricing-overlay'))update()},true);
+ update();
+})();
+</script>
+</body>
 </html>
