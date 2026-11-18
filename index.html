@@ -2053,6 +2053,31 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 #pricing-overlay .pricing-sheet-body > section.v47-hero.v47-pricing-intro p{color:#eaf2e8!important}
 @media(max-width:650px){#pricing-overlay .pricing-sheet-body > section.v47-hero.v47-pricing-intro{min-height:0!important;padding:26px 21px!important}}
 </style>
+<style id="marmito-v90-free-plan-preview">
+/* V90 — premium free-plan preview, scoped to the locked meal-plan content */
+#plan-overlay #plan-body:has(.v90-plan-preview){background:#f8f7f1!important;padding:clamp(14px,3vw,30px)!important;overflow-y:auto!important}
+#plan-overlay .v90-plan-preview{width:min(760px,100%);margin:0 auto 28px;display:grid;gap:18px;color:#244331}
+#plan-overlay .v90-plan-hero{padding:clamp(25px,4vw,43px);border-radius:26px;background:linear-gradient(120deg,#193f2c,#326248);color:#fff;box-shadow:0 15px 34px #173a2921}
+#plan-overlay .v90-hero-top{display:flex;justify-content:space-between;align-items:center;gap:10px;color:#e9bd98;font-size:11px;letter-spacing:.15em;font-weight:800}
+#plan-overlay .v90-lock-icon{display:grid;place-items:center;width:37px;height:37px;border-radius:50%;background:#ffffff1c;color:#fff;font-size:20px}
+#plan-overlay .v90-plan-hero h2{font-family:Georgia,serif;font-size:clamp(27px,4.5vw,43px);line-height:1.16;color:#fff;margin:18px 0 12px;max-width:590px}
+#plan-overlay .v90-plan-hero p{font-size:15px;line-height:1.65;color:#e4eee4;max-width:520px;margin:0}
+#plan-overlay .v90-plan-card{padding:clamp(20px,3vw,34px);border:1px solid #e1e8dc;border-radius:25px;background:#fff;box-shadow:0 12px 30px #23432e0d}
+#plan-overlay .v90-plan-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+#plan-overlay .v90-plan-card-head h3{margin:0;font-family:Georgia,serif;color:#244932;font-size:clamp(19px,2.5vw,25px)}
+#plan-overlay .v90-example-badge{padding:7px 11px;border-radius:99px;background:#edf2e9;color:#48654d;font-size:12px;font-weight:700}
+#plan-overlay .v90-plan-day{display:flex;align-items:center;gap:14px;padding:15px 0;border-bottom:1px solid #edf0e9}
+#plan-overlay .v90-day-number{display:grid;place-items:center;width:44px;height:44px;flex:none;border-radius:13px;background:#eaf0e5;color:#2b583c;font-weight:800}
+#plan-overlay .v90-plan-day>span:nth-child(2){flex:1;display:grid;gap:4px}
+#plan-overlay .v90-plan-day strong{color:#284631;font-size:15px}
+#plan-overlay .v90-plan-day small{color:#718074;font-size:12px}
+#plan-overlay .v90-day-lock{font-size:9px;color:#a8b7a7}
+#plan-overlay .v90-plan-benefits{display:grid;gap:10px;padding:22px 0;color:#365a40;font-size:14px;font-weight:650}
+#plan-overlay .v90-plan-upgrade{width:100%;min-height:52px;border:0;border-radius:14px;background:#28583c;color:#fff;font-weight:800;font-size:15px;cursor:pointer}
+#plan-overlay .v90-plan-upgrade:hover{background:#1e4630}
+#plan-overlay .v90-plan-disclaimer{text-align:center;color:#758175;font-size:12px;line-height:1.5;margin:13px 0 0}
+@media(max-width:600px){#plan-overlay #plan-body:has(.v90-plan-preview){padding:15px!important}#plan-overlay .v90-plan-hero{padding:25px 21px}#plan-overlay .v90-plan-card{padding:19px}#plan-overlay .v90-plan-preview{gap:13px}}
+</style>
 </head>
 <body>
 <header class="header">
@@ -2167,7 +2192,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <span class="search-icon">🔍</span>
 <input autocomplete="off" autocorrect="off" class="search-input" id="recipe-search" onblur="setTimeout(closeSearch,200)" oninput="onSearchInput(this.value)" placeholder="Chercher une recette..." spellcheck="false" type="text"/>
 <div class="search-dropdown" id="search-dropdown"></div>
-</div><div class="v32-discovery-actions"><button aria-controls="marmito-filters-panel" aria-expanded="false" class="v32-open-filters" onclick="marmitoFiltersOpen()" type="button">⚙️ Affiner ma recherche <span>→</span></button><button class="v32-surprise" onclick="generateRecipe()" type="button">✦ Surprends-moi</button></div><div class="v31-quick"><button class="v31-quick-chip" data-cuisine="Afrique" type="button">🌍 Afrique</button><button class="v31-quick-chip" data-cuisine="Antilles" type="button">🌴 Caraïbes</button><button class="v31-quick-chip" data-cuisine="Italienne" type="button">🍝 Italie</button><button class="v31-quick-chip" data-cuisine="Chinoise" type="button">🥢 Asie</button><button class="v31-quick-chip" data-cuisine="Mexicaine" type="button">🌮 Mexique</button></div><section aria-label="Planification et abonnement" class="v33-home-planning" id="v33-home-planning"><div class="v33-planning-heading"><span class="v33-eyebrow">ORGANISEZ VOTRE SEMAINE</span><h2>Votre plan de repas sur 7 jours</h2><p>Retrouvez votre menu de la semaine, déjà préparé pour vous.</p></div><button class="v33-meal-plan-button" onclick="openPlanRepas()">Voir mon plan de repas sur 7 jours</button><div aria-live="polite" class="home-pro-banner" hidden="" id="v33-upgrade-banner">
+</div><div class="v32-discovery-actions"><button aria-controls="marmito-filters-panel" aria-expanded="false" class="v32-open-filters" onclick="marmitoFiltersOpen()" type="button">Affiner ma recherche <span>→</span></button><button class="v32-surprise" onclick="generateRecipe()" type="button">Surprends-moi</button></div><div class="v31-quick"><button class="v31-quick-chip" data-cuisine="Afrique" type="button">Afrique</button><button class="v31-quick-chip" data-cuisine="Antilles" type="button">Caraïbes</button><button class="v31-quick-chip" data-cuisine="Italienne" type="button">Italie</button><button class="v31-quick-chip" data-cuisine="Chinoise" type="button">Asie</button><button class="v31-quick-chip" data-cuisine="Mexicaine" type="button">Mexique</button></div><section aria-label="Planification et abonnement" class="v33-home-planning" id="v33-home-planning"><div class="v33-planning-heading"><span class="v33-eyebrow">ORGANISEZ VOTRE SEMAINE</span><h2>Votre plan de repas sur 7 jours</h2><p>Retrouvez votre menu de la semaine, déjà préparé pour vous.</p></div><button class="v33-meal-plan-button" onclick="openPlanRepas()">Voir mon plan de repas sur 7 jours</button><div aria-live="polite" class="home-pro-banner" hidden="" id="v33-upgrade-banner">
 <span class="home-pro-icon">👑</span>
 <div class="home-pro-text">
 <span class="home-pro-label">Fonctionnalité Saveur/Chef</span>
@@ -2198,10 +2223,10 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 </div>
 <div class="share-bar v80-recipe-actions" role="group" aria-label="Actions de la recette">
-<button class="share-btn share-copy" data-i18n="btn-copy" onclick="copyRecipe()">📋 Copier</button>
+<button class="share-btn share-copy" data-i18n="btn-copy" onclick="copyRecipe()">Copier</button>
 <button class="share-btn share-wa" data-i18n="btn-share" onclick="shareRecipe()">⤴ Partager la recette</button>
-<button class="share-btn" id="grocery-add-recipe" onclick="addCurrentRecipeToShopping()">🛒 Ajouter aux courses</button>
-<button class="share-btn" id="cooked-btn" onclick="toggleCooked()" style="background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)">✓ Cuisiné</button> <button class="share-btn" onclick="marmitoOpenExperience()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">Mon expérience</button> <button class="share-btn" onclick="marmitoOpenPublishedExperiences()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">⭐ Avis de la communauté</button>
+<button class="share-btn" id="grocery-add-recipe" onclick="addCurrentRecipeToShopping()">Ajouter aux courses</button>
+<button class="share-btn" id="cooked-btn" onclick="toggleCooked()" style="background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)">Cuisiné</button> <button class="share-btn" onclick="marmitoOpenExperience()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">Mon expérience</button> <button class="share-btn" onclick="marmitoOpenPublishedExperiences()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">Avis de la communauté</button>
 </div>
 <div class="result-body">
 <div>
@@ -2218,7 +2243,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="result-section-title" data-i18n="sec-preparation">Préparation : Chrono intégré</div>
 <div class="steps" id="result-steps"></div>
 </div>
-<button class="btn-start-cook" data-i18n="btn-start-cook" onclick="startCookMode()">🍳 Commencer la préparation →</button>
+<button class="btn-start-cook" data-i18n="btn-start-cook" onclick="startCookMode()">Commencer la préparation →</button>
 <div class="result-footer">
 <div class="meta-item"><span class="meta-label" data-i18n="meta-time">Temps</span><span class="meta-value" id="r-time"></span></div>
 <div class="meta-item"><span class="meta-label" data-i18n="meta-serves">Personnes</span><span class="meta-value" id="r-serves"></span></div>
@@ -2240,7 +2265,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="cook-step-body">
 <div class="cook-icon-big" id="cook-icon-big"></div>
 <div class="cook-step-text" id="cook-step-text"></div>
-<div style="text-align:center;margin:12px 0"><button id="cook-speak-btn" onclick="cookSpeakToggle()" style="border:1px solid currentColor;border-radius:20px;background:transparent;color:inherit;padding:9px 16px;cursor:pointer" type="button">🔊 Écouter l’étape</button></div>
+<div style="text-align:center;margin:12px 0"><button id="cook-speak-btn" onclick="cookSpeakToggle()" style="border:1px solid currentColor;border-radius:20px;background:transparent;color:inherit;padding:9px 16px;cursor:pointer" type="button">Écouter l’étape</button></div>
 <div class="cook-timer-zone" id="cook-timer-zone" style="display:none">
 <div class="cook-timer-display" id="cook-timer-disp"></div>
 <div class="cook-timer-btns">
@@ -2280,7 +2305,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="card-label" data-i18n="card-cuisine">Type de cuisine</div>
 <select class="cuisine-select" id="cuisine-select" onchange="selectCuisineDropdown(this.value)">
 <option data-i18n="chip-cuisine-all" value="Toutes">Toutes les cuisines</option>
-<option value="Afrique">🌍 Afrique</option>
+<option value="Afrique">Afrique</option>
 <option value="Antilles">🌴 Antilles &amp; Caraïbes</option>
 <option value="Chinoise">🥢 Chinoise</option>
 <option value="Espagnole">🇪🇸 Espagnole</option>
@@ -2333,12 +2358,12 @@ document.addEventListener('DOMContentLoaded',function(){
 <small id="marmito-diet-note" style="opacity:.8;flex:1">Filtres indicatifs : vérifiez toujours les étiquettes et les traces d'allergènes.</small>
 </div>
 </div><div class="btn-row">
-<button class="btn-generate" data-i18n="btn-gen" id="gen-btn" onclick="generateRecipe()">🎲 Surprends-moi</button>
-<button class="btn-filter" data-i18n="btn-filter" id="filter-btn" onclick="generateWithFilters()">🍳 Selon mes filtres</button>
+<button class="btn-generate" data-i18n="btn-gen" id="gen-btn" onclick="generateRecipe()">Surprends-moi</button>
+<button class="btn-filter" data-i18n="btn-filter" id="filter-btn" onclick="generateWithFilters()">Selon mes filtres</button>
 </div><div class="limit-banner" id="limit-banner">
 <h3 data-i18n="limit-title">Limite atteinte</h3>
 <p data-i18n="limit-text">Tu as généré tes 20 recettes gratuites du mois. Passe à Saveur ou Chef pour plus de recettes et toutes les régions.</p>
-<button class="btn-upgrade-big" data-i18n="btn-upgrade" onclick="startUpgrade(this)">✨ Passer à Saveur dès 3,99$/mois</button>
+<button class="btn-upgrade-big" data-i18n="btn-upgrade" onclick="startUpgrade(this)">Passer à Saveur dès 3,99$/mois</button>
 </div></aside></div></main>
 <!-- PLAN DE REPAS MODAL -->
 <div class="plan-overlay" id="plan-overlay" onclick="if(event.target===this)closePlanRepas()">
@@ -2970,7 +2995,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
     const act = document.getElementById('p-actions');
     if (!isPaid) {
       act.innerHTML = '<button class="btn-profile-upgrade" onclick="startUpgrade(this)">' +
-        (currentLang === 'en' ? '✨ Upgrade from $3.99/month' : '✨ Passer à Saveur dès 3,99$/mois') + '</button>';
+        (currentLang === 'en' ? 'Upgrade from $3.99/month' : 'Passer à Saveur dès 3,99$/mois') + '</button>';
     } else {
       act.innerHTML = '<button class="btn-manage-portal" onclick="manageSubscription()">⚙️ ' +
         (currentLang === 'en' ? 'Manage subscription' : 'Gérer mon abonnement') + '</button>';
@@ -3038,7 +3063,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
       const cta = document.getElementById('drawer-sub-cta');
       const subSection = document.getElementById('drawer-sub-section');
       if (userPlan === 'free') {
-        cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">✨ Passer à Saveur dès 3,99$/mois</button>';
+        cta.innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Saveur dès 3,99$/mois</button>';
         if (subSection) subSection.style.display = '';
       } else {
         cta.innerHTML = '';
@@ -3047,7 +3072,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
       document.getElementById('drawer-bottom').style.display = 'block';
     } else {
       userEl.classList.remove('show');
-      document.getElementById('drawer-sub-cta').innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">✨ Passer à Saveur dès 3,99$/mois</button>';
+      document.getElementById('drawer-sub-cta').innerHTML = '<button class="drawer-item pro-cta" onclick="drawerAction(\'upgrade\')">Passer à Saveur dès 3,99$/mois</button>';
       document.getElementById('drawer-bottom').style.display = 'none';
     }
   }
@@ -3271,7 +3296,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
   function openTipsCategory(cat) {
     const TIPS_DATA = {
       conservation: {
-        title: "🧊 Conservation",
+        title: "Conservation",
         tips: [
           { head: "Gingembre frais", body: "Congele-le entier et rape-le directement congele. Ca tient 3 mois et ca rape bien mieux congele que frais, sans perdre son jus." },
           { head: "Herbes fraîches", body: "Persil, coriandre, cive : lave, seche, hache grossierement et congele dans un sac a plat. Tu en prends ce qu'il te faut directement dans la casserole, sans decongeler." },
@@ -3280,7 +3305,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
         ]
       },
       cuisson: {
-        title: "🔥 Astuces de cuisson",
+        title: "Astuces de cuisson",
         tips: [
           { head: "Oignons vraiment fondus", body: "La plupart des sauces africaines et maghrebines commencent par des oignons qui fondent a feu moyen pendant 10 a 15 minutes. Pas sautes, fondus. C'est la que la base de gout se construit." },
           { head: "Riz parfait", body: "Rince jusqu'a ce que l'eau soit claire, puis cuis a feu tres doux avec le couvercle. A la fin, eteins et laisse reposer 5 minutes sans soulever le couvercle." },
@@ -3290,7 +3315,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
         ]
       },
       epices: {
-        title: "🌶️ Épices par cuisine",
+        title: "Épices par cuisine",
         tips: [
           { head: "Cuisine africaine", tag: "Afrique", body: "Gingembre frais, ail, oignon et piment forment la base de presque toutes les sauces. Fais revenir le gingembre et l'ail des le debut pour developper les aromes." },
           { head: "Maghreb", tag: "Maghreb", body: "Ras el hanout, cumin moulu et cannelle sont au coeur des tajines et couscous. Pense aussi a la coriandre fraiche et au citron confit en finition." },
@@ -3300,7 +3325,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
         ]
       },
       substitutions: {
-        title: "🔄 Substitutions",
+        title: "Substitutions",
         tips: [
           { head: "Pas de ras el hanout ?", body: "Melange cumin + coriandre + cannelle + poivre + une pincee de cardamome. Pas identique, mais ca fait le travail dans un tajine ou un couscous." },
           { head: "Pas de feuilles de manioc fraiches ?", body: "Les epinards congeles font un remplacement correct pour le pondu ou le saka saka. Texture legerement differente mais les saveurs de la sauce restent la." },
@@ -3309,7 +3334,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
         ]
       },
       marmito: {
-        title: "📱 Utiliser Marmito",
+        title: "Utiliser Marmito",
         tips: [
           { head: "Ingrédients : optionnels", body: "Tu n'as pas besoin de remplir le champ ingredients. Choisis juste la cuisine et appuie sur Selon mes filtres. Marmito trouve une recette meme sans liste." },
           { head: "Ajuste les portions", body: "Le curseur sous la recette adapte toutes les quantites en temps reel. De 1 a 8 personnes, chaque gramme est recalcule." },
@@ -3318,7 +3343,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
         ]
       },
       hygiene: {
-        title: "🧼 Hygiène & Sécurité",
+        title: "Hygiène & Sécurité",
         tips: [
           { head: "Decongelation correcte", body: "Decongele toujours la viande et le poisson au refrigerateur, pas sur le comptoir. Si tu es presse, utilise l'eau froide courante dans un sac ferme." },
           { head: "Viande hachee et volaille", body: "Le poulet et la viande hachee doivent etre cuits a coeur. Pas de rose, pas de jus rose. Pour les ragouts avec morceaux entiers de boeuf, un peu de rose en surface apres saisie est normal." },
@@ -27261,7 +27286,7 @@ function toggleShareMenu(recipeUrl){
   menu.id='share-menu';
   menu.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--card-bg);border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.2);padding:8px;z-index:999;min-width:220px;';
   const options=[
-    {label:'🔗 Copier le lien', fn:`navigator.clipboard?navigator.clipboard.writeText(${JSON.stringify(url)}).then(()=>showToast('Lien copié !')):prompt('Copie ce lien :',${JSON.stringify(url)});document.getElementById('share-menu').remove()`},
+    {label:'Copier le lien', fn:`navigator.clipboard?navigator.clipboard.writeText(${JSON.stringify(url)}).then(()=>showToast('Lien copié !')):prompt('Copie ce lien :',${JSON.stringify(url)});document.getElementById('share-menu').remove()`},
     {label:'💬 WhatsApp', url:'https://wa.me/?text='+encodeURIComponent((currentLang==='en'?'Check out this recipe: ':'Regarde cette recette : ')+url)},
     {label:'✉️ Email', url:'mailto:?subject='+encodeURIComponent('Recette: '+(cur?cur.title:'Marmito'))+'&body='+encodeURIComponent(url)},
     {label:'𝕏 Twitter/X', url:'https://twitter.com/intent/tweet?text='+encodeURIComponent((cur?cur.title:'Marmito')+' 🍲\n')+encUrl},
@@ -27322,7 +27347,7 @@ function updateCookedUI(){
   if(!cur)return;
   const cooked=getCookedList().includes(cur.title);
   const btn=document.getElementById("cooked-btn");
-  if(btn){btn.textContent=cooked?"✓ Cuisiné":"✓ Cuisiné";btn.className="share-btn"+(cooked?" cooked":"");}
+  if(btn){btn.textContent=cooked?"Cuisiné":"Cuisiné";btn.className="share-btn"+(cooked?" cooked":"");}
   // Badge
   document.querySelectorAll(".cooked-badge").forEach(b=>b.remove());
   if(cooked){
@@ -27406,7 +27431,18 @@ function openPlanRepas() {
   sheet.style.maxHeight = Math.round(vh * 0.94) + 'px';
 
   if (userPlan === 'free') {
-    body.innerHTML = '<div class="plan-pro-lock"><div style="font-size:48px;margin-bottom:12px">🔒</div><h3>' + t('plan-pro-title') + '</h3><p>' + t('plan-pro-text') + '</p><button class="btn-generate" onclick="closePlanRepas();startUpgrade()" style="margin-top:16px">' + t('plan-pro-btn') + '</button></div>';
+    const en = currentLang === 'en';
+    body.innerHTML = '<div class="v90-plan-preview">' +
+      '<section class="v90-plan-hero"><div class="v90-hero-top"><span>'+(en?'MARMITO · MEAL PLANNING':'MARMITO · ORGANISATION')+'</span><span class="v90-lock-icon" aria-hidden="true">♧</span></div>'+
+      '<h2>'+(en?'Your week, beautifully planned.':'Votre semaine, parfaitement organisée.')+'</h2>'+
+      '<p>'+(en?'Plan your meals ahead and make everyday cooking easier.':'Préparez vos repas à l’avance et simplifiez votre quotidien.')+'</p></section>'+
+      '<section class="v90-plan-card"><div class="v90-plan-card-head"><h3>'+(en?'A preview of your week':'Aperçu de votre semaine')+'</h3><span class="v90-example-badge">'+(en?'Example':'Exemple')+'</span></div>'+
+      '<div class="v90-plan-day"><span class="v90-day-number">01</span><span><strong>'+(en?'Monday':'Lundi')+'</strong><small>'+(en?'Lunch and dinner':'Déjeuner et dîner')+'</small></span><span class="v90-day-lock" aria-hidden="true">●</span></div>'+
+      '<div class="v90-plan-day"><span class="v90-day-number">02</span><span><strong>'+(en?'Tuesday':'Mardi')+'</strong><small>'+(en?'Lunch and dinner':'Déjeuner et dîner')+'</small></span><span class="v90-day-lock" aria-hidden="true">●</span></div>'+
+      '<div class="v90-plan-day"><span class="v90-day-number">03</span><span><strong>'+(en?'Wednesday':'Mercredi')+'</strong><small>'+(en?'Lunch and dinner':'Déjeuner et dîner')+'</small></span><span class="v90-day-lock" aria-hidden="true">●</span></div>'+
+      '<div class="v90-plan-benefits"><span>'+(en?'✓ Plan meals for 7 days':'✓ Planification sur 7 jours')+'</span><span>'+(en?'✓ Matching shopping list':'✓ Liste de courses associée')+'</span></div>'+
+      '<button type="button" class="v90-plan-upgrade" onclick="closePlanRepas();startUpgrade()">'+(en?'Explore Saveur and Chef plans':'Découvrir les forfaits Saveur et Chef')+'</button>'+
+      '<p class="v90-plan-disclaimer">'+(en?'Available with an eligible subscription. This is an illustrative preview.':'Disponible avec un abonnement compatible. Cet aperçu est illustratif.')+'</p></section></div>';
     overlay.classList.add('open');
     return;
   }
@@ -27781,7 +27817,7 @@ const i18n = {
     'nav-favs': 'Mes favoris',
     'nav-history': 'Mon historique',
     'nav-plan': 'Plan 7 jours',
-    'btn-surprise': '🎲 Recette surprise, tous styles confondus',
+    'btn-surprise': 'Recette surprise, tous styles confondus',
     'portions-label': 'Portions :',
     'plan-pro-desc': 'Le plan 7 jours est réservé aux abonnés Saveur et Chef. Passez à Saveur pour débloquer.',
     'nav-profile': 'Mon profil',
@@ -27806,17 +27842,17 @@ const i18n = {
     'chip-starter': 'Entrée',
     'chip-side': 'Accompagnement',
     'chip-all': 'Tout',
-    'btn-gen': '🎲 Surprends-moi',
+    'btn-gen': 'Surprends-moi',
     'btn-another-recipe': 'Trouver une autre recette',
-    'btn-filter': '🍳 Selon mes filtres',
+    'btn-filter': 'Selon mes filtres',
     'limit-title': 'Limite atteinte',
     'limit-text': 'Tu as généré tes 20 recettes gratuites du mois. Passe à Saveur ou Chef pour plus de recettes et toutes les régions.',
-    'btn-upgrade': '✨ Passer à Saveur dès 3,99$/mois',
-    'btn-copy': '📋 Copier',
-    'btn-share': '🔗 Partager',
+    'btn-upgrade': 'Passer à Saveur dès 3,99$/mois',
+    'btn-copy': 'Copier',
+    'btn-share': 'Partager',
     'sec-ingredients': 'Ingrédients',
     'sec-preparation': 'Préparation, Chrono intégré',
-    'btn-start-cook': '🍳 Commencer la préparation →',
+    'btn-start-cook': 'Commencer la préparation →',
     'meta-time': 'Temps',
     'meta-serves': 'Personnes',
     'meta-diff': 'Difficulté',
@@ -27832,7 +27868,7 @@ const i18n = {
     'p-plan-label': 'Plan',
     'p-count-label': 'Recettes générées',
     'p-history-title': 'Historique',
-    'history-title': '📋 Mon historique',
+    'history-title': 'Mon historique',
     'history-loading': 'Chargement...',
     'history-empty': 'Aucune recette dans l\'historique.',
     'contact-title': '✉️ Nous contacter',
@@ -27905,7 +27941,7 @@ const i18n = {
     'nav-favs': 'My favorites',
     'nav-history': 'My history',
     'nav-plan': '7-Day Plan',
-    'btn-surprise': '🎲 Surprise me, any style',
+    'btn-surprise': 'Surprise me, any style',
     'portions-label': 'Servings:',
     'plan-pro-desc': 'The 7-day meal plan is reserved for Saveur and Chef subscribers. Upgrade to unlock.',
     'nav-profile': 'My profile',
@@ -27930,17 +27966,17 @@ const i18n = {
     'chip-starter': 'Starter',
     'chip-side': 'Side dish',
     'chip-all': 'All',
-    'btn-gen': '🎲 Surprise me',
+    'btn-gen': 'Surprise me',
     'btn-another-recipe': 'Find another recipe',
     'btn-filter': '🍳 By my filters',
     'limit-title': 'Limit reached',
     'limit-text': 'You’ve used your 20 free recipes this month. Upgrade to Saveur or Chef for more recipes and all regions.',
-    'btn-upgrade': '✨ Upgrade from $3.99/month',
-    'btn-copy': '📋 Copy',
-    'btn-share': '🔗 Share',
+    'btn-upgrade': 'Upgrade from $3.99/month',
+    'btn-copy': 'Copy',
+    'btn-share': 'Share',
     'sec-ingredients': 'Ingredients',
     'sec-preparation': 'Preparation, Built-in timer',
-    'btn-start-cook': '🍳 Start cooking →',
+    'btn-start-cook': 'Start cooking →',
     'meta-time': 'Time',
     'meta-serves': 'Serves',
     'meta-diff': 'Difficulty',
@@ -27956,7 +27992,7 @@ const i18n = {
     'p-plan-label': 'Plan',
     'p-count-label': 'Recipes generated',
     'p-history-title': 'History',
-    'history-title': '📋 My history',
+    'history-title': 'My history',
     'history-loading': 'Loading...',
     'history-empty': 'No recipes in your history.',
     'contact-title': '✉️ Contact us',
@@ -28040,7 +28076,7 @@ function applyLang() {
     if (dict[key] !== undefined) el.placeholder = dict[key];
   });
   const shoppingRecipeBtn = document.getElementById('grocery-add-recipe');
-  if(shoppingRecipeBtn) shoppingRecipeBtn.textContent = currentLang === 'en' ? '🛒 Add to shopping list' : '🛒 Ajouter aux courses';
+  if(shoppingRecipeBtn) shoppingRecipeBtn.textContent = currentLang === 'en' ? 'Add to shopping list' : 'Ajouter aux courses';
   if(document.getElementById('shopping-drawer-link')) document.getElementById('shopping-drawer-link').textContent = currentLang === 'en' ? 'My shopping list' : 'Ma liste de courses';
   if(document.getElementById('shopping-overlay')?.classList.contains('open')) renderShopping();
   const langBtn = document.getElementById('lang-btn');
@@ -28531,7 +28567,7 @@ function cookProgressLoad(){try{const x=JSON.parse(localStorage.getItem(COOK_PRO
 function cookProgressSave(){if(!cur||!Array.isArray(cookSteps)||!cookSteps.length)return;const x=cookProgressLoad();x[cur.title]=cookIdx;try{localStorage.setItem(COOK_PROGRESS_KEY,JSON.stringify(x));}catch(e){}}
 function cookProgressFinish(){if(!cur)return;const x=cookProgressLoad();delete x[cur.title];try{localStorage.setItem(COOK_PROGRESS_KEY,JSON.stringify(x));}catch(e){}}
 function cookSpeechStop(){cookUtterance=null;cookSpeechActive=false;try{if('speechSynthesis'in window)window.speechSynthesis.cancel();}catch(e){}cookSpeechButton();}
-function cookSpeechButton(){const b=document.getElementById('cook-speak-btn');if(!b)return;b.textContent=cookSpeechActive?(currentLang==='en'?'⏹ Stop reading':'⏹ Arrêter la lecture'):(currentLang==='en'?'🔊 Listen to step':'🔊 Écouter l’étape');b.disabled=!(('speechSynthesis'in window)&&('SpeechSynthesisUtterance'in window));}
+function cookSpeechButton(){const b=document.getElementById('cook-speak-btn');if(!b)return;b.textContent=cookSpeechActive?(currentLang==='en'?'⏹ Stop reading':'⏹ Arrêter la lecture'):(currentLang==='en'?'Listen to step':'Écouter l’étape');b.disabled=!(('speechSynthesis'in window)&&('SpeechSynthesisUtterance'in window));}
 function cookSpeakToggle(){
  if(cookSpeechActive){cookSpeechStop();return;}
  if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window))return;
@@ -28961,7 +28997,7 @@ applyLang();
 <span class="referral-link-text" id="referral-link-display">Chargement…</span>
 <button class="referral-copy-btn" onclick="copyReferralLink(this)">Copier</button>
 </div>
-<button class="referral-share-btn" onclick="shareReferral()">📤 Partager mon lien</button>
+<button class="referral-share-btn" onclick="shareReferral()">Partager mon lien</button>
 <div class="referral-stats">
 <div class="referral-stats-title">Mes parrainages</div>
 <div class="referral-stats-row">
