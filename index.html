@@ -1706,6 +1706,100 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
  }
 }
 </style>
+<style id="marmito-v84-about-contact">
+/* V84: about & contact, matching Marmito's editorial identity */
+#about-overlay .about-sheet-body.v48-about-layout{
+ max-width:1160px!important;gap:20px!important;
+ background:#faf9f4;padding:25px clamp(16px,3vw,36px) 70px!important;
+}
+#about-overlay .v48-about-layout>.v47-about-intro{
+ position:relative;overflow:hidden;min-height:290px!important;
+ padding:clamp(30px,5vw,62px)!important;
+ border-radius:30px!important;
+ background:linear-gradient(115deg,#163e2b 0%,#315c40 75%,#54734a 100%)!important;
+ color:#fff!important;box-shadow:0 20px 40px rgba(25,60,38,.15)!important;
+}
+#about-overlay .v48-about-layout>.v47-about-intro:after{
+ content:"";position:absolute;width:330px;height:330px;border-radius:50%;
+ background:rgba(230,239,215,.08);right:-80px;top:-95px;pointer-events:none;
+}
+#about-overlay .v47-about-intro .v47-eyebrow{color:#e6c49d!important;letter-spacing:.16em!important;font-weight:800!important}
+#about-overlay .v47-about-intro h2{
+ color:white!important;font-family:Georgia,serif!important;
+ font-size:clamp(32px,4.5vw,56px)!important;line-height:1.13!important;
+ max-width:710px!important;margin:18px 0!important;
+}
+#about-overlay .v47-about-intro p{color:#e6f0e7!important;font-size:clamp(15px,1.6vw,19px)!important;line-height:1.65!important;max-width:680px!important}
+#about-overlay .v48-about-layout>.about-section{
+ padding:clamp(22px,3vw,32px)!important;border-radius:24px!important;
+ border:1px solid #e0e8da!important;background:#fffefa!important;
+ box-shadow:0 8px 26px rgba(27,58,37,.045)!important;
+}
+#about-overlay .about-section-title{
+ font-family:Georgia,serif!important;font-size:clamp(22px,2.6vw,29px)!important;
+ color:#244d34!important;margin:0 0 18px!important;
+ border-bottom:1px solid #e3eadd;padding-bottom:13px;
+}
+#about-overlay .about-text{font-size:15px!important;line-height:1.8!important;color:#4c5d4e!important}
+#about-overlay .about-regions{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:13px!important}
+#about-overlay .about-region-item{
+ display:flex!important;gap:13px!important;padding:18px!important;
+ background:#f4f7ef!important;border:1px solid #e2e9dd!important;
+ border-radius:18px!important;min-width:0;box-shadow:none!important;
+}
+#about-overlay .about-region-flag{display:grid;place-items:center;width:44px;min-width:44px;height:44px;border-radius:13px;background:#fff;font-size:22px}
+#about-overlay .about-region-name{font-size:15px!important;font-weight:800!important;color:#274a34!important;margin-bottom:5px!important}
+#about-overlay .about-region-desc{font-size:12px!important;line-height:1.6!important;color:#607062!important}
+#about-overlay .about-steps{display:grid;gap:12px}
+#about-overlay .about-step{display:flex;align-items:center;gap:15px;padding:15px!important;border-radius:15px!important;background:#f3f6ee!important;line-height:1.55}
+#about-overlay .about-step-num{display:grid;place-items:center;flex:0 0 35px;height:35px;border-radius:50%;background:#2c5b3d!important;color:#fff!important;font-weight:800}
+#contact-overlay .contact-sheet-body.v84-contact-layout{
+ max-width:1160px!important;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
+ gap:24px;align-content:start;align-items:stretch;
+ padding:clamp(20px,3vw,40px)!important;background:#faf9f4;
+}
+#contact-overlay .v84-contact-intro{
+ position:relative;overflow:hidden;min-height:470px;padding:clamp(28px,4vw,46px);
+ background:linear-gradient(150deg,#173e2b,#356449);border-radius:28px;
+ color:#fff;display:flex;flex-direction:column;justify-content:center;
+}
+#contact-overlay .v84-contact-intro:after{content:"";position:absolute;right:-85px;bottom:-110px;width:280px;height:280px;border:1px solid #ffffff30;border-radius:50%;box-shadow:0 0 0 48px #ffffff08,0 0 0 96px #ffffff05}
+#contact-overlay .v84-contact-kicker{color:#f0c69e;font-size:11px;font-weight:800;letter-spacing:.18em}
+#contact-overlay .v84-contact-intro h2{color:white!important;font-family:Georgia,serif;font-size:clamp(36px,4vw,52px);line-height:1.13;margin:22px 0}
+#contact-overlay .v84-contact-intro p{color:#e6f0e7;font-size:16px;line-height:1.75;max-width:330px}
+#contact-overlay .v84-contact-ornament{display:flex;gap:8px;margin-top:30px}
+#contact-overlay .v84-contact-ornament span{width:9px;height:9px;border-radius:50%;background:#e4bc93}
+#contact-overlay .v84-contact-form-wrap{min-width:0;background:#fffefa;border:1px solid #e1e9dc;border-radius:28px;padding:clamp(18px,3vw,34px);box-shadow:0 14px 35px #23432b0b}
+#contact-overlay .v84-contact-form-wrap .about-contact-form{
+ max-width:none!important;margin:0!important;padding:0!important;
+ border:0!important;background:transparent!important;box-shadow:none!important;gap:19px!important;
+}
+#contact-overlay .about-field label{font-size:12px!important;color:#31553b!important;letter-spacing:.06em}
+#contact-overlay .about-field input,#contact-overlay .about-field textarea{
+ width:100%;box-sizing:border-box;border:1px solid #dce6d9!important;
+ background:#f8faf6!important;border-radius:13px!important;
+ padding:15px 16px!important;font-size:15px!important;min-height:53px;
+}
+#contact-overlay .about-field textarea{min-height:185px;resize:vertical}
+#contact-overlay .about-field input:focus,#contact-overlay .about-field textarea:focus{outline:2px solid #4e8260!important;outline-offset:2px}
+#contact-overlay .about-submit{min-height:56px;border-radius:15px!important;background:#245638!important;color:white!important;font-weight:800!important}
+@media(max-width:900px){
+ #about-overlay .about-regions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #contact-overlay .contact-sheet-body.v84-contact-layout{grid-template-columns:1fr}
+ #contact-overlay .v84-contact-intro{min-height:0;padding:28px}
+ #contact-overlay .v84-contact-intro h2{font-size:35px;margin:12px 0}
+ #contact-overlay .v84-contact-intro p{max-width:none;margin:0}
+ #contact-overlay .v84-contact-ornament{display:none}
+}
+@media(max-width:560px){
+ #about-overlay .about-sheet-body.v48-about-layout{grid-template-columns:1fr!important;padding:15px 13px 55px!important}
+ #about-overlay .about-regions{grid-template-columns:1fr!important}
+ #about-overlay .v48-about-layout>.v47-about-intro{min-height:0!important;padding:28px 24px!important}
+ #about-overlay .v48-about-layout>.about-section{padding:22px!important}
+ #contact-overlay .contact-sheet-body.v84-contact-layout{padding:15px!important;gap:15px}
+ #contact-overlay .v84-contact-form-wrap{padding:21px}
+}
+</style>
 </head>
 <body>
 <header class="header">
@@ -2117,7 +2211,14 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 </div>
 </div>
-<div class="contact-sheet-body">
+<div class="contact-sheet-body v84-contact-layout">
+<section class="v84-contact-intro" aria-labelledby="v84-contact-title">
+<span class="v84-contact-kicker" data-v84-fr="UNE QUESTION ?" data-v84-en="A QUESTION?">UNE QUESTION ?</span>
+<h2 id="v84-contact-title" data-v84-fr="Parlons cuisine." data-v84-en="Let's talk cooking.">Parlons cuisine.</h2>
+<p data-v84-fr="Une idée, une suggestion ou un problème à signaler ? Écris-nous directement ici." data-v84-en="Have an idea, a suggestion or an issue to report? Send us a message here.">Une idée, une suggestion ou un problème à signaler ? Écris-nous directement ici.</p>
+<div class="v84-contact-ornament" aria-hidden="true"><span></span><span></span><span></span></div>
+</section>
+<div class="v84-contact-form-wrap">
 <div class="about-success" data-i18n="contact-success" id="contact-success-2">✓  Message envoyé ! On te répond bientôt.</div>
 <form class="about-contact-form" id="contact-form-2" onsubmit="submitContact2(event)">
 <div class="about-field">
@@ -2134,6 +2235,7 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 <button class="about-submit" data-i18n="contact-send" id="contact-btn-2" type="submit">Envoyer</button>
 </form>
+</div>
 </div>
 </div>
 </div>
@@ -30394,5 +30496,11 @@ function marmitoV64Menu(){
   document.addEventListener("DOMContentLoaded",updateFilters);
 })();
 </script>
+<script id="marmito-v84-contact-lang">(function(){
+ function sync(){const lang=(typeof currentLang!=="undefined"&&currentLang==="en")?"en":"fr";
+ document.querySelectorAll("#contact-overlay [data-v84-fr][data-v84-en]").forEach(function(el){el.textContent=el.getAttribute("data-v84-"+lang);});}
+ document.addEventListener("DOMContentLoaded",function(){sync();const el=document.getElementById("contact-overlay");if(el){new MutationObserver(sync).observe(el,{attributes:true,attributeFilter:["class"]});}});
+ document.addEventListener("click",function(){setTimeout(sync,0);});
+})();</script>
 </body>
 </html>
