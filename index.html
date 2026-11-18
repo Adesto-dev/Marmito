@@ -2116,6 +2116,39 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 .v92-picker input,.v92-picker select{width:100%;padding:12px;border:1px solid #cddcc9;border-radius:11px;background:#fff;color:#284932;font-size:14px}
 .v92-picker-list{display:grid;gap:7px;overflow-y:auto;max-height:min(43dvh,360px)}.v92-picker-item{display:grid;gap:5px;text-align:left;padding:13px;border:1px solid #e0e8dd;border-radius:12px;background:#fff;color:#254934;cursor:pointer}.v92-picker-item:hover{background:#eaf1e8}.v92-picker-item strong{font-size:14px}.v92-picker-item small{font-size:12px;color:#788579}.v92-picker-clear{padding:11px;border:0;background:transparent;color:#4d7056;font-weight:700;cursor:pointer}
 </style>
+<style id="marmito-v93-shopping-cards">
+/* V93 — recipe cards + expandable ingredients, tier-based simultaneous slots */
+#shopping-overlay .v48-shopping-view{display:none!important}
+#shopping-overlay #shopping-recipes{padding:18px clamp(16px,3vw,32px) 0!important}
+#shopping-overlay .v93-shopping-summary{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:12px}
+#shopping-overlay .v93-shopping-kicker{font-size:10px;font-weight:800;letter-spacing:.14em;color:#aa6e4b}
+#shopping-overlay .v93-shopping-summary h2{font:700 clamp(21px,3vw,30px) Georgia,serif;color:#244932;margin:6px 0 0}
+#shopping-overlay .v93-shopping-counter{background:#eaf0e4;border-radius:99px;padding:10px 14px;font-weight:800;color:#28543a;white-space:nowrap}
+#shopping-overlay .v93-shopping-meter{height:7px;border-radius:20px;background:#e9ede3;overflow:hidden;margin:0 0 22px}
+#shopping-overlay .v93-shopping-meter span{display:block;height:100%;border-radius:20px;background:#4b7850;transition:width .2s}
+#shopping-overlay .v93-shopping-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#shopping-overlay .v93-shopping-card{min-width:0;background:#fff;border:1px solid #e0e7d9;border-radius:19px;box-shadow:0 5px 18px #23432e0b;overflow:hidden}
+#shopping-overlay .v93-card-head{display:flex;align-items:start;justify-content:space-between;gap:8px;padding:18px}
+#shopping-overlay .v93-card-info{min-width:0}
+#shopping-overlay .v93-card-index{font-size:11px;color:#b17752;font-weight:850;letter-spacing:.1em}
+#shopping-overlay .v93-card-info h3{font:700 18px Georgia,serif;color:#294d35;margin:8px 0;overflow-wrap:anywhere}
+#shopping-overlay .v93-card-info p{color:#718071;font-size:12px;margin:0}
+#shopping-overlay .v93-card-remove{width:31px;height:31px;flex:none;border-radius:50%;border:1px solid #e3e8de;background:#fff;color:#536d57;font-size:22px;cursor:pointer}
+#shopping-overlay .v93-card-details{border-top:1px solid #e9eee5}
+#shopping-overlay .v93-card-details summary{list-style:none;cursor:pointer;padding:14px 18px;font-size:13px;color:#315f40;font-weight:800}
+#shopping-overlay .v93-card-details summary::-webkit-details-marker{display:none}
+#shopping-overlay .v93-card-details summary:after{content:'+';float:right;font-size:19px;line-height:12px}
+#shopping-overlay .v93-card-details[open] summary:after{content:'−'}
+#shopping-overlay .v93-card-items{display:grid;gap:12px;padding:0 18px 20px}
+#shopping-overlay .v93-card-ingredient label{display:flex;align-items:flex-start;gap:10px;color:#354a38;font-size:13px;line-height:1.4;cursor:pointer}
+#shopping-overlay .v93-card-ingredient input{accent-color:#356d47;flex:none;margin-top:2px}
+#shopping-overlay .v93-card-ingredient.checked span{text-decoration:line-through;color:#91a095}
+#shopping-overlay .v93-shopping-empty{grid-column:1/-1;color:#718071;padding:25px;text-align:center}
+#shopping-overlay .v93-shopping-warning{font-size:13px;color:#92623d;background:#fcf2e8;border-radius:12px;padding:12px 15px;margin:15px 0}
+#shopping-overlay #shopping-contents{margin-top:20px!important}
+#shopping-overlay #shopping-contents:before{content:'Liste consolidée des ingrédients';display:block;font:700 19px Georgia,serif;color:#294b33;margin:10px 0 15px}
+@media(max-width:650px){#shopping-overlay .v93-shopping-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <header class="header">
@@ -27772,40 +27805,35 @@ function shoppingLoad(){
 }
 function shoppingSave(state){try{localStorage.setItem(SHOPPING_KEY,JSON.stringify(state));return true;}catch(e){showToast(currentLang==='en'?'Unable to save locally':'Impossible d’enregistrer localement','error');return false;}}
 function shoppingRecipeKey(recipe){return recipe.title;}
+function marmitoV93ShoppingLimit(){return userPlan==='chef'?14:userPlan==='saveur'?7:3;}
+function marmitoV93Allowed(recipe){return !!recipe && (typeof marmitoV92AllowedRecipes!=='function'||marmitoV92AllowedRecipes().some(r=>r.title===recipe.title));}
+
 function shoppingAddRecipes(list){
- const state=shoppingLoad();let changed=0;
+ const state=shoppingLoad(),limit=marmitoV93ShoppingLimit();let changed=0,blocked=0,restricted=0;
  const weekly=Array.isArray(list)&&list===shoppingWeekPlan;
  (Array.isArray(list)?list:[]).forEach(recipe=>{
   if(!recipe||typeof recipe.title!=='string')return;
+  if(!marmitoV93Allowed(recipe)){restricted++;return;}
   const ratio=!weekly&&recipe===cur&&list.length===1?Number(portionsMultiplier)||1:1;
   const existing=state.recipes.find(x=>x.title===recipe.title);
-  // The weekly plan must never overwrite a recipe already added individually.
   if(weekly&&existing)return;
+  if(!existing&&state.recipes.length>=limit){blocked++;return;}
   const recipeKeys=shoppingEntries({recipes:[{title:recipe.title,portions:ratio}],manual:[],checked:{},removed:[]}).map(e=>e.key);
   const previouslyRemoved=state.removed.length;
   state.removed=state.removed.filter(key=>!recipeKeys.includes(key));
   const restored=state.removed.length!==previouslyRemoved;
   if(existing){
    if(existing.portions!==ratio){
-    const before=new Map(shoppingEntries(state).map(e=>[e.key,e]));
-    existing.portions=ratio;
+    const before=new Map(shoppingEntries(state).map(e=>[e.key,e]));existing.portions=ratio;
     const after=new Map(shoppingEntries(state).map(e=>[e.key,e]));
-    // Only uncheck ingredient rows whose totals changed due to this recipe.
-    new Set([...before.keys(),...after.keys()]).forEach(key=>{
-     const old=before.get(key),next=after.get(key);
-     if(!old||!next||old.qty!==next.qty||old.max!==next.max||old.raw!==next.raw)delete state.checked[key];
-    });
-    changed++;
+    new Set([...before.keys(),...after.keys()]).forEach(key=>{const old=before.get(key),next=after.get(key);if(!old||!next||old.qty!==next.qty||old.max!==next.max||old.raw!==next.raw)delete state.checked[key];});changed++;
    }else if(restored)changed++;
-  }else{
-   state.recipes.push({title:recipe.title,portions:ratio});
-   // Newly introduced or increased ingredient rows are no longer purchased.
-   recipeKeys.forEach(key=>{delete state.checked[key];});
-   changed++;
-  }
+  }else{state.recipes.push({title:recipe.title,portions:ratio});recipeKeys.forEach(key=>{delete state.checked[key]});changed++;}
  });
- if(changed){shoppingSave(state);showToast(shoppingT('added'));}
- else showToast(shoppingT('already'));
+ if(changed)shoppingSave(state);
+ if(blocked)showToast(currentLang==='en'?`Shopping list limit: ${limit} recipes. Remove a recipe to add another.`:`Limite de ${limit} recettes atteinte. Retirez une recette avant d’en ajouter une autre.`);
+ else if(restricted)showToast(currentLang==='en'?'Some recipes are not available with your plan.':'Certaines recettes ne sont pas accessibles avec votre forfait.');
+ else showToast(changed?shoppingT('added'):shoppingT('already'));
  openShopping();
 }
 function addCurrentRecipeToShopping(){if(cur)shoppingAddRecipes([cur]);}
@@ -27937,10 +27965,45 @@ function renderShopping(){
  document.getElementById('shopping-close').setAttribute('aria-label',shoppingT('close'));
  const drawer=document.getElementById('shopping-drawer-link');if(drawer)drawer.textContent=shoppingT('title');
  const recipeBox=document.getElementById('shopping-recipes');recipeBox.replaceChildren();
- if(state.recipes.length){
-  const heading=document.createElement('div');heading.className='shopping-group';heading.textContent=shoppingT('recipes');recipeBox.appendChild(heading);
-  state.recipes.forEach(r=>{const row=document.createElement('div');row.className='shopping-line';const name=document.createElement('span');name.style.flex='1';name.textContent=r.title;const remove=document.createElement('button');remove.type='button';remove.className='shopping-remove';remove.textContent='✕';remove.setAttribute('aria-label',shoppingT('removeRecipe'));remove.onclick=()=>shoppingRemoveRecipe(r.title);row.append(name,remove);recipeBox.appendChild(row);});
- }
+ const limit=marmitoV93ShoppingLimit();
+ const heading=document.createElement('div');heading.className='v93-shopping-summary';
+ const label=document.createElement('div');label.innerHTML='<span class="v93-shopping-kicker">'+(currentLang==='en'?'MY RECIPES':'MES RECETTES')+'</span><h2>'+(currentLang==='en'?'Recipes for my shopping':'Mes recettes pour les courses')+'</h2>';
+ const counter=document.createElement('span');counter.className='v93-shopping-counter';counter.textContent=state.recipes.length+' / '+limit;
+ heading.append(label,counter);recipeBox.append(heading);
+ const meter=document.createElement('div');meter.className='v93-shopping-meter';const fill=document.createElement('span');fill.style.width=Math.min(100,state.recipes.length/limit*100)+'%';meter.append(fill);recipeBox.append(meter);
+ const grid=document.createElement('div');grid.className='v93-shopping-grid';recipeBox.append(grid);
+ state.recipes.forEach((saved,i)=>{
+  const recipe=recipes.find(r=>r.title===saved.title);if(!recipe)return;
+  const allowed=marmitoV93Allowed(recipe);
+  const card=document.createElement('article');card.className='v93-shopping-card';
+  const head=document.createElement('div');head.className='v93-card-head';
+  const info=document.createElement('div');info.className='v93-card-info';
+  const index=document.createElement('span');index.className='v93-card-index';index.textContent=String(i+1).padStart(2,'0');
+  const title=document.createElement('h3');title.textContent=allowed?recipe.title:(currentLang==='en'?'Recipe unavailable on this plan':'Recette non disponible avec ce forfait');
+  const count=document.createElement('p');count.textContent=allowed?recipe.ingredients.length+' '+(currentLang==='en'?'ingredients':'ingrédients'):(currentLang==='en'?'Remove this recipe to free a slot':'Retirez cette recette pour libérer une place');
+  info.append(index,title,count);
+  const remove=document.createElement('button');remove.type='button';remove.className='v93-card-remove';remove.textContent='×';remove.setAttribute('aria-label',shoppingT('removeRecipe'));remove.onclick=()=>shoppingRemoveRecipe(saved.title);
+  head.append(info,remove);card.append(head);
+  if(allowed){
+   const details=document.createElement('details');details.className='v93-card-details';
+   const summary=document.createElement('summary');summary.textContent=currentLang==='en'?'See ingredients':'Voir les ingrédients';details.append(summary);
+   const items=document.createElement('div');items.className='v93-card-items';
+   recipe.ingredients.forEach((name,j)=>{
+    const item=document.createElement('div');item.className='v93-card-ingredient';
+    const cb=document.createElement('input');cb.type='checkbox';
+    const qty=scaleQty(recipeIngredientQty(recipe,j),saved.portions);
+    const text=document.createElement('span');text.textContent=(qty?qty+' ':'')+name;
+    const key='v93:'+saved.title+':'+j;
+    cb.checked=!!state.checked[key];if(cb.checked)item.classList.add('checked');
+    cb.addEventListener('change',()=>{const next=shoppingLoad();if(cb.checked)next.checked[key]=true;else delete next.checked[key];shoppingSave(next);item.classList.toggle('checked',cb.checked)});
+    const label=document.createElement('label');label.append(cb,text);item.append(label);items.append(item);
+   });details.append(items);card.append(details);
+  }
+  grid.append(card);
+ });
+ if(!state.recipes.length){const empty=document.createElement('p');empty.className='v93-shopping-empty';empty.textContent=currentLang==='en'?'Add a recipe to start your shopping list.':'Ajoutez une recette pour commencer votre liste de courses.';grid.append(empty);}
+ if(state.recipes.length>=limit){const warning=document.createElement('p');warning.className='v93-shopping-warning';warning.textContent=currentLang==='en'?`Your ${limit} recipe slots are full. Remove one to add another.`:`Vos ${limit} emplacements sont occupés. Retirez une recette pour en ajouter une autre.`;recipeBox.append(warning);}
+
  body.replaceChildren();
  if(!entries.length){const p=document.createElement('p');p.className='shopping-empty';p.textContent=shoppingT('empty');body.appendChild(p);}
  entries.forEach(entry=>{
