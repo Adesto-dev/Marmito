@@ -1800,6 +1800,53 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
  #contact-overlay .v84-contact-form-wrap{padding:21px}
 }
 </style>
+<style id="marmito-v85-contact-responsive">
+/* V85 — contact responsive layout: preserve natural content height and scrolling */
+#contact-overlay .contact-sheet-body.v84-contact-layout{
+  overflow-y:auto!important;overflow-x:hidden!important;
+  overscroll-behavior-y:contain;
+  grid-auto-rows:max-content;
+  align-content:start!important;
+  padding-bottom:max(92px,env(safe-area-inset-bottom))!important;
+}
+#contact-overlay .v84-contact-intro{
+  box-sizing:border-box;min-width:0;
+  height:auto!important;max-height:none!important;
+  flex-shrink:0;overflow:hidden;
+}
+#contact-overlay .v84-contact-intro > *{position:relative;z-index:1}
+#contact-overlay .v84-contact-form-wrap{box-sizing:border-box;min-width:0;height:auto;align-self:start}
+@media(max-width:900px){
+  #contact-overlay .contact-sheet-body.v84-contact-layout{
+    display:flex!important;flex-direction:column!important;
+    align-items:stretch!important;gap:16px!important;
+    padding-top:18px!important;
+  }
+  #contact-overlay .v84-contact-intro{
+    display:block!important;min-height:0!important;
+    padding:clamp(25px,5vw,35px)!important;
+    border-radius:24px;
+  }
+  #contact-overlay .v84-contact-intro h2{
+    margin:10px 0 12px!important;
+    font-size:clamp(30px,7vw,39px)!important;
+    line-height:1.15!important;
+  }
+  #contact-overlay .v84-contact-intro p{
+    margin:0!important;max-width:none!important;
+    line-height:1.55!important;
+    font-size:clamp(14px,3.2vw,16px)!important;
+  }
+  #contact-overlay .v84-contact-form-wrap{width:100%;flex:none!important}
+}
+@media(max-width:560px){
+ #contact-overlay .contact-sheet-body.v84-contact-layout{
+   padding:14px 14px 100px!important;
+ }
+ #contact-overlay .v84-contact-intro{padding:24px!important}
+ #contact-overlay .v84-contact-form-wrap{padding:20px!important}
+}
+</style>
 </head>
 <body>
 <header class="header">
@@ -2952,8 +2999,12 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
   }
 
   function openContact() {
-    document.getElementById('contact-overlay').classList.add('open');
+    const overlay = document.getElementById('contact-overlay');
+    overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
+    // Always open at the top, including when a previously scrolled sheet is reopened.
+    const body = overlay.querySelector('.contact-sheet-body');
+    if (body) body.scrollTop = 0;
   }
   function closeContact() {
     const sheet = document.querySelector('#contact-overlay .contact-sheet');
