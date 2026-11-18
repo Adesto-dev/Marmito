@@ -5648,6 +5648,7 @@ function t(key) {
 
 function applyLang() {
   const dict = i18n[currentLang];
+  if(dict && !dict['nav-share-app'])dict['nav-share-app']=currentLang==='en'?'Invite a friend':'Inviter un ami';
   marmitoDietRender();
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
@@ -8716,5 +8717,57 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('marmito-v105-ove
 })();
 </script>
 
+<script id="marmito-v1054-i18n-completion">
+(function(){
+'use strict';
+const translations={"Recettes": "Recipes", "Mon espace": "My space", "Mon profil": "My profile", "Ma collection": "My collection", "Abonnement": "Subscription", "Recette du jour": "Recipe of the day", "Chargement...": "Loading...", "Chargement…": "Loading…", "Trouvez votre prochaine inspiration culinaire.": "Find your next culinary inspiration.", "Affiner ma recherche": "Refine my search", "Surprends-moi": "Surprise me", "ORGANISEZ VOTRE SEMAINE": "PLAN YOUR WEEK", "Votre plan de repas sur 7 jours": "Your 7-day meal plan", "Retrouvez votre menu de la semaine, déjà préparé pour vous.": "Find your weekly menu, already planned for you.", "Voir mon plan de repas sur 7 jours": "View my 7-day meal plan", "Fonctionnalité Saveur/Chef": "Saveur/Chef feature", "Le plan 7 jours est réservé aux abonnés Saveur et Chef. Passez à Saveur pour débloquer.": "The 7-day plan is available to Saveur and Chef subscribers. Upgrade to Saveur to unlock it.", "Passer à Saveur": "Upgrade to Saveur", "Ingrédients manquants": "Missing ingredients", "Ajouter aux courses": "Add to shopping list", "Cuisiné": "Cooked", "Mon expérience": "My experience", "Avis de la communauté": "Community reviews", "Portions :": "Servings:", "Ingrédients": "Ingredients", "Préparation :": "Preparation:", "Chrono intégré": "Built-in timer", "Temps": "Time", "Personnes": "Servings", "Difficulté": "Difficulty", "Voir d'autres recettes de cette région": "See more recipes from this region", "Écouter l’étape": "Listen to step", "Marquer comme cuisinée": "Mark as cooked", "Partager mon expérience": "Share my experience", "Terminé — Retour à la recette": "Done — Back to recipe", "MARMITO · RECHERCHE": "MARMITO · SEARCH", "Choisissez vos préférences pour trouver la recette qui vous ressemble.": "Choose your preferences to find a recipe that suits you.", "Filtres sélectionnés": "Selected filters", "Tes ingrédients (optionnel)": "Your ingredients (optional)", "Préférences alimentaires (optionnel)": "Dietary preferences (optional)", "Réinitialiser": "Reset", "Filtres indicatifs : vérifiez toujours les étiquettes et les traces d'allergènes.": "Filters are indicative: always check labels and allergen traces.", "← Retour": "← Back", "Retour": "Back", "MON ORGANISATION": "MY PLANNING", "Organise tes repas pour les sept prochains jours.": "Plan your meals for the next seven days.", "Retrouve tes repas et prépare ta semaine, sans changer ton plan actuel.": "Find your meals and prepare your week without changing your current plan.", "MA LISTE": "MY LIST", "Tout ce qu’il te faut pour tes recettes, au même endroit.": "Everything you need for your recipes, in one place.", "Par liste": "By list", "MON ESPACE CULINAIRE": "MY COOKING SPACE", "Vos recettes et vos découvertes, au même endroit.": "Your recipes and discoveries, all in one place.", "MON ABONNEMENT": "MY SUBSCRIPTION", "Détails de mon abonnement": "Subscription details", "Rafraîchir mon plan": "Refresh my plan", "Mes espaces": "My spaces", "Retrouvez votre univers culinaire": "Explore your culinary world", "Mes favoris": "My favorites", "Vos recettes enregistrées": "Your saved recipes", "Mon historique": "My history", "Les recettes consultées": "Viewed recipes", "Mes expériences culinaires": "My cooking experiences", "Déconnexion": "Sign out", "MA COLLECTION": "MY COLLECTION", "Mes recettes favorites": "My favorite recipes", "Les recettes que tu aimes, prêtes à retrouver.": "The recipes you love, ready to revisit.", "Vos recettes enregistrées, au même endroit.": "Your saved recipes, all in one place.", "Liste": "List", "MON PARCOURS": "MY JOURNEY", "Retrouve les recettes que tu as consultées.": "Find recipes you have viewed.", "Une idée, une suggestion ou un problème à signaler ? Écris-nous directement ici.": "Have an idea, suggestion or issue to report? Write to us here.", "Des recettes de différentes cultures, pensées pour la vraie vie et pour le plaisir de cuisiner.": "Recipes from different cultures, made for everyday life and the joy of cooking.", "Les recettes présentes": "Our recipes", "Comment ça marche": "How it works", "Afrique": "Africa", "Caraïbes": "Caribbean", "Italie": "Italy", "Asie": "Asia", "Mexique": "Mexico", "Antilles & Caraïbes": "Caribbean Islands", "Québec & Occident": "Quebec & Western cuisine", "Afrique subsaharienne": "Sub-Saharan Africa", "Japonaise": "Japanese", "Indienne": "Indian", "Libanaise": "Lebanese", "Mexicaine": "Mexican", "Italienne": "Italian", "Grecque": "Greek", "Espagnole": "Spanish", "Chinoise": "Chinese", "recettes au total, réparties en 12 cuisines :": "recipes in total across 12 cuisines:", "recettes": "recipes", "recette": "recipe", "MON GARDE-MANGER": "MY PANTRY", "Mon garde-manger": "My pantry", "Fermer": "Close", "Menu": "Menu", "Toute durée": "Any duration", "Mes recettes": "My recipes", "Mes listes": "My lists", "Annuler": "Cancel", "Enregistrer": "Save", "Supprimer": "Delete", "Modifier": "Edit", "Ajouter": "Add", "Valider": "Confirm", "Continuer": "Continue", "Suivant": "Next", "Précédent": "Previous", "Terminé": "Done", "Voir": "View", "Rechercher": "Search", "Aucun résultat": "No results", "Aucune recette trouvée": "No recipes found", "Retour à l'accueil": "Back to home", "Inviter un ami": "Invite a friend", "Mon compte": "My account", "Paramètres": "Settings", "Mon abonnement": "My subscription", "Mon plan": "My plan", "Mes plans": "My plans", "Ma liste de courses": "My shopping list", "Ajouter à la liste de courses": "Add to shopping list", "Supprimer la sélection": "Delete selection", "Tout sélectionner": "Select all", "Aucun ingrédient": "No ingredients", "Ingrédient": "Ingredient", "Quantité": "Quantity", "Unité": "Unit", "Ma cuisine": "My kitchen", "Mon organisation": "My planning", "Partager": "Share", "Copier": "Copy"};
+const reverse=Object.fromEntries(Object.entries(translations).map(([fr,en])=>[en,fr]));
+const skipTags=new Set(['SCRIPT','STYLE','NOSCRIPT','TEXTAREA','CODE','PRE','OPTION']);
+let syncing=false;
+function translateNodes(){
+ if(syncing)return;syncing=true;
+ try{
+  const en=typeof currentLang!=='undefined'&&currentLang==='en';
+  const map=en?translations:reverse;
+  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  let node;
+  while((node=walker.nextNode())){
+   const parent=node.parentElement;
+   if(!parent||skipTags.has(parent.tagName)||parent.closest('[data-i18n],[data-v88-fr][data-v88-en],#result-title,#result-ingredients,#result-steps,#marmito-pantry-list,#marmito-v105-list,#marmito-v105-available,#marmito-v105-missing'))continue;
+   const original=node.nodeValue,trimmed=original.trim();
+   if(!trimmed)continue;
+   let replacement=map[trimmed];
+   if(!replacement&&en){
+     const match=trimmed.match(/^(\d+) recettes(.*)$/);
+     if(match)replacement=match[1]+' recipes'+match[2];
+   }else if(!replacement&&!en){
+     const match=trimmed.match(/^(\d+) recipes(.*)$/);
+     if(match)replacement=match[1]+' recettes'+match[2];
+   }
+   if(replacement&&replacement!==trimmed)node.nodeValue=original.replace(trimmed,replacement);
+  }
+  document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{
+   const value=el.getAttribute('placeholder');const next=map[value];if(next)el.setAttribute('placeholder',next);
+  });
+  document.querySelectorAll('select option').forEach(el=>{
+   const value=el.textContent.trim();const next=map[value];if(next)el.textContent=next;
+  });
+ }finally{syncing=false}
+}
+// The main language switch already calls applyLang; extend it without changing recipe logic.
+if(typeof applyLang==='function'){
+ const originalApplyLang=applyLang;
+ applyLang=function(){originalApplyLang.apply(this,arguments);translateNodes()};
+}
+// Dynamic overlays are rendered later; observe their text, not attributes, and batch updates.
+let pending=false;
+const observer=new MutationObserver(()=>{
+ if(syncing||pending)return;pending=true;
+ queueMicrotask(()=>{pending=false;translateNodes()});
+});
+observer.observe(document.body,{subtree:true,childList:true,characterData:true});
+translateNodes();
+})();
+</script>
 </body>
 </html>
