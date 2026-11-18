@@ -27896,7 +27896,7 @@ function shoppingLoad(){
 }
 function shoppingSave(state){try{localStorage.setItem(SHOPPING_KEY,JSON.stringify(state));return true;}catch(e){showToast(currentLang==='en'?'Unable to save locally':'Impossible d’enregistrer localement','error');return false;}}
 function shoppingRecipeKey(recipe){return recipe.title;}
-function marmitoV93ShoppingLimit(){return userPlan==='chef'?14:userPlan==='saveur'?7:3;}
+function marmitoV93ShoppingLimit(){return userPlan==='chef'?Infinity:userPlan==='saveur'?7:3;}
 function marmitoV93Allowed(recipe){return !!recipe && (typeof marmitoV92AllowedRecipes!=='function'||marmitoV92AllowedRecipes().some(r=>r.title===recipe.title));}
 
 function shoppingAddRecipes(list){
@@ -28059,9 +28059,9 @@ function renderShopping(){
  const limit=marmitoV93ShoppingLimit();
  const heading=document.createElement('div');heading.className='v93-shopping-summary';
  const label=document.createElement('div');label.innerHTML='<span class="v93-shopping-kicker">'+(currentLang==='en'?'MY RECIPES':'MES RECETTES')+'</span><h2>'+(currentLang==='en'?'Recipes for my shopping':'Mes recettes pour les courses')+'</h2>';
- const counter=document.createElement('span');counter.className='v93-shopping-counter';counter.textContent=state.recipes.length+' / '+limit;
+ const counter=document.createElement('span');counter.className='v93-shopping-counter';counter.textContent=Number.isFinite(limit)?state.recipes.length+' / '+limit:state.recipes.length+' · '+(currentLang==='en'?'unlimited':'illimité');
  heading.append(label,counter);recipeBox.append(heading);
- const meter=document.createElement('div');meter.className='v93-shopping-meter';const fill=document.createElement('span');fill.style.width=Math.min(100,state.recipes.length/limit*100)+'%';meter.append(fill);recipeBox.append(meter);
+ const meter=document.createElement('div');meter.className='v93-shopping-meter';const fill=document.createElement('span');fill.style.width=Number.isFinite(limit)?Math.min(100,state.recipes.length/limit*100)+'%':'100%';meter.append(fill);recipeBox.append(meter);
  const grid=document.createElement('div');grid.className='v93-shopping-grid';recipeBox.append(grid);
  state.recipes.forEach((saved,i)=>{
   const recipe=recipes.find(r=>r.title===saved.title);if(!recipe)return;
@@ -29305,7 +29305,7 @@ applyLang();
 <div class="plan-price-new">6,99$<span>/mois</span></div>
 </div>
 <div class="launch-note">Premier mois seulement</div>
-<ul class="plan-features"><li>418 recettes accessibles</li><li>Recherche et filtres par région et type</li><li>Cuisine guidée, voix et minuteries</li><li>Favoris, historique, expériences et avis</li><li>Menu Marmito renouvelé chaque semaine</li><li>Plannings personnalisés illimités et duplication</li><li>Liste de courses : 14 recettes maximum</li><li>Conseils et astuces</li></ul>
+<ul class="plan-features"><li>418 recettes accessibles</li><li>Recherche et filtres par région et type</li><li>Cuisine guidée, voix et minuteries</li><li>Favoris, historique, expériences et avis</li><li>Menu Marmito renouvelé chaque semaine</li><li>Plannings personnalisés illimités et duplication</li><li>Liste de courses : recettes illimitées</li><li>Conseils et astuces</li></ul>
 <button class="plan-btn pro-btn" id="btn-chef" onclick="startCheckout('chef',this)">Choisir Chef →</button>
 </div>
 </div>
@@ -31176,7 +31176,7 @@ function marmitoV64Menu(){
  const labels={en:[
  ['20 accessible recipes','Basic search and filters','Guided cooking, voice and timers','Favorites and history','Personal cooking experiences and reviews','Shopping list: up to 3 recipes','Marmito weekly menu and custom planning require a subscription'],
  ['130 accessible recipes','Search by region and category','Guided cooking, voice and timers','Favorites, history, experiences and reviews','Marmito menu refreshed weekly','2 custom weekly plans created per month','Shopping list: up to 7 recipes'],
- ['418 accessible recipes','Search by region and category','Guided cooking, voice and timers','Favorites, history, experiences and reviews','Marmito menu refreshed weekly','Unlimited custom plans and duplication','Shopping list: up to 14 recipes','Tips and advice']
+ ['418 accessible recipes','Search by region and category','Guided cooking, voice and timers','Favorites, history, experiences and reviews','Marmito menu refreshed weekly','Unlimited custom plans and duplication','Shopping list: unlimited recipes','Tips and advice']
  ]};
  const fr=Array.from(document.querySelectorAll('#pricing-overlay .plan-card .plan-features')).map(ul=>Array.from(ul.querySelectorAll('li')).map(li=>li.textContent));
  function update(){const en=typeof currentLang!=='undefined'&&currentLang==='en';document.querySelectorAll('#pricing-overlay .plan-card .plan-features').forEach((ul,i)=>ul.querySelectorAll('li').forEach((li,j)=>{li.textContent=en?labels.en[i][j]:fr[i][j]}));}
