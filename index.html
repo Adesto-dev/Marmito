@@ -2382,7 +2382,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <button class="share-btn share-wa" data-i18n="btn-share" onclick="shareRecipe()">⤴ Partager la recette</button>
 <button class="share-btn" type="button" id="marmito-v105-compare-button" onclick="marmitoV105OpenCompare()">Ingrédients manquants</button>
 <button class="share-btn" id="grocery-add-recipe" onclick="addCurrentRecipeToShopping()">Ajouter aux courses</button>
-<button class="share-btn" id="cooked-btn" onclick="toggleCooked()" style="background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)">Cuisiné</button> <button class="share-btn" onclick="marmitoOpenExperience()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">Mon expérience</button> <button class="share-btn" onclick="marmitoOpenPublishedExperiences()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">Avis de la communauté</button>
+<button class="share-btn" id="cooked-btn" onclick="toggleCooked()" style="background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)">Cuisiné</button> <button class="share-btn" id="marmito-recipe-experience-btn" onclick="marmitoOpenExperience()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">Mon expérience</button> <button class="share-btn" id="marmito-recipe-community-btn" onclick="marmitoOpenPublishedExperiences()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">Avis de la communauté</button>
 </div>
 <div class="result-body">
 <div>
@@ -4501,18 +4501,18 @@ function toggleCooked(){
   if(idx>=0)l.splice(idx,1); else l.push(cur.title);
   saveCookedList(l);
   updateCookedUI();
-  showToast(idx>=0?"Retiré de tes recettes cuisinées":"Marqué comme cuisiné !");
+  showToast(currentLang==='en'?(idx>=0?'Removed from cooked recipes':'Marked as cooked!'):(idx>=0?'Retiré de tes recettes cuisinées':'Marqué comme cuisiné !'));
 }
 function updateCookedUI(){
   if(!cur)return;
   const cooked=getCookedList().includes(cur.title);
   const btn=document.getElementById("cooked-btn");
-  if(btn){btn.textContent=cooked?"Cuisiné":"Cuisiné";btn.className="share-btn"+(cooked?" cooked":"");}
+  if(btn){btn.textContent=currentLang==='en'?'Cooked':'Cuisiné';btn.className='share-btn'+(cooked?' cooked':'');}
   // Badge
   document.querySelectorAll(".cooked-badge").forEach(b=>b.remove());
   if(cooked){
     const hdr=document.querySelector(".result-header-top");
-    if(hdr){const b=document.createElement("div");b.className="cooked-badge";b.textContent="Cuisiné";hdr.appendChild(b);}
+    if(hdr){const b=document.createElement("div");b.className="cooked-badge";b.textContent=currentLang==='en'?'Cooked':'Cuisiné';hdr.appendChild(b);}
   }
 }
 
@@ -5665,6 +5665,18 @@ function applyLang() {
   if (langBtn) langBtn.textContent = currentLang === 'fr' ? 'EN' : 'FR';
   document.documentElement.lang = currentLang;
   document.querySelectorAll('[data-v88-fr][data-v88-en]').forEach(el=>{el.textContent=el.getAttribute(currentLang==='en'?'data-v88-en':'data-v88-fr')});
+  // V105.2: recipe action buttons must follow the active language, including after a toggle.
+  const actionTranslations = [
+    ['marmito-v105-compare-button','Ingrédients manquants','Missing ingredients'],
+    ['cooked-btn','Cuisiné','Cooked'],
+    ['marmito-recipe-experience-btn','Mon expérience','My experience'],
+    ['marmito-recipe-community-btn','Avis de la communauté','Community reviews']
+  ];
+  actionTranslations.forEach(([id,fr,en])=>{
+    const button=document.getElementById(id);
+    if(button)button.textContent=currentLang==='en'?en:fr;
+  });
+  document.querySelectorAll('.cooked-badge').forEach(b=>b.textContent=currentLang==='en'?'Cooked':'Cuisiné');
   if(typeof window.marmitoV105RefreshLanguage==='function')window.marmitoV105RefreshLanguage();
   const anotherBtn=document.getElementById('gen-btn');
   if(anotherBtn && !anotherBtn.disabled && cur && document.getElementById('result-card')?.classList.contains('visible')) {
