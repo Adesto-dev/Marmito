@@ -9037,10 +9037,20 @@ translateNodes();
 #marmito-batch{display:none;position:fixed;inset:0;z-index:1700;background:#f7f6f0;color:#243e2d;overflow:auto}#marmito-batch.open{display:block}#marmito-batch *{box-sizing:border-box}
 .mb-shell{max-width:1060px;margin:auto;padding:20px clamp(15px,4vw,45px) 90px}.mb-head{display:flex;align-items:center;gap:12px;justify-content:space-between;position:sticky;top:0;z-index:3;background:#f7f6f0;padding:15px 0;border-bottom:1px solid #dce3d6}.mb-head h2{font:700 clamp(23px,4vw,37px) Georgia,serif;margin:0;color:#244a32}.mb-actions{display:flex;gap:8px;flex-wrap:wrap}.mb-btn{border:1px solid #cbd7c7;background:#fff;color:#254a33;border-radius:12px;padding:11px 15px;cursor:pointer;font:600 14px inherit}.mb-primary{background:#244a32;border-color:#244a32;color:white}.mb-btn:disabled{opacity:.45;cursor:not-allowed}.mb-intro{line-height:1.65;color:#5b6c5e;margin:22px 0}.mb-tools{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.mb-search{padding:13px;border:1px solid #ccd8ca;border-radius:12px;min-width:220px;flex:1;font:inherit;background:#fff}.mb-stats{background:#e7eee3;border-radius:12px;padding:12px 16px;font-weight:700;margin:15px 0}.mb-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.mb-recipe{display:flex;gap:10px;align-items:flex-start;background:white;border:1px solid #dce4d8;border-radius:15px;padding:15px;cursor:pointer}.mb-recipe input{margin-top:4px;accent-color:#244a32;width:18px;height:18px}.mb-recipe strong{display:block;line-height:1.35}.mb-recipe small{display:block;color:#687869;margin-top:6px}.mb-section{background:#fff;border:1px solid #dce4d8;border-radius:19px;padding:20px;margin:18px 0}.mb-section h3{margin:0 0 14px;color:#244a32;font:700 23px Georgia,serif}.mb-section li{padding:7px 0;line-height:1.5}.mb-section label{display:flex;gap:10px;align-items:flex-start;padding:8px 0}.mb-note{color:#647467;font-size:14px;line-height:1.6}.mb-steps{padding-left:22px}.mb-recipe-title{font-weight:700;margin:20px 0 8px}.mb-hidden{display:none!important}@media(max-width:700px){.mb-grid{grid-template-columns:1fr}.mb-head{align-items:flex-start}.mb-actions{justify-content:flex-end}.mb-shell{padding-bottom:120px}}
 </style>
+<style id="marmito-v107-3-batch-navigation">
+#marmito-batch .mb-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;position:sticky;top:0;padding:16px 0;background:#f7f6f0;z-index:4}
+#marmito-batch .mb-nav{display:flex;gap:8px;align-items:center;justify-self:start}
+#marmito-batch .mb-actions{justify-self:end}
+#marmito-batch .mb-head h2{font-size:clamp(23px,3.5vw,34px);text-align:center}
+#marmito-batch .mb-personal-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 0;border-bottom:1px solid #dce3d6}
+#marmito-batch .mb-personal-tools label{font-weight:700}
+#marmito-batch .mb-personal-tools select{flex:1;min-width:190px;max-width:370px}
+@media(max-width:700px){#marmito-batch .mb-head{grid-template-columns:1fr auto;gap:8px}#marmito-batch .mb-head h2{grid-column:1/-1;grid-row:2;text-align:left}#marmito-batch .mb-nav{grid-column:1;grid-row:1}#marmito-batch .mb-actions{grid-column:2;grid-row:1}#marmito-batch .mb-btn{padding:10px 12px}}
+</style>
 <section id="marmito-batch" role="dialog" aria-modal="true" aria-labelledby="mb-title" aria-hidden="true">
-<div class="mb-shell"><header class="mb-head"><h2 id="mb-title">Batch Cooking</h2><div class="mb-actions"><button type="button" class="mb-btn" id="mb-back">Retour</button><button type="button" class="mb-btn" id="mb-menu">Menu</button><button type="button" class="mb-btn" id="mb-close">Fermer</button></div></header>
+<div class="mb-shell"><header class="mb-head"><div class="mb-nav"><button type="button" class="mb-btn" id="mb-menu">Menu</button><button type="button" class="mb-btn" id="mb-back">Retour</button></div><h2 id="mb-title">Batch Cooking</h2><div class="mb-actions"><button type="button" class="mb-btn" id="mb-close">Fermer</button></div></header>
 <p id="mb-intro" class="mb-intro"></p><div id="mb-status" role="status" aria-live="polite"></div>
-<div id="mb-picker"><div class="mb-tools"><input type="search" id="mb-search" class="mb-search" placeholder="Rechercher une recette" aria-label="Rechercher une recette"><button type="button" class="mb-btn" id="mb-week">Importer mon plan de 7 jours</button><button type="button" class="mb-btn" id="mb-view-week">Voir mon plan</button></div><div id="mb-count" class="mb-stats"></div><div id="mb-recipes" class="mb-grid"></div><div class="mb-tools"><button type="button" class="mb-btn mb-primary" id="mb-generate">Organiser ma séance</button></div></div>
+<div id="mb-picker"><div class="mb-personal-tools"><label for="mb-personal-select" id="mb-personal-label">Mes plannings personnels</label><select id="mb-personal-select" class="mb-search"><option value="">Choisir un planning enregistré</option></select><button type="button" class="mb-btn" id="mb-personal-import">Importer ce planning</button></div><div class="mb-tools"><input type="search" id="mb-search" class="mb-search" placeholder="Rechercher une recette" aria-label="Rechercher une recette"><button type="button" class="mb-btn" id="mb-week">Importer mon plan de 7 jours</button><button type="button" class="mb-btn" id="mb-view-week">Voir mon plan</button></div><div id="mb-count" class="mb-stats"></div><div id="mb-recipes" class="mb-grid"></div><div class="mb-tools"><button type="button" class="mb-btn mb-primary" id="mb-generate">Organiser ma séance</button></div></div>
 <div id="mb-session" class="mb-hidden"><div class="mb-tools"><button type="button" class="mb-btn" id="mb-edit">Modifier les recettes</button><button type="button" class="mb-btn" id="mb-shopping">Ajouter à ma liste de courses</button></div><div id="mb-session-body"></div></div>
 </div></section>
 <script id="marmito-v107-batch-script">
@@ -9054,7 +9064,7 @@ const key=r=>r.title;
 function translated(r){return en()&&typeof MARMITO_EN_CATALOG_V1!=='undefined'&&MARMITO_EN_CATALOG_V1[r.title]?.title||r.title}
 function text(el,value){el.textContent=value}
 function message(value){text($('mb-status'),value)}
-function sync(){text($('mb-back'),t('Retour','Back'));text($('mb-menu'),'Menu');text($('mb-close'),t('Fermer','Close'));text($('mb-week'),t('Importer mon plan de 7 jours','Import my 7-day meal plan'));text($('mb-view-week'),t('Voir mon plan','View my plan'));text($('mb-generate'),t('Organiser ma séance','Organize my session'));text($('mb-edit'),t('Modifier les recettes','Edit recipes'));text($('mb-shopping'),t('Ajouter à ma liste de courses','Add to my shopping list'));text($('mb-intro'),t('Sélectionnez les recettes que vous souhaitez préparer ensemble. Les séances sont temporaires dans cette version : aucune sauvegarde n’est encore activée.','Select recipes to prepare together. Sessions are temporary in this version: saving is not enabled yet.'));$('mb-search').placeholder=t('Rechercher une recette','Search recipes');$('mb-search').setAttribute('aria-label',$('mb-search').placeholder);}
+function sync(){text($('mb-back'),t('Retour','Back'));text($('mb-personal-label'),t('Mes plannings personnels','My personal plans'));text($('mb-personal-import'),t('Importer ce planning','Import this plan'));text($('mb-menu'),'Menu');text($('mb-close'),t('Fermer','Close'));text($('mb-week'),t('Importer mon plan de 7 jours','Import my 7-day meal plan'));text($('mb-view-week'),t('Voir mon plan','View my plan'));text($('mb-generate'),t('Organiser ma séance','Organize my session'));text($('mb-edit'),t('Modifier les recettes','Edit recipes'));text($('mb-shopping'),t('Ajouter à ma liste de courses','Add to my shopping list'));text($('mb-intro'),t('Sélectionnez les recettes que vous souhaitez préparer ensemble. Les séances sont temporaires dans cette version : aucune sauvegarde n’est encore activée.','Select recipes to prepare together. Sessions are temporary in this version: saving is not enabled yet.'));$('mb-search').placeholder=t('Rechercher une recette','Search recipes');$('mb-search').setAttribute('aria-label',$('mb-search').placeholder);}
 function renderPicker(){sync();const list=allowed(),valid=new Set(list.map(key));selected=new Set([...selected].filter(k=>valid.has(k)));const max=limit();text($('mb-count'),selected.size+' / '+(Number.isFinite(max)?max:t('Illimité','Unlimited'))+' '+t('recettes sélectionnées','recipes selected'));const q=$('mb-search').value.trim().toLocaleLowerCase();const host=$('mb-recipes');host.replaceChildren();const filtered=list.filter(r=>!q||translated(r).toLocaleLowerCase().includes(q)||r.title.toLocaleLowerCase().includes(q));
 // Always show selected recipes first, then a short selection of matches.
 const visible=[...filtered.filter(r=>selected.has(key(r))),...filtered.filter(r=>!selected.has(key(r)))].slice(0,Math.max(VISIBLE_RECIPE_LIMIT,selected.size));
@@ -9068,10 +9078,43 @@ else{hint.textContent=filtered.length+' '+t('résultat(s)','result(s)');}
 host.append(hint);$('mb-generate').disabled=!selected.size;}
 function close(){const overlay=$('marmito-batch');overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');if(lastFocus&&lastFocus.isConnected)lastFocus.focus({preventScroll:true});}
 function back(){if(stage==='session'){stage='picker';$('mb-picker').classList.remove('mb-hidden');$('mb-session').classList.add('mb-hidden');renderPicker()}else close()}
-function open(){if(typeof currentUser==='undefined'||!currentUser){if(typeof showToast==='function')showToast(t('Connectez-vous pour utiliser le Batch Cooking.','Sign in to use Batch Cooking.'));return}if(typeof closeDrawer==='function')closeDrawer();lastFocus=document.activeElement;stage='picker';$('mb-picker').classList.remove('mb-hidden');$('mb-session').classList.add('mb-hidden');$('marmito-batch').classList.add('open');$('marmito-batch').setAttribute('aria-hidden','false');message('');renderPicker();$('mb-search').focus({preventScroll:true})}
+function open(){if(typeof currentUser==='undefined'||!currentUser){if(typeof showToast==='function')showToast(t('Connectez-vous pour utiliser le Batch Cooking.','Sign in to use Batch Cooking.'));return}if(typeof closeDrawer==='function')closeDrawer();lastFocus=document.activeElement;stage='picker';$('mb-picker').classList.remove('mb-hidden');$('mb-session').classList.add('mb-hidden');$('marmito-batch').classList.add('open');$('marmito-batch').setAttribute('aria-hidden','false');message('');renderPicker();refreshPersonalPlans();$('mb-search').focus({preventScroll:true})}
 window.marmitoBatchOpen=open;window.marmitoBatchClose=close;
 $('mb-close').onclick=close;$('mb-back').onclick=back;$('mb-edit').onclick=back;$('mb-menu').onclick=()=>{close();if(typeof openDrawer==='function')openDrawer();else document.querySelector('#drawer-toggle, .hamburger, [onclick="openDrawer()"]')?.click()};
 $('mb-search').addEventListener('input',renderPicker);
+// V107.3: read the existing account-scoped Supabase personal planner.
+// Do not create new plan records or alter the personal planner's quotas.
+let personalPlans=[];
+async function refreshPersonalPlans(){
+ const wrap=document.querySelector('#marmito-batch .mb-personal-tools');
+ const select=$('mb-personal-select');
+ wrap.hidden=userPlan==='free';
+ if(wrap.hidden)return;
+ const previous=select.value;
+ select.replaceChildren(new Option(t('Chargement des plannings…','Loading plans…'),''));
+ $('mb-personal-import').disabled=true;
+ try{
+  if(typeof marmitoV95Refresh!=='function')throw new Error('planner unavailable');
+  await marmitoV95Refresh();
+  personalPlans=(typeof marmitoV95State!=='undefined'&&Array.isArray(marmitoV95State.plans))?marmitoV95State.plans:[];
+  select.replaceChildren(new Option(t('Choisir un planning enregistré','Choose a saved plan'),''));
+  personalPlans.forEach(p=>select.add(new Option(p.name,p.id)));
+  if(personalPlans.some(p=>p.id===previous))select.value=previous;
+  $('mb-personal-import').disabled=!select.value;
+  if(!personalPlans.length)message(t('Aucun planning personnel enregistré. Créez-en un dans votre plan de repas.','No saved personal plans. Create one in your meal planner.'));
+ }catch(err){select.replaceChildren(new Option(t('Plannings indisponibles','Plans unavailable'),''));message(t('Impossible de charger les plannings personnels. Réessayez plus tard.','Unable to load personal plans. Please try again later.'));}
+}
+$('mb-personal-select').addEventListener('change',()=>{$('mb-personal-import').disabled=!$('mb-personal-select').value});
+$('mb-personal-import').onclick=()=>{
+ const plan=personalPlans.find(p=>p.id===$('mb-personal-select').value);
+ if(!plan||!Array.isArray(plan.meals))return;
+ const available=new Set(allowed().map(key));
+ const names=[...new Set(plan.meals.filter(name=>typeof name==='string'&&available.has(name)))];
+ const max=limit();const chosen=names.slice(0,max);
+ selected=new Set(chosen);renderPicker();
+ message(names.length>max?t('Votre forfait autorise '+max+' recettes par séance. '+chosen.length+' recettes importées.','Your plan allows '+max+' recipes per session. '+chosen.length+' recipes imported.'):t(chosen.length+' recettes importées de « '+plan.name+' ».','Imported '+chosen.length+' recipes from “'+plan.name+'”.'));
+};
+
 // Synchronisation directe : le plan officiel est deterministe pour la semaine,
 // et ne doit pas etre ouvert dans une fenetre masquee derriere Batch Cooking.
 function weeklyRecipes(){
