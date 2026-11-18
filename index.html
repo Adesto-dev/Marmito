@@ -1847,6 +1847,39 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
  #contact-overlay .v84-contact-form-wrap{padding:20px!important}
 }
 </style>
+<style id="marmito-v86-referral">
+/* V86 — Parrainage: refonte de présentation, logique inchangée */
+#referral-overlay .referral-sheet-body{background:#f8f8f2;padding:clamp(18px,3vw,38px) clamp(16px,4vw,48px) 72px;scrollbar-gutter:stable}
+#referral-overlay .referral-sheet-body > *{max-width:1040px;margin-left:auto;margin-right:auto}
+#referral-overlay .referral-hero{position:relative;overflow:hidden;background:linear-gradient(125deg,#183d2c,#315f43);border-radius:28px;padding:clamp(30px,5vw,58px);margin-bottom:24px;text-align:left;color:#fff;box-shadow:0 18px 44px rgba(25,60,38,.16)}
+#referral-overlay .referral-hero:after{content:'';position:absolute;width:300px;height:300px;border:1px solid rgba(255,255,255,.16);border-radius:50%;right:-110px;top:-120px;pointer-events:none}
+#referral-overlay .referral-hero-icon{display:inline-grid;place-items:center;width:64px;height:64px;border-radius:19px;background:rgba(255,255,255,.13);font-size:31px;margin-bottom:18px}
+#referral-overlay .referral-hero-title{font-family:Georgia,serif;font-size:clamp(29px,4.3vw,48px);line-height:1.14;max-width:690px;margin-bottom:16px;color:#fff}
+#referral-overlay .referral-hero-sub{max-width:750px;font-size:clamp(14px,1.6vw,17px);line-height:1.7;color:#e8efe7;opacity:1}
+#referral-overlay .referral-bonus-bar{border-radius:16px;margin-bottom:18px}
+#referral-overlay .referral-reward-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-bottom:26px}
+#referral-overlay .referral-reward-box{position:relative;min-width:0;text-align:left;border:1px solid #dfe7da;border-radius:22px;background:#fff;padding:26px;box-shadow:0 9px 28px rgba(28,63,37,.06)}
+#referral-overlay .referral-reward-box-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:15px;background:#edf2e9;font-size:26px;margin-bottom:15px}
+#referral-overlay .referral-reward-box-label{font-size:12px;letter-spacing:.1em;color:#5c6b5d}
+#referral-overlay .referral-reward-box-val{font-family:Georgia,serif;font-size:clamp(20px,2.5vw,30px);line-height:1.25;color:#214a33;margin-top:8px;overflow-wrap:anywhere}
+#referral-overlay .referral-link-label{font-size:15px;font-weight:800;color:#264b35;margin-bottom:12px}
+#referral-overlay .referral-link-box{border:1px solid #d8e4d6;background:#fff;border-radius:18px;padding:10px 10px 10px 18px;gap:12px;min-height:70px;box-shadow:0 8px 25px rgba(30,62,41,.05)}
+#referral-overlay .referral-link-text{overflow-wrap:anywhere;word-break:break-word;min-width:0;font-size:14px}
+#referral-overlay .referral-copy-btn{border-radius:12px;min-height:46px;padding:12px 20px;flex-shrink:0}
+#referral-overlay .referral-share-btn{min-height:54px;border-radius:15px;margin-top:12px;margin-bottom:30px;font-weight:800}
+#referral-overlay .referral-stats{background:#edf2e8;border:1px solid #dbe5d6;border-radius:22px;padding:26px;margin-bottom:28px}
+#referral-overlay .referral-stats-title{font-family:Georgia,serif;font-size:clamp(21px,2.5vw,28px);color:#234a34;margin-bottom:14px}
+#referral-overlay .referral-stats-row{padding:14px 0;gap:12px}
+#referral-overlay .referral-stats-val{font-weight:850;color:#234a34}
+#referral-overlay .referral-sheet-body > div:last-child{background:#fff;border:1px solid #dfe7da;border-radius:22px;padding:26px;box-shadow:0 9px 28px rgba(28,63,37,.05)}
+#referral-overlay .referral-how-title{font-family:Georgia,serif;font-size:clamp(22px,2.6vw,30px);color:#234a34;margin-bottom:22px}
+#referral-overlay .referral-step{display:flex;align-items:flex-start;gap:16px;padding:16px 0;border-bottom:1px solid #e6ebe2}
+#referral-overlay .referral-step:last-child{border-bottom:0}
+#referral-overlay .referral-step-num{flex:0 0 42px;width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:#e5eee2;color:#214b34;font-weight:850}
+#referral-overlay .referral-step-text{font-size:15px;line-height:1.7;color:#48584c}
+@media(min-width:900px){#referral-overlay .referral-sheet-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;align-content:start}#referral-overlay .referral-sheet-body > .referral-hero,#referral-overlay .referral-sheet-body > .referral-bonus-bar,#referral-overlay .referral-sheet-body > .referral-reward-row,#referral-overlay .referral-sheet-body > .referral-link-label,#referral-overlay .referral-sheet-body > .referral-link-box,#referral-overlay .referral-sheet-body > .referral-share-btn{grid-column:1/-1;width:100%}#referral-overlay .referral-sheet-body > .referral-stats{grid-column:1;grid-row:auto}#referral-overlay .referral-sheet-body > div:last-child{grid-column:2;grid-row:auto}}
+@media(max-width:600px){#referral-overlay .referral-hero{padding:28px 22px;border-radius:22px}#referral-overlay .referral-reward-row{grid-template-columns:1fr;gap:12px}#referral-overlay .referral-reward-box{padding:20px}#referral-overlay .referral-link-box{flex-wrap:wrap}#referral-overlay .referral-copy-btn{width:100%}#referral-overlay .referral-stats,#referral-overlay .referral-sheet-body > div:last-child{padding:20px}}
+</style>
 </head>
 <body>
 <header class="header">
