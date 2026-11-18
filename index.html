@@ -2306,6 +2306,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <button class="drawer-item" data-i18n="history-title" onclick="marmitoOpenHistoryPage()">Mon historique</button>
 <button class="drawer-item" onclick="marmitoNavigate('experiences')" type="button" data-v88-fr="Mes expériences" data-v88-en="My experiences">Mes expériences</button>
 <button class="drawer-item" id="shopping-drawer-link" onclick="marmitoNavigate('shopping')" data-v88-fr="Ma liste de courses" data-v88-en="My shopping list">Ma liste de courses</button>
+<button class="drawer-item" type="button" onclick="marmitoOpenPantry()" data-v88-fr="Mon garde-manger" data-v88-en="My pantry">Mon garde-manger</button>
 </div></details>
 <button class="drawer-item v88-main-item" data-i18n="nav-profile" onclick="marmitoNavigate('profile')">Mon profil</button>
 <details class="v88-menu-group" id="v88-help">
@@ -8420,5 +8421,124 @@ function marmitoV64Menu(){
   color:#fffdf4;
 }
 </style>
+
+<style id="marmito-v104-pantry-style">
+#marmito-pantry-overlay{position:fixed;inset:0;z-index:1600;display:none;background:#f6f4ec;overflow:auto;overscroll-behavior:contain;color:#254432}
+#marmito-pantry-overlay.open{display:block}
+#marmito-pantry-overlay *{box-sizing:border-box}
+.marmito-pantry-shell{max-width:1000px;margin:0 auto;padding:28px clamp(16px,5vw,55px) 70px}
+.marmito-pantry-head{display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid #d9dfd2;padding-bottom:18px}
+.marmito-pantry-head h2{font:700 clamp(27px,4vw,39px) Georgia,serif;color:#254432;margin:0}
+.marmito-pantry-close{border:1px solid #d9dfd2;background:#fff;color:#254432;border-radius:12px;padding:12px 16px;cursor:pointer;font-size:15px}
+.marmito-pantry-lead{color:#536655;line-height:1.6;margin:18px 0 25px}
+.marmito-pantry-form{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) auto;gap:10px;background:#fff;border:1px solid #dce2d7;padding:18px;border-radius:20px}
+.marmito-pantry-form label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:700;color:#36523b}
+.marmito-pantry-form input,.marmito-pantry-form select{width:100%;min-width:0;padding:12px;border:1px solid #ccd8c7;border-radius:10px;font:inherit;color:#243c2c;background:#fcfdf9}
+.marmito-pantry-form button,.marmito-pantry-action{border:0;border-radius:11px;background:#244d35;color:white;padding:12px 17px;font:700 14px inherit;cursor:pointer;min-height:45px}
+.marmito-pantry-form button{align-self:end}
+#marmito-pantry-status{min-height:25px;margin:16px 0;color:#536655;font-size:14px}
+#marmito-pantry-status.error{color:#a33025}
+.marmito-pantry-list{display:grid;gap:10px}
+.marmito-pantry-row{display:flex;align-items:center;justify-content:space-between;gap:15px;background:white;border:1px solid #dce2d7;border-radius:14px;padding:15px}
+.marmito-pantry-row strong{display:block;font-size:16px;color:#244d35;overflow-wrap:anywhere}
+.marmito-pantry-row small{color:#647666}
+.marmito-pantry-row button{border:1px solid #d7b8b0;color:#a33025;background:#fff;padding:9px 12px;border-radius:9px;cursor:pointer}
+.marmito-pantry-empty{padding:28px;background:#fff;border:1px dashed #cbd7c4;border-radius:15px;color:#647666;text-align:center}
+@media(max-width:700px){.marmito-pantry-form{grid-template-columns:1fr 1fr}.marmito-pantry-form label:first-child{grid-column:1/-1}.marmito-pantry-form button{grid-column:1/-1}.marmito-pantry-row{align-items:flex-start}}
+</style>
+<section id="marmito-pantry-overlay" role="dialog" aria-modal="true" aria-labelledby="marmito-pantry-title" aria-hidden="true">
+ <div class="marmito-pantry-shell">
+  <div class="marmito-pantry-head"><h2 id="marmito-pantry-title">Mon garde-manger</h2><button type="button" class="marmito-pantry-close" onclick="marmitoClosePantry()">Fermer</button></div>
+  <p class="marmito-pantry-lead" id="marmito-pantry-lead">Enregistrez vos ingrédients disponibles à la maison. Ils restent privés et sont synchronisés avec votre compte.</p>
+  <form class="marmito-pantry-form" id="marmito-pantry-form">
+   <label><span id="marmito-pantry-name-label">Ingrédient</span><input id="marmito-pantry-name" type="text" maxlength="100" required placeholder="Ex. riz"></label>
+   <label><span id="marmito-pantry-quantity-label">Quantité</span><input id="marmito-pantry-quantity" type="number" min="0.01" max="999999" step="any" value="1" required></label>
+   <label><span id="marmito-pantry-unit-label">Unité</span><select id="marmito-pantry-unit"><option value="piece">pièce(s)</option><option value="g">g</option><option value="kg">kg</option><option value="ml">ml</option><option value="l">L</option><option value="cup">tasse(s)</option><option value="tbsp">c. à soupe</option><option value="tsp">c. à café</option></select></label>
+   <button type="submit" id="marmito-pantry-save">Ajouter</button>
+  </form>
+  <div id="marmito-pantry-status" role="status" aria-live="polite"></div>
+  <div id="marmito-pantry-list" class="marmito-pantry-list"></div>
+ </div>
+</section>
+<script id="marmito-v104-pantry-script">
+(function(){
+'use strict';
+let rows=[], busy=false, loadToken=0;
+const $=id=>document.getElementById(id);
+const t=(fr,en)=>typeof currentLang!=='undefined'&&currentLang==='en'?en:fr;
+const allowedUnits=new Set(['piece','g','kg','ml','l','cup','tbsp','tsp']);
+const unitLabels={piece:['pièce(s)','piece(s)'],g:['g','g'],kg:['kg','kg'],ml:['ml','ml'],l:['L','L'],cup:['tasse(s)','cup(s)'],tbsp:['c. à soupe','tbsp'],tsp:['c. à café','tsp']};
+const status=(message,error=false)=>{const el=$('marmito-pantry-status');el.textContent=message;el.classList.toggle('error',error)};
+function refreshText(){
+ $('marmito-pantry-title').textContent=t('Mon garde-manger','My pantry');
+ $('marmito-pantry-lead').textContent=t('Enregistrez vos ingrédients disponibles à la maison. Ils restent privés et sont synchronisés avec votre compte.','Save ingredients you have at home. They remain private and sync with your account.');
+ $('marmito-pantry-name-label').textContent=t('Ingrédient','Ingredient');
+ $('marmito-pantry-quantity-label').textContent=t('Quantité','Quantity');
+ $('marmito-pantry-unit-label').textContent=t('Unité','Unit');
+ $('marmito-pantry-save').textContent=t('Enregistrer','Save');
+ $('marmito-pantry-name').placeholder=t('Ex. riz','E.g. rice');
+ $('marmito-pantry-overlay').querySelector('.marmito-pantry-close').textContent=t('Fermer','Close');
+ Array.from($('marmito-pantry-unit').options).forEach(o=>o.textContent=unitLabels[o.value][currentLang==='en'?1:0]);
+}
+function render(){
+ const list=$('marmito-pantry-list');list.replaceChildren();
+ if(!rows.length){const empty=document.createElement('div');empty.className='marmito-pantry-empty';empty.textContent=t('Votre garde-manger est vide. Ajoutez votre premier ingrédient.','Your pantry is empty. Add your first ingredient.');list.append(empty);return}
+ rows.forEach(item=>{
+  const row=document.createElement('div');row.className='marmito-pantry-row';
+  const info=document.createElement('div');const name=document.createElement('strong');name.textContent=item.ingredient_name;
+  const qty=document.createElement('small');qty.textContent=Number(item.quantity).toLocaleString(currentLang==='en'?'en':'fr')+' '+unitLabels[item.unit]?.[currentLang==='en'?1:0];
+  info.append(name,qty);
+  const del=document.createElement('button');del.type='button';del.textContent=t('Supprimer','Delete');del.disabled=busy;
+  del.addEventListener('click',()=>remove(item.id));
+  row.append(info,del);list.append(row);
+ });
+}
+async function load(){
+ const token=++loadToken, user=typeof currentUser!=='undefined'?currentUser:null;
+ rows=[];render();
+ if(!user){status(t('Connectez-vous pour utiliser votre garde-manger.','Sign in to use your pantry.'),true);return}
+ status(t('Chargement…','Loading…'));
+ const {data,error}=await sb.from('marmito_pantry').select('id,ingredient_name,quantity,unit').eq('user_id',user.id).order('ingredient_name');
+ if(token!==loadToken || !currentUser || currentUser.id!==user.id)return;
+ if(error){status(t('Impossible de charger le garde-manger. Vérifiez que la table Supabase est installée.','Unable to load the pantry. Check that the Supabase table is installed.'),true);return}
+ rows=Array.isArray(data)?data:[];render();status('');
+}
+async function remove(id){
+ if(busy||!currentUser)return;
+ busy=true;render();status(t('Suppression…','Deleting…'));
+ try{
+  const {error}=await sb.from('marmito_pantry').delete().eq('id',id).eq('user_id',currentUser.id);
+  if(error)throw error;
+  await load();
+ }catch(e){console.error('[Marmito pantry] delete',e);status(t('Suppression impossible. Réessayez.','Could not delete. Try again.'),true)}
+ finally{busy=false;render()}
+}
+$('marmito-pantry-form').addEventListener('submit',async event=>{
+ event.preventDefault();
+ if(busy||!currentUser){status(t('Connectez-vous pour enregistrer un ingrédient.','Sign in to save an ingredient.'),true);return}
+ const name=$('marmito-pantry-name').value.trim().replace(/\s+/g,' ');
+ const quantity=Number($('marmito-pantry-quantity').value),unit=$('marmito-pantry-unit').value;
+ if(!name||name.length>100||!Number.isFinite(quantity)||quantity<=0||quantity>999999||!allowedUnits.has(unit)){status(t('Vérifiez le nom et la quantité.','Check the ingredient name and quantity.'),true);return}
+ busy=true;$('marmito-pantry-save').disabled=true;status(t('Enregistrement…','Saving…'));
+ try{
+  const {error}=await sb.from('marmito_pantry').upsert({user_id:currentUser.id,ingredient_name:name,quantity,unit},{onConflict:'user_id,ingredient_name'});
+  if(error)throw error;
+  $('marmito-pantry-name').value='';$('marmito-pantry-quantity').value='1';
+  await load();
+ }catch(e){console.error('[Marmito pantry] save',e);status(t('Enregistrement impossible. Vérifiez la connexion et réessayez.','Could not save. Check your connection and try again.'),true)}
+ finally{busy=false;$('marmito-pantry-save').disabled=false;render()}
+});
+window.marmitoOpenPantry=function(){
+ if(typeof closeDrawer==='function')closeDrawer();
+ const panel=$('marmito-pantry-overlay');panel.classList.add('open');panel.setAttribute('aria-hidden','false');
+ refreshText();load();$('marmito-pantry-name').focus({preventScroll:true});
+};
+window.marmitoClosePantry=function(){
+ loadToken++;const panel=$('marmito-pantry-overlay');panel.classList.remove('open');panel.setAttribute('aria-hidden','true');
+};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('marmito-pantry-overlay').classList.contains('open'))window.marmitoClosePantry()});
+})();
+</script>
+
 </body>
 </html>
