@@ -27622,6 +27622,19 @@ function marmitoV92Picker(allowed,button,en){
 // V94 — contextual back navigation and recipe access
 let marmitoV94Return=null;
 let marmitoV94ShoppingFromPlan=false;
+let marmitoV101ShoppingOrigin=null;
+let marmitoV101PlanOrigin=null;
+function marmitoV101CaptureOrigin(exclude){
+ const ids=['plan-overlay','shopping-overlay','profile-overlay','history-overlay','v40-favorites-overlay','pricing-overlay','tips-overlay','about-overlay','contact-overlay'];
+ return ids.find(id=>id!==exclude&&document.getElementById(id)?.classList.contains('open'))||null;
+}
+function marmitoV101RestoreOrigin(id){
+ if(!id)return;
+ if(id==='plan-overlay'){openPlanRepas();return}
+ const el=document.getElementById(id);
+ if(el)el.classList.add('open');
+}
+
 function marmitoV94Recipe(title,source){
  const recipe=marmitoV92AllowedRecipes().find(r=>r.title===title);
  if(!recipe){showToast(currentLang==='en'?'Recipe not available with your plan.':'Recette non accessible avec votre forfait.');return;}
@@ -27642,12 +27655,12 @@ function marmitoV94RecipeBack(){
 }
 function marmitoV94GoBack(){
  if(document.getElementById('shopping-overlay')?.classList.contains('open')){
-  closeShopping();if(marmitoV94ShoppingFromPlan){marmitoV94ShoppingFromPlan=false;marmitoV91ActiveTab='personal';openPlanRepas()}return;
+  closeShopping();const origin=marmitoV101ShoppingOrigin;marmitoV101ShoppingOrigin=null;marmitoV94ShoppingFromPlan=false;marmitoV101RestoreOrigin(origin);return;
  }
  if(document.getElementById('plan-overlay')?.classList.contains('open')){
   if(document.querySelector('#plan-body .v91-editor')){marmitoV91RenderPersonal();return}
   if(marmitoV91ActiveTab==='personal'){marmitoV91ActiveTab='official';marmitoV91OpenOfficial();return}
-  closePlanRepas();return;
+  closePlanRepas();const origin=marmitoV101PlanOrigin;marmitoV101PlanOrigin=null;marmitoV101RestoreOrigin(origin);return;
  }
 }
 async function marmitoV94DeletePlan(id){
@@ -27878,7 +27891,7 @@ function shoppingEmptyState(){return {recipes:[],manual:[],checked:{},removed:[]
 
 // V99 — server-backed shopping list; local copy is a per-account cache.
 let marmitoV99ReadyFor=null,marmitoV99Loading=null,marmitoV99Pending=false;
-let marmitoV99Queue=Promise.resolve(),marmitoV99Generation=0;
+let marmitoV99Queue=Promise.resolve(),marmitoV99Generation=0,marmitoV101Revision=0,marmitoV101SavedRevision=0;
 function marmitoV99LocalKey(){return currentUser?.id?SHOPPING_KEY+':'+currentUser.id:SHOPPING_KEY;}
 function marmitoV99Message(fr,en){return currentLang==='en'?en:fr;}
 function marmitoV99Status(message,isError=false){
@@ -27890,19 +27903,23 @@ function marmitoV99QueueWrite(state){
  const uid=currentUser?.id,gen=marmitoV99Generation;
  if(!uid)return;
  const snapshot=JSON.parse(JSON.stringify(state));
+ const revision=++marmitoV101Revision;
  marmitoV99Queue=marmitoV99Queue.catch(()=>{}).then(async()=>{
   if(uid!==currentUser?.id||gen!==marmitoV99Generation)return;
   const {error}=await sb.rpc('marmito_save_shopping_list',{p_state:snapshot});
   if(error)throw error;
   if(uid===currentUser?.id&&gen===marmitoV99Generation){
+   if(revision!==marmitoV101Revision)return;
+   marmitoV101SavedRevision=revision;
    marmitoV99Pending=false;
-   marmitoV99Status(marmitoV99Message('Liste synchronisée avec Supabase.','Shopping list synced with Supabase.'));
+   marmitoV99Status(marmitoV99Message('Votre liste de courses est enregistrée.','Your shopping list is saved.'));
   }
  }).catch(error=>{
   if(uid===currentUser?.id&&gen===marmitoV99Generation){
+   if(revision!==marmitoV101Revision)return;
    marmitoV99Pending=true;
    console.error('[Marmito V99] Shopping sync failed',error);
-   marmitoV99Status(marmitoV99Message('Synchronisation impossible. Votre copie locale est conservée. Réessayez en ouvrant la liste.','Sync failed. Your local copy is preserved. Reopen the list to retry.'),true);
+   marmitoV99Status(marmitoV99Message('Impossible d’enregistrer votre liste pour le moment. Réessayez plus tard.','Unable to save your list right now. Please try again later.'),true);
   }
  });
 }
@@ -27926,20 +27943,18 @@ async function marmitoV99EnsureLoaded(){
    }
    localStorage.setItem(marmitoV99LocalKey(),JSON.stringify(data.state));
   }else{
-   // Only offer to migrate a legacy device-local list when server has no list.
-   const legacy=localStorage.getItem(SHOPPING_KEY);
-   if(legacy){
-    let parsed=null;
-    try{parsed=JSON.parse(legacy)}catch(e){}
-    if(parsed&&Array.isArray(parsed.recipes)&&Array.isArray(parsed.manual)){
-     const answer=confirm(marmitoV99Message('Une ancienne liste de courses existe sur cet appareil. Voulez-vous la transférer vers ce compte Supabase ?','An older shopping list exists on this device. Import it to this Supabase account?'));
-     if(answer){
-      const {error:saveError}=await sb.rpc('marmito_save_shopping_list',{p_state:parsed});
-      if(saveError)throw saveError;
-      localStorage.setItem(marmitoV99LocalKey(),JSON.stringify(parsed));
-     }else localStorage.setItem(marmitoV99LocalKey(),JSON.stringify(shoppingEmptyState()));
-    }else localStorage.setItem(marmitoV99LocalKey(),JSON.stringify(shoppingEmptyState()));
-   }else localStorage.setItem(marmitoV99LocalKey(),JSON.stringify(shoppingEmptyState()));
+   // V100: silent migration ONLY of a cache already tied to this exact user ID.
+   // The old global SHOPPING_KEY has no owner metadata; importing it silently
+   // would risk exposing a different account's recipes on shared devices.
+   const scoped=localStorage.getItem(marmitoV99LocalKey());
+   let parsed=null;
+   try{parsed=scoped?JSON.parse(scoped):null}catch(e){}
+   if(parsed&&Array.isArray(parsed.recipes)&&Array.isArray(parsed.manual)){
+    const {error:saveError}=await sb.rpc('marmito_save_shopping_list',{p_state:parsed});
+    if(saveError)throw saveError;
+   }else{
+    localStorage.setItem(marmitoV99LocalKey(),JSON.stringify(shoppingEmptyState()));
+   }
   }
   marmitoV99ReadyFor=uid;
  })().finally(()=>{marmitoV99Loading=null});
@@ -27948,6 +27963,7 @@ async function marmitoV99EnsureLoaded(){
 async function marmitoV99OpenShopping(){
  const el=document.getElementById('shopping-overlay');if(!el)return;
  const plan=document.getElementById('plan-overlay');
+ marmitoV101ShoppingOrigin=marmitoV101ShoppingOrigin||marmitoV101CaptureOrigin('shopping-overlay');
  if(plan?.classList.contains('open'))closePlanRepas();
  el.classList.add('open');
  const shoppingContents=document.getElementById('shopping-contents');
@@ -27963,11 +27979,11 @@ async function marmitoV99OpenShopping(){
   renderShopping();
   if(marmitoV99Pending){
    marmitoV99QueueWrite(shoppingLoad());
-   marmitoV99Status(marmitoV99Message('Synchronisation en cours…','Syncing…'));
-  }else marmitoV99Status(marmitoV99Message('Liste liée à votre compte.','List linked to your account.'));
+   marmitoV99Status(marmitoV99Message('Enregistrement en cours…','Saving…'));
+  }else marmitoV99Status(marmitoV99Message('Votre liste de courses est prête.','Your shopping list is ready.'));
  }catch(error){
   console.error('[Marmito V99] Loading shopping list failed',error);
-  marmitoV99Status(marmitoV99Message('Impossible de charger la liste depuis Supabase. Réessayez en fermant puis rouvrant la liste.','Unable to load the list from Supabase. Close and reopen to retry.'),true);
+  marmitoV99Status(marmitoV99Message('Impossible de charger votre liste pour le moment. Fermez-la puis réessayez.','Unable to load your list right now. Close it and try again.'),true);
  }
 }
 function shoppingLoad(){
@@ -28007,6 +28023,15 @@ async function shoppingAddRecipes(list){
  try{await marmitoV99EnsureLoaded()}catch(e){showToast(marmitoV99Message('Liste indisponible : réessayez.','Shopping list unavailable: retry.'),'error');return}
  const state=shoppingLoad(),limit=marmitoV93ShoppingLimit();let changed=0,blocked=0,restricted=0;
  const weekly=Array.isArray(list)&&list===shoppingWeekPlan;
+ if(weekly&&state.recipes.length){
+  const choices=currentLang==='en'
+   ?'Your shopping list already contains recipes.\nOK: replace existing recipes with this week’s menu.\nCancel: keep your current recipes and add this week’s menu.'
+   :'Votre liste contient déjà des recettes.\nOK : remplacer les recettes actuelles par le menu de la semaine.\nAnnuler : conserver les recettes actuelles et ajouter le menu de la semaine.';
+  if(confirm(choices)){
+   state.recipes=[];state.checked={};state.removed=[];
+   changed++;
+  }
+ }
  (Array.isArray(list)?list:[]).forEach(recipe=>{
   if(!recipe||typeof recipe.title!=='string')return;
   if(!marmitoV93Allowed(recipe)){restricted++;return;}
@@ -28033,7 +28058,7 @@ async function shoppingAddRecipes(list){
  openShopping();
 }
 function addCurrentRecipeToShopping(){if(cur)shoppingAddRecipes([cur]);}
-function addWeekToShopping(){shoppingAddRecipes(shoppingWeekPlan);}
+function addWeekToShopping(){marmitoV101ShoppingOrigin=document.getElementById('plan-overlay')?.classList.contains('open')?'plan-overlay':marmitoV101ShoppingOrigin;shoppingAddRecipes(shoppingWeekPlan);}
 function shoppingParseQty(raw){
  const str=String(raw??'').trim().replace(/,/g,'.').replace(/\s*[–—]\s*/g,'-');
  const m=str.match(/^((?:\d+\s*\/\s*\d+|\d+(?:\.\d+)?|[½¼¾]))(?:\s*(?:-|à|to)\s*(\d+(?:\.\d+)?))?\s*(.*)$/i);
@@ -30940,6 +30965,9 @@ function marmitoV51SetView(which,view){
  const originalPlan=window.openPlanRepas;
  if(typeof originalPlan==='function'){
    window.openPlanRepas=function(){
+     if(!document.getElementById('plan-overlay')?.classList.contains('open')){
+       marmitoV101PlanOrigin=marmitoV101CaptureOrigin('plan-overlay');
+     }
      exitAdmin();
      return originalPlan.apply(this,arguments);
    };
