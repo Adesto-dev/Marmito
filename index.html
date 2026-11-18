@@ -1880,6 +1880,141 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 @media(min-width:900px){#referral-overlay .referral-sheet-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;align-content:start}#referral-overlay .referral-sheet-body > .referral-hero,#referral-overlay .referral-sheet-body > .referral-bonus-bar,#referral-overlay .referral-sheet-body > .referral-reward-row,#referral-overlay .referral-sheet-body > .referral-link-label,#referral-overlay .referral-sheet-body > .referral-link-box,#referral-overlay .referral-sheet-body > .referral-share-btn{grid-column:1/-1;width:100%}#referral-overlay .referral-sheet-body > .referral-stats{grid-column:1;grid-row:auto}#referral-overlay .referral-sheet-body > div:last-child{grid-column:2;grid-row:auto}}
 @media(max-width:600px){#referral-overlay .referral-hero{padding:28px 22px;border-radius:22px}#referral-overlay .referral-reward-row{grid-template-columns:1fr;gap:12px}#referral-overlay .referral-reward-box{padding:20px}#referral-overlay .referral-link-box{flex-wrap:wrap}#referral-overlay .referral-copy-btn{width:100%}#referral-overlay .referral-stats,#referral-overlay .referral-sheet-body > div:last-child{padding:20px}}
 </style>
+<style id="marmito-v87-subscription-design">
+
+/* Marmito V87 — subscription comparison, visual only. Keep pricing and checkout intact. */
+#pricing-overlay .pricing-sheet-body{
+ background:#f8f8f3!important;padding:clamp(18px,3vw,38px)!important;
+ overflow-y:auto!important;overflow-x:hidden!important
+}
+#pricing-overlay .v47-pricing-intro{
+ background:linear-gradient(120deg,#183f2d,#346447)!important;
+ color:#fff!important;border-radius:26px!important;
+ padding:clamp(26px,4vw,46px)!important;
+ min-height:0!important;margin-bottom:26px!important;
+ box-shadow:0 16px 35px rgba(21,57,37,.13)!important
+}
+#pricing-overlay .v47-pricing-intro .v47-eyebrow{color:#e8b88f!important;font-size:12px!important;letter-spacing:.14em!important}
+#pricing-overlay .v47-pricing-intro h2{
+ color:#fff!important;font-family:Georgia,serif!important;
+ font-size:clamp(30px,4vw,49px)!important;line-height:1.14!important;
+ margin:10px 0 14px!important
+}
+#pricing-overlay .v47-pricing-intro p{color:#e8f1e9!important;max-width:670px!important;line-height:1.7!important}
+#pricing-overlay .plan-cards{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:18px!important;align-items:stretch!important;margin:0 auto!important;
+ max-width:1190px!important
+}
+#pricing-overlay .plan-card{
+ position:relative!important;min-width:0!important;width:auto!important;
+ display:flex!important;flex-direction:column!important;
+ border:1px solid #e1e8dc!important;border-radius:25px!important;
+ background:#fff!important;padding:clamp(20px,2.4vw,31px)!important;
+ box-shadow:0 12px 30px rgba(28,59,38,.06)!important;
+ transform:none!important;overflow:visible!important
+}
+#pricing-overlay .plan-card.featured{
+ border:2px solid #39744d!important;
+ background:linear-gradient(180deg,#f2f7ed,#fff 32%)!important;
+ box-shadow:0 18px 42px rgba(29,81,49,.12)!important
+}
+#pricing-overlay .plan-card-top{
+ display:flex!important;justify-content:space-between!important;
+ align-items:center!important;gap:12px!important;flex-wrap:wrap!important;
+ border-bottom:1px solid #e9eee5!important;padding-bottom:18px!important;
+ margin-bottom:18px!important
+}
+#pricing-overlay .plan-name{
+ font-family:Georgia,serif!important;font-size:clamp(22px,2.3vw,29px)!important;
+ font-weight:800!important;color:#204832!important
+}
+#pricing-overlay .plan-price.free{font-size:23px!important;color:#254c37!important}
+#pricing-overlay .launch-badge{
+ width:max-content!important;max-width:100%!important;
+ border-radius:99px!important;padding:7px 12px!important;
+ background:#f5e5d4!important;color:#91532e!important;
+ font-weight:800!important;font-size:12px!important;margin-bottom:13px!important
+}
+#pricing-overlay .plan-price-launch{
+ display:flex!important;align-items:baseline!important;gap:12px!important;
+ flex-wrap:wrap!important;margin-bottom:8px!important
+}
+#pricing-overlay .plan-price-old{font-size:17px!important;color:#899387!important}
+#pricing-overlay .plan-price-new{font-size:clamp(32px,3.5vw,43px)!important;color:#1c4830!important;line-height:1.1!important}
+#pricing-overlay .plan-price-new span{font-size:14px!important;font-weight:500!important}
+#pricing-overlay .launch-note{font-size:12px!important;color:#7b705f!important;margin-bottom:19px!important}
+#pricing-overlay .plan-features{
+ padding:17px 0 21px!important;margin:0!important;
+ list-style:none!important;flex:1!important
+}
+#pricing-overlay .plan-features li{
+ position:relative!important;padding:9px 0 9px 27px!important;
+ border-bottom:1px solid #eff1eb!important;
+ color:#344c3c!important;font-size:14px!important;line-height:1.5!important
+}
+#pricing-overlay .plan-features li::before{
+ content:"✓"!important;position:absolute!important;left:0!important;top:9px!important;
+ color:#2c7b49!important;font-weight:900!important
+}
+#pricing-overlay .plan-features li.muted{color:#89938a!important}
+#pricing-overlay .plan-features li.muted::before{content:"–"!important;color:#a0a8a0!important}
+#pricing-overlay .plan-btn{
+ margin-top:auto!important;width:100%!important;min-height:52px!important;
+ border-radius:14px!important;padding:14px!important;font-weight:800!important;
+ font-size:14px!important;box-shadow:none!important
+}
+#pricing-overlay .plan-btn.pro-btn{background:#244f36!important;color:#fff!important}
+#pricing-overlay .plan-card.featured .plan-btn.pro-btn{background:#a94f2c!important}
+#pricing-overlay .plan-btn:disabled{background:#eef1eb!important;color:#6c7a6f!important}
+#pricing-overlay .pricing-footer{
+ text-align:center!important;padding:26px 12px!important;
+ color:#637166!important;font-size:12px!important
+}
+@media(max-width:920px){
+ #pricing-overlay .plan-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #pricing-overlay .plan-card:last-child{grid-column:1/-1!important;max-width:none!important}
+}
+@media(max-width:650px){
+ #pricing-overlay .pricing-sheet-body{padding:16px!important}
+ #pricing-overlay .v47-pricing-intro{padding:25px 20px!important;margin-bottom:16px!important}
+ #pricing-overlay .plan-cards{grid-template-columns:1fr!important;gap:13px!important}
+ #pricing-overlay .plan-card:last-child{grid-column:auto!important}
+ #pricing-overlay .plan-card{padding:22px!important}
+ #pricing-overlay .plan-features{padding:12px 0 18px!important}
+}
+
+</style><style id="marmito-v88-menu-concept-a">
+/* V88 — concept A, sophisticated forest-green drawer; keep existing handlers */
+#drawer{background:linear-gradient(165deg,#102f21,#173e2b 55%,#123323)!important;color:#f7f5eb!important;width:min(365px,92vw)!important;max-width:92vw!important;box-shadow:16px 0 55px #0b231b40!important}
+#drawer .drawer-top{background:transparent!important;border-bottom:1px solid #ffffff25!important;padding:27px 23px 20px!important}
+#drawer .drawer-logo{color:#fff!important;font-family:Georgia,serif!important;font-size:33px!important;letter-spacing:-.04em!important}
+#drawer .drawer-user{margin-top:15px!important;background:#ffffff0d!important;border:1px solid #ffffff22!important;border-radius:15px!important;padding:12px!important}
+#drawer .drawer-user-email,#drawer .drawer-user-count{color:#e4ebe2!important;overflow-wrap:anywhere}
+#drawer .drawer-user-plan{color:#fff!important}
+#drawer .v88-drawer-nav{padding:19px 15px 20px!important;overflow-y:auto!important;overscroll-behavior:contain!important}
+#drawer .v88-menu-kicker{font-size:10px;letter-spacing:.19em;color:#a9c9b0;font-weight:800;padding:5px 15px 13px}
+#drawer .v88-main-item{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;width:100%!important;min-height:49px!important;margin:3px 0!important;padding:13px 15px!important;border:1px solid transparent!important;border-radius:13px!important;background:transparent!important;color:#f4f7ef!important;font-size:15px!important;font-weight:650!important;text-align:left!important;text-decoration:none!important;cursor:pointer!important}
+#drawer .v88-main-item:hover,#drawer .v88-menu-group[open]>summary{background:#ffffff17!important;border-color:#ffffff20!important}
+#drawer .v88-menu-group{margin:3px 0!important;border:0!important;background:transparent!important}
+#drawer .v88-menu-group>summary{list-style:none!important}
+#drawer .v88-menu-group>summary::-webkit-details-marker{display:none}
+#drawer .v88-chevron{width:9px;height:9px;flex:none;border-right:2px solid #c4d6c4;border-bottom:2px solid #c4d6c4;transform:rotate(45deg);transition:transform .2s;margin-right:5px}
+#drawer .v88-menu-group[open] .v88-chevron{transform:rotate(225deg)}
+#drawer .v88-menu-children{margin:2px 0 9px 13px!important;padding:5px 0 5px 13px!important;border-left:1px solid #ffffff35!important;background:#ffffff08!important;border-radius:0 13px 13px 0!important}
+#drawer .v88-menu-children .drawer-item{display:block!important;min-height:40px!important;padding:10px 12px!important;margin:1px 0!important;border-radius:10px!important;background:transparent!important;color:#dceade!important;font-size:13px!important;text-align:left!important;width:100%!important}
+#drawer .v88-menu-children .drawer-item:hover{background:#ffffff1a!important;color:white!important}
+#drawer .v88-sub-section{padding:5px 10px 0!important}
+#drawer .v88-sub-section .drawer-divider{background:#ffffff2b!important}
+#drawer .v88-sub-section .drawer-section-label{color:#bed1bf!important}
+#drawer .drawer-bottom{background:#102e21!important;border-top:1px solid #ffffff24!important;padding:12px 18px!important}
+#drawer .drawer-bottom .drawer-item{color:#f0d5ca!important;border-radius:12px!important}
+#drawer .drawer-bottom .drawer-item:hover{background:#ffffff12!important}
+#drawer .v88-main-item:focus-visible,#drawer summary:focus-visible,#drawer .v88-menu-children button:focus-visible{outline:2px solid #e7bb8d!important;outline-offset:2px!important}
+#drawer .v88-main-item[hidden]{display:none!important}
+@media(max-width:500px){#drawer{width:min(340px,91vw)!important}#drawer .drawer-top{padding:22px 19px 15px!important}#drawer .v88-drawer-nav{padding:14px 12px 20px!important}}
+@media(prefers-reduced-motion:reduce){#drawer .v88-chevron{transition:none}}
+</style>
 </head>
 <body>
 <header class="header">
@@ -1943,28 +2078,34 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="drawer-user-count" id="drawer-count"></div>
 </div>
 </div>
-<div class="drawer-nav">
-<div class="drawer-section-label" data-i18n="section-nav">Navigation</div>
-<button class="drawer-item" data-i18n="nav-home" onclick="marmitoNavigate('home')">Accueil</button>
-<button class="drawer-item drawer-item-plan" data-i18n="nav-plan" onclick="marmitoNavigate('plan')">Plan 7 jours <span class="pro-chip">PRO</span></button>
-<button class="drawer-item" id="shopping-drawer-link" onclick="marmitoNavigate('shopping')">Ma liste de courses</button>
-<button class="drawer-item" data-i18n="nav-profile" onclick="marmitoNavigate('profile')">Mon profil</button>
+<div class="drawer-nav v88-drawer-nav">
+<div class="v88-menu-kicker" data-v88-fr="VOTRE ESPACE" data-v88-en="YOUR SPACE">VOTRE ESPACE</div>
+<button class="drawer-item v88-main-item" data-i18n="nav-home" onclick="marmitoNavigate('home')">Accueil</button>
+<button class="drawer-item drawer-item-plan v88-main-item" data-i18n="nav-plan" onclick="marmitoNavigate('plan')">Plan 7 jours <span class="pro-chip">PRO</span></button>
+<details class="v88-menu-group" id="v88-collection">
+<summary class="v88-main-item"><span data-v88-fr="Ma collection" data-v88-en="My collection">Ma collection</span><span class="v88-chevron" aria-hidden="true"></span></summary>
+<div class="v88-menu-children">
 <button class="drawer-item" data-i18n="nav-favs" onclick="marmitoOpenFavoritesPage()">Mes favoris</button>
 <button class="drawer-item" data-i18n="history-title" onclick="marmitoOpenHistoryPage()">Mon historique</button>
-<button class="drawer-item" onclick="marmitoNavigate('experiences')" type="button">Mes expériences</button>
-<!-- Visible uniquement après vérification du rôle auprès de Supabase -->
-<button class="drawer-item" hidden="" id="marmito-admin-menu" onclick="marmitoNavigate('admin')" style="display:none">Administration</button>
-<div id="drawer-sub-section">
-<div class="drawer-divider"></div>
-<div class="drawer-section-label" data-i18n="section-sub">Abonnement</div>
-<div id="drawer-sub-cta"></div>
-</div>
-<div class="drawer-divider"></div>
-<div class="drawer-section-label" data-i18n="section-help">Aide</div>
+<button class="drawer-item" onclick="marmitoNavigate('experiences')" type="button" data-v88-fr="Mes expériences" data-v88-en="My experiences">Mes expériences</button>
+<button class="drawer-item" id="shopping-drawer-link" onclick="marmitoNavigate('shopping')" data-v88-fr="Ma liste de courses" data-v88-en="My shopping list">Ma liste de courses</button>
+</div></details>
+<button class="drawer-item v88-main-item" data-i18n="nav-profile" onclick="marmitoNavigate('profile')">Mon profil</button>
+<details class="v88-menu-group" id="v88-help">
+<summary class="v88-main-item"><span data-v88-fr="Aide et informations" data-v88-en="Help and information">Aide et informations</span><span class="v88-chevron" aria-hidden="true"></span></summary>
+<div class="v88-menu-children">
 <button class="drawer-item" data-i18n="nav-contact" onclick="drawerAction('contact')">Nous contacter</button>
 <button class="drawer-item" data-i18n="nav-tips" onclick="drawerAction('tips')">Conseils &amp; Astuces</button>
 <button class="drawer-item" data-i18n="nav-about" onclick="drawerAction('about')">À propos de Marmito</button>
 <button class="drawer-item" data-i18n="nav-share-app" onclick="drawerAction('share-app')">Inviter un ami</button>
+</div></details>
+<!-- Preserve existing admin role visibility management: same id and handler. -->
+<button class="drawer-item v88-main-item v88-admin-item" hidden="" id="marmito-admin-menu" onclick="marmitoNavigate('admin')" style="display:none">Administration</button>
+<div id="drawer-sub-section" class="v88-sub-section">
+<div class="drawer-divider"></div>
+<div class="drawer-section-label" data-i18n="section-sub">Abonnement</div>
+<div id="drawer-sub-cta"></div>
+</div>
 </div>
 <div class="drawer-bottom" id="drawer-bottom">
 <button class="drawer-item danger" data-i18n="nav-logout" onclick="drawerAction('logout')">Se déconnecter</button>
@@ -30586,5 +30727,23 @@ function marmitoV64Menu(){
  document.addEventListener("DOMContentLoaded",function(){sync();const el=document.getElementById("contact-overlay");if(el){new MutationObserver(sync).observe(el,{attributes:true,attributeFilter:["class"]});}});
  document.addEventListener("click",function(){setTimeout(sync,0);});
 })();</script>
-</body>
+<script id="marmito-v88-menu-language">
+(function(){
+ function sync(){
+  var en=(typeof currentLang!=="undefined"&&currentLang==="en");
+  document.querySelectorAll("#drawer [data-v88-fr][data-v88-en]").forEach(function(el){
+   el.textContent=el.getAttribute(en?"data-v88-en":"data-v88-fr");
+  });
+ }
+ document.addEventListener("DOMContentLoaded",sync);
+ document.addEventListener("click",function(e){
+  if(e.target.closest("#drawer")||e.target.closest("[onclick*=toggleLang]")||e.target.closest("[onclick*=setLang]"))setTimeout(sync,0);
+ });
+ var drawer=document.getElementById("drawer");
+ if(drawer&&typeof MutationObserver!=="undefined"){
+  var observer=new MutationObserver(function(){sync();});
+  observer.observe(drawer,{attributes:true,attributeFilter:["class"]});
+ }
+})();
+</script></body>
 </html>
