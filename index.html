@@ -2380,6 +2380,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="share-bar v80-recipe-actions" role="group" aria-label="Actions de la recette">
 <button class="share-btn share-copy" data-i18n="btn-copy" onclick="copyRecipe()">Copier</button>
 <button class="share-btn share-wa" data-i18n="btn-share" onclick="shareRecipe()">⤴ Partager la recette</button>
+<button class="share-btn" type="button" id="marmito-v105-compare-button" onclick="marmitoV105OpenCompare()">Ingrédients manquants</button>
 <button class="share-btn" id="grocery-add-recipe" onclick="addCurrentRecipeToShopping()">Ajouter aux courses</button>
 <button class="share-btn" id="cooked-btn" onclick="toggleCooked()" style="background:rgba(250,250,245,0.12);color:rgba(250,250,245,0.9)">Cuisiné</button> <button class="share-btn" onclick="marmitoOpenExperience()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">Mon expérience</button> <button class="share-btn" onclick="marmitoOpenPublishedExperiences()" style="background:rgba(250,250,245,0.16);color:#fff" type="button">Avis de la communauté</button>
 </div>
@@ -8448,7 +8449,7 @@ function marmitoV64Menu(){
 </style>
 <section id="marmito-pantry-overlay" role="dialog" aria-modal="true" aria-labelledby="marmito-pantry-title" aria-hidden="true">
  <div class="marmito-pantry-shell">
-  <div class="marmito-pantry-head"><h2 id="marmito-pantry-title">Mon garde-manger</h2><button type="button" class="marmito-pantry-close" onclick="marmitoClosePantry()">Fermer</button></div>
+  <div class="marmito-pantry-head"><div class="marmito-v105-nav"><button type="button" class="marmito-pantry-close" onclick="marmitoV45Menu(event)" aria-label="Menu">☰ Menu</button><button type="button" class="marmito-pantry-close" onclick="marmitoV105PantryBack()">← <span id="marmito-pantry-back-label">Retour</span></button></div><h2 id="marmito-pantry-title">Mon garde-manger</h2><button type="button" class="marmito-pantry-close" onclick="marmitoClosePantry()">Fermer</button></div>
   <p class="marmito-pantry-lead" id="marmito-pantry-lead">Enregistrez vos ingrédients disponibles à la maison. Ils restent privés et sont synchronisés avec votre compte.</p>
   <form class="marmito-pantry-form" id="marmito-pantry-form">
    <label><span id="marmito-pantry-name-label">Ingrédient</span><input id="marmito-pantry-name" type="text" maxlength="100" required placeholder="Ex. riz"></label>
@@ -8537,6 +8538,127 @@ window.marmitoClosePantry=function(){
  loadToken++;const panel=$('marmito-pantry-overlay');panel.classList.remove('open');panel.setAttribute('aria-hidden','true');
 };
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('marmito-pantry-overlay').classList.contains('open'))window.marmitoClosePantry()});
+})();
+</script>
+
+
+<style id="marmito-v105-style">
+.marmito-v105-nav{display:flex;gap:8px;flex-wrap:wrap}
+#marmito-pantry-overlay .marmito-pantry-head{flex-wrap:wrap}
+#marmito-pantry-overlay .marmito-pantry-head h2{flex:1;min-width:200px}
+#marmito-v105-overlay{display:none;position:fixed;inset:0;z-index:1601;overflow:auto;background:#f6f4ec;color:#254432}
+#marmito-v105-overlay.open{display:block}
+#marmito-v105-overlay *{box-sizing:border-box}
+.marmito-v105-shell{max-width:940px;margin:auto;padding:25px clamp(15px,4vw,45px) 70px}
+.marmito-v105-header{display:flex;align-items:center;flex-wrap:wrap;gap:9px;border-bottom:1px solid #dce2d7;padding-bottom:18px}
+.marmito-v105-header h2{font:700 clamp(24px,4vw,34px) Georgia,serif;margin:5px 0;flex:1;min-width:200px}
+.marmito-v105-header button,.marmito-v105-actions button{border:1px solid #cdd9ca;border-radius:10px;padding:11px 14px;background:#fff;color:#254432;cursor:pointer;font:600 14px Arial,sans-serif}
+.marmito-v105-actions button.primary{background:#244d35;color:#fff;border-color:#244d35}
+.marmito-v105-intro{color:#526954;line-height:1.6;margin:20px 0}
+.marmito-v105-group{background:white;border:1px solid #dce2d7;border-radius:18px;padding:20px;margin:15px 0}
+.marmito-v105-group h3{font:700 20px Georgia,serif;margin:0 0 14px}
+.marmito-v105-item{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-top:1px solid #edf0e9}
+.marmito-v105-item label{flex:1;cursor:pointer;line-height:1.45}
+.marmito-v105-item small{display:block;color:#6a7d6c;margin-top:3px}
+.marmito-v105-item input{margin-top:4px;width:17px;height:17px;accent-color:#244d35}
+.marmito-v105-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+#marmito-v105-status{margin-top:15px;color:#526954;min-height:20px}
+@media(max-width:650px){.marmito-v105-header h2{order:2;flex-basis:100%}.marmito-v105-shell{padding-top:14px}}
+</style>
+<section id="marmito-v105-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="marmito-v105-title">
+<div class="marmito-v105-shell">
+<div class="marmito-v105-header"><button type="button" onclick="marmitoV45Menu(event)">☰ Menu</button><button type="button" onclick="marmitoV105CloseCompare()">← <span id="marmito-v105-back">Retour</span></button><h2 id="marmito-v105-title">Ingrédients manquants</h2><button type="button" onclick="marmitoV105CloseCompare()" aria-label="Fermer">✕</button></div>
+<p id="marmito-v105-intro" class="marmito-v105-intro"></p>
+<div class="marmito-v105-group"><h3 id="marmito-v105-have-title">Déjà dans mon garde-manger</h3><div id="marmito-v105-have"></div></div>
+<div class="marmito-v105-group"><h3 id="marmito-v105-missing-title">À vérifier ou à acheter</h3><div id="marmito-v105-missing"></div><div class="marmito-v105-actions"><button class="primary" id="marmito-v105-add" type="button">Ajouter la sélection aux courses</button><button type="button" id="marmito-v105-pantry" onclick="marmitoV105OpenPantryFromCompare()">Mon garde-manger</button></div></div>
+<p id="marmito-v105-status" role="status" aria-live="polite"></p>
+</div></section>
+<script id="marmito-v105-script">
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const tr=(fr,en)=>currentLang==='en'?en:fr;
+let compareRecipe=null,compareAccount=null,fromCompare=false;
+const normalize=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr').replace(/œ/g,'oe').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+function canon(x){return normalize(typeof canonicalIngredient==='function'?canonicalIngredient(x):x)}
+function qtyUnit(unit){return {piece:['piece',1],g:['g',1],kg:['g',1000],ml:['ml',1],l:['ml',1000],cup:['cup',1],tbsp:['tbsp',1],tsp:['tsp',1]}[unit]||[unit,1]}
+function comparable(recipe,i,pantry){
+ const req=shoppingParseQty(scaleQty(recipeIngredientQty(recipe,i),Number(portionsMultiplier)||1));
+ const [pu,pfactor]=qtyUnit(pantry.unit);
+ if(req.num===null)return {ok:false,note:tr('Quantité à vérifier','Quantity needs checking')};
+ if(req.unit!==pu)return {ok:false,note:tr('Unités différentes : vérifiez la quantité','Different units: check the quantity')};
+ const available=Number(pantry.quantity)*pfactor;
+ return {ok:available>=req.num,note:available>=req.num?tr('Quantité suffisante','Enough available'):tr('Quantité insuffisante','Not enough available')};
+}
+function row(target,name,qty,checked,note){
+ const wrap=document.createElement('div');wrap.className='marmito-v105-item';
+ const check=document.createElement('input');check.type='checkbox';check.checked=checked;check.dataset.name=name;check.dataset.qty=qty;
+ const label=document.createElement('label');const title=document.createElement('strong');title.textContent=name+(qty?' — '+qty:'');label.append(title);
+ if(note){const small=document.createElement('small');small.textContent=note;label.append(small)}
+ if(target==='marmito-v105-missing'){label.prepend(check);check.id='marmito-v105-check-'+$('marmito-v105-missing').children.length;label.htmlFor=check.id}
+ else {const bullet=document.createElement('span');bullet.textContent='✓';bullet.setAttribute('aria-hidden','true');wrap.append(bullet)}
+ wrap.append(label);$(target).append(wrap);
+}
+function empty(target,message){const p=document.createElement('p');p.textContent=message;$(target).append(p)}
+async function render(){
+ const recipe=compareRecipe,uid=compareAccount;
+ if(!recipe||!currentUser||currentUser.id!==uid)return;
+ $('marmito-v105-have').replaceChildren();$('marmito-v105-missing').replaceChildren();
+ $('marmito-v105-title').textContent=tr('Ingrédients manquants','Missing ingredients');
+ $('marmito-v105-back').textContent=tr('Retour','Back');
+ $('marmito-v105-have-title').textContent=tr('Déjà dans mon garde-manger','Already in my pantry');
+ $('marmito-v105-missing-title').textContent=tr('À vérifier ou à acheter','Check or buy');
+ $('marmito-v105-add').textContent=tr('Ajouter la sélection aux courses','Add selected items to shopping list');
+ $('marmito-v105-pantry').textContent=tr('Mon garde-manger','My pantry');
+ $('marmito-v105-intro').textContent=recipe.title+' — '+tr('Comparaison indicative. Les ingrédients et unités doivent correspondre ; vérifiez les quantités avant de cuisiner.','Estimated comparison. Ingredients and units must match; check quantities before cooking.');
+ $('marmito-v105-status').textContent=tr('Chargement du garde-manger…','Loading pantry…');
+ const {data,error}=await sb.from('marmito_pantry').select('ingredient_name,quantity,unit').eq('user_id',uid);
+ if(!$('marmito-v105-overlay').classList.contains('open')||!currentUser||currentUser.id!==uid||compareRecipe!==recipe)return;
+ if(error){$('marmito-v105-status').textContent=tr('Impossible de charger les ingrédients. Vérifiez Supabase et réessayez.','Could not load ingredients. Check Supabase and retry.');return}
+ let have=0,missing=0;
+ recipe.ingredients.forEach((name,i)=>{
+  const quantity=scaleQty(recipeIngredientQty(recipe,i),Number(portionsMultiplier)||1);
+  const pantry=(data||[]).find(p=>canon(p.ingredient_name)===canon(name));
+  const comparison=pantry?comparable(recipe,i,pantry):null;
+  if(pantry&&comparison.ok){row('marmito-v105-have',name,quantity,false,comparison.note);have++}
+  else {row('marmito-v105-missing',name,quantity,true,pantry?comparison.note:tr('Absent du garde-manger','Not in pantry'));missing++}
+ });
+ if(!have)empty('marmito-v105-have',tr('Aucun ingrédient confirmé disponible.','No ingredients confirmed available.'));
+ if(!missing)empty('marmito-v105-missing',tr('Tous les ingrédients sont disponibles !','All ingredients are available!'));
+ $('marmito-v105-status').textContent='';
+}
+window.marmitoV105OpenCompare=async function(){
+ if(!cur){showToast(tr('Choisissez une recette.','Choose a recipe.'));return}
+ if(!currentUser){showToast(tr('Connectez-vous pour utiliser votre garde-manger.','Sign in to use your pantry.'));return}
+ compareRecipe=cur;compareAccount=currentUser.id;
+ $('marmito-v105-overlay').classList.add('open');$('marmito-v105-overlay').setAttribute('aria-hidden','false');
+ await render();
+};
+window.marmitoV105CloseCompare=function(){
+ $('marmito-v105-overlay').classList.remove('open');$('marmito-v105-overlay').setAttribute('aria-hidden','true');compareRecipe=null;
+ if(fromCompare){fromCompare=false;window.marmitoClosePantry()}
+};
+window.marmitoV105OpenPantryFromCompare=function(){fromCompare=true;window.marmitoOpenPantry();$('marmito-v105-overlay').style.display='none'};
+const originalClose=window.marmitoClosePantry;
+window.marmitoClosePantry=function(){originalClose();if(fromCompare){fromCompare=false;$('marmito-v105-overlay').style.display='';if(compareRecipe)render()}};
+window.marmitoV105PantryBack=function(){window.marmitoClosePantry()};
+$('marmito-v105-add').addEventListener('click',async()=>{
+ if(!currentUser||currentUser.id!==compareAccount)return;
+ const selected=[...$('marmito-v105-missing').querySelectorAll('input:checked')];
+ if(!selected.length){$('marmito-v105-status').textContent=tr('Sélectionnez au moins un ingrédient.','Select at least one ingredient.');return}
+ const btn=$('marmito-v105-add');btn.disabled=true;
+ try{
+  await marmitoV99EnsureLoaded();
+  const state=shoppingLoad();let added=0;
+  for(const input of selected){const value=(input.dataset.qty?input.dataset.qty+' ':'')+input.dataset.name;
+   if(!state.manual.some(m=>normalize(m.text)===normalize(value))){state.manual.push({id:Date.now()+'-'+Math.random().toString(36).slice(2),text:value.slice(0,120)});added++}
+  }
+  if(added&&!shoppingSave(state))throw new Error('Local save failed');
+  $('marmito-v105-status').textContent=tr('Ingrédients ajoutés à votre liste de courses.','Ingredients added to your shopping list.');
+ }catch(e){console.error('[Marmito V105] shopping',e);$('marmito-v105-status').textContent=tr('Impossible de mettre à jour la liste. Réessayez.','Could not update shopping list. Retry.')}
+ finally{btn.disabled=false}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('marmito-v105-overlay').classList.contains('open'))window.marmitoV105CloseCompare()});
 })();
 </script>
 
