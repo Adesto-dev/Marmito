@@ -2149,6 +2149,19 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 #shopping-overlay #shopping-contents:before{content:'Liste consolidée des ingrédients';display:block;font:700 19px Georgia,serif;color:#294b33;margin:10px 0 15px}
 @media(max-width:650px){#shopping-overlay .v93-shopping-grid{grid-template-columns:1fr}}
 </style>
+<style id="marmito-v94-navigation">
+#plan-overlay .v94-back,#shopping-overlay .v94-back{border:1px solid #d3dfd1;border-radius:11px;background:#fff;color:#28543a;font-size:13px;font-weight:800;padding:9px 11px;cursor:pointer;white-space:nowrap}
+#plan-overlay .plan-title-row{gap:9px;flex-wrap:wrap}
+#plan-overlay .plan-title{flex:1;min-width:120px}
+#shopping-overlay .shopping-head{gap:9px;flex-wrap:wrap}
+#shopping-overlay #shopping-title{flex:1;min-width:100px}
+#shopping-overlay .v94-recipe-link{cursor:pointer;text-decoration:underline;text-decoration-color:#9bb9a1;text-underline-offset:4px}
+#shopping-overlay .v94-recipe-link:hover{color:#36754d}
+#plan-overlay .v94-view-recipe{border:0;background:transparent;color:#2a6c43;text-decoration:underline;cursor:pointer;font-weight:700;font-size:12px;justify-self:start;padding:4px 0}
+#plan-overlay .v94-delete-plan{border:1px solid #ead6d1;background:#fff9f7;color:#9b4b3e;border-radius:10px;padding:10px 12px;font-weight:700;cursor:pointer}
+#result-card .v94-recipe-back{display:block;position:relative;margin:12px 16px 0;padding:10px 14px;background:#f0f5ed;color:#265039;border:1px solid #cbdcc9;border-radius:12px;font-weight:800;cursor:pointer;z-index:2}
+@media(max-width:500px){#plan-overlay .v94-back span,#shopping-overlay .v94-back span{display:none}}
+</style>
 </head>
 <body>
 <header class="header">
@@ -2441,7 +2454,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="plan-sheet" id="plan-sheet">
 <div class="plan-sheet-head"><button class="v46-inline-menu" type="button" aria-label="Ouvrir le menu" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button>
 <div class="plan-handle" style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px"></div>
-<div class="plan-title-row">
+<div class="plan-title-row"><button type="button" class="v94-back" onclick="marmitoV94GoBack()">← <span>Retour</span></button>
 <div class="plan-title" data-i18n="plan-title">Plan de repas sur 7 jours</div>
 <button class="sheet-close-x" onclick="closePlanRepas()">✕</button>
 </div>
@@ -2452,7 +2465,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <!-- LISTE DE COURSES LOCALE -->
 <div aria-labelledby="shopping-title" aria-modal="true" class="shopping-overlay" id="shopping-overlay" onclick="if(event.target===this)closeShopping()" role="dialog">
 <div class="shopping-sheet">
-<div class="shopping-head"><button class="v46-inline-menu" type="button" aria-label="Ouvrir le menu" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button><strong id="shopping-title"></strong><button aria-label="Fermer" id="shopping-close" onclick="closeShopping()" type="button">✕</button></div>
+<div class="shopping-head"><button class="v46-inline-menu" type="button" aria-label="Ouvrir le menu" onclick="marmitoV45Menu(event)"><span></span><span></span><span></span></button><button type="button" class="v94-back" onclick="marmitoV94GoBack()">← <span>Retour</span></button><strong id="shopping-title"></strong><button aria-label="Fermer" id="shopping-close" onclick="closeShopping()" type="button">✕</button></div>
 <div class="shopping-actions"><div class="v47-shopping-intro"><div class="v47-eyebrow">MA LISTE</div><p>Tout ce qu’il te faut pour tes recettes, au même endroit.</p></div><input id="shopping-manual" maxlength="120" onkeydown="if(event.key==='Enter'){event.preventDefault();addManualShopping()}" placeholder="Ajouter un article" type="text"/><button id="shopping-manual-add" onclick="addManualShopping()" type="button"></button></div>
 <div id="shopping-recipes"></div><div class="v48-shopping-view" role="group" aria-label="Affichage de la liste"><button type="button" class="active" data-v48-view="list" onclick="marmitoV48ShoppingView('list')">Par liste</button><button type="button" data-v48-view="compact" onclick="marmitoV48ShoppingView('compact')">Vue compacte</button></div><div id="shopping-contents"></div>
 <div class="shopping-foot"><button id="shopping-clear-all" onclick="clearAllShopping()" type="button"></button><button id="shopping-clear-checked" onclick="clearCheckedShopping()" type="button"></button><button id="shopping-copy" onclick="copySmartShopping()" type="button"></button></div>
@@ -27553,7 +27566,7 @@ function openPlanRepas() {
       '<aside class="v49-plan-aside"><div class="v49-plan-aside-icon">▦</div><h3>'+(en?'My week':'Ma semaine')+'</h3><div class="v49-plan-aside-stat"><strong>7</strong><span>'+(en?'days':'jours')+'</span></div><div class="v49-plan-aside-stat"><strong>'+plan.filter(p=>p.recipe).length+'</strong><span>'+(en?'recipes':'recettes')+'</span></div>'+buildGroceryHTML(allIngs)+'</aside></div>';
     body.querySelectorAll('[data-v49-day]').forEach(el=>el.addEventListener('click',()=>{window.marmitoV49PlanDay=Number(el.dataset.v49Day);renderPlanBody(displayTitles)}));
     body.querySelectorAll('[data-plan-index]').forEach(el=>{
-      const open=()=>{const item=plan[Number(el.dataset.planIndex)]?.recipe;if(item){closePlanRepas();setTimeout(()=>show(item),200)}};
+      const open=()=>{const item=plan[Number(el.dataset.planIndex)]?.recipe;if(item){marmitoV94Recipe(item.title,'plan-official')}};
       el.addEventListener('click',open);
     });
     if(typeof marmitoV91RenderTabs==='function' && marmitoV91ActiveTab==='official')marmitoV91RenderTabs();
@@ -27605,6 +27618,46 @@ function marmitoV92Picker(allowed,button,en){
  input.addEventListener('input',render);category.addEventListener('change',render);render();
  host.addEventListener('click',e=>{if(e.target===host)dismiss()});host.append(dialog);document.body.append(host);document.addEventListener('keydown',esc);input.focus();
 }
+// V94 — contextual back navigation and recipe access
+let marmitoV94Return=null;
+let marmitoV94ShoppingFromPlan=false;
+function marmitoV94Recipe(title,source){
+ const recipe=marmitoV92AllowedRecipes().find(r=>r.title===title);
+ if(!recipe){showToast(currentLang==='en'?'Recipe not available with your plan.':'Recette non accessible avec votre forfait.');return;}
+ marmitoV94Return=source;
+ if(source==='shopping')closeShopping();else closePlanRepas();
+ show(recipe);
+ marmitoV94RecipeBack();
+}
+function marmitoV94RecipeBack(){
+ let b=document.getElementById('v94-recipe-back');
+ if(!b){b=document.createElement('button');b.id='v94-recipe-back';b.type='button';b.className='v94-recipe-back';document.getElementById('result-card')?.prepend(b)}
+ b.textContent=currentLang==='en'?'← Back':'← Retour';
+ b.onclick=()=>{
+  const source=marmitoV94Return;marmitoV94Return=null;
+  document.getElementById('result-card')?.classList.remove('visible');
+  if(source==='shopping')openShopping();else if(source==='plan-edit')openPlanRepas(),marmitoV91Edit(marmitoV91EditingId);else if(source==='plan-personal')openPlanRepas(),marmitoV91RenderPersonal();else if(source==='plan-official'){marmitoV91ActiveTab='official';openPlanRepas()}
+ };
+}
+function marmitoV94GoBack(){
+ if(document.getElementById('shopping-overlay')?.classList.contains('open')){
+  closeShopping();if(marmitoV94ShoppingFromPlan){marmitoV94ShoppingFromPlan=false;marmitoV91ActiveTab='personal';openPlanRepas()}return;
+ }
+ if(document.getElementById('plan-overlay')?.classList.contains('open')){
+  if(document.querySelector('#plan-body .v91-editor')){marmitoV91RenderPersonal();return}
+  if(marmitoV91ActiveTab==='personal'){marmitoV91ActiveTab='official';marmitoV91OpenOfficial();return}
+  closePlanRepas();return;
+ }
+}
+function marmitoV94DeletePlan(id){
+ const en=currentLang==='en';
+ if(!confirm(en?'Delete this saved plan? This cannot be undone.':'Supprimer définitivement ce planning ? Cette action est irréversible.'))return;
+ const data=marmitoV91Load();data.plans=data.plans.filter(p=>p.id!==id);
+ if(marmitoV91Save(data)){
+  // Deletion does not restore the monthly quota; keep a creation ledger.
+  marmitoV91RenderPersonal();showToast(en?'Plan deleted':'Planning supprimé');
+ }
+}
 // V91 — personalized plans MVP. Account-scoped local persistence; server-side quota enforcement deferred.
 const marmitoV91OfficialOpenPlan = openPlanRepas;
 const marmitoV91DaysFr=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
@@ -27618,14 +27671,17 @@ function marmitoV91Load(){
  try{
   const x=JSON.parse(localStorage.getItem(marmitoV91StorageKey())||'{}');
   if(!x||!Array.isArray(x.plans))return {plans:[]};
-  return {plans:x.plans.filter(p=>p&&typeof p.id==='string'&&typeof p.month==='string'&&Array.isArray(p.meals)&&p.meals.length===14).slice(-250)};
+  return {plans:x.plans.filter(p=>p&&typeof p.id==='string'&&typeof p.month==='string'&&Array.isArray(p.meals)&&p.meals.length===14).slice(-250),creationCounts:x.creationCounts&&typeof x.creationCounts==='object'?x.creationCounts:{}};
  }catch(e){return {plans:[]};}
 }
 function marmitoV91Save(data){
  try{localStorage.setItem(marmitoV91StorageKey(),JSON.stringify(data));return true}
  catch(e){showToast(marmitoV91Text('Impossible de sauvegarder ce planning.','Unable to save this plan.'),'error');return false}
 }
-function marmitoV91MonthCount(data){return data.plans.filter(p=>p.month===marmitoV91Month()).length}
+function marmitoV91MonthCount(data){
+ const month=marmitoV91Month(),existing=data.plans.filter(p=>p.month===month).length;
+ return Math.max(existing,Number(data.creationCounts?.[month])||0);
+}
 function marmitoV91RenderTabs(){
  const body=document.getElementById('plan-body');
  if(!body||userPlan==='free')return;
@@ -27665,6 +27721,7 @@ function marmitoV91RenderPersonal(){
    const edit=document.createElement('button');edit.textContent=en?'Edit':'Modifier';edit.onclick=()=>marmitoV91Edit(p.id);
    const grocery=document.createElement('button');grocery.textContent=en?'Shopping list':'Liste de courses';grocery.onclick=()=>marmitoV91Shopping(p.id);
    row.append(info,edit,grocery);
+   const del=document.createElement('button');del.type='button';del.className='v94-delete-plan';del.textContent=en?'Delete':'Supprimer';del.onclick=()=>marmitoV94DeletePlan(p.id);row.append(del);
    if(userPlan==='chef'){
     const clone=document.createElement('button');clone.textContent=en?'Duplicate':'Dupliquer';clone.onclick=()=>marmitoV91Clone(p.id);row.append(clone);
    }
@@ -27711,7 +27768,9 @@ function marmitoV91Edit(id){
    chosen.dataset.value=chosenRecipe?chosenRecipe.title:'';
    chosen.textContent=chosenRecipe?chosenRecipe.title:(en?'Choose a recipe':'Choisir une recette');
    chosen.onclick=()=>marmitoV92Picker(recipesList,chosen,en);
-   wrap.append(chosen);row.append(wrap);selects.push(chosen);
+   wrap.append(chosen);
+   const view=document.createElement('button');view.type='button';view.className='v94-view-recipe';view.textContent=en?'View recipe':'Voir la recette';view.onclick=()=>{if(chosen.dataset.value)marmitoV94Recipe(chosen.dataset.value,'plan-edit')};
+   wrap.append(view);row.append(wrap);selects.push(chosen);
   }
   form.append(row);
  }
@@ -27725,7 +27784,11 @@ function marmitoV91Edit(id){
   if(existing&&!target){marmitoV91RenderPersonal();return}
   if(!target&&userPlan!=='chef'&&marmitoV91MonthCount(latest)>=2){marmitoV91RenderPersonal();return}
   const record={id:target?.id||('p'+Date.now()+'-'+Math.random().toString(36).slice(2,8)),name:name.value.trim().slice(0,80)||'Ma semaine',month:target?.month||marmitoV91Month(),meals:selects.map(sel=>sel.dataset.value||''),createdAt:target?.createdAt||Date.now()};
-  if(target)Object.assign(target,record);else latest.plans.push(record);
+  if(target)Object.assign(target,record);else{
+   const month=marmitoV91Month(),prior=marmitoV91MonthCount(latest);
+   latest.creationCounts=latest.creationCounts||{};latest.creationCounts[month]=prior+1;
+   latest.plans.push(record);
+  }
   if(marmitoV91Save(latest)){marmitoV91RenderPersonal();showToast(en?'Plan saved':'Planning enregistré')}
  };
  body.append(form);
@@ -27740,7 +27803,7 @@ function marmitoV91Shopping(id){
  const p=marmitoV91Load().plans.find(x=>x.id===id);if(!p)return;
  shoppingWeekPlan=p.meals.map(title=>marmitoV92AllowedRecipes().find(r=>r.title===title)).filter(Boolean);
  if(!shoppingWeekPlan.length){showToast(marmitoV91Text('Ajoutez des recettes au planning.','Add recipes to the plan.'));return}
- addWeekToShopping();
+ marmitoV94ShoppingFromPlan=true;addWeekToShopping();
 }
 openPlanRepas=function(){
  if(userPlan==='free'){marmitoV91ActiveTab='official';marmitoV91OfficialOpenPlan();return}
@@ -27982,6 +28045,7 @@ function renderShopping(){
   const title=document.createElement('h3');title.textContent=allowed?recipe.title:(currentLang==='en'?'Recipe unavailable on this plan':'Recette non disponible avec ce forfait');
   const count=document.createElement('p');count.textContent=allowed?recipe.ingredients.length+' '+(currentLang==='en'?'ingredients':'ingrédients'):(currentLang==='en'?'Remove this recipe to free a slot':'Retirez cette recette pour libérer une place');
   info.append(index,title,count);
+  if(allowed){title.classList.add('v94-recipe-link');title.tabIndex=0;title.setAttribute('role','button');title.title=currentLang==='en'?'Open recipe':'Voir la recette';title.onclick=()=>marmitoV94Recipe(recipe.title,'shopping');title.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();title.click()}};}
   const remove=document.createElement('button');remove.type='button';remove.className='v93-card-remove';remove.textContent='×';remove.setAttribute('aria-label',shoppingT('removeRecipe'));remove.onclick=()=>shoppingRemoveRecipe(saved.title);
   head.append(info,remove);card.append(head);
   if(allowed){
