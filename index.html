@@ -5677,6 +5677,33 @@ function applyLang() {
     if(button)button.textContent=currentLang==='en'?en:fr;
   });
   document.querySelectorAll('.cooked-badge').forEach(b=>b.textContent=currentLang==='en'?'Cooked':'Cuisiné');
+  // V105.3 — Localized homepage and recipe footer, including dynamic elements.
+  const en=currentLang==='en';
+  const localized=[
+    ['.v31-section-head h2','Explorez les saveurs','Explore flavors'],
+    ['.v31-section-head p','Trouvez votre prochaine inspiration culinaire.','Find your next culinary inspiration.'],
+    ['.v32-open-filters','Affiner ma recherche →','Refine my search →'],
+    ['.v32-surprise','Surprends-moi','Surprise me'],
+    ['.v33-planning-heading .v33-eyebrow','ORGANISEZ VOTRE SEMAINE','PLAN YOUR WEEK'],
+    ['.v33-planning-heading h2','Votre plan de repas sur 7 jours','Your 7-day meal plan'],
+    ['.v33-planning-heading p','Retrouvez votre menu de la semaine, déjà préparé pour vous.','Discover your weekly menu, already planned for you.'],
+    ['.v33-meal-plan-button','Voir mon plan de repas sur 7 jours','View my 7-day meal plan'],
+    ['.v31-quick-chip[data-cuisine="Afrique"]','Afrique','Africa'],
+    ['.v31-quick-chip[data-cuisine="Antilles"]','Caraïbes','Caribbean'],
+    ['.v31-quick-chip[data-cuisine="Italienne"]','Italie','Italy'],
+    ['.v31-quick-chip[data-cuisine="Chinoise"]','Asie','Asia'],
+    ['.v31-quick-chip[data-cuisine="Mexicaine"]','Mexique','Mexico']
+  ];
+  localized.forEach(([selector,fr,english])=>{
+    const el=document.querySelector(selector);
+    if(el)el.textContent=en?english:fr;
+  });
+  const search=document.querySelector('.v31-discovery input[type="search"], .v31-discovery .search-wrap input');
+  if(search)search.placeholder=en?'Search for a recipe...':'Chercher une recette...';
+  const sameRegion=document.getElementById('same-region-btn');
+  if(sameRegion&&typeof cur!=='undefined'&&cur?.region){
+    sameRegion.textContent=(en?'See more recipes from ':'Voir d’autres recettes de ')+cur.region;
+  }
   if(typeof window.marmitoV105RefreshLanguage==='function')window.marmitoV105RefreshLanguage();
   const anotherBtn=document.getElementById('gen-btn');
   if(anotherBtn && !anotherBtn.disabled && cur && document.getElementById('result-card')?.classList.contains('visible')) {
@@ -6035,7 +6062,7 @@ function show(recipe){
   setTimeout(()=>document.getElementById("result-card").scrollIntoView({behavior:"smooth",block:"start"}),80);
   // Bouton même région
   const srb=document.getElementById("same-region-btn");
-  if(srb&&recipe.region){srb.textContent="Voir d'autres recettes "+recipe.region;srb.style.display="";}
+  if(srb&&recipe.region){srb.textContent=(currentLang==='en'?'See more recipes from ':'Voir d’autres recettes de ')+recipe.region;srb.style.display="";}
   // Badge cuisiné
   updateCookedUI();
   if(currentLang==="en") translateRecipeSteps(recipe.steps);
