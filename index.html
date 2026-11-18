@@ -1437,7 +1437,75 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 }
 
 </style>
-</head>
+<style id="marmito-v79-approved-design">
+
+/* V79 — approved concept B: actual guided cooking workspace */
+#cook-mode.visible{max-width:1200px;background:#fcfaf5;border:1px solid #e7e3d8}
+#cook-mode .cook-header{padding:26px 34px;background:#193f2c}
+#cook-mode .cook-progress-bar{height:5px}
+#cook-mode .v79-cook-layout{display:grid;grid-template-columns:minmax(0,1fr) 265px;align-items:stretch}
+#cook-mode .v79-cook-main{min-width:0;padding:24px 26px 12px}
+#cook-mode .v79-rail{display:flex;justify-content:center;gap:12px;align-items:center;padding:10px 4px 16px;overflow-x:auto}
+#cook-mode .v79-rail-step{flex:0 0 36px;height:36px;border-radius:50%;border:1px solid #bfcdbf;background:#fff;color:#516652;font-weight:800;cursor:pointer;position:relative}
+#cook-mode .v79-rail-step.current{background:#b55d34;color:white;border-color:#b55d34;box-shadow:0 0 0 5px #f4e4d9}
+#cook-mode .v79-rail-step.completed{background:#214b35;color:white;border-color:#214b35}
+#cook-mode .v79-rail-step:focus-visible{outline:3px solid #c37b50;outline-offset:4px}
+#cook-mode .cook-step-body{min-height:360px;padding:26px 20px 32px;background:#fff;border:1px solid #e8e5da;border-radius:24px;gap:18px}
+#cook-mode .cook-icon-big{width:100px;height:100px;border-radius:26px;background:#eaf1e8;font-size:48px}
+#cook-mode .cook-step-text{font-family:Georgia,serif;font-size:clamp(23px,2.5vw,33px);line-height:1.55;max-width:690px}
+#cook-mode .cook-timer-zone{box-shadow:none;background:#f4f5eb}
+#cook-mode .cook-nav{padding:20px 0 8px;border:0;background:transparent}
+#cook-mode .cook-nav-next{background:#ad4e2d;border-color:#ad4e2d}
+#cook-mode .v79-cook-ingredients{padding:30px 20px;background:#f0f3e9;border-left:1px solid #e1e7dc;overflow:auto;max-height:700px}
+#cook-mode .v79-ingredients-heading{font-weight:800;font-size:19px;color:#1e4932;margin-bottom:20px}
+#cook-mode .v79-ingredient-item{font-size:14px;padding:11px 0;border-bottom:1px solid #dce5d9;line-height:1.5}
+#cook-mode .v79-cook-ingredients #result-ingredients{display:block}
+#cook-mode .v79-cook-ingredients .ingredient-item{padding:9px 0}
+#cook-mode .cook-ready{grid-column:1/-1}
+/* V79 — filter dialog as an airy editorial workspace */
+#marmito-filters-panel.v31-studio{width:min(920px,calc(100vw - 28px));max-width:920px;padding:24px clamp(18px,3vw,34px);background:#fcfaf5;border-radius:26px 0 0 26px;box-shadow:-18px 0 70px #152b2440}
+#marmito-filters-panel .v32-filter-top{background:transparent;border:0;padding:0 0 16px}
+#marmito-filters-panel .v31-studio-head{padding:0 0 18px;text-align:left}
+#marmito-filters-panel .v31-studio-head h2{font-family:Georgia,serif;font-size:clamp(27px,3vw,38px);line-height:1.15;margin:5px 0 8px}
+#marmito-filters-panel .v31-studio-head p{font-size:14px;color:#667264;margin:0}
+#marmito-filters-panel .v79-filter-eyebrow{font-size:10px;font-weight:800;letter-spacing:.16em;color:#ad633b}
+#marmito-filters-panel .v79-filter-summary{padding:14px 16px;background:#eaf0e3;border:1px solid #dce7d5;border-radius:18px;margin-bottom:16px}
+#marmito-filters-panel #v79-filter-summary-label{display:block;font-size:12px;font-weight:800;color:#294a35;margin-bottom:9px}
+#marmito-filters-panel #v79-filter-selected{display:flex;flex-wrap:wrap;gap:7px}
+#marmito-filters-panel .v79-selected-chip{background:#fff;color:#214a33;border:1px solid #cbdac7;padding:7px 11px;border-radius:99px;font-size:12px;font-weight:700}
+#marmito-filters-panel .v79-empty-filter{font-size:12px;color:#657462}
+#marmito-filters-panel .card{padding:18px 20px;margin:0 0 12px;background:#fff;border:1px solid #e4e9df;border-radius:18px;box-shadow:none}
+#marmito-filters-panel .card-label{font-size:14px;font-weight:800;letter-spacing:0;text-transform:none;margin-bottom:12px}
+#marmito-filters-panel .chips{gap:8px}
+#marmito-filters-panel .chip{border-radius:999px;padding:9px 14px;background:#fbfcf9;border:1px solid #dce4d8;font-size:13px}
+#marmito-filters-panel .chip.active{background:#244d37;color:#fff;border-color:#244d37}
+#marmito-filters-panel .cuisine-select,#marmito-filters-panel #ing-input{border-radius:12px;min-height:46px}
+#marmito-filters-panel .btn-row{position:sticky;bottom:0;background:#fcfaf5;padding:16px 0 8px;z-index:2;border-top:1px solid #e6e8e0}
+#marmito-filters-panel .btn-row button{border-radius:13px;min-height:52px}
+#marmito-filters-panel #filter-btn{background:#204d35;color:#fff}
+@media(min-width:900px){
+ #marmito-filters-panel.v31-studio{display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-content:start}
+ #marmito-filters-panel .v32-filter-top,#marmito-filters-panel .v31-studio-head,#marmito-filters-panel .v79-filter-summary,#marmito-filters-panel .btn-row,#marmito-filters-panel .limit-banner{grid-column:1/-1}
+ #marmito-filters-panel .card{align-self:start}
+}
+@media(max-width:800px){
+ #cook-mode .v79-cook-layout{grid-template-columns:1fr}
+ #cook-mode .v79-cook-main{padding:16px}
+ #cook-mode .v79-cook-ingredients{border-left:0;border-top:1px solid #e1e7dc;max-height:260px;padding:20px}
+ #cook-mode .cook-step-body{min-height:310px}
+ #marmito-filters-panel.v31-studio{width:min(100vw,520px);border-radius:20px 0 0 20px;padding:20px}
+}
+@media(max-width:480px){
+ #cook-mode .v79-rail{gap:7px}
+ #cook-mode .v79-rail-step{flex-basis:31px;height:31px}
+ #cook-mode .cook-step-text{font-size:23px}
+ #cook-mode .cook-nav{gap:7px}
+ #cook-mode .cook-dots{display:none}
+ #marmito-filters-panel .card{padding:16px}
+}
+@media(prefers-reduced-motion:reduce){#cook-mode .v79-rail-step{transition:none}}
+
+</style></head>
 <body>
 <header class="header">
 <button aria-label="Menu" class="btn-hamburger" onclick="openDrawer()" title="Menu">
@@ -1612,7 +1680,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <button onclick="closeCookMode()" onmouseout="this.style.color='rgba(250,240,228,0.7)'" onmouseover="this.style.color='#fff'" style="background:none;border:none;cursor:pointer;color:rgba(250,240,228,0.7);font-size:20px;padding:2px 4px;line-height:1;border-radius:6px;transition:color 0.15s" title="Fermer">✕</button>
 </div>
 </div>
-<div class="cook-progress-bar"><div class="cook-progress-fill" id="cook-progress-fill"></div></div>
+<div class="cook-progress-bar"><div class="cook-progress-fill" id="cook-progress-fill"></div></div><div class="v79-cook-layout"><div class="v79-cook-main"><div class="v79-rail" id="v79-cook-rail" aria-label="Progression des étapes"></div>
 <!-- Step view -->
 <div id="cook-step-view">
 <div class="cook-step-body">
@@ -1633,7 +1701,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="cook-dots" id="cook-dots"></div>
 <button class="cook-nav-btn cook-nav-next" data-i18n="btn-next" id="cook-next" onclick="cookNav(1)">Suivante →</button>
 </div>
-</div>
+</div></div><aside class="v79-cook-ingredients"><div class="v79-ingredients-heading" id="v79-ingredients-heading">Ingrédients</div><div id="v79-ingredients-list"></div></aside></div>
 <!-- Ready screen -->
 <div class="cook-ready" id="cook-ready">
 <div class="cook-ready-emoji">🍽️</div>
@@ -1645,7 +1713,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <button class="cook-ready-btn" id="marmito-finish-close" type="button" onclick="closeCookMode()" style="background:transparent;color:var(--fg);border:1px solid var(--border)">Terminé — Retour à la recette</button>
 </div>
 </div>
-</div></section><div aria-hidden="true" class="v32-filter-scrim" id="marmito-filter-scrim" onclick="marmitoFiltersClose()"></div><aside aria-hidden="true" aria-label="Personnaliser les recettes" aria-modal="true" class="v31-studio" id="marmito-filters-panel" role="dialog"><div class="v32-filter-top"><span>PERSONNALISER</span><button aria-label="Fermer les filtres" onclick="marmitoFiltersClose()" type="button">✕</button></div><div class="v31-studio-head"><span>VOTRE ATELIER</span><h2>À votre goût</h2><p>Composez une recette selon vos envies.</p></div><div class="card">
+</div></section><div aria-hidden="true" class="v32-filter-scrim" id="marmito-filter-scrim" onclick="marmitoFiltersClose()"></div><aside aria-hidden="true" aria-label="Personnaliser les recettes" aria-modal="true" class="v31-studio" id="marmito-filters-panel" role="dialog"><div class="v32-filter-top"><span>PERSONNALISER</span><button aria-label="Fermer les filtres" onclick="marmitoFiltersClose()" type="button">✕</button></div><div class="v31-studio-head"><span class="v79-filter-eyebrow">MARMITO · RECHERCHE</span><h2 id="v79-filter-title">Affiner ma recherche</h2><p id="v79-filter-desc">Choisissez vos préférences pour trouver la recette qui vous ressemble.</p></div><div class="v79-filter-summary" aria-live="polite"><span id="v79-filter-summary-label">Filtres sélectionnés</span><div id="v79-filter-selected"></div></div><div class="card">
 <div class="card-label"><span data-i18n="card-ing">Tes ingrédients</span> <span data-i18n="card-ing-opt" style="font-weight:400;text-transform:none;letter-spacing:0">(optionnel)</span></div>
 <div class="ing-autocomplete-wrap">
 <div class="ingredient-field" id="ing-field">
@@ -27999,6 +28067,7 @@ function renderCookStep(){
   // Progress
   const t=i18n[currentLang];
   const stepLabel=currentLang==='en'?("Step "+(cookIdx+1)+" of "+total):("Étape "+(cookIdx+1)+" sur "+total);
+  if(typeof marmitoV79RenderCookUI==="function")marmitoV79RenderCookUI();
   document.getElementById("cook-progress-text").textContent=stepLabel;
   document.getElementById("cook-progress-fill").style.width=(((cookIdx+1)/total)*100)+"%";
   // Icon
@@ -30029,5 +30098,70 @@ function marmitoV64Menu(){
  #marmito-published-overlay #marmito-published-list {grid-template-columns:1fr;gap:14px;}
 }
 </style>
+
+<script id="marmito-v79-ui">
+(function(){
+  const dict={fr:{ingredients:"Ingrédients",selected:"Filtres sélectionnés",none:"Aucun filtre supplémentaire",title:"Affiner ma recherche",desc:"Choisissez vos préférences pour trouver la recette qui vous ressemble.",step:"Étape"},
+              en:{ingredients:"Ingredients",selected:"Selected filters",none:"No additional filters",title:"Refine my search",desc:"Choose your preferences to find a recipe that suits you.",step:"Step"}};
+  function lang(){return (typeof currentLang!=="undefined"&&currentLang==="en")?"en":"fr";}
+  function safeText(x){return String(x==null?"":x);}
+  window.marmitoV79RenderCookUI=function(){
+    const rail=document.getElementById("v79-cook-rail"), list=document.getElementById("v79-ingredients-list");
+    if(!rail||!list||typeof cookSteps==="undefined"||!Array.isArray(cookSteps))return;
+    const d=dict[lang()];
+    rail.replaceChildren();
+    cookSteps.forEach((_,i)=>{
+      const b=document.createElement("button");
+      b.type="button";b.className="v79-rail-step"+(i===cookIdx?" current":i<cookIdx?" completed":"");
+      b.textContent=i<cookIdx?"✓":String(i+1);
+      b.setAttribute("aria-label",d.step+" "+(i+1));
+      if(i===cookIdx)b.setAttribute("aria-current","step");
+      b.onclick=()=>{if(i!==cookIdx)cookNav(i-cookIdx);};
+      rail.appendChild(b);
+    });
+    const heading=document.getElementById("v79-ingredients-heading");
+    if(heading)heading.textContent=d.ingredients;
+    list.replaceChildren();
+    if(typeof cur!=="undefined"&&cur&&Array.isArray(cur.ingredients)){
+      cur.ingredients.forEach(ing=>{
+        const item=document.createElement("div");item.className="v79-ingredient-item";
+        if(typeof ing==="string")item.textContent=ing;
+        else if(ing&&typeof ing==="object")item.textContent=safeText(ing.qty||ing.quantity||"")+" "+safeText(ing.unit||"")+" "+safeText(ing.name||ing.ingredient||ing.fr||"");
+        list.appendChild(item);
+      });
+    }
+    if(!list.children.length){
+      const source=document.getElementById("result-ingredients");
+      if(source){list.innerHTML=source.innerHTML;list.querySelectorAll("button,input,select").forEach(x=>x.remove());}
+    }
+  };
+  function updateFilters(){
+    const panel=document.getElementById("marmito-filters-panel");
+    if(!panel)return;
+    const d=dict[lang()];
+    const title=document.getElementById("v79-filter-title"),desc=document.getElementById("v79-filter-desc"),label=document.getElementById("v79-filter-summary-label"),target=document.getElementById("v79-filter-selected");
+    if(title)title.textContent=d.title;if(desc)desc.textContent=d.desc;if(label)label.textContent=d.selected;
+    if(!target)return;
+    target.replaceChildren();
+    const selected=[];
+    const cuisine=document.getElementById("cuisine-select");
+    if(cuisine&&cuisine.value!=="Toutes")selected.push(cuisine.selectedOptions[0]?.textContent||cuisine.value);
+    ["type","time"].forEach(group=>{
+      const c=panel.querySelector('.chip[data-group="'+group+'"].active');
+      if(c&&!(["Tout","Toutes","Toute durée","Plat principal"].includes(c.textContent.trim())&&group!=="type"))selected.push(c.textContent.trim());
+    });
+    panel.querySelectorAll(".ingredient-tag").forEach(x=>selected.push(x.textContent.trim()));
+    panel.querySelectorAll("#marmito-diet-options .active, #marmito-diet-options input:checked").forEach(x=>selected.push(x.textContent.trim()||x.value||""));
+    const seen=new Set();
+    selected.filter(Boolean).forEach(v=>{if(seen.has(v))return;seen.add(v);const el=document.createElement("span");el.className="v79-selected-chip";el.textContent=v;target.appendChild(el);});
+    if(!target.children.length){const empty=document.createElement("span");empty.className="v79-empty-filter";empty.textContent=d.none;target.appendChild(empty);}
+  }
+  document.addEventListener("click",e=>{
+    if(e.target.closest("#marmito-filters-panel")||e.target.closest(".v32-open-filters"))setTimeout(updateFilters,0);
+  });
+  document.addEventListener("change",e=>{if(e.target.closest("#marmito-filters-panel"))updateFilters();});
+  document.addEventListener("DOMContentLoaded",updateFilters);
+})();
+</script>
 </body>
 </html>
