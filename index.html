@@ -2826,6 +2826,11 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
       currentUser = session.user;
       await loadUserProfile();
       await marmitoLoadSecureCatalog();
+      // V102 : ne rendre les données de recettes qu'après chargement sécurisé.
+      document.getElementById('rc').textContent=recipes.length+(currentLang==='en'?' recipes':' recettes');
+      initDailyRecipe();
+      checkDirectLink();
+      applyLang();
       // Échec fermé : aucun accès administrateur en cas d'erreur réseau.
       await marmitoRefreshAdminRole();
       authReady = true;
@@ -6306,8 +6311,7 @@ function cookTimerReset(){
 }
 
 document.getElementById("rc").textContent=recipes.length+(currentLang==='en'?' recipes':' recettes');
-initDailyRecipe();
-checkDirectLink();
+// Initialisation des recettes différée jusqu’au retour de Supabase.
 applyLang();
 </script>
 <!-- TIPS PAGE -->
