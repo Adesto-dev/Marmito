@@ -2107,6 +2107,15 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 #plan-overlay .v91-editor-actions{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:10px}
 @media(max-width:700px){#plan-overlay .v91-editor-day{grid-template-columns:1fr;gap:10px}#plan-overlay .v91-editor-day h3{margin:0}#plan-overlay .v91-saved-row span{flex-basis:100%}#plan-overlay .v91-plan-tabs button{font-size:12px}}
 </style>
+<style id="marmito-v92-picker">
+#plan-overlay .v92-recipe-choose{width:100%;text-align:left;min-height:47px;padding:12px;border:1px solid #cbdacb;border-radius:11px;background:#fff;color:#285239;font-weight:650;cursor:pointer}
+.v92-picker-backdrop{position:fixed;inset:0;z-index:2147483600;background:#102b1dbb;display:flex;align-items:center;justify-content:center;padding:15px}
+.v92-picker{background:#fbfaf6;color:#254833;border-radius:22px;width:min(620px,100%);max-height:88dvh;overflow:auto;padding:clamp(18px,3vw,28px);box-shadow:0 25px 70px #0a211e66;display:grid;gap:13px}
+.v92-picker-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}.v92-picker h3{font:700 clamp(22px,3vw,29px) Georgia,serif;margin:0;color:#234b34}.v92-picker p{font-size:13px;color:#617467;margin:0}
+.v92-picker-close{border:0;background:#e8eee5;border-radius:50%;width:36px;height:36px;font-size:25px;color:#254b34;cursor:pointer}
+.v92-picker input,.v92-picker select{width:100%;padding:12px;border:1px solid #cddcc9;border-radius:11px;background:#fff;color:#284932;font-size:14px}
+.v92-picker-list{display:grid;gap:7px;overflow-y:auto;max-height:min(43dvh,360px)}.v92-picker-item{display:grid;gap:5px;text-align:left;padding:13px;border:1px solid #e0e8dd;border-radius:12px;background:#fff;color:#254934;cursor:pointer}.v92-picker-item:hover{background:#eaf1e8}.v92-picker-item strong{font-size:14px}.v92-picker-item small{font-size:12px;color:#788579}.v92-picker-clear{padding:11px;border:0;background:transparent;color:#4d7056;font-weight:700;cursor:pointer}
+</style>
 </head>
 <body>
 <header class="header">
@@ -27478,7 +27487,7 @@ function openPlanRepas() {
 
   // Seed unique par semaine → rotation hebdomadaire, stable sur 7 jours
   const weekSeed = getWeekSeed();
-  const mainRecipes = recipes.filter(r => r.type === 'Plat principal');
+  const mainRecipes = marmitoV92AllowedRecipes().filter(r => r.type === 'Plat principal');
   // Mélange déterministe : même résultat toute la semaine, différent chaque semaine
   const shuffled = seededShuffle(mainRecipes, weekSeed);
   const plan = JOURS_KEYS.map((jourKey, i) => ({
@@ -27531,6 +27540,38 @@ function openPlanRepas() {
   }
 }
 
+// V92 — consistent catalog limit and accessible visual recipe picker.
+function marmitoV92AllowedRecipes(){
+ const limit=userPlan==='chef'?418:userPlan==='saveur'?130:20;
+ return recipes.slice(0,limit);
+}
+function marmitoV92Picker(allowed,button,en){
+ const host=document.createElement('div');host.className='v92-picker-backdrop';host.setAttribute('role','presentation');
+ const dialog=document.createElement('section');dialog.className='v92-picker';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label',en?'Choose a recipe':'Choisir une recette');
+ const heading=document.createElement('div');heading.className='v92-picker-heading';
+ const title=document.createElement('h3');title.textContent=en?'Find your next meal':'Choisissez votre prochain repas';
+ const close=document.createElement('button');close.type='button';close.className='v92-picker-close';close.textContent='×';close.setAttribute('aria-label',en?'Close':'Fermer');
+ const dismiss=()=>{document.removeEventListener('keydown',esc);host.remove()};
+ const esc=e=>{if(e.key==='Escape')dismiss()};close.onclick=dismiss;
+ heading.append(title,close);dialog.append(heading);
+ const subtitle=document.createElement('p');subtitle.textContent=en?`${allowed.length} recipes available with your plan`:`${allowed.length} recettes accessibles avec votre forfait`;dialog.append(subtitle);
+ const input=document.createElement('input');input.type='search';input.placeholder=en?'Search for a dish…':'Rechercher une idée de repas…';input.setAttribute('aria-label',input.placeholder);dialog.append(input);
+ const category=document.createElement('select');category.setAttribute('aria-label',en?'Filter by category':'Filtrer par catégorie');
+ const categories=[...new Set(allowed.map(r=>r.region).filter(Boolean))].sort();
+ const first=document.createElement('option');first.value='';first.textContent=en?'All regions':'Toutes les régions';category.append(first);
+ categories.forEach(c=>{const option=document.createElement('option');option.value=c;option.textContent=c;category.append(option)});dialog.append(category);
+ const list=document.createElement('div');list.className='v92-picker-list';dialog.append(list);
+ const clear=document.createElement('button');clear.type='button';clear.className='v92-picker-clear';clear.textContent=en?'Leave this meal empty':'Laisser ce repas vide';clear.onclick=()=>{button.dataset.value='';button.textContent=en?'Choose a recipe':'Choisir une recette';dismiss()};dialog.append(clear);
+ const render=()=>{
+  list.replaceChildren();const query=input.value.trim().toLocaleLowerCase();const matches=allowed.filter(r=>(!category.value||r.region===category.value)&&(!query||r.title.toLocaleLowerCase().includes(query))).slice(0,60);
+  if(!matches.length){const empty=document.createElement('p');empty.textContent=en?'No matching recipe':'Aucune recette correspondante';list.append(empty);return}
+  matches.forEach(r=>{const item=document.createElement('button');item.type='button';item.className='v92-picker-item';
+   const name=document.createElement('strong');name.textContent=r.title;const meta=document.createElement('small');meta.textContent=[r.region,r.time].filter(Boolean).join(' · ');
+   item.append(name,meta);item.onclick=()=>{button.dataset.value=r.title;button.textContent=r.title;dismiss()};list.append(item)});
+ };
+ input.addEventListener('input',render);category.addEventListener('change',render);render();
+ host.addEventListener('click',e=>{if(e.target===host)dismiss()});host.append(dialog);document.body.append(host);document.addEventListener('keydown',esc);input.focus();
+}
 // V91 — personalized plans MVP. Account-scoped local persistence; server-side quota enforcement deferred.
 const marmitoV91OfficialOpenPlan = openPlanRepas;
 const marmitoV91DaysFr=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
@@ -27574,8 +27615,6 @@ function marmitoV91RenderPersonal(){
  if(userPlan==='free')return;
  marmitoV91ActiveTab='personal';
  const body=document.getElementById('plan-body');
- body.replaceChildren();
- marmitoV91RenderTabs();
  const data=marmitoV91Load(),count=marmitoV91MonthCount(data),limit=userPlan==='chef'?Infinity:2;
  const en=currentLang==='en';
  const root=document.createElement('section');root.className='v91-personal';
@@ -27608,7 +27647,9 @@ function marmitoV91RenderPersonal(){
   root.append(message);
   const upgrade=document.createElement('button');upgrade.className='v91-upgrade';upgrade.textContent=en?'Explore Chef':'Découvrir Chef';upgrade.onclick=()=>{closePlanRepas();startUpgrade()};root.append(upgrade);
  }
+ body.replaceChildren();
  body.append(root);
+ marmitoV91RenderTabs();
 }
 function marmitoV91Edit(id){
  if(userPlan==='free')return;
@@ -27622,7 +27663,7 @@ function marmitoV91Edit(id){
  const label=document.createElement('label');label.textContent=en?'Plan name':'Nom du planning';
  const name=document.createElement('input');name.required=true;name.maxLength=80;name.value=existing?.name||(en?'My week':'Ma semaine');
  label.append(name);form.append(title,label);
- const recipesList=recipes.filter(r=>userPlan==='chef'||recipes.indexOf(r)<130);
+ const recipesList=marmitoV92AllowedRecipes();
  const days=en?marmitoV91DaysEn:marmitoV91DaysFr;
  const selects=[];
  for(let day=0;day<7;day++){
@@ -27631,11 +27672,13 @@ function marmitoV91Edit(id){
   for(let meal=0;meal<2;meal++){
    const index=day*2+meal,wrap=document.createElement('label');
    wrap.textContent=meal===0?(en?'Lunch':'Déjeuner'):(en?'Dinner':'Dîner');
-   const sel=document.createElement('select');
-   const blank=document.createElement('option');blank.value='';blank.textContent=en?'Choose a recipe':'Choisir une recette';sel.append(blank);
-   recipesList.forEach(r=>{const o=document.createElement('option');o.value=r.title;o.textContent=r.title;sel.append(o)});
-   sel.value=existing?.meals[index]||'';
-   wrap.append(sel);row.append(wrap);selects.push(sel);
+   const chosen=document.createElement('button');chosen.type='button';chosen.className='v92-recipe-choose';
+   const initial=existing?.meals[index]||'';
+   const chosenRecipe=recipesList.find(r=>r.title===initial);
+   chosen.dataset.value=chosenRecipe?chosenRecipe.title:'';
+   chosen.textContent=chosenRecipe?chosenRecipe.title:(en?'Choose a recipe':'Choisir une recette');
+   chosen.onclick=()=>marmitoV92Picker(recipesList,chosen,en);
+   wrap.append(chosen);row.append(wrap);selects.push(chosen);
   }
   form.append(row);
  }
@@ -27648,9 +27691,9 @@ function marmitoV91Edit(id){
   const target=existing?latest.plans.find(p=>p.id===existing.id):null;
   if(existing&&!target){marmitoV91RenderPersonal();return}
   if(!target&&userPlan!=='chef'&&marmitoV91MonthCount(latest)>=2){marmitoV91RenderPersonal();return}
-  const record={id:target?.id||('p'+Date.now()+'-'+Math.random().toString(36).slice(2,8)),name:name.value.trim().slice(0,80)||'Ma semaine',month:target?.month||marmitoV91Month(),meals:selects.map(sel=>sel.value),createdAt:target?.createdAt||Date.now()};
+  const record={id:target?.id||('p'+Date.now()+'-'+Math.random().toString(36).slice(2,8)),name:name.value.trim().slice(0,80)||'Ma semaine',month:target?.month||marmitoV91Month(),meals:selects.map(sel=>sel.dataset.value||''),createdAt:target?.createdAt||Date.now()};
   if(target)Object.assign(target,record);else latest.plans.push(record);
-  if(marmitoV91Save(latest)){showToast(en?'Plan saved':'Planning enregistré');marmitoV91RenderPersonal()}
+  if(marmitoV91Save(latest)){marmitoV91RenderPersonal();showToast(en?'Plan saved':'Planning enregistré')}
  };
  body.append(form);
 }
@@ -27662,7 +27705,7 @@ function marmitoV91Clone(id){
 }
 function marmitoV91Shopping(id){
  const p=marmitoV91Load().plans.find(x=>x.id===id);if(!p)return;
- shoppingWeekPlan=p.meals.map(title=>recipes.find(r=>r.title===title)).filter(Boolean);
+ shoppingWeekPlan=p.meals.map(title=>marmitoV92AllowedRecipes().find(r=>r.title===title)).filter(Boolean);
  if(!shoppingWeekPlan.length){showToast(marmitoV91Text('Ajoutez des recettes au planning.','Add recipes to the plan.'));return}
  addWeekToShopping();
 }
@@ -28077,7 +28120,7 @@ const i18n = {
     'cook-timer-lbl': 'Chrono',
     'cook-finish': 'Étape terminée !',
     'btn-plan': '&#128197; Plan de repas 7 jours',
-    'plan-title': '&#128197; Plan 7 jours',
+    'plan-title': 'Plan 7 jours',
     'plan-pro-title': 'Fonctionnalit&eacute; Saveur/Chef',
     'plan-pro-text': 'Le plan de repas 7 jours est r&eacute;serv&eacute; aux abonn&eacute;s Marmito Saveur/Chef.',
     'plan-pro-btn': '✨ Passer &agrave; Saveur , d&egrave;s 3,99$/mois',
@@ -28194,7 +28237,7 @@ const i18n = {
     'cook-timer-lbl': 'Timer',
     'cook-finish': 'Step complete!',
     'btn-plan': '&#128197; 7-day meal plan',
-    'plan-title': '&#128197; 7-day plan',
+    'plan-title': '7-day plan',
     'plan-pro-title': 'Pro feature',
     'plan-pro-text': 'The 7-day meal plan is reserved for Saveur and Chef subscribers.',
     'plan-pro-btn': 'Upgrade from $3.99/month',
