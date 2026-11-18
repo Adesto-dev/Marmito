@@ -2780,7 +2780,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
   let recipeCount = 0;
   let authReady = false;
   let marmitoIsAdmin = false;
-  const PLAN_LIMITS = { free: 20, saveur: 130, chef: 418 };
+  const PLAN_LIMITS = { free: 20, saveur: 180, chef: 418 };
   function getPlanLimit() { return PLAN_LIMITS[userPlan] || 20; }
   const FREE_LIMIT = 20; // garde pour compatibilité
   // Charge le compteur local pour les utilisateurs pas connectés
@@ -27589,7 +27589,7 @@ function openPlanRepas() {
 
 // V92 — consistent catalog limit and accessible visual recipe picker.
 function marmitoV92AllowedRecipes(){
- const limit=userPlan==='chef'?418:userPlan==='saveur'?130:20;
+ const limit=userPlan==='chef'?418:userPlan==='saveur'?180:20;
  return recipes.slice(0,limit);
 }
 function marmitoV92Picker(allowed,button,en){
@@ -27896,7 +27896,7 @@ function shoppingLoad(){
 }
 function shoppingSave(state){try{localStorage.setItem(SHOPPING_KEY,JSON.stringify(state));return true;}catch(e){showToast(currentLang==='en'?'Unable to save locally':'Impossible d’enregistrer localement','error');return false;}}
 function shoppingRecipeKey(recipe){return recipe.title;}
-function marmitoV93ShoppingLimit(){return userPlan==='chef'?Infinity:userPlan==='saveur'?7:3;}
+function marmitoV93ShoppingLimit(){return userPlan==='chef'?Infinity:userPlan==='saveur'?14:3;}
 function marmitoV93Allowed(recipe){return !!recipe && (typeof marmitoV92AllowedRecipes!=='function'||marmitoV92AllowedRecipes().some(r=>r.title===recipe.title));}
 
 function shoppingAddRecipes(list){
@@ -29291,7 +29291,7 @@ applyLang();
 <div class="plan-price-new">3,99$<span>/mois</span></div>
 </div>
 <div class="launch-note">Premier mois seulement</div>
-<ul class="plan-features"><li>130 recettes accessibles</li><li>Recherche et filtres par région et type</li><li>Cuisine guidée, voix et minuteries</li><li>Favoris, historique, expériences et avis</li><li>Menu Marmito renouvelé chaque semaine</li><li>2 plannings personnalisés créés par mois</li><li>Liste de courses : 7 recettes maximum</li></ul>
+<ul class="plan-features"><li>180 recettes accessibles</li><li>Recherche et filtres par région et type</li><li>Cuisine guidée, voix et minuteries</li><li>Favoris, historique, expériences et avis</li><li>Menu Marmito renouvelé chaque semaine</li><li>2 plannings personnalisés créés par mois</li><li>Liste de courses : 14 recettes maximum</li></ul>
 <button class="plan-btn pro-btn" id="btn-saveur" onclick="startCheckout('saveur',this)">Choisir Saveur →</button>
 </div>
 <!-- Chef (10.99/mois) -->
@@ -31175,7 +31175,7 @@ function marmitoV64Menu(){
 (function(){
  const labels={en:[
  ['20 accessible recipes','Basic search and filters','Guided cooking, voice and timers','Favorites and history','Personal cooking experiences and reviews','Shopping list: up to 3 recipes','Marmito weekly menu and custom planning require a subscription'],
- ['130 accessible recipes','Search by region and category','Guided cooking, voice and timers','Favorites, history, experiences and reviews','Marmito menu refreshed weekly','2 custom weekly plans created per month','Shopping list: up to 7 recipes'],
+ ['180 accessible recipes','Search by region and category','Guided cooking, voice and timers','Favorites, history, experiences and reviews','Marmito menu refreshed weekly','2 custom weekly plans created per month','Shopping list: up to 14 recipes'],
  ['418 accessible recipes','Search by region and category','Guided cooking, voice and timers','Favorites, history, experiences and reviews','Marmito menu refreshed weekly','Unlimited custom plans and duplication','Shopping list: unlimited recipes','Tips and advice']
  ]};
  const fr=Array.from(document.querySelectorAll('#pricing-overlay .plan-card .plan-features')).map(ul=>Array.from(ul.querySelectorAll('li')).map(li=>li.textContent));
