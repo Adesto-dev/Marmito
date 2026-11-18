@@ -9040,7 +9040,7 @@ translateNodes();
 <section id="marmito-batch" role="dialog" aria-modal="true" aria-labelledby="mb-title" aria-hidden="true">
 <div class="mb-shell"><header class="mb-head"><h2 id="mb-title">Batch Cooking</h2><div class="mb-actions"><button type="button" class="mb-btn" id="mb-back">Retour</button><button type="button" class="mb-btn" id="mb-menu">Menu</button><button type="button" class="mb-btn" id="mb-close">Fermer</button></div></header>
 <p id="mb-intro" class="mb-intro"></p><div id="mb-status" role="status" aria-live="polite"></div>
-<div id="mb-picker"><div class="mb-tools"><input type="search" id="mb-search" class="mb-search" placeholder="Rechercher une recette" aria-label="Rechercher une recette"><button type="button" class="mb-btn" id="mb-week">Depuis mon plan de 7 jours</button></div><div id="mb-count" class="mb-stats"></div><div id="mb-recipes" class="mb-grid"></div><div class="mb-tools"><button type="button" class="mb-btn mb-primary" id="mb-generate">Organiser ma séance</button></div></div>
+<div id="mb-picker"><div class="mb-tools"><input type="search" id="mb-search" class="mb-search" placeholder="Rechercher une recette" aria-label="Rechercher une recette"><button type="button" class="mb-btn" id="mb-week">Importer mon plan de 7 jours</button><button type="button" class="mb-btn" id="mb-view-week">Voir mon plan</button></div><div id="mb-count" class="mb-stats"></div><div id="mb-recipes" class="mb-grid"></div><div class="mb-tools"><button type="button" class="mb-btn mb-primary" id="mb-generate">Organiser ma séance</button></div></div>
 <div id="mb-session" class="mb-hidden"><div class="mb-tools"><button type="button" class="mb-btn" id="mb-edit">Modifier les recettes</button><button type="button" class="mb-btn" id="mb-shopping">Ajouter à ma liste de courses</button></div><div id="mb-session-body"></div></div>
 </div></section>
 <script id="marmito-v107-batch-script">
@@ -9054,7 +9054,7 @@ const key=r=>r.title;
 function translated(r){return en()&&typeof MARMITO_EN_CATALOG_V1!=='undefined'&&MARMITO_EN_CATALOG_V1[r.title]?.title||r.title}
 function text(el,value){el.textContent=value}
 function message(value){text($('mb-status'),value)}
-function sync(){text($('mb-back'),t('Retour','Back'));text($('mb-menu'),'Menu');text($('mb-close'),t('Fermer','Close'));text($('mb-week'),t('Depuis mon plan de 7 jours','From my 7-day meal plan'));text($('mb-generate'),t('Organiser ma séance','Organize my session'));text($('mb-edit'),t('Modifier les recettes','Edit recipes'));text($('mb-shopping'),t('Ajouter à ma liste de courses','Add to my shopping list'));text($('mb-intro'),t('Sélectionnez les recettes que vous souhaitez préparer ensemble. Les séances sont temporaires dans cette version : aucune sauvegarde n’est encore activée.','Select recipes to prepare together. Sessions are temporary in this version: saving is not enabled yet.'));$('mb-search').placeholder=t('Rechercher une recette','Search recipes');$('mb-search').setAttribute('aria-label',$('mb-search').placeholder);}
+function sync(){text($('mb-back'),t('Retour','Back'));text($('mb-menu'),'Menu');text($('mb-close'),t('Fermer','Close'));text($('mb-week'),t('Importer mon plan de 7 jours','Import my 7-day meal plan'));text($('mb-view-week'),t('Voir mon plan','View my plan'));text($('mb-generate'),t('Organiser ma séance','Organize my session'));text($('mb-edit'),t('Modifier les recettes','Edit recipes'));text($('mb-shopping'),t('Ajouter à ma liste de courses','Add to my shopping list'));text($('mb-intro'),t('Sélectionnez les recettes que vous souhaitez préparer ensemble. Les séances sont temporaires dans cette version : aucune sauvegarde n’est encore activée.','Select recipes to prepare together. Sessions are temporary in this version: saving is not enabled yet.'));$('mb-search').placeholder=t('Rechercher une recette','Search recipes');$('mb-search').setAttribute('aria-label',$('mb-search').placeholder);}
 function renderPicker(){sync();const list=allowed(),valid=new Set(list.map(key));selected=new Set([...selected].filter(k=>valid.has(k)));const max=limit();text($('mb-count'),selected.size+' / '+(Number.isFinite(max)?max:t('Illimité','Unlimited'))+' '+t('recettes sélectionnées','recipes selected'));const q=$('mb-search').value.trim().toLocaleLowerCase();const host=$('mb-recipes');host.replaceChildren();const filtered=list.filter(r=>!q||translated(r).toLocaleLowerCase().includes(q)||r.title.toLocaleLowerCase().includes(q));
 // Always show selected recipes first, then a short selection of matches.
 const visible=[...filtered.filter(r=>selected.has(key(r))),...filtered.filter(r=>!selected.has(key(r)))].slice(0,Math.max(VISIBLE_RECIPE_LIMIT,selected.size));
@@ -9072,7 +9072,35 @@ function open(){if(typeof currentUser==='undefined'||!currentUser){if(typeof sho
 window.marmitoBatchOpen=open;window.marmitoBatchClose=close;
 $('mb-close').onclick=close;$('mb-back').onclick=back;$('mb-edit').onclick=back;$('mb-menu').onclick=()=>{close();if(typeof openDrawer==='function')openDrawer();else document.querySelector('#drawer-toggle, .hamburger, [onclick="openDrawer()"]')?.click()};
 $('mb-search').addEventListener('input',renderPicker);
-$('mb-week').onclick=()=>{const week=typeof shoppingWeekPlan!=='undefined'&&Array.isArray(shoppingWeekPlan)?shoppingWeekPlan:[];if(!week.length){message(t('Ouvrez d’abord votre plan de 7 jours pour le charger, puis revenez ici.','Open your 7-day meal plan to load it, then return here.'));return}const valid=new Set(allowed().map(key));const chosen=[...new Set(week.map(key))].filter(k=>valid.has(k));if(chosen.length>limit()){message(t('Votre plan contient plus de recettes que la limite de votre forfait. Sélectionnez-les manuellement.','Your plan has more recipes than your plan allows. Please select recipes manually.'));return}selected=new Set(chosen);message('');renderPicker()};
+// Synchronisation directe : le plan officiel est deterministe pour la semaine,
+// et ne doit pas etre ouvert dans une fenetre masquee derriere Batch Cooking.
+function weeklyRecipes(){
+  const list=allowed();
+  if(typeof userPlan==='undefined'||userPlan==='free')return [];
+  // Le plan personnel actif doit etre lu depuis les plans deja sauvegardes,
+  // sans modifier shoppingWeekPlan (partage avec la liste de courses).
+  if(typeof seededShuffle==='function'&&typeof getWeekSeed==='function'){
+    const mains=list.filter(r=>r.type==='Plat principal');
+    if(mains.length){const shuffled=seededShuffle(mains,getWeekSeed());return shuffled.slice(0,Math.min(7,shuffled.length));}
+  }
+  return Array.isArray(shoppingWeekPlan)?shoppingWeekPlan.filter(r=>list.some(a=>key(a)===key(r))):[];
+}
+$('mb-week').onclick=()=>{
+  const week=weeklyRecipes();
+  if(!week.length){message(t('Aucun plan hebdomadaire accessible. Vérifiez votre abonnement ou réessayez après le chargement des recettes.','No weekly plan available. Check your subscription or retry after recipes load.'));return;}
+  const chosen=[...new Set(week.map(key))];
+  const max=limit();
+  if(chosen.length>max){
+    selected=new Set(chosen.slice(0,max));
+    message(t('Votre forfait permet '+max+' recettes par séance : les '+max+' premières ont été sélectionnées.','Your plan allows '+max+' recipes per session: the first '+max+' have been selected.'));
+  }else{selected=new Set(chosen);message(t(chosen.length+' recettes importées du plan hebdomadaire.','Imported '+chosen.length+' recipes from the weekly plan.'));}
+  renderPicker();
+};
+$('mb-view-week').onclick=()=>{
+  close();
+  if(typeof openPlanRepas==='function')openPlanRepas();
+  else message(t('Plan de repas indisponible.','Meal plan unavailable.'));
+};
 function createSection(title){const section=document.createElement('section');section.className='mb-section';const h=document.createElement('h3');h.textContent=title;section.append(h);return section}
 function ingredientLabel(r,index){const tr=en()&&typeof MARMITO_EN_CATALOG_V1!=='undefined'?MARMITO_EN_CATALOG_V1[r.title]:null;return tr?.ingredients?.[index]||r.ingredients[index]}
 function generate(){const list=allowed().filter(r=>selected.has(key(r)));if(!list.length||list.length>limit())return;stage='session';$('mb-picker').classList.add('mb-hidden');$('mb-session').classList.remove('mb-hidden');message('');const root=$('mb-session-body');root.replaceChildren();
