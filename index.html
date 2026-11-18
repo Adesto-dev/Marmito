@@ -1505,7 +1505,55 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 }
 @media(prefers-reduced-motion:reduce){#cook-mode .v79-rail-step{transition:none}}
 
-</style></head>
+</style><style id="marmito-v80-recipe-actions">
+/* V80 — Recipe action bar: predictable order, accessible touch targets */
+#result-card .share-bar.v80-recipe-actions{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:10px;padding:18px clamp(16px,3vw,30px);
+ background:#f7f8f3;border-bottom:1px solid #e4e8dc;
+}
+#result-card .share-bar.v80-recipe-actions>.share-btn{
+ width:100%;min-width:0;min-height:48px;display:flex;justify-content:center;
+ align-items:center;text-align:center;white-space:normal;line-height:1.3;
+ padding:12px 10px!important;border-radius:14px!important;
+ background:#fff!important;color:#2a4936!important;
+ border:1px solid #d9e4d7!important;box-shadow:0 2px 6px rgba(26,58,35,.035)!important;
+ font-size:13px!important;font-weight:700;transition:background .15s,border-color .15s;
+}
+#result-card .share-bar.v80-recipe-actions>.share-btn:hover{
+ background:#edf4eb!important;border-color:#98b29b!important
+}
+#result-card .share-bar.v80-recipe-actions>.share-btn:focus-visible{
+ outline:3px solid #b9794c;outline-offset:3px
+}
+#result-card .share-bar.v80-recipe-actions>#grocery-add-recipe{
+ background:#eaf2e7!important;border-color:#c9dac7!important
+}
+#result-card .share-bar.v80-recipe-actions>#cooked-btn{
+ background:#f0f4ed!important
+}
+#result-card .share-bar.v80-recipe-actions>.share-btn:nth-child(5),
+#result-card .share-bar.v80-recipe-actions>.share-btn:nth-child(6){
+ background:#f6efe6!important;border-color:#e8d9c9!important
+}
+@media(max-width:720px){
+ #result-card .share-bar.v80-recipe-actions{
+  grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:14px 12px;
+ }
+ #result-card .share-bar.v80-recipe-actions>.share-btn{
+  min-height:52px;padding:11px 8px!important;font-size:12.5px!important
+ }
+ #result-card .share-bar.v80-recipe-actions>.share-btn:nth-child(5),
+ #result-card .share-bar.v80-recipe-actions>.share-btn:nth-child(6){min-height:58px}
+}
+@media(max-width:340px){
+ #result-card .share-bar.v80-recipe-actions>.share-btn{font-size:11.5px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #result-card .share-bar.v80-recipe-actions>.share-btn{transition:none}
+}
+</style>
+</head>
 <body>
 <header class="header">
 <button aria-label="Menu" class="btn-hamburger" onclick="openDrawer()" title="Menu">
@@ -1643,7 +1691,7 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 </div>
 </div>
-<div class="share-bar">
+<div class="share-bar v80-recipe-actions" role="group" aria-label="Actions de la recette">
 <button class="share-btn share-copy" data-i18n="btn-copy" onclick="copyRecipe()">📋 Copier</button>
 <button class="share-btn share-wa" data-i18n="btn-share" onclick="shareRecipe()">⤴ Partager la recette</button>
 <button class="share-btn" id="grocery-add-recipe" onclick="addCurrentRecipeToShopping()">🛒 Ajouter aux courses</button>
