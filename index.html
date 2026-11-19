@@ -2282,7 +2282,7 @@ document.addEventListener('DOMContentLoaded',function(){
     if(el)new MutationObserver(sync).observe(el,{attributes:true,attributeFilter:['class']});
   });
   sync();
-})();
+});
 </script>
 <!-- DRAWER MENU -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
@@ -2446,7 +2446,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="marmito-v37-finish-actions" style="display:flex;flex-direction:column;gap:10px;max-width:380px;margin:20px auto 0;padding:0 16px">
 <button class="cook-ready-btn" id="marmito-finish-cooked" type="button" onclick="marmitoFinishMarkCooked()">Marquer comme cuisinée</button>
 <button class="cook-ready-btn" id="marmito-finish-experience" type="button" onclick="marmitoFinishExperience()" style="background:transparent;color:var(--green);border:1.5px solid var(--green)">Partager mon expérience</button>
-<button class="cook-ready-btn" id="marmito-finish-close" type="button" onclick="closeCookMode()" style="background:transparent;color:var(--fg);border:1px solid var(--border)">Terminé — Retour à la recette</button>
+<button class="cook-ready-btn" id="marmito-finish-close" type="button" onclick="closeCookMode()" style="background:transparent;color:var(--fg);border:1px solid var(--border)">Terminé, retour à la recette</button>
 </div>
 </div>
 </div></section><div aria-hidden="true" class="v32-filter-scrim" id="marmito-filter-scrim" onclick="marmitoFiltersClose()"></div><aside aria-hidden="true" aria-label="Personnaliser les recettes" aria-modal="true" class="v31-studio" id="marmito-filters-panel" role="dialog"><div class="v32-filter-top"><span>PERSONNALISER</span><button aria-label="Fermer les filtres" onclick="marmitoFiltersClose()" type="button">✕</button></div><div class="v31-studio-head"><span class="v79-filter-eyebrow">MARMITO · RECHERCHE</span><h2 id="v79-filter-title">Affiner ma recherche</h2><p id="v79-filter-desc">Choisissez vos préférences pour trouver la recette qui vous ressemble.</p></div><div class="v79-filter-summary" aria-live="polite"><span id="v79-filter-summary-label">Filtres sélectionnés</span><div id="v79-filter-selected"></div></div><div class="card">
@@ -2850,14 +2850,47 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
 
   let currentUser = null;
   let userPlan = 'free';
+  let userBasePlan = 'free';   // forfait du profil, sans le bonus temporaire
+  let userBonusPlan = null;    // forfait bonus actif (parrainage), le cas échéant
   let recipeCount = 0;
   let authReady = false;
   let marmitoIsAdmin = false;
   const PLAN_LIMITS = { free: 20, saveur: 180, chef: 418 };
   function getPlanLimit() { return PLAN_LIMITS[userPlan] || 20; }
   const FREE_LIMIT = 20; // garde pour compatibilité
-  // Charge le compteur local pour les utilisateurs pas connectés
-  try { recipeCount = parseInt(localStorage.getItem('marmito-count') || '0'); } catch(e){}
+  // V107.5 : le compteur n'est plus lu depuis un cache partagé. Le serveur est la seule source (voir loadUserProfile).
+  // Caches locaux isolés par compte : chaque clé porte l'identifiant de l'utilisateur.
+  function marmitoScopedKey(base) { return currentUser && currentUser.id ? base + ':' + currentUser.id : null; }
+  function marmitoScopedGet(base) { const k = marmitoScopedKey(base); if (!k) return null; try { return localStorage.getItem(k); } catch(e) { return null; } }
+  function marmitoScopedSet(base, value) { const k = marmitoScopedKey(base); if (!k) return; try { localStorage.setItem(k, value); } catch(e) {} }
+  // Forfait effectif = forfait du profil, relevé par un bonus actif s'il est plus élevé (même règle qu'au chargement du profil).
+  function marmitoEffectivePlan(basePlan) {
+    const rank = {free:0, saveur:1, chef:2};
+    const base = rank[basePlan] !== undefined ? basePlan : 'free';
+    if (userBonusPlan && userBonusExpires && new Date(userBonusExpires) > new Date() && (rank[userBonusPlan] || 0) > rank[base]) return userBonusPlan;
+    return base;
+  }
+  // Appelée une seule fois après l'identification : supprime les anciens caches partagés entre comptes
+  // et recharge les données locales du compte connecté.
+  function marmitoLoadScopedLocalState() {
+    if (!currentUser || !currentUser.id) return;
+    try {
+      // Plan et compteur n'étaient que des copies du serveur : on les supprime sans les reprendre.
+      localStorage.removeItem('marmito-plan'); localStorage.removeItem('marmito-count');
+      // Favoris, plats cuisinés, filtres alimentaires, progression : le premier compte connecté après la mise à jour
+      // reprend l'ancien contenu partagé (une seule fois), puis les anciennes clés sont supprimées.
+      const claimed = localStorage.getItem('marmito-legacy-local-owner');
+      [ 'marmito-favs', 'marmito-cooked', MARMITO_DIET_KEY, COOK_PROGRESS_KEY ].forEach(base => {
+        const old = localStorage.getItem(base);
+        if (old === null) return;
+        if (!claimed && marmitoScopedGet(base) === null) marmitoScopedSet(base, old);
+        localStorage.removeItem(base);
+      });
+      if (!claimed) localStorage.setItem('marmito-legacy-local-owner', currentUser.id);
+    } catch(e) {}
+    try { const f = JSON.parse(marmitoScopedGet('marmito-favs') || '[]'); favs = Array.isArray(f) ? f : []; } catch(e) { favs = []; }
+    marmitoDietReloadScoped();
+  }
 
   // V21 : notification de récupération, sans déconnexion ni faux plan autorisé.
   function marmitoClearAuthError() {
@@ -2897,6 +2930,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
         return;
       }
       currentUser = session.user;
+      marmitoLoadScopedLocalState();
       await loadUserProfile();
       await marmitoLoadSecureCatalog();
       // V102 : ne rendre les données de recettes qu'après chargement sécurisé.
@@ -2948,7 +2982,9 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
 
     if (data) {
       // Succes : on charge le profil
-      userPlan = data.plan || 'free';
+      userBasePlan = data.plan || 'free';
+      userBonusPlan = data.bonus_plan || null;
+      userPlan = userBasePlan;
       userReferralCode = data.referral_code || null;
       // V60 : seul Supabase attribue et conserve un code unique.
       await ensureReferralCode();
@@ -2960,12 +2996,12 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
         if ((planRank[data.bonus_plan] || 0) > (planRank[userPlan] || 0)) userPlan = data.bonus_plan;
       }
       // Cache le plan en localStorage pour resilience offline/erreur reseau
-      try { localStorage.setItem('marmito-plan', userPlan); } catch(e){}
+      marmitoScopedSet('marmito-plan', userPlan);
       syncPricingCurrentPlan();
       // Le serveur est seul responsable du reset mensuel et du quota.
       // Ne jamais remettre a zero localement ni reutiliser un compteur local pour autoriser une generation.
       recipeCount = Number(data.recipe_count) || 0;
-      try { localStorage.setItem('marmito-count', String(recipeCount)); } catch(e){}
+      marmitoScopedSet('marmito-count', String(recipeCount));
 
     } else if (error && error.code === 'PGRST116') {
       // Aucun profil trouve (premiere connexion) - on cree le profil
@@ -2973,17 +3009,16 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
       if (createError && createError.code !== '23505') throw createError;
       await ensureReferralCode();
       await applyPendingReferral();
-      userPlan = 'free'; recipeCount = 0;
-      try { localStorage.setItem('marmito-plan', 'free'); } catch(e){}
+      userPlan = 'free'; userBasePlan = 'free'; userBonusPlan = null; recipeCount = 0;
+      marmitoScopedSet('marmito-plan', 'free');
     } else {
       // Erreur reseau ou Supabase indisponible : on utilise le cache local
       // NE PAS ecraser le plan avec 'free' - utiliser la derniere valeur connue
       console.warn('[Marmito] loadProfile erreur:', error ? error.message : 'no data', '- utilisation du cache local');
-      try {
-        const cachedPlan = localStorage.getItem('marmito-plan');
-        if (cachedPlan) userPlan = cachedPlan;
-        // sinon userPlan reste 'free' par defaut
-      } catch(e){}
+      // Le cache est propre au compte connecté et son contenu est validé.
+      const cachedPlan = marmitoScopedGet('marmito-plan');
+      if (cachedPlan && PLAN_LIMITS[cachedPlan]) userPlan = cachedPlan;
+      // sinon userPlan reste 'free' par defaut
     }
   }
 
@@ -3037,8 +3072,9 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
       if (error) throw error;
       if (!data || typeof data.count !== 'number' || typeof data.allowed !== 'boolean') throw new Error('Invalid quota response');
       recipeCount = data.count;
-      if (typeof data.plan === 'string' && PLAN_LIMITS[data.plan]) userPlan = data.plan;
-      try { localStorage.setItem('marmito-count', String(recipeCount)); } catch(e){}
+      // Le serveur renvoie le forfait du profil : on réapplique le bonus actif pour ne pas rétrograder la session en cours.
+      if (typeof data.plan === 'string' && PLAN_LIMITS[data.plan]) { userBasePlan = data.plan; userPlan = marmitoEffectivePlan(data.plan); }
+      marmitoScopedSet('marmito-count', String(recipeCount));
       updateUserBar();
       if (!data.allowed) {
         document.getElementById('limit-banner')?.classList.add('show');
@@ -4423,8 +4459,7 @@ function resetTimer(i){
 const FAV_SVG_EMPTY='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
   const FAV_SVG_FILLED='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
   let favs=[];let cur=null;
-try{favs=JSON.parse(localStorage.getItem("marmito-favs")||"[]");}catch(e){}
-function saveFavs(){try{localStorage.setItem("marmito-favs",JSON.stringify(favs));}catch(e){}}
+function saveFavs(){marmitoScopedSet("marmito-favs",JSON.stringify(favs));}
 function toggleFav(){
   if(!cur)return;
   const fb=document.getElementById("fav-btn");
@@ -4550,8 +4585,8 @@ async function generateSameRegion(){
 }
 
 // ===== BADGE CUISINÉ =====
-function getCookedList(){try{return JSON.parse(localStorage.getItem("marmito-cooked")||"[]");}catch(e){return[];}}
-function saveCookedList(l){try{localStorage.setItem("marmito-cooked",JSON.stringify(l));}catch(e){}}
+function getCookedList(){try{const l=JSON.parse(marmitoScopedGet("marmito-cooked")||"[]");return Array.isArray(l)?l:[];}catch(e){return[];}}
+function saveCookedList(l){marmitoScopedSet("marmito-cooked",JSON.stringify(l));}
 function toggleCooked(){
   if(!cur)return;
   const l=getCookedList();
@@ -4856,8 +4891,18 @@ async function marmitoV95ShowPersonal(){
  try{await marmitoV95Refresh();if(marmitoV91ActiveTab==='personal')marmitoV91RenderPersonal()}
  catch(error){loading.textContent=marmitoV95Error(error);const retry=document.createElement('button');retry.type='button';retry.className='v91-secondary';retry.textContent=marmitoV91Text('Réessayer','Retry');retry.onclick=marmitoV95ShowPersonal;body.append(retry)}
 }
+// Identifiant de planning : aléatoire et non devinable (UUID). L'identifiant est créé côté navigateur, donc le serveur
+// DOIT aussi vérifier que la ligne appartient à auth.uid() (voir les vérifications Supabase du rapport).
+function marmitoV95NewPlanId(){
+ const random=(window.crypto&&typeof window.crypto.randomUUID==='function')?window.crypto.randomUUID():Array.from(window.crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
+ return 'p-'+random;
+}
+function marmitoV95ValidPlanId(id){return typeof id==='string'&&/^[A-Za-z0-9_-]{6,80}$/.test(id)}
 async function marmitoV95Write(record){
- if(marmitoV95Busy)return false;marmitoV95Busy=true;
+ if(marmitoV95Busy)return false;
+ // Un identifiant existant doit venir des plannings du compte connecté (jamais d'une saisie libre).
+ if(!marmitoV95ValidPlanId(record&&record.id)||(!/^p-/.test(record.id)&&!marmitoV95State.plans.some(p=>p.id===record.id))){showToast(marmitoV95Error('Identifiant de planning invalide'));return false}
+ marmitoV95Busy=true;
  try{
   const {error}=await sb.rpc('marmito_save_personal_plan',{p_id:record.id,p_name:record.name,p_meals:record.meals});
   if(error)throw error;
@@ -4963,7 +5008,7 @@ function marmitoV91Edit(id){
  const save=document.createElement('button');save.type='submit';save.className='v91-create';save.textContent=en?'Save my plan':'Enregistrer mon planning';actions.append(back,save);form.append(actions);
  form.onsubmit=async e=>{
   e.preventDefault();if(marmitoV95Busy)return;
-  const record={id:existing?.id||('p'+Date.now()+'-'+Math.random().toString(36).slice(2,8)),name:name.value.trim().slice(0,80)||'Ma semaine',meals:selects.map(sel=>sel.dataset.value||'')};
+  const record={id:existing?.id||marmitoV95NewPlanId(),name:name.value.trim().slice(0,80)||'Ma semaine',meals:selects.map(sel=>sel.dataset.value||'')};
   save.disabled=true;
   const ok=await marmitoV95Write(record);
   if(ok){marmitoV91RenderPersonal();showToast(en?'Plan saved':'Planning enregistré')}
@@ -4974,7 +5019,7 @@ function marmitoV91Edit(id){
 async function marmitoV91Clone(id){
  if(userPlan!=='chef')return;
  const source=marmitoV91Load().plans.find(p=>p.id===id);if(!source)return;
- const record={id:'p'+Date.now()+'-'+Math.random().toString(36).slice(2,8),name:source.name+' (copie)',meals:source.meals.slice()};
+ const record={id:marmitoV95NewPlanId(),name:source.name+' (copie)',meals:source.meals.slice()};
  if(await marmitoV95Write(record))marmitoV91RenderPersonal();
 }
 function marmitoV91Shopping(id){
@@ -5777,6 +5822,7 @@ function toggleLang() {
   ++marmitoStepTranslationRun; // Invalidate results from a previous language request.
   try { localStorage.setItem('marmito-lang', currentLang); } catch(e) {}
   applyLang();
+  try{document.dispatchEvent(new CustomEvent('marmito-lang-changed'));}catch(e){}
   initDailyRecipe();
   // Refresh recipe card if one is currently shown
   if (cur) {
@@ -5947,7 +5993,7 @@ function marmitoDietRecipeFlags(recipe){
  return flags;
 }
 let marmitoDietState={filters:[],allergens:[]};
-try{const d=JSON.parse(localStorage.getItem(MARMITO_DIET_KEY)||'{}');if(d&&typeof d==='object')marmitoDietState={filters:Array.isArray(d.filters)?d.filters.filter(x=>MARMITO_DIET_OPTIONS.some(y=>y[0]===x)):[],allergens:Array.isArray(d.allergens)?d.allergens.filter(x=>MARMITO_ALLERGENS.some(y=>y[0]===x)):[]};}catch(e){}
+function marmitoDietReloadScoped(){marmitoDietState={filters:[],allergens:[]};try{const d=JSON.parse(marmitoScopedGet(MARMITO_DIET_KEY)||'{}');if(d&&typeof d==='object')marmitoDietState={filters:Array.isArray(d.filters)?d.filters.filter(x=>MARMITO_DIET_OPTIONS.some(y=>y[0]===x)):[],allergens:Array.isArray(d.allergens)?d.allergens.filter(x=>MARMITO_ALLERGENS.some(y=>y[0]===x)):[]};}catch(e){}}
 function marmitoDietActive(){return marmitoDietState.filters.length>0||marmitoDietState.allergens.length>0;}
 function marmitoDietMatches(recipe){
  if(!marmitoDietActive())return true;
@@ -5958,7 +6004,7 @@ function marmitoDietMatches(recipe){
  for(const k of marmitoDietState.allergens)if(has(k))return false;
  return true;
 }
-function marmitoDietSave(){try{localStorage.setItem(MARMITO_DIET_KEY,JSON.stringify(marmitoDietState));}catch(e){}}
+function marmitoDietSave(){marmitoScopedSet(MARMITO_DIET_KEY,JSON.stringify(marmitoDietState));}
 function marmitoDietToggle(k,allergen){const list=allergen?marmitoDietState.allergens:marmitoDietState.filters;const i=list.indexOf(k);if(i>=0)list.splice(i,1);else list.push(k);marmitoDietSave();marmitoDietRender();if(cur&&document.getElementById('result-card')?.classList.contains('visible'))renderRecipeIngredients(cur,currentLang==='en'&&cur._ingEN?cur._ingEN:cur.ingredients);}
 function marmitoDietReset(){marmitoDietState={filters:[],allergens:[]};marmitoDietSave();marmitoDietRender();if(cur&&document.getElementById('result-card')?.classList.contains('visible'))renderRecipeIngredients(cur,currentLang==='en'&&cur._ingEN?cur._ingEN:cur.ingredients);}
 function marmitoDietRender(){
@@ -6245,9 +6291,9 @@ const COOK_PROGRESS_KEY='marmito-cook-progress-v1';
 let cookSpeechActive=false;
 let cookUtterance=null;
 let cookStepDisplayedLang=null;
-function cookProgressLoad(){try{const x=JSON.parse(localStorage.getItem(COOK_PROGRESS_KEY)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{};}catch(e){return {};}}
-function cookProgressSave(){if(!cur||!Array.isArray(cookSteps)||!cookSteps.length)return;const x=cookProgressLoad();x[cur.title]=cookIdx;try{localStorage.setItem(COOK_PROGRESS_KEY,JSON.stringify(x));}catch(e){}}
-function cookProgressFinish(){if(!cur)return;const x=cookProgressLoad();delete x[cur.title];try{localStorage.setItem(COOK_PROGRESS_KEY,JSON.stringify(x));}catch(e){}}
+function cookProgressLoad(){try{const x=JSON.parse(marmitoScopedGet(COOK_PROGRESS_KEY)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{};}catch(e){return {};}}
+function cookProgressSave(){if(!cur||!Array.isArray(cookSteps)||!cookSteps.length)return;const x=cookProgressLoad();x[cur.title]=cookIdx;marmitoScopedSet(COOK_PROGRESS_KEY,JSON.stringify(x));}
+function cookProgressFinish(){if(!cur)return;const x=cookProgressLoad();delete x[cur.title];marmitoScopedSet(COOK_PROGRESS_KEY,JSON.stringify(x));}
 function cookSpeechStop(){cookUtterance=null;cookSpeechActive=false;try{if('speechSynthesis'in window)window.speechSynthesis.cancel();}catch(e){}cookSpeechButton();}
 function cookSpeechButton(){const b=document.getElementById('cook-speak-btn');if(!b)return;b.textContent=cookSpeechActive?(currentLang==='en'?'⏹ Stop reading':'⏹ Arrêter la lecture'):(currentLang==='en'?'Listen to step':'Écouter l’étape');b.disabled=!(('speechSynthesis'in window)&&('SpeechSynthesisUtterance'in window));}
 function cookSpeakToggle(){
@@ -6340,7 +6386,7 @@ function marmitoFinishUpdateLabels(){
   const back=document.getElementById('marmito-finish-close');
   if(mark){mark.textContent=cooked?(en?'Already cooked':'Déjà cuisinée'):(en?'Mark as cooked':'Marquer comme cuisinée');mark.disabled=cooked;mark.style.opacity=cooked?'0.7':'1';}
   if(experience)experience.textContent=en?'Share my experience':'Partager mon expérience';
-  if(back)back.textContent=en?'Done — Back to recipe':'Terminé — Retour à la recette';
+  if(back)back.textContent=en?'Done, back to recipe':'Terminé, retour à la recette';
 }
 function marmitoFinishMarkCooked(){
   if(!cur)return;
@@ -6749,11 +6795,11 @@ if ('serviceWorker' in navigator) {
     <div class="v51-queue-heading"><span class="v64-admin-eyebrow">MODÉRATION</span><h2>Contributions à examiner</h2><p>Consultez et traitez les expériences soumises à validation.</p></div>
     <div class="marmito-admin-card" id="v49-admin-moderation">
       <h3>Modération des expériences culinaires</h3>
-      <p>Consultez les contributions publiées et masquez celles qui ne respectent pas les règles. Les anciennes demandes en attente restent consultables.</p>
-      <button type="button" class="v64-admin-btn" onclick="marmitoAdminSetViewV66('published')">Contributions publiées</button> <button type="button" class="v64-admin-btn" onclick="marmitoAdminSetViewV66('pending')">Anciennes demandes</button> <button type="button" class="v64-admin-btn" onclick="marmitoLoadPendingExperiences()">↻ Actualiser</button>
+      <p>Examinez les demandes de publication, approuvez ou refusez-les. Vous pouvez aussi masquer une contribution déjà publiée qui ne respecte pas les règles.</p>
+      <button type="button" class="v64-admin-btn" onclick="marmitoAdminSetViewV66('pending')">Demandes à examiner</button> <button type="button" class="v64-admin-btn" onclick="marmitoAdminSetViewV66('published')">Contributions publiées</button> <button type="button" class="v64-admin-btn" onclick="marmitoLoadPendingExperiences()">↻ Actualiser</button>
       <p aria-live="polite" id="marmito-admin-status" role="status">Ouvrez cette section pour charger les contributions.</p>
       <div id="marmito-admin-queue"></div>
-      <div aria-label="Pages des expériences en attente" id="marmito-admin-pagination" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px"></div>
+      <div aria-label="Pages des expériences" id="marmito-admin-pagination" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px"></div>
     </div>
   </div>
 </section>
@@ -6761,7 +6807,15 @@ if ('serviceWorker' in navigator) {
 // Modération Marmito : données affichées en texte brut pour éviter l'injection HTML.
 let marmitoAdminBusy = false;
 let marmitoAdminPage = 0;
-let marmitoAdminViewV66 = 'published';
+// Noms des fonctions Supabase de modération (modèle retenu : private/pending -> pending/pending -> published/published ou rejected/rejected).
+// marmito_submit_experience_v66, marmito_approve_experience_v66 et marmito_reject_experience_v66 sont créées par la migration SQL V107.5 (à exécuter séparément).
+// marmito_hide_experience_v66 existe déjà (published -> rejected).
+const MARMITO_MODERATION_RPC = Object.freeze({submit:'marmito_submit_experience_v66', approve:'marmito_approve_experience_v66', reject:'marmito_reject_experience_v66', hide:'marmito_hide_experience_v66'});
+function marmitoRpcMissing(err) {
+  const text = String((err && (err.message || err.details || err.hint)) || '');
+  return !!err && (err.code === 'PGRST202' || err.code === '42883' || /could not find the function|schema cache|does not exist/i.test(text));
+}
+let marmitoAdminViewV66 = 'pending';
 function marmitoAdminSetViewV66(view) {
   if (marmitoAdminBusy || !['published','pending'].includes(view)) return;
   marmitoAdminViewV66=view; marmitoAdminPage=0; marmitoLoadPendingExperiences();
@@ -6819,7 +6873,7 @@ async function marmitoLoadPendingExperiences() {
   marmitoAdminBusy = true;
   queue.replaceChildren();
   document.getElementById('marmito-admin-pagination')?.replaceChildren();
-  marmitoAdminMessage(marmitoV22Text('Chargement des expériences en attente…', 'Loading pending experiences…'));
+  marmitoAdminMessage(marmitoV22Text(marmitoAdminViewV66==='published'?'Chargement des contributions publiées…':'Chargement des demandes à examiner…', marmitoAdminViewV66==='published'?'Loading published contributions…':'Loading requests to review…'));
   try {
     if (!await marmitoRefreshAdminRole()) {
       marmitoAdminMessage('Accès administrateur non autorisé.');
@@ -6840,7 +6894,7 @@ async function marmitoLoadPendingExperiences() {
       if (marmitoAdminPage === 0 || data.length) break;
       marmitoAdminPage = Math.max(0, Math.ceil(count / MARMITO_ADMIN_PAGE_SIZE) - 1);
     }
-    marmitoAdminMessage(count ? `${count} contribution(s) ${marmitoAdminViewV66==='published'?'publiée(s)':'en attente'}. Page ${marmitoAdminPage + 1} sur ${Math.ceil(count / MARMITO_ADMIN_PAGE_SIZE)}.` : (marmitoAdminViewV66==='published'?'Aucune contribution publiée.':'Aucune expérience en attente.'));
+    marmitoAdminMessage(count ? `${count} contribution(s) ${marmitoAdminViewV66==='published'?'publiée(s)':'à examiner'}. Page ${marmitoAdminPage + 1} sur ${Math.ceil(count / MARMITO_ADMIN_PAGE_SIZE)}.` : (marmitoAdminViewV66==='published'?'Aucune contribution publiée.':'Aucune demande à examiner.'));
     marmitoAdminRenderPagination(count || 0);
     for (const item of data) {
       const card = document.createElement('article');
@@ -6890,7 +6944,7 @@ async function marmitoLoadPendingExperiences() {
       }
       const actions = document.createElement('div');
       actions.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;margin-top:12px';
-      for (const [label, fn] of (marmitoAdminViewV66==='published' ? [['Masquer', 'marmito_hide_experience_v66']] : [['✓ Approuver', 'approve_recipe_experience'], ['✕ Refuser', 'reject_recipe_experience']])) {
+      for (const [label, fn] of (marmitoAdminViewV66==='published' ? [['Masquer', MARMITO_MODERATION_RPC.hide]] : [['✓ Approuver', MARMITO_MODERATION_RPC.approve], ['✕ Refuser', MARMITO_MODERATION_RPC.reject]])) {
         const btn = document.createElement('button');
         btn.type = 'button'; btn.className = 'marmito-admin-back'; btn.textContent = label;
         btn.addEventListener('click', () => marmitoModerateExperience(item.id, fn, label));
@@ -6900,13 +6954,13 @@ async function marmitoLoadPendingExperiences() {
     }
   } catch (err) {
     console.error('[Marmito Admin] Chargement impossible', err);
-    marmitoAdminMessage(marmitoV22Text('Impossible de charger les expériences. Vérifie les droits de lecture Supabase et réessaie.', 'Unable to load experiences. Check Supabase read permissions and try again.'));
+    marmitoAdminMessage(marmitoV22Text('Impossible de charger les expériences. Vérifie les droits de lecture Supabase (politique de lecture administrateur des demandes en attente) et réessaie.', 'Unable to load experiences. Check Supabase read permissions and try again.'));
     marmitoAdminShowRetry();
   } finally { marmitoAdminBusy = false; }
 }
 async function marmitoModerateExperience(id, fn, label) {
-  if (marmitoAdminBusy || !id || !['approve_recipe_experience','reject_recipe_experience','marmito_hide_experience_v66'].includes(fn)) return;
-  if (!window.confirm(`${label} cette expérience ?`)) return;
+  if (marmitoAdminBusy || !id || !Object.values(MARMITO_MODERATION_RPC).filter(name => name !== MARMITO_MODERATION_RPC.submit).includes(fn)) return;
+  if (!window.confirm(`${label.replace(/^[✓✕]\s*/, '')} cette expérience ?`)) return;
   marmitoAdminBusy = true;
   marmitoAdminMessage('Traitement en cours…');
   try {
@@ -6917,7 +6971,7 @@ async function marmitoModerateExperience(id, fn, label) {
     marmitoAdminMessage('Décision enregistrée.');
   } catch (err) {
     console.error('[Marmito Admin] Modération impossible', err);
-    marmitoAdminMessage(`Opération impossible : ${err.message || 'erreur inconnue'}`);
+    marmitoAdminMessage(marmitoRpcMissing(err) ? 'Cette action de modération n’est pas encore installée dans Supabase (migration V107.5 à exécuter).' : `Opération impossible : ${err.message || 'erreur inconnue'}`);
     marmitoAdminBusy = false;
     return;
   }
@@ -6942,14 +6996,14 @@ async function marmitoModerateExperience(id, fn, label) {
 <div class="v49-exp-hero"><div class="v49-eyebrow">PARTAGER UN SOUVENIR</div><h2 id="marmito-experience-title">Mon expérience culinaire</h2></div>
 <p id="marmito-experience-recipe"></p>
 <label for="marmito-experience-rating">Ma note</label>
-<select id="marmito-experience-rating"><option value="5">★★★★★ — 5/5</option><option value="4">★★★★☆ — 4/5</option><option value="3">★★★☆☆ — 3/5</option><option value="2">★★☆☆☆ — 2/5</option><option value="1">★☆☆☆☆ — 1/5</option></select>
+<select id="marmito-experience-rating"><option value="5">★★★★★ 5/5</option><option value="4">★★★★☆ 4/5</option><option value="3">★★★☆☆ 3/5</option><option value="2">★★☆☆☆ 2/5</option><option value="1">★☆☆☆☆ 1/5</option></select>
 <label for="marmito-experience-comment">Mon commentaire ou ma suggestion</label>
 <textarea id="marmito-experience-comment" maxlength="2000" placeholder="Comment s'est passée la préparation ?"></textarea>
 <label for="marmito-experience-photo">Photo facultative (JPEG, PNG, WebP, 5 Mo maximum)</label>
 <input accept="image/jpeg,image/png,image/webp" id="marmito-experience-photo" type="file"/>
-<p>Ton expérience reste privée par défaut. Choisis « Publier » pour la rendre immédiatement visible par la communauté.</p>
+<p>Ton expérience reste privée par défaut. Si tu la proposes à la communauté, elle sera vérifiée par un administrateur avant d’être visible.</p>
 <label for="marmito-experience-visibility">Enregistrer comme</label>
-<select id="marmito-experience-visibility"><option value="private">Privée — pour moi uniquement</option><option value="published">Publier maintenant — visible par tous</option></select>
+<select id="marmito-experience-visibility"><option value="private">Privée : pour moi uniquement</option><option value="submit">Proposer à la communauté : visible après vérification</option></select>
 <p aria-live="polite" id="marmito-experience-status" role="status"></p>
 <button id="marmito-experience-save" onclick="marmitoSaveExperience()" type="button">Enregistrer</button>
 <button onclick="marmitoCloseExperience()" type="button">Fermer</button>
@@ -6987,7 +7041,7 @@ async function marmitoSaveExperience() {
  const rating = Number(document.getElementById('marmito-experience-rating').value);
  const comment = document.getElementById('marmito-experience-comment').value.trim();
  const photo = document.getElementById('marmito-experience-photo').files[0];
- const submit = document.getElementById('marmito-experience-visibility').value === 'published';
+ const submit = document.getElementById('marmito-experience-visibility').value === 'submit';
  if (!Number.isInteger(rating) || rating < 1 || rating > 5) return marmitoExperienceStatus('Note invalide.');
  if (photo && (photo.size > 5242880 || !['image/jpeg','image/png','image/webp'].includes(photo.type))) return marmitoExperienceStatus('Photo non acceptée : JPEG, PNG ou WebP, 5 Mo maximum.');
  marmitoExperienceBusy = true;
@@ -7004,23 +7058,24 @@ async function marmitoSaveExperience() {
    const {error: uploadError} = await sb.storage.from('marmito-experiences').upload(uploadedPath, photo, {contentType:photo.type,upsert:false});
    if (uploadError) throw uploadError;
   }
-  marmitoExperienceStatus('Enregistrement privé…');
+  marmitoExperienceStatus('Enregistrement…');
   const payload = {user_id:userId,recipe_title:marmitoExperienceRecipe.title,rating,comment,photo_path:uploadedPath,visibility:'private',moderation_status:'pending'};
   const {data, error} = await sb.from('recipe_experiences').insert(payload).select('id').single();
   if (error) throw error;
   inserted = true;
   if (submit) {
    marmitoExperienceSaved = true; // La ligne privée existe déjà : ne pas créer de doublon si le RPC échoue.
-   marmitoExperienceStatus('Publication en cours…');
-   const {data: accepted,error: submitError} = await sb.rpc('marmito_publish_experience_v66',{p_experience_id:data.id});
+   marmitoExperienceStatus('Envoi de la demande…');
+   const {data: accepted,error: submitError} = await sb.rpc(MARMITO_MODERATION_RPC.submit,{p_experience_id:data.id});
+   if (submitError && marmitoRpcMissing(submitError)) throw new Error('la proposition à la communauté n’est pas encore activée');
    if (submitError || accepted !== true) throw submitError || new Error('Soumission impossible.');
   }
   marmitoExperienceSaved = true;
-  marmitoExperienceStatus(submit ? 'Expérience publiée ! Elle est maintenant visible par la communauté.' : 'Expérience privée enregistrée ! Ferme cette fenêtre pour continuer.');
+  marmitoExperienceStatus(submit ? 'Demande envoyée ! Ton expérience sera visible par la communauté après vérification. Tu peux suivre son état dans « Mes expériences ».' : 'Expérience privée enregistrée ! Ferme cette fenêtre pour continuer.');
   document.getElementById('marmito-experience-photo').value = '';
  } catch (err) {
   console.error('[Marmito Experience] Enregistrement impossible',err);
-  marmitoExperienceStatus((inserted ? 'Expérience privée enregistrée, mais non soumise. Contacte le support si nécessaire : ' : 'Enregistrement impossible : ') + (err?.message || 'erreur inconnue'));
+  marmitoExperienceStatus((inserted ? 'Expérience enregistrée en privé, mais la demande n’a pas été envoyée. Tu pourras la proposer depuis « Mes expériences » : ' : 'Enregistrement impossible : ') + (err?.message || 'erreur inconnue'));
   if (!inserted && uploadedPath) {
    try { await sb.storage.from('marmito-experiences').remove([uploadedPath]); } catch (_) {}
   }
@@ -7158,7 +7213,7 @@ async function marmitoOpenMyExperiences(){
    if(request!==marmitoMyExpRequest)return;
    const card=document.createElement('article');card.className='marmito-myexp-entry';
    card.append(marmitoMyExpText('h3',item.recipe_title||'Recette'));
-   const state=item.visibility==='private'?'🔒 Privée':item.visibility==='pending'?'⏳ En attente':item.visibility==='published'?'✓ Publiée':item.visibility==='rejected'?'✕ Refusée':'Statut : '+item.visibility;
+   const state=item.visibility==='private'?'🔒 Privée (visible par toi seulement)':item.visibility==='pending'?'⏳ En attente de vérification':item.visibility==='published'?'✓ Publiée':item.visibility==='rejected'?'✕ Non publiée':'Statut : '+item.visibility;
    card.append(marmitoMyExpText('p',state));
    if(Number.isInteger(item.rating)&&item.rating>=1&&item.rating<=5)card.append(marmitoMyExpText('strong','★'.repeat(item.rating)+'☆'.repeat(5-item.rating)));
    if(item.comment)card.append(marmitoMyExpText('p',item.comment));
@@ -7171,24 +7226,25 @@ async function marmitoOpenMyExperiences(){
     }else card.append(marmitoMyExpText('p','Photo indisponible.'));
    }
    if(item.visibility==='private'&&item.moderation_status==='pending'){
-    const button=document.createElement('button');button.type='button';button.textContent='Publier à la communauté';
+    const button=document.createElement('button');button.type='button';button.textContent='Proposer à la communauté';
     button.addEventListener('click',async()=>{
      if(marmitoMyExpSubmitting)return;
-     if(!confirm('Publier cette expérience maintenant ? Elle sera visible par tous.'))return;
+     if(!confirm('Proposer cette expérience à la communauté ? Elle sera visible seulement après vérification par un administrateur.'))return;
      marmitoMyExpSubmitting=true;button.disabled=true;
      const original=button.textContent;button.textContent='Soumission…';
      try{
       const {data:auth,error:authError}=await sb.auth.getUser();
       if(authError||auth?.user?.id!==item.user_id)throw new Error('Session expirée.');
-      const {data:ok,error}=await sb.rpc('marmito_publish_experience_v66',{p_experience_id:item.id});
-      if(error||ok!==true)throw error||new Error('Soumission refusée.');
+      const {data:ok,error}=await sb.rpc(MARMITO_MODERATION_RPC.submit,{p_experience_id:item.id});
+      if(error&&marmitoRpcMissing(error))throw new Error('la proposition à la communauté n’est pas encore activée');
+      if(error||ok!==true)throw error||new Error('Demande refusée ou déjà envoyée.');
       if(request===marmitoMyExpRequest){
-       card.querySelector('p').textContent='✓ Publiée';
+       card.querySelector('p').textContent='⏳ En attente de vérification';
        button.remove();
-       status.textContent='Expérience publiée et visible par la communauté.';
+       status.textContent='Demande envoyée. Ton expérience sera visible après vérification.';
       }
      }catch(err){
-      if(request===marmitoMyExpRequest){button.disabled=false;button.textContent=original;status.textContent='Échec de la soumission : '+(err?.message||'erreur inconnue');}
+      if(request===marmitoMyExpRequest){button.disabled=false;button.textContent=original;status.textContent='Échec de l’envoi de la demande : '+(err?.message||'erreur inconnue');}
      }finally{marmitoMyExpSubmitting=false;}
     });
     card.append(button);
@@ -7989,7 +8045,7 @@ function marmitoV49OpenQueue(){
  card.classList.add('v50-queue-highlight');
  const heading=card.querySelector('h3');
  if(heading){heading.setAttribute('tabindex','-1');heading.focus({preventScroll:true});}
- if(status&&(!status.textContent.trim()||status.textContent.includes('Ouvre cette section'))){status.textContent='Chargement des contributions en attente…';}
+ if(status&&(!status.textContent.trim()||status.textContent.includes('Ouvre cette section'))){status.textContent='Chargement des demandes à examiner…';}
  // A real action: refresh the moderation queue (requires verified admin role).
  if(typeof marmitoLoadPendingExperiences==='function'){
   if(typeof marmitoAdminBusy!=='undefined'&&marmitoAdminBusy){
@@ -8681,19 +8737,32 @@ const tr=(fr,en)=>currentLang==='en'?en:fr;
 let compareRecipe=null,compareAccount=null,fromCompare=false;
 const normalize=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr').replace(/œ/g,'oe').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
 function canon(x){return normalize(typeof canonicalIngredient==='function'?canonicalIngredient(x):x)}
-function qtyUnit(unit){return {piece:['piece',1],g:['g',1],kg:['g',1000],ml:['ml',1],l:['ml',1000],cup:['cup',1],tbsp:['tbsp',1],tsp:['tsp',1]}[unit]||[unit,1]}
+// Unités du garde-manger -> unités des quantités de recettes (shoppingParseQty les normalise : g, ml, piece, 'c. à soupe', 'c. à café').
+function qtyUnit(unit){return {piece:['piece',1],g:['g',1],kg:['g',1000],ml:['ml',1],l:['ml',1000],cup:['cup',1],tbsp:['c. à soupe',1],tsp:['c. à café',1]}[unit]||[unit,1]}
+// Unité d'une quantité de recette, ramenée aux mêmes noms. Un nombre seul ("3" oignons) compte des pièces.
+function recipeUnit(req){
+ const u=String(req.unit||'').trim().toLowerCase();
+ if(req.num!==null&&u==='')return 'piece';
+ if(['tasse','tasses','cup','cups'].includes(u))return 'cup';
+ if(['tbsp','tablespoon','tablespoons'].includes(u))return 'c. à soupe';
+ if(['tsp','teaspoon','teaspoons'].includes(u))return 'c. à café';
+ return u;
+}
 function comparable(recipe,i,pantry){
  const req=shoppingParseQty(scaleQty(recipeIngredientQty(recipe,i),Number(portionsMultiplier)||1));
  const [pu,pfactor]=qtyUnit(pantry.unit);
  if(req.num===null)return {ok:false,note:tr('Quantité à vérifier','Quantity needs checking')};
- if(req.unit!==pu)return {ok:false,note:tr('Unités différentes : vérifiez la quantité','Different units: check the quantity')};
- const available=Number(pantry.quantity)*pfactor;
- return {ok:available>=req.num,note:available>=req.num?tr('Quantité suffisante','Enough available'):tr('Quantité insuffisante','Not enough available')};
+ if(recipeUnit(req)!==pu)return {ok:false,note:tr('Unités différentes : vérifiez la quantité','Different units: check the quantity')};
+ const stock=Number(pantry.quantity);
+ if(!Number.isFinite(stock)||stock<0)return {ok:false,note:tr('Quantité du garde-manger à vérifier','Pantry quantity needs checking')};
+ const needed=Number.isFinite(req.max)&&req.max>req.num?req.max:req.num; // plage "2-3" : on vérifie le haut de la plage
+ const available=stock*pfactor;
+ return {ok:available>=needed,note:available>=needed?tr('Quantité suffisante','Enough available'):tr('Quantité insuffisante','Not enough available')};
 }
 function row(target,name,qty,checked,note){
  const wrap=document.createElement('div');wrap.className='marmito-v105-item';
  const check=document.createElement('input');check.type='checkbox';check.checked=checked;check.dataset.name=name;check.dataset.qty=qty;
- const label=document.createElement('label');const title=document.createElement('strong');title.textContent=name+(qty?' — '+qty:'');label.append(title);
+ const label=document.createElement('label');const title=document.createElement('strong');title.textContent=name+(qty?' : '+qty:'');label.append(title);
  if(note){const small=document.createElement('small');small.textContent=note;label.append(small)}
  if(target==='marmito-v105-missing'){label.prepend(check);check.id='marmito-v105-check-'+$('marmito-v105-missing').children.length;label.htmlFor=check.id}
  else {const bullet=document.createElement('span');bullet.textContent='✓';bullet.setAttribute('aria-hidden','true');wrap.append(bullet)}
@@ -8712,7 +8781,7 @@ async function render(){
  $('marmito-v105-missing-title').textContent=tr('À vérifier ou à acheter','Check or buy');
  $('marmito-v105-add').textContent=tr('Ajouter la sélection aux courses','Add selected items to shopping list');
  $('marmito-v105-pantry').textContent=tr('Mon garde-manger','My pantry');
- $('marmito-v105-intro').textContent=(currentLang==='en'?(document.getElementById('result-title')?.textContent||recipe.title):recipe.title)+' — '+tr('Comparaison indicative. Les ingrédients et unités doivent correspondre ; vérifiez les quantités avant de cuisiner.','Estimated comparison. Ingredients and units must match; check quantities before cooking.');
+ $('marmito-v105-intro').textContent=(currentLang==='en'?(document.getElementById('result-title')?.textContent||recipe.title):recipe.title)+' : '+tr('Comparaison indicative. Les ingrédients et unités doivent correspondre ; vérifiez les quantités avant de cuisiner.','Estimated comparison. Ingredients and units must match; check quantities before cooking.');
  $('marmito-v105-status').textContent=tr('Chargement du garde-manger…','Loading pantry…');
  const {data,error}=await sb.from('marmito_pantry').select('ingredient_name,quantity,unit').eq('user_id',uid);
  if(!$('marmito-v105-overlay').classList.contains('open')||!currentUser||currentUser.id!==uid||compareRecipe!==recipe)return;
@@ -8778,7 +8847,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('marmito-v105-ove
 <script id="marmito-v1054-i18n-completion">
 (function(){
 'use strict';
-const translations={"Recettes": "Recipes", "Mon espace": "My space", "Mon profil": "My profile", "Ma collection": "My collection", "Abonnement": "Subscription", "Recette du jour": "Recipe of the day", "Chargement...": "Loading...", "Chargement…": "Loading…", "Trouvez votre prochaine inspiration culinaire.": "Find your next culinary inspiration.", "Affiner ma recherche": "Refine my search", "Surprends-moi": "Surprise me", "ORGANISEZ VOTRE SEMAINE": "PLAN YOUR WEEK", "Votre plan de repas sur 7 jours": "Your 7-day meal plan", "Retrouvez votre menu de la semaine, déjà préparé pour vous.": "Find your weekly menu, already planned for you.", "Voir mon plan de repas sur 7 jours": "View my 7-day meal plan", "Fonctionnalité Saveur/Chef": "Saveur/Chef feature", "Le plan 7 jours est réservé aux abonnés Saveur et Chef. Passez à Saveur pour débloquer.": "The 7-day plan is available to Saveur and Chef subscribers. Upgrade to Saveur to unlock it.", "Passer à Saveur": "Upgrade to Saveur", "Ingrédients manquants": "Missing ingredients", "Ajouter aux courses": "Add to shopping list", "Cuisiné": "Cooked", "Mon expérience": "My experience", "Avis de la communauté": "Community reviews", "Portions :": "Servings:", "Ingrédients": "Ingredients", "Préparation :": "Preparation:", "Chrono intégré": "Built-in timer", "Temps": "Time", "Personnes": "Servings", "Difficulté": "Difficulty", "Voir d'autres recettes de cette région": "See more recipes from this region", "Écouter l’étape": "Listen to step", "Marquer comme cuisinée": "Mark as cooked", "Partager mon expérience": "Share my experience", "Terminé — Retour à la recette": "Done — Back to recipe", "MARMITO · RECHERCHE": "MARMITO · SEARCH", "Choisissez vos préférences pour trouver la recette qui vous ressemble.": "Choose your preferences to find a recipe that suits you.", "Filtres sélectionnés": "Selected filters", "Tes ingrédients (optionnel)": "Your ingredients (optional)", "Préférences alimentaires (optionnel)": "Dietary preferences (optional)", "Réinitialiser": "Reset", "Filtres indicatifs : vérifiez toujours les étiquettes et les traces d'allergènes.": "Filters are indicative: always check labels and allergen traces.", "← Retour": "← Back", "Retour": "Back", "MON ORGANISATION": "MY PLANNING", "Organise tes repas pour les sept prochains jours.": "Plan your meals for the next seven days.", "Retrouve tes repas et prépare ta semaine, sans changer ton plan actuel.": "Find your meals and prepare your week without changing your current plan.", "MA LISTE": "MY LIST", "Tout ce qu’il te faut pour tes recettes, au même endroit.": "Everything you need for your recipes, in one place.", "Par liste": "By list", "MON ESPACE CULINAIRE": "MY COOKING SPACE", "Vos recettes et vos découvertes, au même endroit.": "Your recipes and discoveries, all in one place.", "MON ABONNEMENT": "MY SUBSCRIPTION", "Détails de mon abonnement": "Subscription details", "Rafraîchir mon plan": "Refresh my plan", "Mes espaces": "My spaces", "Retrouvez votre univers culinaire": "Explore your culinary world", "Mes favoris": "My favorites", "Vos recettes enregistrées": "Your saved recipes", "Mon historique": "My history", "Les recettes consultées": "Viewed recipes", "Mes expériences culinaires": "My cooking experiences", "Déconnexion": "Sign out", "MA COLLECTION": "MY COLLECTION", "Mes recettes favorites": "My favorite recipes", "Les recettes que tu aimes, prêtes à retrouver.": "The recipes you love, ready to revisit.", "Vos recettes enregistrées, au même endroit.": "Your saved recipes, all in one place.", "Liste": "List", "MON PARCOURS": "MY JOURNEY", "Retrouve les recettes que tu as consultées.": "Find recipes you have viewed.", "Une idée, une suggestion ou un problème à signaler ? Écris-nous directement ici.": "Have an idea, suggestion or issue to report? Write to us here.", "Des recettes de différentes cultures, pensées pour la vraie vie et pour le plaisir de cuisiner.": "Recipes from different cultures, made for everyday life and the joy of cooking.", "Les recettes présentes": "Our recipes", "Comment ça marche": "How it works", "Afrique": "Africa", "Caraïbes": "Caribbean", "Italie": "Italy", "Asie": "Asia", "Mexique": "Mexico", "Antilles & Caraïbes": "Caribbean Islands", "Québec & Occident": "Quebec & Western cuisine", "Afrique subsaharienne": "Sub-Saharan Africa", "Japonaise": "Japanese", "Indienne": "Indian", "Libanaise": "Lebanese", "Mexicaine": "Mexican", "Italienne": "Italian", "Grecque": "Greek", "Espagnole": "Spanish", "Chinoise": "Chinese", "recettes au total, réparties en 12 cuisines :": "recipes in total across 12 cuisines:", "recettes": "recipes", "recette": "recipe", "MON GARDE-MANGER": "MY PANTRY", "Mon garde-manger": "My pantry", "Fermer": "Close", "Menu": "Menu", "Toute durée": "Any duration", "Mes recettes": "My recipes", "Mes listes": "My lists", "Annuler": "Cancel", "Enregistrer": "Save", "Supprimer": "Delete", "Modifier": "Edit", "Ajouter": "Add", "Valider": "Confirm", "Continuer": "Continue", "Suivant": "Next", "Précédent": "Previous", "Terminé": "Done", "Voir": "View", "Rechercher": "Search", "Aucun résultat": "No results", "Aucune recette trouvée": "No recipes found", "Retour à l'accueil": "Back to home", "Inviter un ami": "Invite a friend", "Mon compte": "My account", "Paramètres": "Settings", "Mon abonnement": "My subscription", "Mon plan": "My plan", "Mes plans": "My plans", "Ma liste de courses": "My shopping list", "Ajouter à la liste de courses": "Add to shopping list", "Supprimer la sélection": "Delete selection", "Tout sélectionner": "Select all", "Aucun ingrédient": "No ingredients", "Ingrédient": "Ingredient", "Quantité": "Quantity", "Unité": "Unit", "Ma cuisine": "My kitchen", "Mon organisation": "My planning", "Partager": "Share", "Copier": "Copy"};
+const translations={"Recettes": "Recipes", "Mon espace": "My space", "Mon profil": "My profile", "Ma collection": "My collection", "Abonnement": "Subscription", "Recette du jour": "Recipe of the day", "Chargement...": "Loading...", "Chargement…": "Loading…", "Trouvez votre prochaine inspiration culinaire.": "Find your next culinary inspiration.", "Affiner ma recherche": "Refine my search", "Surprends-moi": "Surprise me", "ORGANISEZ VOTRE SEMAINE": "PLAN YOUR WEEK", "Votre plan de repas sur 7 jours": "Your 7-day meal plan", "Retrouvez votre menu de la semaine, déjà préparé pour vous.": "Find your weekly menu, already planned for you.", "Voir mon plan de repas sur 7 jours": "View my 7-day meal plan", "Fonctionnalité Saveur/Chef": "Saveur/Chef feature", "Le plan 7 jours est réservé aux abonnés Saveur et Chef. Passez à Saveur pour débloquer.": "The 7-day plan is available to Saveur and Chef subscribers. Upgrade to Saveur to unlock it.", "Passer à Saveur": "Upgrade to Saveur", "Ingrédients manquants": "Missing ingredients", "Ajouter aux courses": "Add to shopping list", "Cuisiné": "Cooked", "Mon expérience": "My experience", "Avis de la communauté": "Community reviews", "Portions :": "Servings:", "Ingrédients": "Ingredients", "Préparation :": "Preparation:", "Chrono intégré": "Built-in timer", "Temps": "Time", "Personnes": "Servings", "Difficulté": "Difficulty", "Voir d'autres recettes de cette région": "See more recipes from this region", "Écouter l’étape": "Listen to step", "Marquer comme cuisinée": "Mark as cooked", "Partager mon expérience": "Share my experience", "Terminé, retour à la recette": "Done, back to recipe", "MARMITO · RECHERCHE": "MARMITO · SEARCH", "Choisissez vos préférences pour trouver la recette qui vous ressemble.": "Choose your preferences to find a recipe that suits you.", "Filtres sélectionnés": "Selected filters", "Tes ingrédients (optionnel)": "Your ingredients (optional)", "Préférences alimentaires (optionnel)": "Dietary preferences (optional)", "Réinitialiser": "Reset", "Filtres indicatifs : vérifiez toujours les étiquettes et les traces d'allergènes.": "Filters are indicative: always check labels and allergen traces.", "← Retour": "← Back", "Retour": "Back", "MON ORGANISATION": "MY PLANNING", "Organise tes repas pour les sept prochains jours.": "Plan your meals for the next seven days.", "Retrouve tes repas et prépare ta semaine, sans changer ton plan actuel.": "Find your meals and prepare your week without changing your current plan.", "MA LISTE": "MY LIST", "Tout ce qu’il te faut pour tes recettes, au même endroit.": "Everything you need for your recipes, in one place.", "Par liste": "By list", "MON ESPACE CULINAIRE": "MY COOKING SPACE", "Vos recettes et vos découvertes, au même endroit.": "Your recipes and discoveries, all in one place.", "MON ABONNEMENT": "MY SUBSCRIPTION", "Détails de mon abonnement": "Subscription details", "Rafraîchir mon plan": "Refresh my plan", "Mes espaces": "My spaces", "Retrouvez votre univers culinaire": "Explore your culinary world", "Mes favoris": "My favorites", "Vos recettes enregistrées": "Your saved recipes", "Mon historique": "My history", "Les recettes consultées": "Viewed recipes", "Mes expériences culinaires": "My cooking experiences", "Déconnexion": "Sign out", "MA COLLECTION": "MY COLLECTION", "Mes recettes favorites": "My favorite recipes", "Les recettes que tu aimes, prêtes à retrouver.": "The recipes you love, ready to revisit.", "Vos recettes enregistrées, au même endroit.": "Your saved recipes, all in one place.", "Liste": "List", "MON PARCOURS": "MY JOURNEY", "Retrouve les recettes que tu as consultées.": "Find recipes you have viewed.", "Une idée, une suggestion ou un problème à signaler ? Écris-nous directement ici.": "Have an idea, suggestion or issue to report? Write to us here.", "Des recettes de différentes cultures, pensées pour la vraie vie et pour le plaisir de cuisiner.": "Recipes from different cultures, made for everyday life and the joy of cooking.", "Les recettes présentes": "Our recipes", "Comment ça marche": "How it works", "Afrique": "Africa", "Caraïbes": "Caribbean", "Italie": "Italy", "Asie": "Asia", "Mexique": "Mexico", "Antilles & Caraïbes": "Caribbean Islands", "Québec & Occident": "Quebec & Western cuisine", "Afrique subsaharienne": "Sub-Saharan Africa", "Japonaise": "Japanese", "Indienne": "Indian", "Libanaise": "Lebanese", "Mexicaine": "Mexican", "Italienne": "Italian", "Grecque": "Greek", "Espagnole": "Spanish", "Chinoise": "Chinese", "recettes au total, réparties en 12 cuisines :": "recipes in total across 12 cuisines:", "recettes": "recipes", "recette": "recipe", "MON GARDE-MANGER": "MY PANTRY", "Mon garde-manger": "My pantry", "Fermer": "Close", "Menu": "Menu", "Toute durée": "Any duration", "Mes recettes": "My recipes", "Mes listes": "My lists", "Annuler": "Cancel", "Enregistrer": "Save", "Supprimer": "Delete", "Modifier": "Edit", "Ajouter": "Add", "Valider": "Confirm", "Continuer": "Continue", "Suivant": "Next", "Précédent": "Previous", "Terminé": "Done", "Voir": "View", "Rechercher": "Search", "Aucun résultat": "No results", "Aucune recette trouvée": "No recipes found", "Retour à l'accueil": "Back to home", "Inviter un ami": "Invite a friend", "Mon compte": "My account", "Paramètres": "Settings", "Mon abonnement": "My subscription", "Mon plan": "My plan", "Mes plans": "My plans", "Ma liste de courses": "My shopping list", "Ajouter à la liste de courses": "Add to shopping list", "Supprimer la sélection": "Delete selection", "Tout sélectionner": "Select all", "Aucun ingrédient": "No ingredients", "Ingrédient": "Ingredient", "Quantité": "Quantity", "Unité": "Unit", "Ma cuisine": "My kitchen", "Mon organisation": "My planning", "Partager": "Share", "Copier": "Copy"};
 Object.assign(translations, {
  "Conseils & Astuces": "Tips & Tricks",
  "GUIDE MARMITO": "MARMITO GUIDE",
@@ -8867,9 +8936,9 @@ Object.assign(translations, {
  "MODÉRATION": "MODERATION",
  "Consultez et traitez les expériences soumises à validation.": "Review and process experiences submitted for approval.",
  "Modération des expériences culinaires": "Cooking experience moderation",
- "Consultez les contributions publiées et masquez celles qui ne respectent pas les règles. Les anciennes demandes en attente restent consultables.": "Review published submissions and hide those that break the rules. Previous pending submissions remain available.",
+ "Examinez les demandes de publication, approuvez ou refusez-les. Vous pouvez aussi masquer une contribution déjà publiée qui ne respecte pas les règles.": "Review publication requests, then approve or refuse them. You can also hide an already published contribution that breaks the rules.",
  "Contributions publiées": "Published submissions",
- "Anciennes demandes": "Previous requests",
+ "Demandes à examiner": "Requests to review",
  "↻ Actualiser": "↻ Refresh",
  "Ouvrez cette section pour charger les contributions.": "Open this section to load submissions.",
  "Choisir un abonnement": "Choose a subscription",
@@ -9032,7 +9101,7 @@ translateNodes();
 @media(prefers-reduced-motion:reduce){#tips-overlay .tips-cat-tile{transition:none!important}}
 </style>
 
-<!-- V107 : Batch Cooking — séances temporaires, sans sauvegarde serveur (prévue en V107.1) -->
+<!-- V107 : Batch Cooking, séances temporaires sans sauvegarde serveur -->
 <style id="marmito-v107-batch-style">
 #marmito-batch{display:none;position:fixed;inset:0;z-index:1700;background:#f7f6f0;color:#243e2d;overflow:auto}#marmito-batch.open{display:block}#marmito-batch *{box-sizing:border-box}
 .mb-shell{max-width:1060px;margin:auto;padding:20px clamp(15px,4vw,45px) 90px}.mb-head{display:flex;align-items:center;gap:12px;justify-content:space-between;position:sticky;top:0;z-index:3;background:#f7f6f0;padding:15px 0;border-bottom:1px solid #dce3d6}.mb-head h2{font:700 clamp(23px,4vw,37px) Georgia,serif;margin:0;color:#244a32}.mb-actions{display:flex;gap:8px;flex-wrap:wrap}.mb-btn{border:1px solid #cbd7c7;background:#fff;color:#254a33;border-radius:12px;padding:11px 15px;cursor:pointer;font:600 14px inherit}.mb-primary{background:#244a32;border-color:#244a32;color:white}.mb-btn:disabled{opacity:.45;cursor:not-allowed}.mb-intro{line-height:1.65;color:#5b6c5e;margin:22px 0}.mb-tools{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.mb-search{padding:13px;border:1px solid #ccd8ca;border-radius:12px;min-width:220px;flex:1;font:inherit;background:#fff}.mb-stats{background:#e7eee3;border-radius:12px;padding:12px 16px;font-weight:700;margin:15px 0}.mb-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.mb-recipe{display:flex;gap:10px;align-items:flex-start;background:white;border:1px solid #dce4d8;border-radius:15px;padding:15px;cursor:pointer}.mb-recipe input{margin-top:4px;accent-color:#244a32;width:18px;height:18px}.mb-recipe strong{display:block;line-height:1.35}.mb-recipe small{display:block;color:#687869;margin-top:6px}.mb-section{background:#fff;border:1px solid #dce4d8;border-radius:19px;padding:20px;margin:18px 0}.mb-section h3{margin:0 0 14px;color:#244a32;font:700 23px Georgia,serif}.mb-section li{padding:7px 0;line-height:1.5}.mb-section label{display:flex;gap:10px;align-items:flex-start;padding:8px 0}.mb-note{color:#647467;font-size:14px;line-height:1.6}.mb-steps{padding-left:22px}.mb-recipe-title{font-weight:700;margin:20px 0 8px}.mb-hidden{display:none!important}@media(max-width:700px){.mb-grid{grid-template-columns:1fr}.mb-head{align-items:flex-start}.mb-actions{justify-content:flex-end}.mb-shell{padding-bottom:120px}}
@@ -9067,12 +9136,23 @@ translateNodes();
 #marmito-batch .mb-task-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-left:31px}
 #marmito-batch .mb-resource{background:#edf3e8;border-radius:999px;padding:5px 9px;font-size:12px}
 #marmito-batch .mb-task:has(input:checked) .mb-task-text{opacity:.65;text-decoration:line-through}
+#marmito-batch .mb-task.mb-finished{background:#fff6dd;border-radius:12px;padding-left:10px;padding-right:10px;outline:2px solid #d9a21b}
+#marmito-batch .mb-task-note{display:block;margin:8px 0 0 31px;color:#8a3b12;line-height:1.5}
+#marmito-batch .mb-task-note:empty{display:none}
+#marmito-batch .mb-warning{background:#fff1e6;border:1px solid #f0c9a8;color:#7a3a10;border-radius:12px;padding:11px 14px;margin:12px 0;line-height:1.5}
+#marmito-batch .mb-timerbar{position:sticky;bottom:0;z-index:5;display:grid;gap:8px;background:#244a32;color:#fff;border-radius:14px;padding:12px 14px;margin-top:18px;box-shadow:0 -6px 22px rgba(0,0,0,.18)}
+#marmito-batch .mb-timerbar{padding-right:68px}
+@media(max-width:700px){#marmito-batch .mb-timerbar{bottom:calc(72px + env(safe-area-inset-bottom,0px))}}
+#marmito-batch .mb-timerbar[hidden]{display:none}
+#marmito-batch .mb-alert{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#ffe9a8;color:#3b2a00;border-radius:10px;padding:10px 12px;font-weight:700;line-height:1.45}
+#marmito-batch .mb-running{font-variant-numeric:tabular-nums;font-weight:600}
 </style>
 <section id="marmito-batch" role="dialog" aria-modal="true" aria-labelledby="mb-title" aria-hidden="true">
 <div class="mb-shell"><header class="mb-head"><div class="mb-nav"><button type="button" class="mb-btn" id="mb-menu">Menu</button><button type="button" class="mb-btn" id="mb-back">Retour</button></div><h2 id="mb-title">Batch Cooking</h2><div class="mb-actions"><button type="button" class="mb-btn" id="mb-close">Fermer</button></div></header>
 <p id="mb-intro" class="mb-intro"></p><div id="mb-status" role="status" aria-live="polite"></div>
 <div id="mb-picker"><div class="mb-personal-tools"><label for="mb-personal-select" id="mb-personal-label">Mes plannings personnels</label><select id="mb-personal-select" class="mb-search"><option value="">Choisir un planning enregistré</option></select><button type="button" class="mb-btn" id="mb-personal-import">Importer ce planning</button></div><div class="mb-tools"><input type="search" id="mb-search" class="mb-search" placeholder="Rechercher une recette" aria-label="Rechercher une recette"><button type="button" class="mb-btn" id="mb-week">Importer mon plan de 7 jours</button><button type="button" class="mb-btn" id="mb-view-week">Voir mon plan</button></div><div id="mb-count" class="mb-stats"></div><div id="mb-recipes" class="mb-grid"></div><div class="mb-tools"><button type="button" class="mb-btn mb-primary" id="mb-generate">Organiser ma séance</button></div></div>
 <div id="mb-session" class="mb-hidden"><div class="mb-tools"><button type="button" class="mb-btn" id="mb-edit">Modifier les recettes</button><button type="button" class="mb-btn" id="mb-shopping">Ajouter à ma liste de courses</button></div><div id="mb-session-body"></div></div>
+<div id="mb-timerbar" class="mb-timerbar" role="region" aria-label="Minuteurs" hidden></div>
 </div></section>
 <script id="marmito-v107-batch-script">
 (()=>{'use strict';
@@ -9085,7 +9165,7 @@ const key=r=>r.title;
 function translated(r){return en()&&typeof MARMITO_EN_CATALOG_V1!=='undefined'&&MARMITO_EN_CATALOG_V1[r.title]?.title||r.title}
 function text(el,value){el.textContent=value}
 function message(value){text($('mb-status'),value)}
-function sync(){text($('mb-personal-select').options[0]||document.createElement('option'),t('Choisir un planning enregistré','Choose a saved plan'));text($('mb-back'),t('Retour','Back'));text($('mb-personal-label'),t('Mes plannings personnels','My personal plans'));text($('mb-personal-import'),t('Importer ce planning','Import this plan'));text($('mb-menu'),'Menu');text($('mb-close'),t('Fermer','Close'));text($('mb-week'),t('Importer mon plan de 7 jours','Import my 7-day meal plan'));text($('mb-view-week'),t('Voir mon plan','View my plan'));text($('mb-generate'),t('Organiser ma séance','Organize my session'));text($('mb-edit'),t('Modifier les recettes','Edit recipes'));text($('mb-shopping'),t('Ajouter à ma liste de courses','Add to my shopping list'));text($('mb-intro'),t('Sélectionnez les recettes que vous souhaitez préparer ensemble. Les séances sont temporaires dans cette version : aucune sauvegarde n’est encore activée.','Select recipes to prepare together. Sessions are temporary in this version: saving is not enabled yet.'));$('mb-search').placeholder=t('Rechercher une recette','Search recipes');$('mb-search').setAttribute('aria-label',$('mb-search').placeholder);}
+function sync(){text($('mb-personal-select').options[0]||document.createElement('option'),t('Choisir un planning enregistré','Choose a saved plan'));text($('mb-back'),t('Retour','Back'));text($('mb-personal-label'),t('Mes plannings personnels','My personal plans'));text($('mb-personal-import'),t('Importer ce planning','Import this plan'));text($('mb-menu'),'Menu');text($('mb-close'),t('Fermer','Close'));text($('mb-week'),t('Importer mon plan de 7 jours','Import my 7-day meal plan'));text($('mb-view-week'),t('Voir mon plan','View my plan'));text($('mb-generate'),t('Organiser ma séance','Organize my session'));text($('mb-edit'),t('Modifier les recettes','Edit recipes'));text($('mb-shopping'),t('Ajouter à ma liste de courses','Add to my shopping list'));text($('mb-intro'),t('Sélectionnez les recettes que vous souhaitez préparer ensemble. Les séances sont temporaires : elles ne sont pas sauvegardées.','Select recipes to prepare together. Sessions are temporary: they are not saved.'));$('mb-search').placeholder=t('Rechercher une recette','Search recipes');$('mb-search').setAttribute('aria-label',$('mb-search').placeholder);}
 function renderPicker(){sync();const list=allowed(),valid=new Set(list.map(key));selected=new Set([...selected].filter(k=>valid.has(k)));const max=limit();text($('mb-count'),selected.size+' / '+(Number.isFinite(max)?max:t('Illimité','Unlimited'))+' '+t('recettes sélectionnées','recipes selected'));const q=$('mb-search').value.trim().toLocaleLowerCase();const host=$('mb-recipes');host.replaceChildren();const filtered=list.filter(r=>!q||translated(r).toLocaleLowerCase().includes(q)||r.title.toLocaleLowerCase().includes(q));
 // Always show selected recipes first, then a short selection of matches.
 const chosenRecipes=list.filter(r=>selected.has(key(r)));
@@ -9107,6 +9187,7 @@ if(weeklyOverlay&&weeklyOverlay.classList.contains('open')){
   if(typeof closePlanRepas==='function')closePlanRepas();
   else weeklyOverlay.classList.remove('open');
 }
+if(mbOwner&&mbOwner!==currentUser.id)mbResetAll();
 lastFocus=document.activeElement;stage='picker';$('mb-picker').classList.remove('mb-hidden');$('mb-session').classList.add('mb-hidden');$('marmito-batch').classList.add('open');$('marmito-batch').setAttribute('aria-hidden','false');message('');renderPicker();refreshPersonalPlans();$('mb-search').focus({preventScroll:true})}
 window.marmitoBatchOpen=open;window.marmitoBatchClose=close;
 $('mb-close').onclick=close;$('mb-back').onclick=back;$('mb-edit').onclick=back;$('mb-menu').onclick=()=>{close();if(typeof openDrawer==='function')openDrawer();else document.querySelector('#drawer-toggle, .hamburger, [onclick="openDrawer()"]')?.click()};
@@ -9175,92 +9256,241 @@ $('mb-view-week').onclick=()=>{
   if(typeof openPlanRepas==='function')openPlanRepas();
   else message(t('Plan de repas indisponible.','Meal plan unavailable.'));
 };
-// V107.5 Batch Cooking: local, session-only equipment configuration.
+// V107.5 Batch Cooking : planificateur (durées, équipements, personnes, minuteurs, alertes).
+// L'état (cases cochées, minuteurs, alertes) vit en mémoire pour la session et survit aux changements de réglages.
 const MB_DEFAULT_EQUIPMENT={burners:4,ovens:1,people:1,microwave:1};
+const MB_UNKNOWN_STEP_MIN=3;      // estimation interne pour une étape sans durée (jamais affichée comme une durée de recette)
+const MB_MIN_TIMER_SEC=30;
+const MB_MAX_TIMER_SEC=172800;
 let mbEquipment={...MB_DEFAULT_EQUIPMENT};
+let mbOwner=null,mbRecipes=[],mbDone=new Set(),mbTimers=new Map(),mbAlerts=[],mbTicker=null,mbAudio=null,mbRegistry=new Map(),mbLastBeep=0,mbBeepCount=0,mbPlanHost=null;
+function mbNorm(s){return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();}
 function mbStepText(step){if(typeof step==='string')return step;if(step&&typeof step==='object'){const v=en()?(step.text_en||step.en||step.text):(step.text_fr||step.fr||step.text);return typeof v==='string'?v:'';}return '';}
-function mbStepMinutes(step,description){
-  const explicit=step&&typeof step==='object'?[step.duration_minutes,step.durationMinutes,step.minutes]:[];
-  for(const v of explicit){if(typeof v==='number'&&Number.isFinite(v)&&v>0&&v<=480)return Math.ceil(v);}
-  const m=description.match(/(?:\b(?:pendant|environ|durant|for|about)\s+)?(\d{1,3})\s*(?:à|a|to|–|-)\s*(\d{1,3})\s*(minutes?|mins?|min\b|heures?|hours?|hrs?\b)/i)||description.match(/(\d{1,3})\s*(minutes?|mins?|min\b|heures?|hours?|hrs?\b)/i);
-  if(!m)return null;
-  const n=Number(m[2]&&/^\d+$/.test(m[2])?m[2]:m[1]);const unit=m[m.length-1];return n>0&&n<=480?( /heure|hour|hr/i.test(unit)?n*60:n):null;
+// Lit toutes les durées d'un texte : "25 minutes", "1h30", "1 heure et demie", "25 à 30 minutes", "1h15 à 1h30".
+// Les intervalles ("toutes les 25 minutes") et les repères ("30 minutes avant la fin") ne sont pas des durées d'étape.
+function mbParseDurations(text){
+ const x=mbNorm(text),atoms=[],re=/(\d+(?:[.,]\d+)?)\s*(heures?|hours?|hrs?|hr|h|minutes?|mins?|min|secondes?|seconds?|secs?|sec)(?![a-z])(\d{2}(?!\d))?/g;let m;
+ while((m=re.exec(x))){
+  const n=parseFloat(m[1].replace(',','.')),u=m[2],kind=/^(?:h|hr|hrs|heures?|hours?)$/.test(u)?'h':/^(?:secs?|secondes?|seconds?)$/.test(u)?'s':'m';
+  let sec=n*(kind==='h'?3600:kind==='s'?1:60),end=m.index+m[0].length,compound=false;
+  if(kind==='h'){
+   if(m[3]){sec+=parseInt(m[3],10)*60;compound=true;}
+   else{const rest=x.slice(end);let r;
+    if((r=/^\s*(?:et\s+|and\s+)?(?:demie?|half)(?![a-z])/.exec(rest))){sec+=1800;end+=r[0].length;compound=true;}
+    else if((r=/^\s*(?:et\s+|and\s+)?(\d{1,2})\s*(?:minutes?|mins?|min)(?![a-z])/.exec(rest))){sec+=parseInt(r[1],10)*60;end+=r[0].length;compound=true;}
+    else if(u==='h'&&(r=/^\s+(\d{2})(?!\d|\s*(?:g|kg|ml|cl|cm|mm|%|°))/.exec(rest))){sec+=parseInt(r[1],10)*60;end+=r[0].length;compound=true;}}
+  }
+  atoms.push({sec,start:m.index,end,kind,compound});re.lastIndex=Math.max(re.lastIndex,end);
+ }
+ const out=[];
+ atoms.forEach((a,i)=>{
+  const before=x.slice(Math.max(0,a.start-18),a.start),after=x.slice(a.end,a.end+24);
+  if(/(?:toutes?\s+les|tous\s+les|chaque|every|each)\s*$/.test(before))return;
+  if(/^\s*(?:avant la fin|before the end|avant de servir|before serving)/.test(after))return;
+  const prev=atoms[i-1];
+  if(prev&&out.length&&/^\s*(?:a|to|-|–|ou|or)\s*$/.test(x.slice(prev.end,a.start))){const last=out[out.length-1];last.hi=Math.max(last.hi,a.sec);return;}
+  let lo=a.sec;
+  const rb=!a.compound&&/(\d+(?:[.,]\d+)?)\s*(?:a|to|-|–)\s*$/.exec(x.slice(0,a.start));
+  if(rb){const v=parseFloat(rb[1].replace(',','.'))*(a.kind==='h'?3600:a.kind==='s'?1:60);if(v>0&&v<a.sec)lo=v;}
+  out.push({lo,hi:a.sec});
+ });
+ return out;
 }
-function mbClassify(description){
- const x=description.toLocaleLowerCase();
- const oven=/four|enfour|gratin|bake|oven|roast/.test(x);
- const microwave=/micro[- ]?ondes|microwave/.test(x);
- const burner=/poêle|poele|casserole|mijot|bouill|feu (?:doux|moyen|vif)|sauteuse|saisir|frire|friture|simmer|stovetop|pan[- ]?fry|boil|sauté|skillet/.test(x);
- const passive=/laisser (?:cuire|mijoter|reposer|refroidir|lever)|faire (?:cuire|mijoter)|cuire (?:au four|à feu doux|a feu doux)|enfourner|mijoter|réfrigér|reposer|let (?:simmer|rest|cool)|bake (?:for|until)|simmer|chill|refrigerate/.test(x);
- const prep=/lav|épluch|éminc|hach|coup|découp|pes|mesur|prépar|rinc|peel|wash|chop|slice|dice|measure|rinse|mix|mélang/.test(x);
- return {resource:microwave?'microwave':oven?'oven':burner?'burner':'none',passive:passive&&!/remu|surveill|stir constantly|whisk constantly/.test(x),prep};
+// Priorité : le champ structuré step.time (secondes) puis, à défaut, la durée lue dans le texte.
+function mbStepDuration(step,frText){
+ const obj=step&&typeof step==='object';
+ const time=obj&&Number(step.time)>0&&Number(step.time)<=MB_MAX_TIMER_SEC?Math.round(Number(step.time)):0;
+ const timeMax=obj&&Number(step.timeMax)>0?Math.round(Number(step.timeMax)):0;
+ const parsed=mbParseDurations(frText),textMax=parsed.reduce((m,p)=>Math.max(m,p.hi),0);
+ if(time){
+  let max=timeMax>time?timeMax:0;
+  if(!max){const r=parsed.find(p=>p.hi>p.lo&&Math.abs(p.lo-time)<=60);if(r)max=r.hi;}
+  return {seconds:time,secondsMax:max,source:'data',conflict:textMax>time*1.3&&textMax-time>=300};
+ }
+ if(parsed.length){const best=parsed.reduce((a,b)=>b.hi>a.hi?b:a);return {seconds:Math.round(best.lo),secondsMax:best.hi>best.lo?Math.round(best.hi):0,source:'text',conflict:false,multi:parsed.length>1};}
+ return {seconds:0,secondsMax:0,source:null,conflict:false};
+}
+const MB_RE={
+ micro:/micro[- ]?ondes?|microwave/,
+ oven:/\b(?:four|enfour\w*|gratin\w*|gril|oven|bake|baked|baking|broil\w*|roast\w*)\b/,
+ burner:/\b(?:poele|casserole|cocotte|marmite|sauteuse|faitout|wok|feu|mijot\w*|bouill\w*|saisi\w*|frit\w*|fris\w*|frire|revenir|dorer|dore\w*|saute\w*|cuire|cuis|cuit|cuits|cuite|cuites|cuisson|cuisez|chauff\w*|simmer\w*|boil\w*|fry\w*|sear\w*|skillet|saucepan|pot|pan|stovetop|stove|cook|cooks|cooked|cooking|heat\w*|brown\w*)\b/,
+ preheat:/prechauff|preheat|allume\w*\s+le\s+four/,
+ calm:/(?:en )?remu\w*\s+(?:de temps en temps|souvent|regulierement|occasionnellement)|de temps en temps|occasionnellement|regulierement|souvent|from time to time|occasionally|often|regularly|every few minutes|toutes les \d+(?: a \d+)? ?(?:minutes?|min)|every \d+(?:-\d+)? ?(?:minutes?|min)/g,
+ strong:/constamment|sans cesse|en remuant|remue\w*|fouett\w*|de chaque cote|retourn\w*|surveill\w*|each side|constantly|whisk\w*|stirring|keep stirring|flip\w*|turn(?:ing)? over/,
+ browning:/revenir|dorer|dore\w*|saute\w*|saisi\w*|sear\w*|brown\w*/,
+ unattended:/laisse\w*|couvre\w*|couvert|mijot\w*|enfour\w*|marin\w*|repos\w*|refroid\w*|\blever\b|\bleve\b|tremp\w*|refrigerateur|frigo|congel\w*|gonfl\w*|feu (?:tres )?doux|au four|\blet\b|\bleave\b|cover\w*|simmer\w*|bake\w*|\brest\b|resting|cool\w*|chill\w*|marinat\w*|soak\w*|\brise\b|proof\w*|refrigerat\w*|in the oven/
+};
+function mbClassify(text,icon,seconds){
+ const x=mbNorm(text),calm=x.replace(MB_RE.calm,'');
+ const resource=MB_RE.micro.test(x)?'microwave':MB_RE.oven.test(x)||icon==='oven'?'oven':MB_RE.burner.test(x)?'burner':'none';
+ const preheat=MB_RE.preheat.test(x);
+ const hasDuration=seconds>=MB_MIN_TIMER_SEC;
+ const strong=MB_RE.strong.test(calm),browning=MB_RE.browning.test(calm);
+ let passive=false;
+ if(hasDuration&&!strong){
+  const calmCue=icon==='rest'||MB_RE.unattended.test(x);
+  if(calmCue&&(!browning||seconds>=900))passive=true;
+  else if(!calmCue&&!browning&&resource!=='none'&&seconds>=480)passive=true;
+ }
+ return {resource,preheat,hasDuration,passive,holds:hasDuration&&resource!=='none'&&!preheat};
 }
 function mbBuildTasks(recipes){
- const tasks=[];
- recipes.forEach((r,ri)=>{const translatedSteps=en()&&typeof MARMITO_EN_CATALOG_V1!=='undefined'?MARMITO_EN_CATALOG_V1[r.title]?.steps:null;
- const steps=Array.isArray(translatedSteps)?translatedSteps:Array.isArray(r.steps)?r.steps:[];
- steps.forEach((step,i)=>{const description=mbStepText(step);if(!description.trim())return;
- const info=mbClassify(description);tasks.push({id:ri+'-'+i,ri,index:i,recipe:translated(r),description,minutes:mbStepMinutes(step,description),...info});});});
- // Dependency-safe scheduling: only the next step of a recipe may be selected.
- // Passive steps with an explicit duration are prioritized; no fictional timings.
- const queues=recipes.map((_,ri)=>tasks.filter(x=>x.ri===ri));const ordered=[];
- while(queues.some(q=>q.length)){
-  const ready=queues.filter(q=>q.length).map(q=>q[0]);
-  ready.sort((a,b)=>{
-   const priority=x=>x.passive&&x.minutes?0:x.prep?1:x.resource!=='none'?2:3;
-   return priority(a)-priority(b)||(b.passive?b.minutes||0:0)-(a.passive?a.minutes||0:0)||a.ri-b.ri;
+ return recipes.map((r,ri)=>{
+  const frSteps=Array.isArray(r.steps)?r.steps:[];
+  const enSteps=en()&&typeof MARMITO_EN_CATALOG_V1!=='undefined'?MARMITO_EN_CATALOG_V1[r.title]?.steps:null;
+  const useEn=Array.isArray(enSteps)&&enSteps.length>0,aligned=!useEn||enSteps.length===frSteps.length,source=useEn?enSteps:frSteps,list=[];
+  source.forEach((step,i)=>{
+   const description=mbStepText(step);if(!description.trim())return;
+   const frStep=aligned?frSteps[i]:step,frText=aligned&&frSteps[i]?(typeof frSteps[i]==='string'?frSteps[i]:frSteps[i].text||''):description;
+   const duration=mbStepDuration(frStep,frText),icon=(frStep&&frStep.icon)||(step&&step.icon)||'';
+   const info=mbClassify(frText+' '+description,icon,duration.seconds);
+   const planMin=info.hasDuration?duration.seconds/60:(info.preheat?1:MB_UNKNOWN_STEP_MIN);
+   list.push({key:r.title+'#'+i,ri,index:i,recipe:translated(r),description,...duration,...info,planMin,start:0,end:0,missing:false});
   });
-  const next=ready[0];ordered.push(next);queues[next.ri].shift();
- }
- return ordered;
+  return list;
+ });
 }
+// Ordonnancement : l'ordre des étapes de chaque recette est respecté ; une personne ne fait qu'une tâche manuelle à la fois ;
+// un feu, un four ou un micro-ondes n'accueille qu'une cuisson à la fois ; les cuissons sans surveillance partent en premier.
+function mbSchedule(chains,eq){
+ const cap={burner:eq.burners,oven:eq.ovens,microwave:eq.microwave},people=Math.max(1,eq.people),running=[],idx=chains.map(()=>0),ready=chains.map(()=>0),out=[];
+ let now=0,guard=0;
+ const left=()=>chains.some((c,k)=>idx[k]<c.length);
+ while(left()&&guard++<20000){
+  for(let i=running.length-1;i>=0;i--)if(running[i].end<=now+1e-9)running.splice(i,1);
+  const used={burner:0,oven:0,microwave:0};let busy=0;running.forEach(r=>{if(r.res)used[r.res]++;busy+=r.person});
+  const cands=[];chains.forEach((c,k)=>{if(idx[k]<c.length&&ready[k]<=now+1e-9)cands.push(k)});
+  const remaining=k=>chains[k].slice(idx[k]).reduce((s,x)=>s+x.planMin,0);
+  cands.sort((a,b)=>{const ta=chains[a][idx[a]],tb=chains[b][idx[b]],pa=ta.passive?0:ta.holds?1:2,pb=tb.passive?0:tb.holds?1:2;
+   return pa-pb||(tb.passive?tb.planMin:0)-(ta.passive?ta.planMin:0)||remaining(b)-remaining(a)||a-b;});
+  for(const k of cands){
+   const task=chains[k][idx[k]],person=task.passive?0:1,res=task.holds?task.resource:null,missing=!!res&&cap[res]<=0;
+   if(person&&busy+person>people)continue;
+   if(res&&!missing&&used[res]>=cap[res])continue;
+   task.start=now;task.end=now+task.planMin;task.missing=missing;
+   running.push({end:task.end,res:res&&!missing?res:null,person});if(person)busy+=person;if(res&&!missing)used[res]++;
+   ready[k]=task.end;idx[k]++;out.push(task);
+  }
+  let next=Infinity;running.forEach(r=>{if(r.end>now+1e-9)next=Math.min(next,r.end)});chains.forEach((c,k)=>{if(idx[k]<c.length&&ready[k]>now+1e-9)next=Math.min(next,ready[k])});
+  if(next===Infinity){chains.forEach((c,k)=>{while(idx[k]<c.length){const task=c[idx[k]++];task.start=now;task.end=now+task.planMin;out.push(task)}});break;}
+  now=next;
+ }
+ return out;
+}
+function mbFmt(sec){sec=Math.max(0,Math.round(sec));if(sec<60)return sec+' s';const m=Math.round(sec/60);if(m<60)return m+' min';const h=Math.floor(m/60),r=m%60;return h+' h'+(r?' '+String(r).padStart(2,'0'):'');}
+function mbFmtRange(task){if(!task.secondsMax||task.secondsMax<=task.seconds)return mbFmt(task.seconds);if(task.secondsMax<3600)return Math.floor(task.seconds/60)+t(' à ',' to ')+Math.floor(task.secondsMax/60)+' min';return mbFmt(task.seconds)+t(' à ',' to ')+mbFmt(task.secondsMax);}
+function mbClock(sec){sec=Math.max(0,Math.floor(sec));const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;return (h?h+':'+String(m).padStart(2,'0'):String(m))+':'+String(s).padStart(2,'0');}
+function mbResName(res){return {burner:t('feu','burner'),oven:t('four','oven'),microwave:t('micro-ondes','microwave')}[res]||'';}
+function mbCap(res){return res==='burner'?mbEquipment.burners:res==='oven'?mbEquipment.ovens:res==='microwave'?mbEquipment.microwave:Infinity;}
+const mbRunning=()=>[...mbTimers.values()].filter(x=>x.state==='running');
+// Son et vibration : l'audio est activé au premier clic sur un minuteur (règle des navigateurs).
+function mbPrimeAudio(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;if(!mbAudio)mbAudio=new C();if(mbAudio.state==='suspended')mbAudio.resume();}catch(e){}}
+function mbBeep(){mbLastBeep=Date.now();mbBeepCount++;try{if(navigator.vibrate)navigator.vibrate([300,150,300,150,300]);}catch(e){}
+ try{mbPrimeAudio();if(!mbAudio)return;const t0=mbAudio.currentTime;for(let i=0;i<3;i++){const o=mbAudio.createOscillator(),g=mbAudio.createGain(),s=t0+i*.45;o.type='sine';o.frequency.value=880;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.45,s+.03);g.gain.exponentialRampToValueAtTime(.0001,s+.35);o.connect(g);g.connect(mbAudio.destination);o.start(s);o.stop(s+.38);}}catch(e){}}
+function mbAlertText(tm){const base=t('Minuteur terminé : ','Timer finished: ')+tm.recipe+', '+t('étape ','step ')+tm.step+'. ';
+ if(tm.res)return base+(tm.secondsMax>tm.seconds?t('La cuisson peut aller jusqu’à '+mbFmt(tm.secondsMax)+'. Vérifiez avant de continuer.','Cooking can take up to '+mbFmt(tm.secondsMax)+'. Check before continuing.'):t('Vérifiez la cuisson avant de continuer.','Check the cooking before continuing.'));
+ return base+t('Passez à la suite de la recette.','Move on to the next part of the recipe.');}
+function mbFire(tm){mbAlerts=mbAlerts.filter(a=>a.key!==tm.key);mbAlerts.push({key:tm.key,text:mbAlertText(tm)});mbBeepCount=0;mbBeep();
+ const overlay=$('marmito-batch');if((!overlay||!overlay.classList.contains('open'))&&typeof showToast==='function')showToast(mbAlertText(tm));}
+function mbDismissAlert(key){mbAlerts=mbAlerts.filter(a=>a.key!==key);}
+function mbEnsureTicker(){if(!mbTicker)mbTicker=setInterval(mbTick,1000);}
+function mbTick(){
+ if(mbOwner&&(typeof currentUser==='undefined'||!currentUser||currentUser.id!==mbOwner)){mbResetAll();return;}
+ const now=Date.now();
+ mbTimers.forEach(tm=>{if(tm.state==='running'&&tm.end<=now){tm.state='done';mbFire(tm);}});
+ if(mbAlerts.length&&now-mbLastBeep>=12000&&mbBeepCount<4)mbBeep();
+ mbPaintAll();
+ if(!mbRunning().length&&!mbAlerts.length){clearInterval(mbTicker);mbTicker=null;}
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&mbTicker)mbTick();});
+function mbResetAll(){mbTimers.clear();mbAlerts=[];mbDone=new Set();mbRegistry=new Map();mbRecipes=[];mbOwner=null;if(mbTicker){clearInterval(mbTicker);mbTicker=null;}mbPaintBar();}
+function mbNote(key,msg){const e=mbRegistry.get(key);if(e)e.note.textContent=msg||'';}
+function mbStopTimer(key){const tm=mbTimers.get(key);if(tm)mbTimers.delete(key);mbDismissAlert(key);mbNote(key,'');mbPaintAll();}
+function mbStartTimer(task){
+ const cur=mbTimers.get(task.key);
+ if(cur&&cur.state==='running'){mbStopTimer(task.key);return;}
+ mbPrimeAudio();
+ const person=!task.passive;
+ if(task.holds){const cap=mbCap(task.resource);if(cap>0&&mbRunning().filter(x=>x.res===task.resource).length>=cap){mbNote(task.key,t('Il n’y a plus de '+mbResName(task.resource)+' libre ('+cap+' sur '+cap+' utilisés). Arrêtez une autre cuisson ou changez « Votre cuisine ».','No '+mbResName(task.resource)+' is free ('+cap+' of '+cap+' in use). Stop another cooking step or change “Your kitchen”.'));return;}}
+ if(person){const cap=Math.max(1,mbEquipment.people);if(mbRunning().filter(x=>x.person).length>=cap){mbNote(task.key,t('Toutes les personnes sont déjà occupées ('+cap+'). Terminez une étape manuelle ou augmentez « Personnes en cuisine ».','Everyone is already busy ('+cap+'). Finish a hands-on step or raise “People cooking”.'));return;}}
+ mbTimers.set(task.key,{key:task.key,recipe:task.recipe,step:task.index+1,seconds:task.seconds,secondsMax:task.secondsMax,end:Date.now()+task.seconds*1000,res:task.holds?task.resource:null,person,state:'running'});
+ mbDismissAlert(task.key);mbNote(task.key,'');mbEnsureTicker();mbPaintAll();
+}
+function mbPaintTimer(key){
+ const e=mbRegistry.get(key);if(!e||!e.btn)return;const tm=mbTimers.get(key);
+ e.card.classList.toggle('mb-finished',!!tm&&tm.state==='done');
+ if(tm&&tm.state==='running'){const rem=Math.max(0,Math.ceil((tm.end-Date.now())/1000));e.btn.textContent=mbClock(rem)+' · '+t('Arrêter','Stop');e.btn.setAttribute('aria-label',t('Arrêter le minuteur, temps restant ','Stop timer, time left ')+mbClock(rem));}
+ else if(tm&&tm.state==='done'){e.btn.textContent=t('Terminé · relancer','Finished · restart');e.btn.setAttribute('aria-label',t('Minuteur terminé, relancer','Timer finished, restart'));}
+ else{e.btn.textContent=t('Démarrer le minuteur','Start timer');e.btn.setAttribute('aria-label',t('Démarrer le minuteur de ','Start timer for ')+mbFmt(e.seconds));}
+}
+function mbPaintBar(){
+ const bar=$('mb-timerbar');if(!bar)return;bar.replaceChildren();
+ const running=mbRunning();bar.hidden=!running.length&&!mbAlerts.length;if(bar.hidden)return;
+ mbAlerts.forEach(a=>{const row=document.createElement('div');row.className='mb-alert';row.setAttribute('role','alert');const msg=document.createElement('span');msg.textContent=a.text;const ok=document.createElement('button');ok.type='button';ok.className='mb-btn';ok.textContent=t('OK, compris','OK, got it');ok.onclick=()=>{mbDismissAlert(a.key);mbPaintAll();};row.append(msg,ok);bar.append(row);});
+ running.sort((a,b)=>a.end-b.end).forEach(tm=>{const row=document.createElement('div');row.className='mb-running';const rem=Math.max(0,Math.ceil((tm.end-Date.now())/1000));row.textContent='⏱ '+mbClock(rem)+' · '+tm.recipe+', '+t('étape ','step ')+tm.step;bar.append(row);});
+}
+function mbPaintAll(){mbRegistry.forEach((e,key)=>mbPaintTimer(key));mbPaintBar();}
 function mbEquipmentPanel(){
  const section=createSection(t('Votre cuisine','Your kitchen'));
- const note=document.createElement('p');note.className='mb-note';note.textContent=t('Adaptez le planning à vos équipements. Les réglages restent temporaires.','Adapt the plan to your equipment. Settings are temporary.');section.append(note);
+ const note=document.createElement('p');note.className='mb-note';note.textContent=t('Le planning tient compte de vos feux, de vos fours, de vos micro-ondes et du nombre de personnes. Si vous changez un réglage, vos étapes cochées et vos minuteurs en cours sont conservés.','The plan uses your burners, ovens, microwaves and the number of people. If you change a setting, your checked steps and running timers are kept.');section.append(note);
  const wrap=document.createElement('div');wrap.className='mb-equipment';
  [['burners',t('Feux de cuisson','Stove burners'),0,8],['ovens',t('Fours','Ovens'),0,3],['people',t('Personnes en cuisine','People cooking'),1,6],['microwave',t('Micro-ondes','Microwaves'),0,2]].forEach(([name,label,min,max])=>{
   const el=document.createElement('label');el.textContent=label;const select=document.createElement('select');select.setAttribute('aria-label',label);
   for(let n=min;n<=max;n++)select.add(new Option(String(n),String(n)));
-  select.value=String(mbEquipment[name]);select.onchange=()=>{mbEquipment[name]=Number(select.value);generate();};el.append(select);wrap.append(el);
+  select.value=String(mbEquipment[name]);select.onchange=()=>{mbEquipment[name]=Number(select.value);mbRenderPlan();};el.append(select);wrap.append(el);
  });section.append(wrap);return section;
 }
-function mbRenderPlan(recipes){
- const section=createSection(t('Assistant de préparation — ordre conseillé','Cooking assistant — suggested order'));
- const note=document.createElement('p');note.className='mb-note';note.textContent=t('Les étapes de chaque recette restent dans leur ordre original. Les cuissons longues connues sont proposées dès que leurs préparations préalables sont prêtes. Une seule tâche manuelle à la fois. Vérifiez les cuissons et la disponibilité de vos équipements avant de commencer une nouvelle étape.','Each recipe keeps its original step order. Known long cooking steps are suggested as soon as their prerequisites are ready. Only one hands-on task at a time. Check cooking progress and equipment availability before starting another step.');section.append(note);
- const tasks=mbBuildTasks(recipes);if(!tasks.length){const p=document.createElement('p');p.textContent=t('Aucune étape disponible pour ces recettes.','No steps available for these recipes.');section.append(p);return section;}
- const counts={burner:0,oven:0,microwave:0};const active=new Map();const cards=[];
+function mbResetProgress(){const keys=new Set();mbRecipes.forEach(r=>(r.steps||[]).forEach((s,i)=>keys.add(r.title+'#'+i)));keys.forEach(k=>{mbDone.delete(k);mbTimers.delete(k);mbDismissAlert(k);});mbRenderPlan();}
+// Reconstruit uniquement le plan : les ingrédients, l'état coché et les minuteurs restent intacts.
+function mbRenderPlan(){
+ const host=mbPlanHost;if(!host||!host.isConnected)return;host.replaceChildren();mbRegistry=new Map();
+ const section=createSection(t('Assistant de préparation','Cooking assistant'));
+ const chains=mbBuildTasks(mbRecipes),tasks=mbSchedule(chains,mbEquipment);
+ const note=document.createElement('p');note.className='mb-note';note.textContent=t('Les étapes de chaque recette gardent leur ordre. Les cuissons sans surveillance sont lancées en premier, puis les tâches manuelles s’enchaînent selon le nombre de personnes. Un feu, un four ou un micro-ondes ne sert qu’à une cuisson à la fois. Les durées viennent des recettes ; une étape sans durée compte pour '+MB_UNKNOWN_STEP_MIN+' min dans l’estimation seulement.','Each recipe keeps its step order. Unattended cooking starts first, then hands-on tasks follow according to the number of people. A burner, oven or microwave only handles one cooking step at a time. Durations come from the recipes; a step without a duration counts for '+MB_UNKNOWN_STEP_MIN+' min in the estimate only.');section.append(note);
+ if(!tasks.length){const p=document.createElement('p');p.textContent=t('Aucune étape disponible pour ces recettes.','No steps available for these recipes.');section.append(p);host.append(section);mbPaintBar();return;}
+ const total=tasks.reduce((m,x)=>Math.max(m,x.end),0);
  const summary=document.createElement('p');summary.className='mb-stats';section.append(summary);
- const update=()=>{const done=cards.filter(c=>c.checkbox.checked).length;summary.textContent=done+' / '+tasks.length+' '+t('étapes terminées','steps completed');};
+ const needs=res=>tasks.filter(x=>x.holds&&x.resource===res).length;
+ [['burner',mbEquipment.burners],['oven',mbEquipment.ovens],['microwave',mbEquipment.microwave]].forEach(([res,cap])=>{if(cap<=0&&needs(res)){const w=document.createElement('p');w.className='mb-warning';w.textContent=t(needs(res)+' étape(s) utilisent un '+mbResName(res)+' mais vous avez réglé 0. Elles restent dans le plan : trouvez une solution ou changez le réglage.',needs(res)+' step(s) use a '+mbResName(res)+' but you set 0. They stay in the plan: find another way or change the setting.');section.append(w);}});
+ const over=[['burner',mbEquipment.burners],['oven',mbEquipment.ovens],['microwave',mbEquipment.microwave]].filter(([res,cap])=>mbRunning().filter(x=>x.res===res).length>cap);
+ if(over.length){const w=document.createElement('p');w.className='mb-warning';w.textContent=t('Des minuteurs en cours dépassent ce réglage. Ils continuent jusqu’à leur fin.','Some running timers exceed this setting. They keep running until they end.');section.append(w);}
+ const cards=[];
+ const update=()=>{const done=cards.filter(c=>c.checkbox.checked).length;summary.textContent=done+' / '+tasks.length+' '+t('étapes terminées','steps completed')+' · '+t('durée estimée : ','estimated time: ')+mbFmt(total*60)+' ('+mbEquipment.people+' '+t(mbEquipment.people>1?'personnes':'personne',mbEquipment.people>1?'people':'person')+', '+mbEquipment.burners+' '+t('feux','burners')+', '+mbEquipment.ovens+' '+t(mbEquipment.ovens>1?'fours':'four',mbEquipment.ovens>1?'ovens':'oven')+')';};
  tasks.forEach((task,pos)=>{
   const card=document.createElement('div');card.className='mb-task';const label=document.createElement('label');
-  const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.setAttribute('aria-label',t('Terminer étape','Complete step')+' '+(pos+1));
+  const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=mbDone.has(task.key);checkbox.setAttribute('aria-label',t('Terminer étape','Complete step')+' '+(pos+1));
   const content=document.createElement('span');const heading=document.createElement('strong');heading.textContent=(pos+1)+'. '+task.recipe+' · '+t('Étape','Step')+' '+(task.index+1);const desc=document.createElement('span');desc.className='mb-task-text';desc.textContent=task.description;content.append(heading,desc);label.append(checkbox,content);card.append(label);
   const actions=document.createElement('div');actions.className='mb-task-actions';
-  const resource=task.resource;const resourceName={burner:t('feu','burner'),oven:t('four','oven'),microwave:t('micro-ondes','microwave')};
-  if(resource!=='none'){const pill=document.createElement('span');pill.className='mb-resource';pill.textContent=resourceName[resource];actions.append(pill);}
-  if(task.minutes){const duration=document.createElement('span');duration.className='mb-resource';duration.textContent=task.minutes+' min';actions.append(duration);}
-  if(task.passive&&task.minutes){const timer=document.createElement('button');timer.type='button';timer.className='mb-btn';timer.textContent=t('Démarrer le minuteur','Start timer');let end=0,interval=null;
-   const redraw=()=>{const remain=Math.max(0,Math.ceil((end-Date.now())/1000));timer.textContent=remain?`${Math.floor(remain/60)}:${String(remain%60).padStart(2,'0')} · ${t('Arrêter','Stop')}`:t('Démarrer le minuteur','Start timer');if(!remain&&interval){clearInterval(interval);interval=null;if(resource!=='none'&&active.has(task.id)){counts[resource]=Math.max(0,counts[resource]-1);active.delete(task.id);}timer.setAttribute('aria-label',t('Minuteur terminé','Timer finished'));}};
-   timer.onclick=()=>{if(interval){clearInterval(interval);interval=null;end=0;if(resource!=='none'&&active.has(task.id)){counts[resource]=Math.max(0,counts[resource]-1);active.delete(task.id);}redraw();return;}
-    const cap=mbEquipment[resource];if(resource!=='none'&&counts[resource]>=cap){message(t('Équipement occupé ou indisponible. Terminez une cuisson avant de lancer ce minuteur.','Equipment busy or unavailable. Finish a cooking step before starting this timer.'));return;}
-    if(resource!=='none')counts[resource]++;end=Date.now()+task.minutes*60000;interval=setInterval(redraw,1000);redraw();message('');};
-   checkbox.addEventListener('change',()=>{if(checkbox.checked&&interval){clearInterval(interval);interval=null;end=0;redraw();}if(resource!=='none'&&active.has(task.id)){counts[resource]=Math.max(0,counts[resource]-1);active.delete(task.id);}update();});
-   timer.addEventListener('click',()=>{if(interval&&resource!=='none')active.set(task.id,true);});actions.append(timer);
-  }else checkbox.addEventListener('change',update);
-  if(!task.minutes){const caution=document.createElement('small');caution.className='mb-note';caution.textContent=t('Durée non précisée : suivez la recette.','Duration not specified: follow the recipe.');actions.append(caution);}
-  card.append(actions);section.append(card);cards.push({checkbox});
- });update();return section;
+  const chip=text=>{const s=document.createElement('span');s.className='mb-resource';s.textContent=text;actions.append(s);};
+  chip(t('Début conseillé : ','Suggested start: ')+(task.start<1?t('tout de suite','right away'):t('après ','after ')+mbFmt(task.start*60)));
+  if(task.resource!=='none'&&!task.preheat)chip(mbResName(task.resource));
+  if(task.preheat)chip(t('four à préchauffer','preheat the oven'));
+  if(task.hasDuration){chip(mbFmtRange(task));chip(task.passive?t('sans surveillance','unattended'):t('demande votre attention','needs your attention'));}
+  const noteEl=document.createElement('small');noteEl.className='mb-task-note';noteEl.setAttribute('role','status');noteEl.setAttribute('aria-live','polite');
+  let btn=null;
+  if(task.hasDuration){btn=document.createElement('button');btn.type='button';btn.className='mb-btn';btn.onclick=()=>mbStartTimer(task);actions.append(btn);}
+  else{const caution=document.createElement('small');caution.className='mb-note';caution.textContent=t('Durée non précisée : suivez la recette.','Duration not specified: follow the recipe.');actions.append(caution);}
+  if(task.source==='text'&&task.hasDuration){const c=document.createElement('small');c.className='mb-note';c.textContent=task.multi?t('Plusieurs durées dans cette étape : vérifiez la recette.','Several durations in this step: check the recipe.'):t('Durée lue dans le texte de l’étape.','Duration read from the step text.');actions.append(c);}
+  if(task.conflict){const c=document.createElement('small');c.className='mb-note';c.textContent=t('Le texte mentionne aussi une durée plus longue : suivez la recette.','The text also mentions a longer duration: follow the recipe.');actions.append(c);}
+  if(task.missing){const c=document.createElement('small');c.className='mb-note';c.textContent=t('Équipement non disponible dans vos réglages.','Equipment not available in your settings.');actions.append(c);}
+  card.append(actions,noteEl);section.append(card);cards.push({checkbox});
+  mbRegistry.set(task.key,{card,btn,note:noteEl,seconds:task.seconds});
+  checkbox.addEventListener('change',()=>{if(checkbox.checked){mbDone.add(task.key);mbTimers.delete(task.key);mbDismissAlert(task.key);}else mbDone.delete(task.key);noteEl.textContent='';update();mbPaintAll();});
+ });
+ const reset=document.createElement('button');reset.type='button';reset.className='mb-btn';reset.textContent=t('Réinitialiser la progression','Reset progress');reset.onclick=mbResetProgress;section.append(reset);
+ update();host.append(section);mbPaintAll();
 }
 function createSection(title){const section=document.createElement('section');section.className='mb-section';const h=document.createElement('h3');h.textContent=title;section.append(h);return section}
 function ingredientLabel(r,index){const tr=en()&&typeof MARMITO_EN_CATALOG_V1!=='undefined'?MARMITO_EN_CATALOG_V1[r.title]:null;return tr?.ingredients?.[index]||r.ingredients[index]}
 function generate(){const list=allowed().filter(r=>selected.has(key(r)));if(!list.length||list.length>limit())return;stage='session';$('mb-picker').classList.add('mb-hidden');$('mb-session').classList.remove('mb-hidden');message('');const root=$('mb-session-body');root.replaceChildren();
 const group=createSection(t('Ingrédients à préparer','Ingredients to prepare'));const note=document.createElement('p');note.className='mb-note';note.textContent=t('Les ingrédients identiques sont regroupés par nom. Vérifiez les quantités et les unités dans chaque recette avant de les additionner.','Identical ingredient names are grouped. Check quantities and units in each recipe before adding them.');group.append(note);const map=new Map();list.forEach(r=>r.ingredients.forEach((ing,i)=>{const name=ingredientLabel(r,i),normalized=String(name).trim().toLocaleLowerCase();if(!map.has(normalized))map.set(normalized,{name,recipes:[]});const qty=typeof recipeIngredientQty==='function'?recipeIngredientQty(r,i):'';map.get(normalized).recipes.push({recipe:translated(r),qty:String(qty||'')})}));const ingredientGrid=document.createElement('div');ingredientGrid.className='mb-ingredient-grid';[...map.values()].sort((a,b)=>a.name.localeCompare(b.name)).forEach(item=>{const card=document.createElement('article');card.className='mb-ingredient-card';const heading=document.createElement('h4');heading.className='mb-ingredient-name';heading.textContent=item.name;card.append(heading);const details=document.createElement('div');details.className='mb-ingredient-details';item.recipes.forEach(x=>{const line=document.createElement('div');line.className='mb-ingredient-line';if(x.qty){const qty=document.createElement('span');qty.className='mb-ingredient-qty';qty.textContent=x.qty;line.append(qty);}const recipe=document.createElement('span');recipe.className='mb-ingredient-recipe';recipe.textContent=x.recipe;line.append(recipe);details.append(line)});card.append(details);ingredientGrid.append(card)});group.append(ingredientGrid);root.append(group);
-root.append(mbEquipmentPanel());root.append(mbRenderPlan(list));
-const storage=createSection(t('Conservation et sécurité','Storage and safety'));const p=document.createElement('p');p.className='mb-note';p.textContent=t('Réfrigérez les préparations périssables dans les 2 heures, à 4 °C ou moins. Consommez les restes dans les 2 à 3 jours ou congelez-les rapidement. Réchauffez les restes à 74 °C à cœur. Adaptez ces indications aux ingrédients et à chaque recette.','Refrigerate perishable preparations within 2 hours at 4°C or below. Eat leftovers within 2–3 days or freeze promptly. Reheat leftovers to an internal temperature of 74°C. Adapt these guidelines to the ingredients and each recipe.');storage.append(p);root.append(storage);
-const footer=document.createElement('p');footer.className='mb-note';footer.textContent=t('Sauvegarde des séances : à venir en V107.1 (Saveur : 10 nouvelles séances par mois ; Chef : illimité ; Gratuit : aucune).','Session saving: coming in V107.1 (Saveur: 10 new sessions per month; Chef: unlimited; Free: none).');root.append(footer);$('marmito-batch').scrollTo({top:0,behavior:'instant'});}
+if(mbOwner&&mbOwner!==(currentUser&&currentUser.id))mbResetAll();mbOwner=currentUser&&currentUser.id||null;mbRecipes=list;root.append(mbEquipmentPanel());mbPlanHost=document.createElement('div');mbPlanHost.id='mb-plan-host';root.append(mbPlanHost);mbRenderPlan();
+const storage=createSection(t('Conservation et sécurité','Storage and safety'));const p=document.createElement('p');p.className='mb-note';p.textContent=t('Réfrigérez les préparations périssables dans les 2 heures, à 4 °C ou moins. Consommez les restes dans les 2 à 3 jours ou congelez-les rapidement. Réchauffez les restes à 74 °C à cœur. Adaptez ces indications aux ingrédients et à chaque recette.','Refrigerate perishable preparations within 2 hours at 4°C or below. Eat leftovers within 2 to 3 days or freeze promptly. Reheat leftovers to an internal temperature of 74°C. Adapt these guidelines to the ingredients and each recipe.');storage.append(p);root.append(storage);
+$('marmito-batch').scrollTo({top:0,behavior:'instant'});}
 $('mb-generate').onclick=generate;
 $('mb-shopping').onclick=()=>{const list=allowed().filter(r=>selected.has(key(r)));if(!list.length)return;const cap=userPlan==='chef'?Infinity:userPlan==='saveur'?14:3;if(list.length>cap){message(t('La liste de courses de votre forfait accepte moins de recettes. Ajoutez-les par groupes plus petits.','Your shopping list plan allows fewer recipes. Add them in smaller groups.'));return}if(typeof shoppingAddRecipes==='function'){close();Promise.resolve(shoppingAddRecipes(list)).catch(()=>{if(typeof showToast==='function')showToast(t('Impossible de charger la liste de courses.','Could not open the shopping list.'))})}else message(t('Liste de courses indisponible.','Shopping list unavailable.'))};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('marmito-batch').classList.contains('open'))back()});
+document.addEventListener('marmito-lang-changed',()=>{if(!$('marmito-batch').classList.contains('open')){mbPaintBar();return}sync();if(stage==='session')generate();else renderPicker();mbPaintBar();});
 })();
 </script>
 
