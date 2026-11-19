@@ -125,6 +125,23 @@ body{
 /* Footer */
 .footer-note{text-align:center;font-size:0.78rem;color:var(--fg2);margin-top:16px;max-width:420px}
 .footer-note a{color:var(--accent);text-decoration:none}
+
+/* Marmito V59 — harmonisation visuelle avec landing et index */
+:root{--bg:#faf6ee;--fg:#193c29;--fg2:#657565;--accent:#c94715;--accent-light:#fbe9dc;--accent-dark:#a9360b;--brown:#214a32;--brown-mid:#315a3d;--border:#dce4d4;--card-bg:#fffdf8;--shadow:0 18px 50px rgba(27,58,36,.10);--grad-dark:linear-gradient(125deg,#123d2a,#315d3c)}
+body{background:radial-gradient(ellipse at 15% 10%,#e8efdf 0,transparent 45%),radial-gradient(ellipse at 95% 95%,#fae8d9 0,transparent 38%),var(--bg);padding:28px 16px}
+.auth-logo{font-family:Georgia,'Fraunces',serif;color:#fff;border-radius:22px 22px 0 0;letter-spacing:.035em;padding:25px 32px 9px;background:var(--grad-dark);max-width:460px}
+.auth-logo span{color:#f2c8a0}
+.tagline{max-width:460px;background:var(--grad-dark);opacity:1;color:#e9f1e7;padding:0 26px 24px;letter-spacing:.015em}
+.card{max-width:460px;border-radius:0 0 22px 22px;padding:30px 32px 28px;box-shadow:var(--shadow)}
+.tab.active{color:#174b30;border-bottom-color:#c94715}
+.field label{color:#355643}
+.field input{background:#fff;color:#193c29}
+.field input:focus{border-color:#c94715;box-shadow:0 0 0 3px #c9471520}
+.btn-primary{border-radius:999px;font-family:'DM Sans',sans-serif;background:#c94715;font-weight:700;min-height:48px}
+.btn-primary:hover{background:#a9360b}
+.btn-google{border-radius:999px;min-height:46px;background:#fff}
+.footer-note a{color:#a9360b}
+@media(max-width:480px){.card{padding:24px 20px}.auth-logo{font-size:2rem}}
 </style>
 </head>
 <body>
@@ -180,9 +197,15 @@ body{
 <p class="footer-note">En vous inscrivant, vous acceptez nos <a href="#">conditions d'utilisation</a>.</p>
 
 <script>
-const SUPABASE_URL = 'https://kfaabpwvisormfrwceaa.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_n8HXWNlgaJ5Ck749-k8_XQ_HsZ7-BRX';
+const SUPABASE_URL = 'https://osfhpzgfqpbzyrbjkajk.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_HAduBBuXWYfdKvOnfZ7X-Q_liL5Xj7h';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// V60 : mémoriser le code d'invitation sur le même domaine que l'application.
+const inviteCode = new URLSearchParams(location.search).get('ref');
+if (inviteCode && /^[A-Z0-9]{6,24}$/i.test(inviteCode)) {
+  try { localStorage.setItem('marmito-pending-ref', inviteCode.toUpperCase()); } catch(e) {}
+}
+
 
 sb.auth.getSession().then(({data:{session}})=>{
   if(session) window.location.href='/';
@@ -226,7 +249,13 @@ async function doSignup(){
   if(pass.length<8){showMsg('Le mot de passe doit avoir au moins 8 caracteres.','error');return;}
   const btn=document.getElementById('btn-signup');
   btn.disabled=true;btn.textContent='Creation...';
-  const{error}=await sb.auth.signUp({email,password:pass});
+  // V61 : transmettre le code en métadonnées, en plus du stockage local.
+  // La validation et l'association définitive restent du ressort de la RPC Supabase.
+  let referralCode = null;
+  try { referralCode = localStorage.getItem('marmito-pending-ref'); } catch(e) {}
+  if (referralCode && !/^[A-Z0-9]{6,24}$/.test(referralCode)) referralCode = null;
+  const signupOptions = referralCode ? { data: { marmito_referral_code: referralCode } } : {};
+  const{error}=await sb.auth.signUp({email,password:pass,options:signupOptions});
   if(error){showMsg(error.message,'error');btn.disabled=false;btn.textContent='Creer mon compte';}
   else showMsg('Compte cree ! Verifiez votre courriel pour confirmer.','success');
 }
