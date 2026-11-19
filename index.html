@@ -4655,8 +4655,16 @@ function checkDirectLink() {
 
 // ===== RECETTE DU JOUR =====
 function getDailyRecipe() {
-  const dayIndex = Math.floor(Date.now() / 86400000);
-  return recipes[dayIndex % recipes.length];
+  // Le catalogue dépend du forfait : utiliser les 20 premières recettes,
+  // communes à Gratuit, Saveur et Chef, pour un choix identique pour tous.
+  if (!Array.isArray(recipes) || recipes.length === 0) return null;
+  const commonCount = Math.min(20, recipes.length);
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Toronto', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(new Date());
+  const datePart = type => Number(parts.find(part => part.type === type).value);
+  const dayIndex = Math.floor(Date.UTC(datePart('year'), datePart('month') - 1, datePart('day')) / 86400000);
+  return recipes[dayIndex % commonCount];
 }
 function initDailyRecipe() {
   const r = getDailyRecipe();
