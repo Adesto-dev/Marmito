@@ -3243,8 +3243,17 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
 
   function signOut() {
     if (confirm(currentLang === 'en' ? 'Sign out?' : 'Se déconnecter ?')) {
-      sb.auth.signOut().then(() => location.reload());
+      marmitoHardSignOut();
     }
+  }
+
+  // V107.7 : deconnexion fiable. Si le serveur repond avec une erreur, la session locale est quand meme supprimee.
+  async function marmitoHardSignOut() {
+    try { await sb.auth.signOut({ scope: 'local' }); } catch (e) {}
+    try {
+      Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k));
+    } catch (e) {}
+    window.location.href = '/landing.html';
   }
 
   // ===== DRAWER MENU =====
@@ -3860,7 +3869,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
     else if (action === 'admin') { setTimeout(()=>marmitoOpenAdmin(), 320); }
     else if (action === 'upgrade') { setTimeout(()=>openPricing(), 320); }
     else if (action === 'manage') { setTimeout(()=>manageSubscription(), 320); }
-    else if (action === 'logout') { if(confirm('Se déconnecter ?')) { sb.auth.signOut().then(()=>location.reload()); } }
+    else if (action === 'logout') { if(confirm('Se déconnecter ?')) { marmitoHardSignOut(); } }
     else if (action === 'about') { setTimeout(()=>openAbout(), 320); }
     else if (action === 'tips') { setTimeout(()=>openTips(), 320); }
     else if (action === 'contact') { setTimeout(()=>openContact(), 320); }
@@ -3946,8 +3955,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
   }
 
   async function doLogout() {
-    await sb.auth.signOut();
-    window.location.href = '/auth.html';
+    await marmitoHardSignOut();
   }
 
   // === SEARCH ===
