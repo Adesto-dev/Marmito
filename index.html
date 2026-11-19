@@ -8578,7 +8578,7 @@ function refreshText(){
  $('marmito-pantry-unit-label').textContent=t('Unité','Unit');
  $('marmito-pantry-save').textContent=t('Enregistrer','Save');
  $('marmito-pantry-name').placeholder=t('Ex. riz','E.g. rice');
- $('marmito-pantry-overlay').querySelector('.marmito-pantry-close').textContent=t('Fermer','Close');
+ $('marmito-pantry-overlay').querySelector('button[onclick="marmitoClosePantry()"]')?.replaceChildren(document.createTextNode(t('Fermer','Close')));
  Array.from($('marmito-pantry-unit').options).forEach(o=>o.textContent=unitLabels[o.value][currentLang==='en'?1:0]);
 }
 function render(){
