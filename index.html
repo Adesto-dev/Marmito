@@ -9100,7 +9100,14 @@ else{hint.textContent=filtered.length+' '+t('résultat(s)','result(s)');}
 host.append(hint);$('mb-generate').disabled=!selected.size;}
 function close(){const overlay=$('marmito-batch');overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');if(lastFocus&&lastFocus.isConnected)lastFocus.focus({preventScroll:true});}
 function back(){if(stage==='session'){stage='picker';$('mb-picker').classList.remove('mb-hidden');$('mb-session').classList.add('mb-hidden');renderPicker()}else close()}
-function open(){if(typeof currentUser==='undefined'||!currentUser){if(typeof showToast==='function')showToast(t('Connectez-vous pour utiliser le Batch Cooking.','Sign in to use Batch Cooking.'));return}if(typeof closeDrawer==='function')closeDrawer();lastFocus=document.activeElement;stage='picker';$('mb-picker').classList.remove('mb-hidden');$('mb-session').classList.add('mb-hidden');$('marmito-batch').classList.add('open');$('marmito-batch').setAttribute('aria-hidden','false');message('');renderPicker();refreshPersonalPlans();$('mb-search').focus({preventScroll:true})}
+function open(){if(typeof currentUser==='undefined'||!currentUser){if(typeof showToast==='function')showToast(t('Connectez-vous pour utiliser le Batch Cooking.','Sign in to use Batch Cooking.'));return}if(typeof closeDrawer==='function')closeDrawer();
+// Close the weekly plan before displaying Batch Cooking: its overlay has a higher z-index.
+const weeklyOverlay=document.getElementById('plan-overlay');
+if(weeklyOverlay&&weeklyOverlay.classList.contains('open')){
+  if(typeof closePlanRepas==='function')closePlanRepas();
+  else weeklyOverlay.classList.remove('open');
+}
+lastFocus=document.activeElement;stage='picker';$('mb-picker').classList.remove('mb-hidden');$('mb-session').classList.add('mb-hidden');$('marmito-batch').classList.add('open');$('marmito-batch').setAttribute('aria-hidden','false');message('');renderPicker();refreshPersonalPlans();$('mb-search').focus({preventScroll:true})}
 window.marmitoBatchOpen=open;window.marmitoBatchClose=close;
 $('mb-close').onclick=close;$('mb-back').onclick=back;$('mb-edit').onclick=back;$('mb-menu').onclick=()=>{close();if(typeof openDrawer==='function')openDrawer();else document.querySelector('#drawer-toggle, .hamburger, [onclick="openDrawer()"]')?.click()};
 $('mb-search').addEventListener('input',renderPicker);
