@@ -9047,6 +9047,19 @@ translateNodes();
 #marmito-batch .mb-personal-tools select{flex:1;min-width:190px;max-width:370px}
 @media(max-width:700px){#marmito-batch .mb-head{grid-template-columns:1fr auto;gap:8px}#marmito-batch .mb-head h2{grid-column:1/-1;grid-row:2;text-align:left}#marmito-batch .mb-nav{grid-column:1;grid-row:1}#marmito-batch .mb-actions{grid-column:2;grid-row:1}#marmito-batch .mb-btn{padding:10px 12px}}
 </style>
+<style id="marmito-batch-smart-style">
+#marmito-batch .mb-equipment{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+#marmito-batch .mb-equipment label{display:flex;flex-direction:column;gap:8px;font-weight:650}
+#marmito-batch .mb-equipment select{padding:10px;border:1px solid #ccd8ca;border-radius:10px;background:white;font:inherit}
+#marmito-batch .mb-task{border-top:1px solid #e2e8df;padding:13px 0}
+#marmito-batch .mb-task label{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+#marmito-batch .mb-task label input{width:19px;height:19px;flex-shrink:0;accent-color:#244a32}
+#marmito-batch .mb-task label strong{display:block;margin-bottom:6px}
+#marmito-batch .mb-task-text{display:block;line-height:1.6;white-space:pre-line}
+#marmito-batch .mb-task-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-left:31px}
+#marmito-batch .mb-resource{background:#edf3e8;border-radius:999px;padding:5px 9px;font-size:12px}
+#marmito-batch .mb-task:has(input:checked) .mb-task-text{opacity:.65;text-decoration:line-through}
+</style>
 <section id="marmito-batch" role="dialog" aria-modal="true" aria-labelledby="mb-title" aria-hidden="true">
 <div class="mb-shell"><header class="mb-head"><div class="mb-nav"><button type="button" class="mb-btn" id="mb-menu">Menu</button><button type="button" class="mb-btn" id="mb-back">Retour</button></div><h2 id="mb-title">Batch Cooking</h2><div class="mb-actions"><button type="button" class="mb-btn" id="mb-close">Fermer</button></div></header>
 <p id="mb-intro" class="mb-intro"></p><div id="mb-status" role="status" aria-live="polite"></div>
@@ -9147,11 +9160,87 @@ $('mb-view-week').onclick=()=>{
   if(typeof openPlanRepas==='function')openPlanRepas();
   else message(t('Plan de repas indisponible.','Meal plan unavailable.'));
 };
+// V107.5 Batch Cooking: local, session-only equipment configuration.
+const MB_DEFAULT_EQUIPMENT={burners:4,ovens:1,people:1,microwave:1};
+let mbEquipment={...MB_DEFAULT_EQUIPMENT};
+function mbStepText(step){if(typeof step==='string')return step;if(step&&typeof step==='object'){const v=en()?(step.text_en||step.en||step.text):(step.text_fr||step.fr||step.text);return typeof v==='string'?v:'';}return '';}
+function mbStepMinutes(step,description){
+  const explicit=step&&typeof step==='object'?[step.duration_minutes,step.durationMinutes,step.minutes]:[];
+  for(const v of explicit){if(typeof v==='number'&&Number.isFinite(v)&&v>0&&v<=480)return Math.ceil(v);}
+  const m=description.match(/(?:\b(?:pendant|environ|durant|for|about)\s+)?(\d{1,3})\s*(?:à|a|to|–|-)\s*(\d{1,3})\s*(minutes?|mins?|min\b|heures?|hours?|hrs?\b)/i)||description.match(/(\d{1,3})\s*(minutes?|mins?|min\b|heures?|hours?|hrs?\b)/i);
+  if(!m)return null;
+  const n=Number(m[2]&&/^\d+$/.test(m[2])?m[2]:m[1]);const unit=m[m.length-1];return n>0&&n<=480?( /heure|hour|hr/i.test(unit)?n*60:n):null;
+}
+function mbClassify(description){
+ const x=description.toLocaleLowerCase();
+ const oven=/four|enfour|gratin|bake|oven|roast/.test(x);
+ const microwave=/micro[- ]?ondes|microwave/.test(x);
+ const burner=/poêle|poele|casserole|mijot|bouill|feu (?:doux|moyen|vif)|sauteuse|saisir|frire|friture|simmer|stovetop|pan[- ]?fry|boil|sauté|skillet/.test(x);
+ const passive=/laisser (?:cuire|mijoter|reposer|refroidir|lever)|faire (?:cuire|mijoter)|cuire (?:au four|à feu doux|a feu doux)|enfourner|mijoter|réfrigér|reposer|let (?:simmer|rest|cool)|bake (?:for|until)|simmer|chill|refrigerate/.test(x);
+ const prep=/lav|épluch|éminc|hach|coup|découp|pes|mesur|prépar|rinc|peel|wash|chop|slice|dice|measure|rinse|mix|mélang/.test(x);
+ return {resource:microwave?'microwave':oven?'oven':burner?'burner':'none',passive:passive&&!/remu|surveill|stir constantly|whisk constantly/.test(x),prep};
+}
+function mbBuildTasks(recipes){
+ const tasks=[];
+ recipes.forEach((r,ri)=>{const translatedSteps=en()&&typeof MARMITO_EN_CATALOG_V1!=='undefined'?MARMITO_EN_CATALOG_V1[r.title]?.steps:null;
+ const steps=Array.isArray(translatedSteps)?translatedSteps:Array.isArray(r.steps)?r.steps:[];
+ steps.forEach((step,i)=>{const description=mbStepText(step);if(!description.trim())return;
+ const info=mbClassify(description);tasks.push({id:ri+'-'+i,ri,index:i,recipe:translated(r),description,minutes:mbStepMinutes(step,description),...info});});});
+ // Dependency-safe scheduling: only the next step of a recipe may be selected.
+ // Passive steps with an explicit duration are prioritized; no fictional timings.
+ const queues=recipes.map((_,ri)=>tasks.filter(x=>x.ri===ri));const ordered=[];
+ while(queues.some(q=>q.length)){
+  const ready=queues.filter(q=>q.length).map(q=>q[0]);
+  ready.sort((a,b)=>{
+   const priority=x=>x.passive&&x.minutes?0:x.prep?1:x.resource!=='none'?2:3;
+   return priority(a)-priority(b)||(b.passive?b.minutes||0:0)-(a.passive?a.minutes||0:0)||a.ri-b.ri;
+  });
+  const next=ready[0];ordered.push(next);queues[next.ri].shift();
+ }
+ return ordered;
+}
+function mbEquipmentPanel(){
+ const section=createSection(t('Votre cuisine','Your kitchen'));
+ const note=document.createElement('p');note.className='mb-note';note.textContent=t('Adaptez le planning à vos équipements. Les réglages restent temporaires.','Adapt the plan to your equipment. Settings are temporary.');section.append(note);
+ const wrap=document.createElement('div');wrap.className='mb-equipment';
+ [['burners',t('Feux de cuisson','Stove burners'),0,8],['ovens',t('Fours','Ovens'),0,3],['people',t('Personnes en cuisine','People cooking'),1,6],['microwave',t('Micro-ondes','Microwaves'),0,2]].forEach(([name,label,min,max])=>{
+  const el=document.createElement('label');el.textContent=label;const select=document.createElement('select');select.setAttribute('aria-label',label);
+  for(let n=min;n<=max;n++)select.add(new Option(String(n),String(n)));
+  select.value=String(mbEquipment[name]);select.onchange=()=>{mbEquipment[name]=Number(select.value);generate();};el.append(select);wrap.append(el);
+ });section.append(wrap);return section;
+}
+function mbRenderPlan(recipes){
+ const section=createSection(t('Assistant de préparation — ordre conseillé','Cooking assistant — suggested order'));
+ const note=document.createElement('p');note.className='mb-note';note.textContent=t('Les étapes de chaque recette restent dans leur ordre original. Les cuissons longues connues sont proposées dès que leurs préparations préalables sont prêtes. Une seule tâche manuelle à la fois. Vérifiez les cuissons et la disponibilité de vos équipements avant de commencer une nouvelle étape.','Each recipe keeps its original step order. Known long cooking steps are suggested as soon as their prerequisites are ready. Only one hands-on task at a time. Check cooking progress and equipment availability before starting another step.');section.append(note);
+ const tasks=mbBuildTasks(recipes);if(!tasks.length){const p=document.createElement('p');p.textContent=t('Aucune étape disponible pour ces recettes.','No steps available for these recipes.');section.append(p);return section;}
+ const counts={burner:0,oven:0,microwave:0};const active=new Map();const cards=[];
+ const summary=document.createElement('p');summary.className='mb-stats';section.append(summary);
+ const update=()=>{const done=cards.filter(c=>c.checkbox.checked).length;summary.textContent=done+' / '+tasks.length+' '+t('étapes terminées','steps completed');};
+ tasks.forEach((task,pos)=>{
+  const card=document.createElement('div');card.className='mb-task';const label=document.createElement('label');
+  const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.setAttribute('aria-label',t('Terminer étape','Complete step')+' '+(pos+1));
+  const content=document.createElement('span');const heading=document.createElement('strong');heading.textContent=(pos+1)+'. '+task.recipe+' · '+t('Étape','Step')+' '+(task.index+1);const desc=document.createElement('span');desc.className='mb-task-text';desc.textContent=task.description;content.append(heading,desc);label.append(checkbox,content);card.append(label);
+  const actions=document.createElement('div');actions.className='mb-task-actions';
+  const resource=task.resource;const resourceName={burner:t('feu','burner'),oven:t('four','oven'),microwave:t('micro-ondes','microwave')};
+  if(resource!=='none'){const pill=document.createElement('span');pill.className='mb-resource';pill.textContent=resourceName[resource];actions.append(pill);}
+  if(task.minutes){const duration=document.createElement('span');duration.className='mb-resource';duration.textContent=task.minutes+' min';actions.append(duration);}
+  if(task.passive&&task.minutes){const timer=document.createElement('button');timer.type='button';timer.className='mb-btn';timer.textContent=t('Démarrer le minuteur','Start timer');let end=0,interval=null;
+   const redraw=()=>{const remain=Math.max(0,Math.ceil((end-Date.now())/1000));timer.textContent=remain?`${Math.floor(remain/60)}:${String(remain%60).padStart(2,'0')} · ${t('Arrêter','Stop')}`:t('Démarrer le minuteur','Start timer');if(!remain&&interval){clearInterval(interval);interval=null;if(resource!=='none'&&active.has(task.id)){counts[resource]=Math.max(0,counts[resource]-1);active.delete(task.id);}timer.setAttribute('aria-label',t('Minuteur terminé','Timer finished'));}};
+   timer.onclick=()=>{if(interval){clearInterval(interval);interval=null;end=0;if(resource!=='none'&&active.has(task.id)){counts[resource]=Math.max(0,counts[resource]-1);active.delete(task.id);}redraw();return;}
+    const cap=mbEquipment[resource];if(resource!=='none'&&counts[resource]>=cap){message(t('Équipement occupé ou indisponible. Terminez une cuisson avant de lancer ce minuteur.','Equipment busy or unavailable. Finish a cooking step before starting this timer.'));return;}
+    if(resource!=='none')counts[resource]++;end=Date.now()+task.minutes*60000;interval=setInterval(redraw,1000);redraw();message('');};
+   checkbox.addEventListener('change',()=>{if(checkbox.checked&&interval){clearInterval(interval);interval=null;end=0;redraw();}if(resource!=='none'&&active.has(task.id)){counts[resource]=Math.max(0,counts[resource]-1);active.delete(task.id);}update();});
+   timer.addEventListener('click',()=>{if(interval&&resource!=='none')active.set(task.id,true);});actions.append(timer);
+  }else checkbox.addEventListener('change',update);
+  if(!task.minutes){const caution=document.createElement('small');caution.className='mb-note';caution.textContent=t('Durée non précisée : suivez la recette.','Duration not specified: follow the recipe.');actions.append(caution);}
+  card.append(actions);section.append(card);cards.push({checkbox});
+ });update();return section;
+}
 function createSection(title){const section=document.createElement('section');section.className='mb-section';const h=document.createElement('h3');h.textContent=title;section.append(h);return section}
 function ingredientLabel(r,index){const tr=en()&&typeof MARMITO_EN_CATALOG_V1!=='undefined'?MARMITO_EN_CATALOG_V1[r.title]:null;return tr?.ingredients?.[index]||r.ingredients[index]}
 function generate(){const list=allowed().filter(r=>selected.has(key(r)));if(!list.length||list.length>limit())return;stage='session';$('mb-picker').classList.add('mb-hidden');$('mb-session').classList.remove('mb-hidden');message('');const root=$('mb-session-body');root.replaceChildren();
 const group=createSection(t('Ingrédients à préparer','Ingredients to prepare'));const note=document.createElement('p');note.className='mb-note';note.textContent=t('Les ingrédients identiques sont regroupés par nom. Vérifiez les quantités et les unités dans chaque recette avant de les additionner.','Identical ingredient names are grouped. Check quantities and units in each recipe before adding them.');group.append(note);const map=new Map();list.forEach(r=>r.ingredients.forEach((ing,i)=>{const name=ingredientLabel(r,i),normalized=String(name).trim().toLocaleLowerCase();if(!map.has(normalized))map.set(normalized,{name,recipes:[]});const qty=typeof recipeIngredientQty==='function'?recipeIngredientQty(r,i):'';map.get(normalized).recipes.push({recipe:translated(r),qty:String(qty||'')})}));const ul=document.createElement('ul');[...map.values()].sort((a,b)=>a.name.localeCompare(b.name)).forEach(item=>{const li=document.createElement('li');const b=document.createElement('strong');b.textContent=item.name;li.append(b,document.createTextNode(' — '+item.recipes.map(x=>(x.qty?x.qty+' · ':'')+x.recipe).join('; ')));ul.append(li)});group.append(ul);root.append(group);
-const prep=createSection(t('Organisation de la séance','Session checklist'));const description=document.createElement('p');description.className='mb-note';description.textContent=t('Suivez les étapes d’origine de chaque recette. Les tâches ne sont pas fusionnées automatiquement afin de préserver les instructions de cuisson.','Follow each recipe’s original steps. Cooking tasks are not automatically merged, to preserve the original instructions.');prep.append(description);list.forEach(r=>{const heading=document.createElement('div');heading.className='mb-recipe-title';heading.textContent=translated(r);prep.append(heading);const translatedSteps=en()&&typeof MARMITO_EN_CATALOG_V1!=='undefined'?MARMITO_EN_CATALOG_V1[r.title]?.steps:null;const steps=Array.isArray(translatedSteps)?translatedSteps:r.steps||[];steps.forEach((step,i)=>{const label=document.createElement('label');const check=document.createElement('input');check.type='checkbox';check.setAttribute('aria-label',t('Étape','Step')+' '+(i+1));const span=document.createElement('span');span.textContent=typeof step==='string'?step:(step&&typeof step.text==='string'?step.text:'');label.append(check,span);prep.append(label)})});root.append(prep);
+root.append(mbEquipmentPanel());root.append(mbRenderPlan(list));
 const storage=createSection(t('Conservation et sécurité','Storage and safety'));const p=document.createElement('p');p.className='mb-note';p.textContent=t('Réfrigérez les préparations périssables dans les 2 heures, à 4 °C ou moins. Consommez les restes dans les 2 à 3 jours ou congelez-les rapidement. Réchauffez les restes à 74 °C à cœur. Adaptez ces indications aux ingrédients et à chaque recette.','Refrigerate perishable preparations within 2 hours at 4°C or below. Eat leftovers within 2–3 days or freeze promptly. Reheat leftovers to an internal temperature of 74°C. Adapt these guidelines to the ingredients and each recipe.');storage.append(p);root.append(storage);
 const footer=document.createElement('p');footer.className='mb-note';footer.textContent=t('Sauvegarde des séances : à venir en V107.1 (Saveur : 10 nouvelles séances par mois ; Chef : illimité ; Gratuit : aucune).','Session saving: coming in V107.1 (Saveur: 10 new sessions per month; Chef: unlimited; Free: none).');root.append(footer);$('marmito-batch').scrollTo({top:0,behavior:'instant'});}
 $('mb-generate').onclick=generate;
