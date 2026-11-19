@@ -3005,7 +3005,8 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
 
     } else if (error && error.code === 'PGRST116') {
       // Aucun profil trouve (premiere connexion) - on cree le profil
-      const { error: createError } = await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email, plan: 'free', recipe_count: 0, reset_month: currentMonth });
+      // V107.6 : le rôle connecté n'a le droit d'écrire que id et email. Le plan 'free', le compteur et le mois viennent des valeurs par défaut et du serveur.
+      const { error: createError } = await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email });
       if (createError && createError.code !== '23505') throw createError;
       await ensureReferralCode();
       await applyPendingReferral();
@@ -7085,7 +7086,7 @@ async function marmitoSaveExperience() {
  }
 }
 </script>
-<!-- V18 : consultation des expériences publiées, réservée aux abonnés Saveur/Chef -->
+<!-- V18 : consultation des expériences publiées. V107.6 : ouverte à tous les comptes connectés, côté site et côté Supabase (aucun contrôle de forfait). Pour la limiter à Saveur/Chef, il faut un contrôle ici ET dans la politique marmito_v66_read_published. -->
 <style>
 #marmito-published-overlay{display:none;position:fixed;inset:0;z-index:100000;background:rgba(24,15,8,.8);overflow:auto;padding:20px 12px}
 #marmito-published-overlay.open{display:flex;align-items:flex-start;justify-content:center}
