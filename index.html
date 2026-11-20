@@ -4681,6 +4681,7 @@ function initDailyRecipe() {
   }
 }
 function openDailyRecipe() {
+  window.marmitoV114RecipeMode="random";
   show(getDailyRecipe());
   window.scrollTo({ top: document.getElementById('result-card').offsetTop - 20, behavior: 'smooth' });
 }
@@ -6095,6 +6096,7 @@ function generateWithFilters(){
       chosen=pickNoRepeat(pool,filterKey);
     }
     if (!(await marmitoConsumeRecipeQuota())) { btn.disabled=false;btn.innerHTML=currentLang==='en'?'&#127859; By my filters':'&#127859; Selon mes filtres'; return; }
+    window.marmitoV114RecipeMode="filtered";
     show(chosen);
     btn.disabled=false;btn.innerHTML=currentLang==='en'?'&#127859; By my filters':'&#127859; Selon mes filtres';
   },800);
@@ -6128,6 +6130,7 @@ function generateRecipe(){
     if(!randomPool.length){marmitoDietEmpty();btn.disabled=false;btn.textContent=currentLang==='en'?'Surprise me':'Surprends-moi';return;}
     const chosen=pickNoRepeat(randomPool,'random-all|'+JSON.stringify(marmitoDietState));
     if (!(await marmitoConsumeRecipeQuota())) { btn.disabled=false;btn.textContent=t('btn-another-recipe'); return; }
+    window.marmitoV114RecipeMode="random";
     show(chosen);
     btn.disabled=false;btn.textContent=t('btn-another-recipe');
   },1000);
@@ -9512,6 +9515,48 @@ $('mb-generate').onclick=generate;
 $('mb-shopping').onclick=()=>{const list=allowed().filter(r=>selected.has(key(r)));if(!list.length)return;const cap=userPlan==='chef'?Infinity:userPlan==='saveur'?20:3;if(list.length>cap){message(t('La liste de courses de votre forfait accepte moins de recettes. Ajoutez-les par groupes plus petits.','Your shopping list plan allows fewer recipes. Add them in smaller groups.'));return}if(typeof shoppingAddRecipes==='function'){close();Promise.resolve(shoppingAddRecipes(list)).catch(()=>{if(typeof showToast==='function')showToast(t('Impossible de charger la liste de courses.','Could not open the shopping list.'))})}else message(t('Liste de courses indisponible.','Shopping list unavailable.'))};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('marmito-batch').classList.contains('open'))back()});
 document.addEventListener('marmito-lang-changed',()=>{if(!$('marmito-batch').classList.contains('open')){mbPaintBar();return}sync();if(stage==='session')renderBatchSession();else renderPicker();mbPaintBar();});
+})();
+</script>
+<style id="marmito-v114-recipe-style">
+/* V107.14: dedicated recipe screen, without altering the existing recipe card logic */
+#marmito-v114-screen{position:fixed;inset:0;z-index:16500;background:#f7f9f1;overflow-y:auto;overscroll-behavior:contain;display:none;padding:0 12px 40px;box-sizing:border-box}
+#marmito-v114-screen.open{display:block}
+#marmito-v114-screen .v114-toolbar{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:1000px;margin:0 auto;padding:12px 8px;background:#f7f9f1;border-bottom:1px solid #dae4d0}
+#marmito-v114-screen .v114-toolbar button{border:1px solid #bdcfb5;border-radius:12px;padding:12px 14px;background:white;color:#304d32;font-weight:750;cursor:pointer;min-height:44px}
+#marmito-v114-screen .v114-toolbar .v114-next{background:#38563b;color:white;border-color:#38563b}
+#marmito-v114-screen #result-card{width:100%;max-width:1000px;margin:18px auto 28px;box-sizing:border-box}
+body.marmito-v114-recipe-open{overflow:hidden}
+@media(max-width:520px){#marmito-v114-screen{padding:0 7px 24px}#marmito-v114-screen .v114-toolbar{gap:6px;padding:8px 2px}#marmito-v114-screen .v114-toolbar button{font-size:12px;padding:10px 8px}}
+</style>
+<script id="marmito-v114-recipe-navigation">
+(function(){
+'use strict';
+function init(){
+ const card=document.getElementById('result-card');if(!card||document.getElementById('marmito-v114-screen'))return;
+ const screen=document.createElement('section');screen.id='marmito-v114-screen';screen.setAttribute('aria-label','Recette');
+ screen.innerHTML='<div class="v114-toolbar"><button type="button" id="v114-back">← Retour</button><button type="button" class="v114-next" id="v114-next">Trouver une autre recette</button></div>';
+ document.body.appendChild(screen);screen.appendChild(card);
+ const back=document.getElementById('v114-back'),next=document.getElementById('v114-next');
+ let previousScroll=0;
+ function sync(){const open=card.classList.contains('visible');if(open&&!screen.classList.contains('open')){previousScroll=window.scrollY;screen.scrollTop=0;}
+  screen.classList.toggle('open',open);document.body.classList.toggle('marmito-v114-recipe-open',open);
+  back.textContent=window.currentLang==='en'?'← Back':'← Retour';next.textContent=window.currentLang==='en'?'Find another recipe':'Trouver une autre recette';
+ }
+ function close(){if(!card.classList.contains('visible'))return;card.classList.remove('visible');if(typeof closeCookMode==='function')closeCookMode();sync();window.scrollTo({top:previousScroll,behavior:'instant'});}
+ back.addEventListener('click',()=>{const original=document.getElementById('v94-recipe-back');if(original&&window.marmitoV94Return){original.click();sync();}else close();});
+ next.addEventListener('click',()=>{if(next.disabled)return;next.disabled=true;
+  const filtered=window.marmitoV114RecipeMode==='filtered';
+  try{if(filtered&&typeof generateWithFilters==='function')generateWithFilters();else if(typeof generateRecipe==='function')generateRecipe();}finally{setTimeout(()=>{next.disabled=false;},1300);}
+ });
+ new MutationObserver(sync).observe(card,{attributes:true,attributeFilter:['class']});
+ // Close the dedicated screen when navigating elsewhere, without intercepting recipe actions.
+ document.addEventListener('click',function(e){if(!card.classList.contains('visible')||screen.contains(e.target))return;
+  const navigation=e.target.closest('.drawer-item,[data-v23-tab],.marmito-v23-bottom-nav button,.nav-link');
+  if(navigation)close();},true);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&screen.classList.contains('open'))close();});
+ sync();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
 </body>
