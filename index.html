@@ -4898,7 +4898,7 @@ function marmitoV91Save(){throw new Error('V95: use Supabase RPC for plan writes
 function marmitoV91MonthCount(data){return Number(data.creationCounts?.[marmitoV91Month()])||0}
 function marmitoV95Error(error){
  const en=currentLang==='en';const msg=String(error?.message||error||'');
- if(msg.includes('Monthly plan creation limit'))return en?'Monthly limit reached (6 plans).':'Limite mensuelle atteinte (6 plannings).';
+ if(msg.includes('Monthly plan creation limit'))return en?'Monthly limit reached (12 plans).':'Limite mensuelle atteinte (12 plannings).';
  if(msg.includes('Plan not eligible'))return en?'Your subscription does not allow this action.':'Votre abonnement ne permet pas cette action.';
  if(msg.includes('Authentication required')||!currentUser)return en?'Sign in to manage your plans.':'Connectez-vous pour gérer vos plannings.';
  return (en?'Supabase error: ':'Erreur Supabase : ')+msg.slice(0,180);
@@ -4973,7 +4973,7 @@ function marmitoV91RenderPersonal(){
  const root=document.createElement('section');root.className='v91-personal';
  const head=document.createElement('div');head.className='v91-personal-head';
  const heading=document.createElement('div');heading.innerHTML='<div class="v91-eyebrow">MARMITO · '+(en?'PERSONAL PLANNER':'PLANNING PERSONNALISÉ')+'</div><h2>'+(en?'Plan your own week':'Composez votre semaine')+'</h2><p>'+(en?'Choose lunch and dinner recipes for each day.':'Choisissez vos recettes du déjeuner et du dîner pour chaque jour.')+'</p>';
- const quota=document.createElement('span');quota.className='v91-quota';quota.textContent=userPlan==='chef'?(en?'Unlimited plans':'Plannings illimités'):(en?`${count} / 6 plans this month`:`${count} / 6 plannings ce mois-ci`);
+ const quota=document.createElement('span');quota.className='v91-quota';quota.textContent=userPlan==='chef'?(en?'Unlimited plans':'Plannings illimités'):(en?`${count} / 12 plans this month`:`${count} / 12 plannings ce mois-ci`);
  head.append(heading,quota);root.append(head);
  const saved=document.createElement('div');saved.className='v91-saved';
  const currentPlans=data.plans.slice().reverse();
@@ -5233,7 +5233,7 @@ function shoppingSave(state){
  }catch(e){showToast(currentLang==='en'?'Unable to save locally':'Impossible d’enregistrer localement','error');return false;}
 }
 function shoppingRecipeKey(recipe){return recipe.title;}
-function marmitoV93ShoppingLimit(){return userPlan==='chef'?Infinity:userPlan==='saveur'?14:3;}
+function marmitoV93ShoppingLimit(){return userPlan==='chef'?Infinity:userPlan==='saveur'?20:3;}
 function marmitoV93Allowed(recipe){return !!recipe && (typeof marmitoV92AllowedRecipes!=='function'||marmitoV92AllowedRecipes().some(r=>r.title===recipe.title));}
 
 async function shoppingAddRecipes(list){
@@ -6680,7 +6680,7 @@ applyLang();
 <div class="plan-price-new">3,99$<span>/mois</span></div>
 </div>
 <div class="launch-note">Premier mois seulement · puis tarif régulier chaque mois</div>
-<ul class="plan-features"><li>180 recettes</li><li>Recherche et filtres avancés</li><li>Cuisine guidée</li><li>Favoris et historique</li><li>Liste de courses : 14 recettes</li><li>Menu hebdomadaire Marmito</li><li>Plan de repas sur 7 jours</li><li>6 plannings personnalisés/mois</li><li>6 séances Batch Cooking/mois</li></ul>
+<ul class="plan-features"><li>180 recettes</li><li>Recherche et filtres avancés</li><li>Cuisine guidée</li><li>Favoris et historique</li><li>Liste de courses : 20 recettes</li><li>Menu hebdomadaire Marmito</li><li>Plan de repas sur 7 jours</li><li>12 plannings personnalisés/mois</li><li>12 séances Batch Cooking/mois</li></ul>
 <button class="plan-btn pro-btn" id="btn-saveur" onclick="startCheckout('saveur',this)">Choisir Saveur →</button>
 </div>
 <!-- Chef (10.99/mois) -->
@@ -8529,12 +8529,12 @@ function marmitoV64Menu(){
  const features={
   fr:[
    ['20 recettes','Recherche et filtres de base','Cuisine guidée','Favoris et historique','Liste de courses : 3 recettes'],
-   ['180 recettes','Recherche et filtres avancés','Cuisine guidée','Favoris et historique','Liste de courses : 14 recettes','Menu hebdomadaire Marmito','Plan de repas sur 7 jours','6 plannings personnalisés/mois','6 séances Batch Cooking/mois'],
+   ['180 recettes','Recherche et filtres avancés','Cuisine guidée','Favoris et historique','Liste de courses : 20 recettes','Menu hebdomadaire Marmito','Plan de repas sur 7 jours','12 plannings personnalisés/mois','12 séances Batch Cooking/mois'],
    ['418 recettes','Recherche et filtres avancés','Cuisine guidée','Favoris et historique','Liste de courses illimitée','Menu hebdomadaire Marmito','Plan de repas sur 7 jours','Plannings illimités + duplication','Batch Cooking illimité','Conseils et astuces exclusifs']
   ],
   en:[
    ['20 recipes','Basic search and filters','Guided cooking','Favorites and history','Shopping list: 3 recipes'],
-   ['180 recipes','Advanced search and filters','Guided cooking','Favorites and history','Shopping list: 14 recipes','Marmito weekly menu','7-day meal plan','6 personalized plans/month','6 Batch Cooking sessions/month'],
+   ['180 recipes','Advanced search and filters','Guided cooking','Favorites and history','Shopping list: 20 recipes','Marmito weekly menu','7-day meal plan','12 personalized plans/month','12 Batch Cooking sessions/month'],
    ['418 recipes','Advanced search and filters','Guided cooking','Favorites and history','Unlimited shopping list','Marmito weekly menu','7-day meal plan','Unlimited plans + duplication','Unlimited Batch Cooking','Exclusive tips and advice']
   ]
  };
@@ -9149,7 +9149,7 @@ translateNodes();
 const $=id=>document.getElementById(id),en=()=>typeof currentLang!=='undefined'&&currentLang==='en',t=(fr,english)=>en()?english:fr;
 let selected=new Set(),stage='picker',lastFocus=null;
 const VISIBLE_RECIPE_LIMIT=8;
-const limit=()=>userPlan==='chef'?Infinity:userPlan==='saveur'?14:2;
+const limit=()=>userPlan==='chef'?Infinity:userPlan==='saveur'?20:2;
 const allowed=()=>typeof marmitoV92AllowedRecipes==='function'?marmitoV92AllowedRecipes():[];
 const key=r=>r.title;
 function translated(r){return en()&&typeof MARMITO_EN_CATALOG_V1!=='undefined'&&MARMITO_EN_CATALOG_V1[r.title]?.title||r.title}
@@ -9488,14 +9488,14 @@ async function generate(){
   // Each newly generated session is debited atomically on the server, not in localStorage.
   const {data,error}=await sb.rpc('marmito_claim_batch_session');
   if(error)throw error;
-  if(!data||!data.allowed){message(data?.reason==='quota' ? t('Vous avez utilisé vos 6 séances de Batch Cooking ce mois-ci.','You have used your 6 Batch Cooking sessions this month.') : t('Votre abonnement ne permet pas le Batch Cooking.','Your subscription does not include Batch Cooking.'));return;}
+  if(!data||!data.allowed){message(data?.reason==='quota' ? t('Vous avez utilisé vos 12 séances de Batch Cooking ce mois-ci.','You have used your 12 Batch Cooking sessions this month.') : t('Votre abonnement ne permet pas le Batch Cooking.','Your subscription does not include Batch Cooking.'));return;}
   if(!currentUser||userPlan==='free')return;
   renderBatchSession();
  }catch(error){message(t('Impossible de vérifier votre quota Batch Cooking. Réessayez.','Unable to check your Batch Cooking allowance. Please retry.'));}
  finally{mbGenerating=false;if(stage==='picker')renderPicker();}
 }
 $('mb-generate').onclick=generate;
-$('mb-shopping').onclick=()=>{const list=allowed().filter(r=>selected.has(key(r)));if(!list.length)return;const cap=userPlan==='chef'?Infinity:userPlan==='saveur'?14:3;if(list.length>cap){message(t('La liste de courses de votre forfait accepte moins de recettes. Ajoutez-les par groupes plus petits.','Your shopping list plan allows fewer recipes. Add them in smaller groups.'));return}if(typeof shoppingAddRecipes==='function'){close();Promise.resolve(shoppingAddRecipes(list)).catch(()=>{if(typeof showToast==='function')showToast(t('Impossible de charger la liste de courses.','Could not open the shopping list.'))})}else message(t('Liste de courses indisponible.','Shopping list unavailable.'))};
+$('mb-shopping').onclick=()=>{const list=allowed().filter(r=>selected.has(key(r)));if(!list.length)return;const cap=userPlan==='chef'?Infinity:userPlan==='saveur'?20:3;if(list.length>cap){message(t('La liste de courses de votre forfait accepte moins de recettes. Ajoutez-les par groupes plus petits.','Your shopping list plan allows fewer recipes. Add them in smaller groups.'));return}if(typeof shoppingAddRecipes==='function'){close();Promise.resolve(shoppingAddRecipes(list)).catch(()=>{if(typeof showToast==='function')showToast(t('Impossible de charger la liste de courses.','Could not open the shopping list.'))})}else message(t('Liste de courses indisponible.','Shopping list unavailable.'))};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('marmito-batch').classList.contains('open'))back()});
 document.addEventListener('marmito-lang-changed',()=>{if(!$('marmito-batch').classList.contains('open')){mbPaintBar();return}sync();if(stage==='session')renderBatchSession();else renderPicker();mbPaintBar();});
 })();
