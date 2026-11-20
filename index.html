@@ -2,7 +2,7 @@
 
 <html lang="fr" style="color-scheme:light">
 <head>
-<meta name="marmito-build" content="V107.12">
+<meta name="marmito-build" content="V107.13">
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <title>Marmito : Recettes du monde entier</title>
@@ -7383,7 +7383,7 @@ for (const [id, openName, closeName] of marmitoExperienceDialogs) {
  function closeFavorites(){document.body.classList.remove('marmito-v34-inner');const p=document.getElementById('marmito-favorites-page');if(p)p.hidden=true}
  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
  function showFavorites(){const p=document.getElementById('marmito-favorites-page'),list=document.getElementById('marmito-v34-fav-content');if(!p||!list)return;const arr=typeof favs!=='undefined'&&Array.isArray(favs)?favs:[];list.replaceChildren();if(!arr.length){const empty=document.createElement('p');empty.textContent='Aucune recette favorite pour le moment. Explorez les recettes et ajoutez celles que vous aimez.';list.appendChild(empty)}else{arr.forEach((f,i)=>{const card=document.createElement('article');card.className='marmito-v34-fav-card';const h=document.createElement('h3');h.textContent=f.title||'Recette';const sub=document.createElement('p');sub.textContent=[f.region,f.type].filter(Boolean).join(' · ');const btn=document.createElement('button');btn.type='button';btn.textContent='Voir la recette';btn.addEventListener('click',()=>{closeFavorites();if(typeof originalGoHome==='function')originalGoHome();setTab('recipes');if(typeof cookFav==='function')cookFav(f.title)});card.append(h,sub,btn);list.appendChild(card)})}p.hidden=false;document.body.classList.add('marmito-v34-inner');window.scrollTo({top:0,behavior:'instant'})}
- window.marmitoNavigate=function(page){if(typeof closeDrawer==='function')closeDrawer();closeFavorites();if(page==='home'||page==='recipes'){if(typeof originalGoHome==='function')originalGoHome();setTab(page);if(page==='recipes'){const search=document.getElementById('recipe-search');if(search){search.scrollIntoView({block:'center',behavior:'smooth'});search.focus({preventScroll:true})}}else window.scrollTo({top:0,behavior:'smooth'});return}if(page==='favorites'){if(typeof originalGoHome==='function')originalGoHome();showFavorites();setTab('favs');return}if(page==='profile'){if(typeof openProfile==='function')openProfile();setTab('profile');return}setTab('');if(page==='plan'&&typeof openPlanRepas==='function')openPlanRepas();else if(page==='shopping'&&typeof openShopping==='function')openShopping();else if(page==='experiences'&&typeof marmitoOpenMyExperiences==='function')marmitoOpenMyExperiences();else if(page==='admin'&&typeof marmitoOpenAdmin==='function')marmitoOpenAdmin()};
+ window.marmitoNavigate=function(page){if(typeof marmitoBatchClose==='function')marmitoBatchClose();if(typeof closeDrawer==='function')closeDrawer();closeFavorites();if(page==='home'||page==='recipes'){if(typeof originalGoHome==='function')originalGoHome();setTab(page);if(page==='recipes'){const search=document.getElementById('recipe-search');if(search){search.scrollIntoView({block:'center',behavior:'smooth'});search.focus({preventScroll:true})}}else window.scrollTo({top:0,behavior:'smooth'});return}if(page==='favorites'){if(typeof originalGoHome==='function')originalGoHome();showFavorites();setTab('favs');return}if(page==='profile'){if(typeof openProfile==='function')openProfile();setTab('profile');return}setTab('');if(page==='plan'&&typeof openPlanRepas==='function')openPlanRepas();else if(page==='shopping'&&typeof openShopping==='function')openShopping();else if(page==='experiences'&&typeof marmitoOpenMyExperiences==='function')marmitoOpenMyExperiences();else if(page==='admin'&&typeof marmitoOpenAdmin==='function')marmitoOpenAdmin()};
  // Existing close/back handlers should return to the correct home state
  if(typeof originalGoHome==='function')window.goHome=function(){closeFavorites();originalGoHome();setTab('home')};
  setTab('home');
@@ -9093,7 +9093,7 @@ translateNodes();
 </style>
 <!-- V107 : Batch Cooking, séances temporaires sans sauvegarde serveur -->
 <style id="marmito-v107-batch-style">
-#marmito-batch{display:none;position:fixed;inset:0;z-index:1700;background:#f7f6f0;color:#243e2d;overflow:auto}#marmito-batch.open{display:block}#marmito-batch *{box-sizing:border-box}
+#marmito-batch{display:none;position:fixed;inset:0;z-index:140000;background:#f7f6f0;color:#243e2d;overflow:auto}#marmito-batch.open{display:block}#marmito-batch *{box-sizing:border-box}
 .mb-shell{max-width:1060px;margin:auto;padding:20px clamp(15px,4vw,45px) 90px}.mb-head{display:flex;align-items:center;gap:12px;justify-content:space-between;position:sticky;top:0;z-index:3;background:#f7f6f0;padding:15px 0;border-bottom:1px solid #dce3d6}.mb-head h2{font:700 clamp(23px,4vw,37px) Georgia,serif;margin:0;color:#244a32}.mb-actions{display:flex;gap:8px;flex-wrap:wrap}.mb-btn{border:1px solid #cbd7c7;background:#fff;color:#254a33;border-radius:12px;padding:11px 15px;cursor:pointer;font:600 14px inherit}.mb-primary{background:#244a32;border-color:#244a32;color:white}.mb-btn:disabled{opacity:.45;cursor:not-allowed}.mb-intro{line-height:1.65;color:#5b6c5e;margin:22px 0}.mb-tools{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.mb-search{padding:13px;border:1px solid #ccd8ca;border-radius:12px;min-width:220px;flex:1;font:inherit;background:#fff}.mb-stats{background:#e7eee3;border-radius:12px;padding:12px 16px;font-weight:700;margin:15px 0}.mb-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.mb-recipe{display:flex;gap:10px;align-items:flex-start;background:white;border:1px solid #dce4d8;border-radius:15px;padding:15px;cursor:pointer}.mb-recipe input{margin-top:4px;accent-color:#244a32;width:18px;height:18px}.mb-recipe strong{display:block;line-height:1.35}.mb-recipe small{display:block;color:#687869;margin-top:6px}.mb-section{background:#fff;border:1px solid #dce4d8;border-radius:19px;padding:20px;margin:18px 0}.mb-section h3{margin:0 0 14px;color:#244a32;font:700 23px Georgia,serif}.mb-section li{padding:7px 0;line-height:1.5}.mb-section label{display:flex;gap:10px;align-items:flex-start;padding:8px 0}.mb-note{color:#647467;font-size:14px;line-height:1.6}.mb-steps{padding-left:22px}.mb-recipe-title{font-weight:700;margin:20px 0 8px}.mb-hidden{display:none!important}@media(max-width:700px){.mb-grid{grid-template-columns:1fr}.mb-head{align-items:flex-start}.mb-actions{justify-content:flex-end}.mb-shell{padding-bottom:120px}}
 </style>
 <style id="marmito-v107-3-batch-navigation">
@@ -9171,6 +9171,20 @@ host.append(hint);$('mb-generate').disabled=!selected.size;}
 function close(){const overlay=$('marmito-batch');overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');if(lastFocus&&lastFocus.isConnected)lastFocus.focus({preventScroll:true});}
 function back(){if(stage==='session'){stage='picker';$('mb-picker').classList.remove('mb-hidden');$('mb-session').classList.add('mb-hidden');renderPicker()}else close()}
 function open(){if(typeof currentUser==='undefined'||!currentUser){if(typeof showToast==='function')showToast(t('Connectez-vous pour utiliser le Batch Cooking.','Sign in to use Batch Cooking.'));return}if(userPlan!=='saveur'&&userPlan!=='chef'){if(typeof showToast==='function')showToast(t('Batch Cooking est réservé aux abonnés Saveur et Chef.','Batch Cooking is available to Saveur and Chef subscribers.'));return}if(typeof closeDrawer==='function')closeDrawer();
+// V107.13: close other full-screen pages before opening Batch Cooking.
+// Otherwise their stacking contexts can cover the Batch Cooking screen.
+if(document.getElementById('shopping-overlay')?.classList.contains('open')){
+  if(typeof closeShopping==='function')closeShopping();
+  else document.getElementById('shopping-overlay').classList.remove('open');
+}
+if(document.getElementById('marmito-myexp-overlay')?.classList.contains('open')){
+  if(typeof marmitoCloseMyExperiences==='function')marmitoCloseMyExperiences();
+  document.getElementById('marmito-myexp-overlay').classList.remove('open');
+}
+for(const id of ['marmito-experience-overlay','marmito-published-overlay','profile-overlay','marmito-admin-overlay']){
+  const el=document.getElementById(id);
+  if(el?.classList.contains('open'))el.classList.remove('open');
+}
 // Close the weekly plan before displaying Batch Cooking: its overlay has a higher z-index.
 const weeklyOverlay=document.getElementById('plan-overlay');
 if(weeklyOverlay&&weeklyOverlay.classList.contains('open')){
