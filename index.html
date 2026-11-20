@@ -2,7 +2,7 @@
 
 <html lang="fr" style="color-scheme:light">
 <head>
-<meta name="marmito-build" content="V107.13">
+<meta name="marmito-build" content="V107.15">
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <title>Marmito : Recettes du monde entier</title>
@@ -2526,7 +2526,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <!-- PLAN DE REPAS MODAL -->
 <div class="plan-overlay" id="plan-overlay" onclick="if(event.target===this)closePlanRepas()">
 <div class="plan-sheet" id="plan-sheet">
-<div class="plan-sheet-head"><button aria-label="Ouvrir le menu" class="v46-inline-menu" onclick="marmitoV45Menu(event)" type="button"><span></span><span></span><span></span></button>
+<div class="plan-sheet-head"><button aria-label="Ouvrir le menu" class="v46-inline-menu v115-menu" onclick="marmitoV45Menu(event)" type="button"><span></span><span></span><span></span></button>
 <div class="plan-handle" style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px"></div>
 <div class="plan-title-row"><button class="v94-back" onclick="marmitoV94GoBack()" type="button">← <span>Retour</span></button>
 <div class="plan-title" data-i18n="plan-title">Plan de repas sur 7 jours</div>
@@ -2539,7 +2539,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <!-- LISTE DE COURSES LOCALE -->
 <div aria-labelledby="shopping-title" aria-modal="true" class="shopping-overlay" id="shopping-overlay" onclick="if(event.target===this)closeShopping()" role="dialog">
 <div class="shopping-sheet">
-<div class="shopping-head"><button aria-label="Ouvrir le menu" class="v46-inline-menu" onclick="marmitoV45Menu(event)" type="button"><span></span><span></span><span></span></button><button class="v94-back" onclick="marmitoV94GoBack()" type="button">← <span>Retour</span></button><strong id="shopping-title"></strong><button aria-label="Fermer" id="shopping-close" onclick="closeShopping()" type="button">✕</button></div>
+<div class="shopping-head"><button aria-label="Ouvrir le menu" class="v46-inline-menu v115-menu" onclick="marmitoV45Menu(event)" type="button"><span></span><span></span><span></span></button><button class="v94-back" onclick="marmitoV94GoBack()" type="button">← <span>Retour</span></button><strong id="shopping-title"></strong><button aria-label="Fermer" id="shopping-close" onclick="closeShopping()" type="button">✕</button></div>
 <div class="shopping-actions"><div class="v47-shopping-intro"><div class="v47-eyebrow">MA LISTE</div><p>Tout ce qu’il te faut pour tes recettes, au même endroit.</p></div><input id="shopping-manual" maxlength="120" onkeydown="if(event.key==='Enter'){event.preventDefault();addManualShopping()}" placeholder="Ajouter un article" type="text"/><button id="shopping-manual-add" onclick="addManualShopping()" type="button"></button></div>
 <div id="shopping-recipes"></div><div aria-label="Affichage de la liste" class="v48-shopping-view" role="group"><button class="active" data-v48-view="list" onclick="marmitoV48ShoppingView('list')" type="button">Par liste</button><button data-v48-view="compact" onclick="marmitoV48ShoppingView('compact')" type="button">Vue compacte</button></div><div id="shopping-contents"></div>
 <div class="shopping-foot"><button id="shopping-clear-all" onclick="clearAllShopping()" type="button"></button><button id="shopping-clear-checked" onclick="clearCheckedShopping()" type="button"></button><button id="shopping-copy" onclick="copySmartShopping()" type="button"></button></div>
@@ -2551,7 +2551,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="profile-sheet" id="profile-sheet">
 <div class="profile-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
+<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu v115-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeProfile()">←</button>
 <div class="page-nav-title" data-i18n="profile-title">Mon profil</div>
 </div>
@@ -2619,7 +2619,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <!-- V40 : page Favoris autonome -->
 <div class="history-overlay" id="v40-favorites-overlay">
 <div class="history-sheet">
-<div class="history-sheet-head"><div class="page-nav-header"><div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
+<div class="history-sheet-head"><div class="page-nav-header"><div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu v115-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="marmitoCloseFavoritesPage()" type="button">←</button>
 <div class="page-nav-title" data-i18n="nav-favs">Mes favoris</div>
 </div></div></div>
@@ -2631,7 +2631,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="history-sheet">
 <div class="history-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
+<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu v115-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeHistory()">←</button>
 <div class="page-nav-title" data-i18n="history-title">Mon historique</div>
 </div>
@@ -2647,7 +2647,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="contact-sheet">
 <div class="contact-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
+<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu v115-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeContact()">←</button>
 <div class="page-nav-title" data-i18n="contact-title">Nous contacter</div>
 </div>
@@ -2686,7 +2686,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <div class="about-sheet">
 <div class="about-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
+<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu v115-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeAbout()">←</button>
 <div class="page-nav-title">Marmito</div>
 </div>
@@ -6575,7 +6575,7 @@ applyLang();
 <div class="tips-sheet">
 <div class="tips-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
+<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu v115-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeTips()">←</button>
 <div class="page-nav-title" data-i18n="tips-title">Conseils &amp; Astuces</div>
 </div>
@@ -6654,7 +6654,7 @@ applyLang();
 <div class="pricing-sheet">
 <div class="pricing-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
+<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu v115-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closePricing()">←</button>
 <div class="page-nav-title">Choisir un abonnement</div>
 </div>
@@ -6710,7 +6710,7 @@ applyLang();
 <div class="referral-sheet">
 <div class="referral-sheet-head">
 <div class="page-nav-header">
-<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
+<div class="page-nav-inner"><button aria-label="Ouvrir le menu" class="v43-page-menu v115-menu" onclick="marmitoV43OpenMenu(event)" title="Menu" type="button"><span></span><span></span><span></span></button>
 <button aria-label="Retour" class="page-back-btn" onclick="closeReferral()">←</button>
 <div class="page-nav-title">Inviter un ami</div>
 </div>
@@ -6805,7 +6805,7 @@ if ('serviceWorker' in navigator) {
 <div><div class="v64-admin-eyebrow">ESPACE PRIVÉ · MARMITO</div><h2 id="marmito-admin-title">Administration</h2><p>Gestion et modération des expériences culinaires</p></div>
 <div class="v64-admin-header-actions">
 <a class="v64-admin-btn v64-admin-primary" href="./index.html" id="v65-admin-return">← Retour à Marmito</a>
-<details class="v65-admin-navigation"><summary class="v64-admin-btn">☰ Menu</summary>
+<details class="v65-admin-navigation"><summary class="v64-admin-btn v115-menu" aria-label="Ouvrir le menu" title="Menu"><span></span><span></span><span></span></summary>
 <nav aria-label="Navigation Marmito depuis Administration">
 <a href="./index.html">Accueil</a>
 <a href="./index.html?marmitoGo=favorites">Favoris</a>
@@ -7030,7 +7030,7 @@ async function marmitoModerateExperience(id, fn, label) {
 </style>
 <section aria-labelledby="marmito-experience-title" aria-modal="true" id="marmito-experience-overlay" role="dialog">
 <div class="marmito-experience-box">
-<button aria-label="Ouvrir le menu de navigation" class="v45-experience-menu" onclick="marmitoV45Menu(event)" type="button"><span></span><span></span><span></span></button>
+<button aria-label="Ouvrir le menu de navigation" class="v45-experience-menu v115-menu" onclick="marmitoV45Menu(event)" type="button"><span></span><span></span><span></span></button>
 <div class="v49-exp-hero"><div class="v49-eyebrow">PARTAGER UN SOUVENIR</div><h2 id="marmito-experience-title">Mon expérience culinaire</h2></div>
 <p id="marmito-experience-recipe"></p>
 <label for="marmito-experience-rating">Ma note</label>
@@ -7134,7 +7134,7 @@ async function marmitoSaveExperience() {
 </style>
 <section aria-labelledby="marmito-published-title" aria-modal="true" id="marmito-published-overlay" role="dialog">
 <div class="marmito-published-box">
-<button aria-label="Ouvrir le menu de navigation" class="v45-experience-menu" onclick="marmitoV45Menu(event)" type="button"><span></span><span></span><span></span></button>
+<button aria-label="Ouvrir le menu de navigation" class="v45-experience-menu v115-menu" onclick="marmitoV45Menu(event)" type="button"><span></span><span></span><span></span></button>
 <h2 id="marmito-published-title">Expériences de la communauté</h2>
 <p id="marmito-published-recipe"></p>
 <p aria-live="polite" id="marmito-published-status" role="status"></p>
@@ -7208,7 +7208,7 @@ async function marmitoOpenPublishedExperiences(){
 </style>
 <section aria-labelledby="marmito-myexp-title" aria-modal="true" id="marmito-myexp-overlay" role="dialog">
 <div class="marmito-myexp-box">
-<button aria-label="Ouvrir le menu de navigation" class="v45-experience-menu" onclick="marmitoV45Menu(event)" type="button"><span></span><span></span><span></span></button>
+<button aria-label="Ouvrir le menu de navigation" class="v45-experience-menu v115-menu" onclick="marmitoV45Menu(event)" type="button"><span></span><span></span><span></span></button>
 <div class="v49-exp-hero"><div class="v49-eyebrow">MON CARNET CULINAIRE</div><h2 id="marmito-myexp-title">Mes expériences</h2><p>Mes préparations, mes notes et mes partages.</p></div>
 <p>Retrouve tes expériences privées et suis les expériences soumises à la communauté.</p>
 <p aria-live="polite" id="marmito-myexp-status" role="status"></p>
@@ -8605,7 +8605,7 @@ function marmitoV64Menu(){
 </style>
 <section aria-hidden="true" aria-labelledby="marmito-pantry-title" aria-modal="true" id="marmito-pantry-overlay" role="dialog">
 <div class="marmito-pantry-shell">
-<div class="marmito-pantry-head"><div class="marmito-v105-nav"><button aria-label="Menu" class="marmito-pantry-close" onclick="marmitoV45Menu(event)" type="button">☰ Menu</button><button class="marmito-pantry-close" onclick="marmitoV105PantryBack()" type="button">← <span id="marmito-pantry-back-label">Retour</span></button></div><h2 id="marmito-pantry-title">Mon garde-manger</h2><button class="marmito-pantry-close" onclick="marmitoClosePantry()" type="button">Fermer</button></div>
+<div class="marmito-pantry-head"><div class="marmito-v105-nav"><button aria-label="Menu" class="marmito-pantry-close v115-menu" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV45Menu(event)" type="button"><span></span><span></span><span></span></button><button class="marmito-pantry-close" onclick="marmitoV105PantryBack()" type="button">← <span id="marmito-pantry-back-label">Retour</span></button></div><h2 id="marmito-pantry-title">Mon garde-manger</h2><button class="marmito-pantry-close" onclick="marmitoClosePantry()" type="button">Fermer</button></div>
 <p class="marmito-pantry-lead" id="marmito-pantry-lead">Enregistrez vos ingrédients disponibles à la maison. Ils restent privés et sont synchronisés avec votre compte.</p>
 <form class="marmito-pantry-form" id="marmito-pantry-form">
 <label><span id="marmito-pantry-name-label">Ingrédient</span><input id="marmito-pantry-name" maxlength="100" placeholder="Ex. riz" required="" type="text"/></label>
@@ -8721,7 +8721,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('marmito-pantry-o
 </style>
 <section aria-hidden="true" aria-labelledby="marmito-v105-title" aria-modal="true" id="marmito-v105-overlay" role="dialog">
 <div class="marmito-v105-shell">
-<div class="marmito-v105-header"><button id="marmito-v105-menu" onclick="marmitoV45Menu(event)" type="button">☰ Menu</button><button onclick="marmitoV105CloseCompare()" type="button">← <span id="marmito-v105-back">Retour</span></button><h2 id="marmito-v105-title">Ingrédients manquants</h2><button aria-label="Fermer" id="marmito-v105-close" onclick="marmitoV105CloseCompare()" type="button">✕</button></div>
+<div class="marmito-v105-header"><button id="marmito-v105-menu" class="v115-menu" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV45Menu(event)" type="button"><span></span><span></span><span></span></button><button onclick="marmitoV105CloseCompare()" type="button">← <span id="marmito-v105-back">Retour</span></button><h2 id="marmito-v105-title">Ingrédients manquants</h2><button aria-label="Fermer" id="marmito-v105-close" onclick="marmitoV105CloseCompare()" type="button">✕</button></div>
 <p class="marmito-v105-intro" id="marmito-v105-intro"></p>
 <div class="marmito-v105-group"><h3 id="marmito-v105-have-title">Déjà dans mon garde-manger</h3><div id="marmito-v105-have"></div></div>
 <div class="marmito-v105-group"><h3 id="marmito-v105-missing-title">À vérifier ou à acheter</h3><div id="marmito-v105-missing"></div><div class="marmito-v105-actions"><button class="primary" id="marmito-v105-add" type="button">Ajouter la sélection aux courses</button><button id="marmito-v105-pantry" onclick="marmitoV105OpenPantryFromCompare()" type="button">Mon garde-manger</button></div></div>
@@ -9141,7 +9141,7 @@ translateNodes();
 #marmito-batch .mb-running{font-variant-numeric:tabular-nums;font-weight:600}
 </style>
 <section aria-hidden="true" aria-labelledby="mb-title" aria-modal="true" id="marmito-batch" role="dialog">
-<div class="mb-shell"><header class="mb-head"><div class="mb-nav"><button class="mb-btn" id="mb-menu" type="button">Menu</button><button class="mb-btn" id="mb-back" type="button">Retour</button></div><h2 id="mb-title">Batch Cooking</h2><div class="mb-actions"><button class="mb-btn" id="mb-close" type="button">Fermer</button></div></header>
+<div class="mb-shell"><header class="mb-head"><div class="mb-nav"><button class="mb-btn v115-menu" id="mb-menu" type="button" aria-label="Ouvrir le menu" title="Menu"><span></span><span></span><span></span></button><button class="mb-btn" id="mb-back" type="button">Retour</button></div><h2 id="mb-title">Batch Cooking</h2><div class="mb-actions"><button class="mb-btn" id="mb-close" type="button">Fermer</button></div></header>
 <p class="mb-intro" id="mb-intro"></p><div aria-live="polite" id="mb-status" role="status"></div>
 <div id="mb-picker"><div class="mb-personal-tools"><label for="mb-personal-select" id="mb-personal-label">Mes plannings personnels</label><select class="mb-search" id="mb-personal-select"><option value="">Choisir un planning enregistré</option></select><button class="mb-btn" id="mb-personal-import" type="button">Importer ce planning</button></div><div class="mb-tools"><input aria-label="Rechercher une recette" class="mb-search" id="mb-search" placeholder="Rechercher une recette" type="search"/><button class="mb-btn" id="mb-week" type="button">Importer mon plan de 7 jours</button><button class="mb-btn" id="mb-view-week" type="button">Voir mon plan</button></div><div class="mb-stats" id="mb-count"></div><div class="mb-grid" id="mb-recipes"></div><div class="mb-tools"><button class="mb-btn mb-primary" id="mb-generate" type="button">Organiser ma séance</button></div></div>
 <div class="mb-hidden" id="mb-session"><div class="mb-tools"><button class="mb-btn" id="mb-edit" type="button">Modifier les recettes</button><button class="mb-btn" id="mb-shopping" type="button">Ajouter à ma liste de courses</button></div><div id="mb-session-body"></div></div>
@@ -9534,7 +9534,7 @@ body.marmito-v114-recipe-open{overflow:hidden}
 function init(){
  const card=document.getElementById('result-card');if(!card||document.getElementById('marmito-v114-screen'))return;
  const screen=document.createElement('section');screen.id='marmito-v114-screen';screen.setAttribute('aria-label','Recette');
- screen.innerHTML='<div class="v114-toolbar"><button type="button" id="v114-back">← Retour</button><button type="button" class="v114-next" id="v114-next">Trouver une autre recette</button></div>';
+ screen.innerHTML='<div class="v114-toolbar"><div class="v115-left"><button type="button" class="v115-menu" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV115OpenMenu(event)"><span></span><span></span><span></span></button><button type="button" id="v114-back">← Retour</button></div><button type="button" class="v114-next" id="v114-next">Trouver une autre recette</button></div>';
  document.body.appendChild(screen);screen.appendChild(card);
  const back=document.getElementById('v114-back'),next=document.getElementById('v114-next');
  let previousScroll=0;
@@ -9557,6 +9557,54 @@ function init(){
  sync();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<style id="marmito-v115-menu-unification">
+/* V107.15: same white square / three dark green strokes on all screens */
+:root{--v115-menu-green:#355c3c}
+.v115-menu,button.v115-menu,summary.v115-menu,
+#mb-menu.v115-menu,#marmito-v105-menu.v115-menu{
+ display:inline-flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+ gap:4px!important;flex:0 0 42px!important;width:42px!important;height:42px!important;
+ padding:10px!important;margin:0 9px 0 0!important;border:1px solid #d6e0d2!important;
+ border-radius:11px!important;background:#fff!important;color:var(--v115-menu-green)!important;
+ box-shadow:0 1px 3px rgba(32,64,38,.07)!important;cursor:pointer!important;
+ font-size:0!important;line-height:0!important;vertical-align:middle!important;
+}
+.v115-menu span{display:block!important;width:20px!important;height:2px!important;min-height:2px!important;flex:none!important;background:var(--v115-menu-green)!important;border-radius:3px!important;opacity:1!important;transform:none!important}
+.v115-menu:hover{background:#f1f6ee!important}
+.v115-menu:focus-visible{outline:3px solid #83a98a!important;outline-offset:2px!important}
+#mb-menu.v115-menu{min-width:42px!important}
+#marmito-v114-screen .v114-toolbar .v115-left{display:flex;align-items:center;gap:4px;min-width:0}
+#marmito-v114-screen .v114-toolbar .v115-menu{padding:10px!important}
+#drawer-overlay{z-index:210000!important}
+#drawer{z-index:210001!important}
+@media(max-width:480px){#marmito-v114-screen .v114-toolbar{gap:6px!important;padding:10px 0!important}#marmito-v114-screen .v114-toolbar button:not(.v115-menu){padding:10px 8px!important;font-size:12px!important}}
+</style>
+<script id="marmito-v115-menu-script">
+(function(){'use strict';
+ const icon='<span></span><span></span><span></span>';
+ window.marmitoV115OpenMenu=function(event){
+  if(event)event.stopPropagation();
+  if(typeof window.marmitoV45Menu==='function')window.marmitoV45Menu(event);
+  else if(typeof window.openDrawer==='function')window.openDrawer();
+ };
+ // Some legacy language-refresh routines replace icon markup with the word Menu.
+ function normalize(){
+  document.querySelectorAll('.v115-menu').forEach(function(button){
+   if(button.children.length!==3||Array.from(button.children).some(el=>el.tagName!=='SPAN'))button.innerHTML=icon;
+   if(!button.getAttribute('aria-label'))button.setAttribute('aria-label',document.documentElement.lang==='en'?'Open menu':'Ouvrir le menu');
+  });
+ }
+ document.addEventListener('DOMContentLoaded',function(){
+  normalize();
+  const watched=['mb-menu','marmito-v105-menu'];
+  watched.forEach(function(id){const el=document.getElementById(id);if(!el)return;
+   const observer=new MutationObserver(function(){if(el.children.length!==3||el.textContent.trim())normalize();});
+   observer.observe(el,{childList:true,characterData:true,subtree:true});
+  });
+ });
 })();
 </script>
 </body>
