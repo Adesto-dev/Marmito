@@ -6168,15 +6168,21 @@ function generateRecipe(){
   },1000);
 }
 
-// V107.17 — cinq photos pilotes hébergées dans Supabase Storage.
-// Les cinq premiers essais pourront être renseignés ici après validation des images.
+// V107.19 — onze photos de recettes hébergées dans Supabase Storage.
+// Photos 1 à 11, identifiées par recipe_id.
 // Clés = recipe_id Supabase ; ne jamais indexer par le titre traduit.
 const MARMITO_PILOT_RECIPE_PHOTOS = Object.freeze({
   1: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/1.webp",
   2: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/2.webp",
   3: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/3.webp",
   4: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/4.webp",
-  5: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/5.webp"
+  5: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/5.webp",
+  6: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/6.webp",
+  7: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/7.webp",
+  8: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/8.webp",
+  9: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/9.webp",
+  10: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/10.webp",
+  11: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/11.webp"
 });
 function marmitoRecipePhotoUrl(recipe){
   const raw=(recipe && (MARMITO_PILOT_RECIPE_PHOTOS[recipe._marmitoRecipeId] || recipe._marmitoImageUrl || recipe.image_url)) || '';
