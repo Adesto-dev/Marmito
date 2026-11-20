@@ -2,7 +2,7 @@
 
 <html lang="fr" style="color-scheme:light">
 <head>
-<meta name="marmito-build" content="V107.11">
+<meta name="marmito-build" content="V107.12">
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <title>Marmito : Recettes du monde entier</title>
@@ -4968,7 +4968,7 @@ function marmitoV91RenderPersonal(){
  if(userPlan==='free')return;
  marmitoV91ActiveTab='personal';
  const body=document.getElementById('plan-body');
- const data=marmitoV91Load(),count=marmitoV91MonthCount(data),limit=userPlan==='chef'?Infinity:6;
+ const data=marmitoV91Load(),count=marmitoV91MonthCount(data),limit=userPlan==='chef'?Infinity:12;
  const en=currentLang==='en';
  const root=document.createElement('section');root.className='v91-personal';
  const head=document.createElement('div');head.className='v91-personal-head';
@@ -4997,7 +4997,7 @@ function marmitoV91RenderPersonal(){
  const newBtn=document.createElement('button');newBtn.className='v91-create';newBtn.textContent=en?'Create a weekly plan':'Créer un planning de 7 jours';
  newBtn.disabled=!canCreate;newBtn.onclick=()=>marmitoV91Edit(null);root.append(newBtn);
  if(!canCreate){
-  const message=document.createElement('p');message.className='v91-limit';message.textContent=en?'Your two new plans for this calendar month have been used. Existing plans remain editable. Upgrade to Chef for unlimited planning.':'Vos deux créations de ce mois civil ont été utilisées. Vous pouvez toujours modifier vos plannings existants. Passez à Chef pour créer sans limite.';
+  const message=document.createElement('p');message.className='v91-limit';message.textContent=en?'Your 12 new plans for this calendar month have been used. Existing plans remain editable. Upgrade to Chef for unlimited planning.':'Vos 12 créations de ce mois civil ont été utilisées. Vous pouvez toujours modifier vos plannings existants. Passez à Chef pour créer sans limite.';
   root.append(message);
   const upgrade=document.createElement('button');upgrade.className='v91-upgrade';upgrade.textContent=en?'Explore Chef':'Découvrir Chef';upgrade.onclick=()=>{closePlanRepas();startUpgrade()};root.append(upgrade);
  }
@@ -5009,7 +5009,7 @@ function marmitoV91Edit(id){
  if(userPlan==='free')return;
  const data=marmitoV91Load(),existing=id?data.plans.find(p=>p.id===id):null;
  if(id&&!existing)return;
- if(!existing&&userPlan!=='chef'&&marmitoV91MonthCount(data)>=2){marmitoV91RenderPersonal();return}
+ if(!existing&&userPlan!=='chef'&&marmitoV91MonthCount(data)>=12){marmitoV91RenderPersonal();return}
  marmitoV91EditingId=existing?.id||null;
  const en=currentLang==='en',body=document.getElementById('plan-body');body.replaceChildren();marmitoV91RenderTabs();
  const form=document.createElement('form');form.className='v91-editor';
