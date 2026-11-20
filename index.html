@@ -9759,5 +9759,72 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  });
 })();
 </script>
+<style id="marmito-v10724-photos-collections">
+/* V107.24 — image de recette partagée dans historique, favoris et recette du jour */
+#h-history-list .m124-photo,#v40-favorites-list .m124-photo{display:block;width:100%;height:100%;object-fit:cover}
+#h-history-list .m124-thumb,#v40-favorites-list .m124-thumb{background:linear-gradient(135deg,#e8e7d8,#d2ddc5);overflow:hidden;flex-shrink:0}
+#h-history-list:not(.v51-history-grid) .history-item.m124-card,#v40-favorites-list:not(.v51-fav-grid) .fav-item.m124-card{display:flex!important;flex-direction:row!important;align-items:center!important;gap:13px!important;min-height:98px!important;padding:9px!important}
+#h-history-list:not(.v51-history-grid) .m124-thumb,#v40-favorites-list:not(.v51-fav-grid) .m124-thumb{width:105px;height:95px;border-radius:13px}
+#h-history-list.v51-history-grid .history-item.m124-card,#v40-favorites-list.v51-fav-grid .fav-item.m124-card{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;padding:0!important;gap:0!important;min-height:0!important}
+#h-history-list.v51-history-grid .m124-thumb,#v40-favorites-list.v51-fav-grid .m124-thumb{width:100%;height:auto;aspect-ratio:1.32;border-radius:0}
+#h-history-list .m124-details,#v40-favorites-list .m124-details{min-width:0;flex:1;padding:3px}
+#h-history-list.v51-history-grid .m124-details,#v40-favorites-list.v51-fav-grid .m124-details{padding:13px!important}
+#h-history-list .history-item-name,#v40-favorites-list .fav-item-name{font-family:Georgia,serif!important;color:#29452c!important;font-size:clamp(15px,2.4vw,19px)!important;line-height:1.25!important;overflow-wrap:anywhere}
+#h-history-list .history-item-date{display:block;margin-top:9px;font-size:12px;color:#788073}
+#v40-favorites-list .fav-item-region{margin-top:5px;color:#788073}
+#v40-favorites-list .fav-cook-btn{flex-shrink:0}
+#v40-favorites-list.v51-fav-grid .fav-cook-btn{margin:0 13px 13px!important;align-self:flex-start}
+#h-history-list .m124-no-photo,#v40-favorites-list .m124-no-photo{display:flex;align-items:center;justify-content:center;color:#718466;font-size:30px;height:100%}
+#daily-card.m124-daily-photo{position:relative!important;background-image:linear-gradient(90deg,rgba(20,46,30,.92),rgba(24,50,32,.73) 47%,rgba(24,50,32,.14)),var(--m124-daily-url)!important;background-position:center!important;background-size:cover!important;color:white!important}
+#daily-card.m124-daily-photo .daily-label,#daily-card.m124-daily-photo .daily-title,#daily-card.m124-daily-photo .daily-sub{color:#fff!important;text-shadow:0 1px 8px rgba(0,0,0,.3)}
+#daily-card.m124-daily-photo .daily-btn{background:#fff!important;color:#29452c!important}
+@media(max-width:550px){#h-history-list.v51-history-grid,#v40-favorites-list.v51-fav-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}#h-history-list:not(.v51-history-grid) .m124-thumb,#v40-favorites-list:not(.v51-fav-grid) .m124-thumb{width:94px;height:88px}#v40-favorites-list:not(.v51-fav-grid) .fav-item.m124-card{flex-wrap:wrap}#v40-favorites-list:not(.v51-fav-grid) .fav-cook-btn{margin-left:107px}}
+</style>
+<script id="marmito-v10724-photos-collections-script">
+(function(){'use strict';
+function recipeFor(title){
+ if(typeof recipes==='undefined'||!Array.isArray(recipes))return null;
+ const key=String(title||'').trim().toLocaleLowerCase();
+ return recipes.find(r=>String(r.title||'').trim().toLocaleLowerCase()===key)||null;
+}
+function photoFor(title){const recipe=recipeFor(title);return recipe&&typeof marmitoRecipePhotoUrl==='function'?marmitoRecipePhotoUrl(recipe):'';}
+function thumbnail(title){
+ const box=document.createElement('div');box.className='m124-thumb';
+ const url=photoFor(title);
+ if(url){const img=document.createElement('img');img.className='m124-photo';img.alt='';img.loading='lazy';img.decoding='async';img.onerror=()=>{box.replaceChildren();const fallback=document.createElement('span');fallback.className='m124-no-photo';fallback.textContent='🍽';box.append(fallback)};box.append(img);img.src=url;}
+ else {const fallback=document.createElement('span');fallback.className='m124-no-photo';fallback.textContent='🍽';box.append(fallback)}
+ return box;
+}
+function enhanceHistory(){
+ const root=document.getElementById('h-history-list');if(!root)return;
+ root.querySelectorAll('.history-item:not(.m124-card)').forEach(item=>{
+  const name=item.querySelector('.history-item-name');if(!name)return;
+  const title=name.childNodes[0]?.textContent?.trim()||'';
+  const details=document.createElement('div');details.className='m124-details';
+  while(item.firstChild)details.append(item.firstChild);
+  item.append(thumbnail(title),details);item.classList.add('m124-card');
+ });
+}
+function enhanceFavorites(){
+ const root=document.getElementById('v40-favorites-list');if(!root)return;
+ root.querySelectorAll('.fav-item:not(.m124-card)').forEach(item=>{
+  const title=item.querySelector('.fav-item-name')?.textContent||'';
+  const info=item.firstElementChild;if(info)info.classList.add('m124-details');
+  item.prepend(thumbnail(title));item.classList.add('m124-card');
+ });
+}
+function enhanceDaily(){
+ const card=document.getElementById('daily-card');if(!card)return;
+ const r=typeof getDailyRecipe==='function'?getDailyRecipe():null;
+ const url=r&&typeof marmitoRecipePhotoUrl==='function'?marmitoRecipePhotoUrl(r):'';
+ if(!url){card.classList.remove('m124-daily-photo');card.style.removeProperty('--m124-daily-url');return;}
+ const img=new Image();img.onload=()=>{card.style.setProperty('--m124-daily-url','url("'+url+'")');card.classList.add('m124-daily-photo')};
+ img.onerror=()=>{card.classList.remove('m124-daily-photo');card.style.removeProperty('--m124-daily-url')};img.src=url;
+}
+function wrap(name,after){const original=window[name];if(typeof original!=='function')return;window[name]=function(...args){const result=original.apply(this,args);if(result&&typeof result.then==='function')return result.then(value=>{after();return value});after();return result;};}
+function install(){wrap('openHistory',enhanceHistory);wrap('marmitoOpenFavoritesPage',enhanceFavorites);wrap('initDailyRecipe',enhanceDaily);enhanceDaily();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})();
+</script>
 </body>
 </html>
