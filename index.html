@@ -894,6 +894,29 @@ body{background:var(--bg)}
 /* V59: indication visuelle du forfait actif */
 #pricing-overlay .plan-card.is-current-plan{outline:2px solid #517744!important;outline-offset:2px}
 #pricing-overlay .plan-card.is-current-plan .plan-btn{cursor:default!important;opacity:1!important}
+
+/* V107.18 — Photo immersive, cadrage complet et titre fondu dans l'image.
+   S'applique automatiquement à toutes les recettes ayant une photo. */
+#result-card .result-header.marmito-photo-header{position:relative;background:#24352c!important;isolation:isolate}
+#result-card .result-header.marmito-photo-header .recipe-visual-banner.has-photo{
+  width:100%;height:auto;min-height:0;padding:0;aspect-ratio:5/4;
+  overflow:hidden;background:#24352c;display:block;
+}
+#result-card .result-header.marmito-photo-header .recipe-visual-banner.has-photo img{
+  width:100%;height:100%;display:block;object-fit:cover;object-position:center center;
+}
+#result-card .result-header.marmito-photo-header .result-header-info{
+  position:absolute;bottom:0;left:0;right:0;z-index:1;
+  padding:clamp(72px,15vw,150px) clamp(18px,4vw,36px) clamp(22px,4vw,36px);
+  background:linear-gradient(to bottom,transparent 0%,rgba(17,24,17,.38) 36%,rgba(17,24,17,.88) 100%);
+}
+#result-card .result-header.marmito-photo-header .result-title{color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.45)}
+#result-card .result-header.marmito-photo-header .result-region{color:#f3eadb;text-shadow:0 1px 6px rgba(0,0,0,.65)}
+#result-card .result-header.marmito-photo-header .fav-btn{background:rgba(0,0,0,.32);color:#fff;backdrop-filter:blur(5px)}
+@media(max-width:600px){
+  #result-card .result-header.marmito-photo-header .recipe-visual-banner.has-photo{min-height:0;padding:0;aspect-ratio:5/4}
+  #result-card .result-header.marmito-photo-header .result-header-info{padding:72px 17px 20px}
+}
 </style>
 </meta><style id="marmito-v31-relooking">
 /* MARMITO V31 — Structural redesign */
@@ -6167,14 +6190,16 @@ function marmitoRenderRecipePhoto(recipe,banner){
   if(!banner)return;
   banner.replaceChildren();
   banner.classList.remove('has-photo');
-  const fallback=()=>{banner.replaceChildren();banner.classList.remove('has-photo');banner.textContent=recipe.emoji||'🍽️';};
+  const header=document.getElementById('result-header');
+  if(header)header.classList.remove('marmito-photo-header');
+  const fallback=()=>{banner.replaceChildren();banner.classList.remove('has-photo');if(header)header.classList.remove('marmito-photo-header');banner.textContent=recipe.emoji||'🍽️';};
   const src=marmitoRecipePhotoUrl(recipe);
   if(!src){fallback();return;}
   const img=document.createElement('img');
   img.alt=recipe.title||'Photo de recette';
   img.loading='eager';img.decoding='async';img.referrerPolicy='no-referrer';
   img.onerror=()=>{if(img.parentNode===banner)fallback();};
-  banner.classList.add('has-photo');banner.append(img);
+  banner.classList.add('has-photo');if(header)header.classList.add('marmito-photo-header');banner.append(img);
   img.src=src;
 }
 function show(recipe){
