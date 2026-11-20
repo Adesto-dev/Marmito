@@ -6168,8 +6168,8 @@ function generateRecipe(){
   },1000);
 }
 
-// V107.20 — vingt-sept photos de recettes hébergées dans Supabase Storage.
-// Photos 1 à 27, identifiées par recipe_id.
+// V107.21 — quarante-sept photos de recettes hébergées dans Supabase Storage.
+// Photos 1 à 47, identifiées par recipe_id.
 // Clés = recipe_id Supabase ; ne jamais indexer par le titre traduit.
 const MARMITO_PILOT_RECIPE_PHOTOS = Object.freeze({
   1: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/1.webp",
@@ -6198,7 +6198,27 @@ const MARMITO_PILOT_RECIPE_PHOTOS = Object.freeze({
   24: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/24.webp",
   25: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/25.webp",
   26: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/26.webp",
-  27: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/27.webp"
+  27: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/27.webp",
+  28: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/28.webp",
+  29: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/29.webp",
+  30: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/30.webp",
+  31: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/31.webp",
+  32: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/32.webp",
+  33: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/33.webp",
+  34: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/34.webp",
+  35: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/35.webp",
+  36: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/36.webp",
+  37: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/37.webp",
+  38: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/38.webp",
+  39: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/39.webp",
+  40: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/40.webp",
+  41: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/41.webp",
+  42: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/42.webp",
+  43: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/43.webp",
+  44: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/44.webp",
+  45: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/45.webp",
+  46: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/46.webp",
+  47: "https://osfhpzgfqpbzyrbjkajk.supabase.co/storage/v1/object/public/recipe-images/recipes/47.webp"
 });
 function marmitoRecipePhotoUrl(recipe){
   const raw=(recipe && (MARMITO_PILOT_RECIPE_PHOTOS[recipe._marmitoRecipeId] || recipe._marmitoImageUrl || recipe.image_url)) || '';
@@ -9624,6 +9644,10 @@ function init(){
  const screen=document.createElement('section');screen.id='marmito-v114-screen';screen.setAttribute('aria-label','Recette');
  screen.innerHTML='<div class="v114-toolbar"><div class="v115-left"><button type="button" class="v115-menu" aria-label="Ouvrir le menu" title="Menu" onclick="marmitoV115OpenMenu(event)"><span></span><span></span><span></span></button><button type="button" id="v114-back">← Retour</button></div><button type="button" class="v114-next" id="v114-next">Trouver une autre recette</button></div>';
  document.body.appendChild(screen);screen.appendChild(card);
+ // V107.21: guided cooking was left behind the fixed recipe screen.
+ // Keep the guided-cooking panel in the same screen as the recipe card.
+ const guidedCook=document.getElementById('cook-mode');
+ if(guidedCook)screen.appendChild(guidedCook);
  const back=document.getElementById('v114-back'),next=document.getElementById('v114-next');
  let previousScroll=0;
  function sync(){const open=card.classList.contains('visible');if(open&&!screen.classList.contains('open')){previousScroll=window.scrollY;screen.scrollTop=0;}
