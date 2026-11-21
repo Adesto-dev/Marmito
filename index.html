@@ -9846,5 +9846,45 @@ function install(){wrap('openHistory',enhanceHistory);wrap('marmitoOpenFavorites
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
 </script>
+
+<!-- V107.26 — Barre de navigation persistante sur toutes les pages mobiles -->
+<style id="marmito-v10726-persistent-navigation">
+@media (max-width:700px){
+  :root{--marmito-bottom-navigation-height:calc(94px + env(safe-area-inset-bottom, 0px))}
+  /* Surclasse toutes les anciennes règles qui masquaient la barre en fiche recette. */
+  body .marmito-v23-bottom-nav.marmito-v10725-bottom-nav,
+  body.marmito-v24-recipe-open .marmito-v23-bottom-nav.marmito-v10725-bottom-nav{
+    display:grid!important;visibility:visible!important;opacity:1!important;
+    position:fixed!important;bottom:0!important;z-index:200000!important;
+  }
+  /* Les pages secondaires plein écran ne recouvrent plus la barre. */
+  #profile-overlay,#v40-favorites-overlay,#history-overlay,
+  #plan-overlay,#shopping-overlay,#about-overlay,#tips-overlay,
+  #contact-overlay,#pricing-overlay,#referral-overlay,
+  #marmito-admin-overlay,#marmito-experience-overlay,
+  #marmito-published-overlay,#marmito-myexp-overlay,
+  #marmito-pantry-overlay,#marmito-v105-overlay{
+    bottom:var(--marmito-bottom-navigation-height)!important;
+    max-height:calc(100dvh - var(--marmito-bottom-navigation-height))!important;
+  }
+  /* Conserve l'accès au bas des pages défilantes et aux commandes. */
+  .main,main{padding-bottom:max(110px,calc(105px + env(safe-area-inset-bottom, 0px)))!important}
+  .history-sheet,.profile-sheet{max-height:100%!important}
+  .history-sheet-body{padding-bottom:35px!important}
+  /* Les menus contextuels doivent rester accessibles au-dessus de la barre. */
+  #drawer,#drawer-overlay,.drawer,.drawer-overlay{z-index:300000!important}
+}
+</style>
+<script id="marmito-v10726-persistent-navigation-script">
+(function(){
+  'use strict';
+  function ensureNavAtBodyLevel(){
+    var nav=document.querySelector('.marmito-v23-bottom-nav.marmito-v10725-bottom-nav');
+    if(nav && nav.parentElement!==document.body)document.body.appendChild(nav);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureNavAtBodyLevel);
+  else ensureNavAtBodyLevel();
+})();
+</script>
 </body>
 </html>
