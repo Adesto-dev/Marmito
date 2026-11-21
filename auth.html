@@ -199,51 +199,60 @@ body{background:radial-gradient(ellipse at 15% 10%,#e8efdf 0,transparent 45%),ra
 <script>
 const SUPABASE_URL = 'https://osfhpzgfqpbzyrbjkajk.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_HAduBBuXWYfdKvOnfZ7X-Q_liL5Xj7h';
-// Flux implicite cohérent avec index.html : Supabase traite automatiquement
-// les jetons du retour Google, sans échange PKCE manuel ni code-verifier.
+// V107.31 OAuth 4 : retour implicite traité explicitement, une seule fois.
+// Capturer le fragment AVANT toute initialisation de Supabase.
+const oauthFragment = window.location.hash.startsWith('#')
+  ? new URLSearchParams(window.location.hash.slice(1)) : new URLSearchParams();
+const oauthAccessToken = oauthFragment.get('access_token');
+const oauthRefreshToken = oauthFragment.get('refresh_token');
+const oauthError = oauthFragment.get('error_description') || oauthFragment.get('error');
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true }
+  auth: { flowType: 'implicit', detectSessionInUrl: false, persistSession: true, autoRefreshToken: true }
 });
-// V60 : mémoriser le code d'invitation sur le même domaine que l'application.
+// Conserver le parrainage de la version précédente.
 const inviteCode = new URLSearchParams(location.search).get('ref');
 if (inviteCode && /^[A-Z0-9]{6,24}$/i.test(inviteCode)) {
   try { localStorage.setItem('marmito-pending-ref', inviteCode.toUpperCase()); } catch(e) {}
 }
-
-
-// OAuth V107.31 — retour Google géré par Supabase JS (une seule fois).
-const authParams = new URLSearchParams(window.location.search);
-const oauthCallback = authParams.get('oauth') === 'callback';
 let authNavigationStarted = false;
 function goToAppOnce(session) {
   if (!session?.access_token || !session?.user || authNavigationStarted) return;
   authNavigationStarted = true;
-  // Ne pas conserver de jetons OAuth dans l'historique.
   window.location.replace('/');
 }
 function oauthFailure(message) {
   showMsg('Connexion Google non finalisée : ' + message, 'error');
 }
 async function finishAuthReturn() {
-  if (oauthCallback) showMsg('Connexion Google en cours...', 'success');
+  // Les jetons ne doivent pas rester dans l'historique ni dans l'URL visible.
+  if (oauthAccessToken || oauthRefreshToken || oauthError) {
+    window.history.replaceState(null, '', window.location.pathname);
+  }
+  if (oauthError) { oauthFailure('Google a refusé la connexion. Réessayez.'); return; }
+  const hasOAuthTokens = Boolean(oauthAccessToken || oauthRefreshToken);
+  if (hasOAuthTokens) showMsg('Connexion Google en cours...', 'success');
   try {
-    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-    const providerError = authParams.get('error_description') || hash.get('error_description') ||
-      authParams.get('error') || hash.get('error');
-    if (providerError) {
-      oauthFailure(providerError);
+    if (hasOAuthTokens) {
+      if (!oauthAccessToken || !oauthRefreshToken) {
+        oauthFailure('réponse Google incomplète. Réessayez.'); return;
+      }
+      // setSession valide les jetons et persiste la session via Supabase JS.
+      const {data, error} = await sb.auth.setSession({
+        access_token: oauthAccessToken, refresh_token: oauthRefreshToken
+      });
+      if (error) throw error;
+      if (data?.session) { goToAppOnce(data.session); return; }
+      oauthFailure('session non créée après le retour Google. Réessayez.');
       return;
     }
-    // getSession attend l'initialisation Supabase, y compris le traitement
-    // automatique du fragment #access_token=...&refresh_token=...
-    const { data, error } = await sb.auth.getSession();
+    // Navigation ordinaire vers auth.html : ne pas déclencher de fausse erreur.
+    const {data, error} = await sb.auth.getSession();
     if (error) throw error;
-    if (data?.session) { goToAppOnce(data.session); return; }
-    if (oauthCallback) oauthFailure('aucune session reçue après le retour Google. Réessayez.');
+    if (data?.session) goToAppOnce(data.session);
   } catch (error) {
-    const safeMessage = String(error?.message || 'erreur inconnue')
-      .replace(/(access_token|refresh_token|code)=([^&\s]+)/gi, '$1=[masqué]');
-    oauthFailure(safeMessage);
+    // Ne jamais afficher les jetons ou l'URL complète dans les erreurs.
+    console.error('Marmito OAuth : échec de finalisation (détails sensibles masqués)');
+    oauthFailure('impossible de créer la session. Réessayez.');
   }
 }
 sb.auth.onAuthStateChange((event, session) => {
@@ -299,7 +308,7 @@ async function doSignup(){
 async function doGoogle(){
   const{error}=await sb.auth.signInWithOAuth({
     provider:'google',
-    options:{redirectTo:window.location.origin+'/auth.html?oauth=callback',queryParams:{prompt:'select_account'}}
+    options:{redirectTo:window.location.origin+'/auth.html',queryParams:{prompt:'select_account'}}
   });
   if(error)showMsg(error.message,'error');
 }
