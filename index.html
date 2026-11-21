@@ -4183,7 +4183,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
     }
     return total;
   }
-  function marmitoSearchResults(query,allowed,limit=50){
+  function marmitoSearchResults(query,allowed,limit=8){
     return allowed.map((r,i)=>({r,i,score:marmitoSearchScore(r.title,query)}))
       .filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.i-b.i)
       .slice(0,limit).map(x=>x.r);
@@ -4192,7 +4192,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
     const drop = document.getElementById('search-dropdown');
     if (!val.trim()) { closeSearch(); return; }
     if (!marmitoCatalogLoaded) { closeSearch(); return; }
-    const matches=marmitoSearchResults(val,recipes,50);
+    const matches=marmitoSearchResults(val,recipes,8);
     window.marmitoSearchMatches=matches;
     if (!matches.length) {
       drop.textContent=currentLang==='en'?'No matching recipe in your plan.':'Aucune recette correspondante dans votre forfait.';
