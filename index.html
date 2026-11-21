@@ -2295,6 +2295,47 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 .mb-task label>.marmito-v129-photo{width:46px;height:46px;flex-basis:46px;margin:0 8px}
 @media(max-width:480px){.v49-plan-mini{grid-template-columns:38px 56px minmax(0,1fr) 10px!important}.v49-plan-mini .marmito-v129-mini{width:36px;height:36px;flex-basis:36px}.v49-meal-icon.marmito-v129-photo{flex-basis:62px;width:62px;height:62px}}
 </style>
+
+<style id="marmito-v10733-mobile-safe-areas">
+/* V107.33 — correctif d'affichage mobile, sans changement de logique métier. */
+@media (max-width: 700px) {
+  /* Le tiroir conserve son bouton de sortie visible, même avec la barre iOS. */
+  #drawer {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  #drawer .drawer-nav { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+  #drawer .drawer-bottom {
+    flex-shrink: 0;
+    padding-bottom: 14px !important;
+  }
+  #drawer .drawer-bottom .drawer-item { min-height: 48px; }
+
+  /* Les feuilles plein écran respectent la hauteur visible du navigateur. */
+  .profile-sheet, .history-sheet, .contact-sheet, .about-sheet, .tips-sheet {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    min-height: 0;
+    box-sizing: border-box;
+  }
+  /* Les titres ne passent pas derrière l'encoche / la barre d'état. */
+  .page-nav-header { padding-top: env(safe-area-inset-top, 0px) !important; }
+  .page-nav-inner { min-width: 0; }
+  .page-nav-title { min-width: 0; overflow-wrap: anywhere; }
+  /* Conserver les actions finales au-dessus de la zone gestuelle iOS. */
+  .profile-sheet-body, .history-sheet-body, .contact-sheet-body,
+  .about-sheet-body, .tips-sheet-body {
+    min-height: 0;
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important;
+    box-sizing: border-box;
+  }
+  /* Les messages flottants ne sont pas recouverts par la navigation. */
+  .toast { bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
+}
+</style>
 </head>
 <body>
 <header class="header">
