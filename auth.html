@@ -167,6 +167,28 @@ body{background:radial-gradient(ellipse at 15% 10%,#e8efdf 0,transparent 45%),ra
       <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
     </div>
     <button class="btn-primary" id="btn-login" onclick="doLogin()">Se connecter</button>
+    <button type="button" id="forgot-link" onclick="showRecoveryForm()" style="display:block;margin:14px auto 0;background:none;border:0;color:#a9360b;text-decoration:underline;cursor:pointer;font:inherit">Mot de passe oublié ?</button>
+  </div>
+
+  <div id="recovery-form" style="display:none">
+    <div class="field">
+      <label for="recovery-email">Adresse courriel de votre compte</label>
+      <input type="email" id="recovery-email" placeholder="vous@exemple.com" autocomplete="email">
+    </div>
+    <button class="btn-primary" id="btn-recovery" onclick="sendPasswordReset()">Envoyer le lien de réinitialisation</button>
+    <button type="button" onclick="switchTab('login')" style="display:block;margin:14px auto 0;background:none;border:0;color:#a9360b;cursor:pointer;font:inherit">Retour à la connexion</button>
+  </div>
+
+  <div id="new-password-form" style="display:none">
+    <div class="field">
+      <label for="new-password">Nouveau mot de passe (8 caractères minimum)</label>
+      <input type="password" id="new-password" autocomplete="new-password" minlength="8">
+    </div>
+    <div class="field">
+      <label for="confirm-password">Confirmer le nouveau mot de passe</label>
+      <input type="password" id="confirm-password" autocomplete="new-password" minlength="8">
+    </div>
+    <button class="btn-primary" id="btn-new-password" onclick="saveNewPassword()">Enregistrer le nouveau mot de passe</button>
   </div>
 
   <div id="signup-form" style="display:none">
@@ -206,6 +228,8 @@ const oauthFragment = window.location.hash.startsWith('#')
 const oauthAccessToken = oauthFragment.get('access_token');
 const oauthRefreshToken = oauthFragment.get('refresh_token');
 const oauthError = oauthFragment.get('error_description') || oauthFragment.get('error');
+const recoveryReturn = new URLSearchParams(location.search).get('mode') === 'reset'
+  || oauthFragment.get('type') === 'recovery';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { flowType: 'implicit', detectSessionInUrl: false, persistSession: true, autoRefreshToken: true }
 });
@@ -215,8 +239,10 @@ if (inviteCode && /^[A-Z0-9]{6,24}$/i.test(inviteCode)) {
   try { localStorage.setItem('marmito-pending-ref', inviteCode.toUpperCase()); } catch(e) {}
 }
 let authNavigationStarted = false;
+let passwordRecoveryActive = recoveryReturn;
 function goToAppOnce(session) {
   if (!session?.access_token || !session?.user || authNavigationStarted) return;
+  if (recoveryReturn || passwordRecoveryActive) return;
   authNavigationStarted = true;
   window.location.replace('/');
 }
@@ -228,7 +254,11 @@ async function finishAuthReturn() {
   if (oauthAccessToken || oauthRefreshToken || oauthError) {
     window.history.replaceState(null, '', window.location.pathname);
   }
-  if (oauthError) { oauthFailure('Google a refusé la connexion. Réessayez.'); return; }
+  if (oauthError) {
+    if (recoveryReturn) showMsg('Lien de réinitialisation invalide ou expiré. Demandez un nouveau lien.', 'error');
+    else oauthFailure('Google a refusé la connexion. Réessayez.');
+    return;
+  }
   const hasOAuthTokens = Boolean(oauthAccessToken || oauthRefreshToken);
   if (hasOAuthTokens) showMsg('Connexion Google en cours...', 'success');
   try {
@@ -241,14 +271,20 @@ async function finishAuthReturn() {
         access_token: oauthAccessToken, refresh_token: oauthRefreshToken
       });
       if (error) throw error;
-      if (data?.session) { goToAppOnce(data.session); return; }
+      if (data?.session) {
+        if (recoveryReturn) { showNewPasswordForm(); return; }
+        goToAppOnce(data.session); return;
+      }
       oauthFailure('session non créée après le retour Google. Réessayez.');
       return;
     }
     // Navigation ordinaire vers auth.html : ne pas déclencher de fausse erreur.
     const {data, error} = await sb.auth.getSession();
     if (error) throw error;
-    if (data?.session) goToAppOnce(data.session);
+    if (recoveryReturn) {
+      if (data?.session) showNewPasswordForm();
+      else showMsg('Lien de réinitialisation expiré ou non reconnu. Demandez un nouveau lien.', 'error');
+    } else if (data?.session) goToAppOnce(data.session);
   } catch (error) {
     // Ne jamais afficher les jetons ou l'URL complète dans les erreurs.
     console.error('Marmito OAuth : échec de finalisation (détails sensibles masqués)');
@@ -256,7 +292,10 @@ async function finishAuthReturn() {
   }
 }
 sb.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' && session) goToAppOnce(session);
+  if (event === 'PASSWORD_RECOVERY') {
+    passwordRecoveryActive = true;
+    showNewPasswordForm();
+  } else if (event === 'SIGNED_IN' && session && !passwordRecoveryActive) goToAppOnce(session);
 });
 finishAuthReturn();
 
@@ -264,6 +303,9 @@ function switchTab(tab){
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===(tab==='login'?0:1)));
   document.getElementById('login-form').style.display=tab==='login'?'':'none';
   document.getElementById('signup-form').style.display=tab==='signup'?'':'none';
+  document.getElementById('recovery-form').style.display='none';
+  document.getElementById('new-password-form').style.display='none';
+  document.querySelector('.tabs').style.display='';
   clearMsg();
 }
 
@@ -274,6 +316,62 @@ function showMsg(text,type){
 function clearMsg(){
   const el=document.getElementById('msg');
   el.className='msg';el.textContent='';
+}
+
+function showRecoveryForm(){
+  document.getElementById('login-form').style.display='none';
+  document.getElementById('signup-form').style.display='none';
+  document.getElementById('recovery-form').style.display='';
+  document.getElementById('new-password-form').style.display='none';
+  document.getElementById('recovery-email').value=document.getElementById('login-email').value.trim();
+  clearMsg();
+}
+function showNewPasswordForm(){
+  passwordRecoveryActive=true;
+  document.querySelector('.tabs').style.display='none';
+  document.getElementById('login-form').style.display='none';
+  document.getElementById('signup-form').style.display='none';
+  document.getElementById('recovery-form').style.display='none';
+  document.getElementById('new-password-form').style.display='';
+  showMsg('Choisissez votre nouveau mot de passe.', 'success');
+}
+async function sendPasswordReset(){
+  const email=document.getElementById('recovery-email').value.trim();
+  if(!email){showMsg('Indiquez votre adresse courriel.','error');return;}
+  const btn=document.getElementById('btn-recovery');
+  btn.disabled=true;btn.textContent='Envoi...';
+  try {
+    const {error}=await sb.auth.resetPasswordForEmail(email,{
+      redirectTo:window.location.origin+'/auth.html?mode=reset'
+    });
+    if(error) throw error;
+    showMsg('Si cette adresse correspond à un compte, un lien de réinitialisation sera envoyé. Vérifiez aussi les courriels indésirables.','success');
+  } catch(e) {
+    showMsg('Impossible d’envoyer le lien pour le moment. Réessayez.','error');
+  } finally {
+    btn.disabled=false;btn.textContent='Envoyer le lien de réinitialisation';
+  }
+}
+async function saveNewPassword(){
+  const password=document.getElementById('new-password').value;
+  const confirmation=document.getElementById('confirm-password').value;
+  if(password.length<8){showMsg('Le mot de passe doit contenir au moins 8 caractères.','error');return;}
+  if(password!==confirmation){showMsg('Les deux mots de passe ne correspondent pas.','error');return;}
+  const btn=document.getElementById('btn-new-password');
+  btn.disabled=true;btn.textContent='Enregistrement...';
+  try {
+    const {data,error:sessionError}=await sb.auth.getSession();
+    if(sessionError || !data?.session) throw new Error('no recovery session');
+    const {error}=await sb.auth.updateUser({password});
+    if(error) throw error;
+    // Conserver la session courante et terminer sur l'application.
+    passwordRecoveryActive=false;
+    authNavigationStarted=true;
+    window.location.replace('/');
+  } catch(e) {
+    showMsg('Réinitialisation impossible ou lien expiré. Demandez un nouveau lien.','error');
+    btn.disabled=false;btn.textContent='Enregistrer le nouveau mot de passe';
+  }
 }
 
 async function doLogin(){
@@ -316,7 +414,9 @@ async function doGoogle(){
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter')return;
   const loginVisible=document.getElementById('login-form').style.display!=='none';
-  if(loginVisible)doLogin();else doSignup();
+  if(document.getElementById('new-password-form').style.display!=='none')saveNewPassword();
+  else if(document.getElementById('recovery-form').style.display!=='none')sendPasswordReset();
+  else if(loginVisible)doLogin();else doSignup();
 });
 
 if(new URLSearchParams(location.search).get('signup')==='1')switchTab('signup');
