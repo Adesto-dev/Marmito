@@ -2296,6 +2296,85 @@ body.marmito-v34-inner .v31-hero,body.marmito-v34-inner .v31-discovery,body.marm
 @media(max-width:480px){.v49-plan-mini{grid-template-columns:38px 56px minmax(0,1fr) 10px!important}.v49-plan-mini .marmito-v129-mini{width:36px;height:36px;flex-basis:36px}.v49-meal-icon.marmito-v129-photo{flex-basis:62px;width:62px;height:62px}}
 </style>
 
+
+<style id="marmito-v10734-shopping-full-page">
+/* V107.34 — La liste de courses devient une page du menu, pas une feuille tronquée. */
+#shopping-overlay.open {
+  inset: 0 !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  background: var(--bg, #faf8f2) !important;
+}
+#shopping-overlay .shopping-sheet {
+  display: block !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  max-height: 100dvh !important;
+  margin: 0 !important;
+  padding: 0 0 calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+#shopping-overlay .shopping-head {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 5;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 64px;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 12px !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+#shopping-overlay #shopping-title {
+  display: block;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  font-size: clamp(16px, 4.4vw, 21px) !important;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+#shopping-overlay .shopping-head > button {
+  flex: 0 0 auto;
+  min-width: 36px;
+  min-height: 40px;
+  margin: 0 !important;
+}
+#shopping-overlay .shopping-actions {
+  box-sizing: border-box;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  padding: 18px clamp(14px, 4vw, 28px) !important;
+  margin: 0 !important;
+}
+#shopping-overlay .v47-shopping-intro { flex: 1 0 100%; min-width: 0; }
+#shopping-overlay #shopping-manual { flex: 1 1 170px; min-width: 0; }
+#shopping-overlay #shopping-recipes,
+#shopping-overlay #shopping-contents,
+#shopping-overlay .shopping-foot { box-sizing: border-box; max-width: 1100px; margin-left: auto !important; margin-right: auto !important; }
+#shopping-overlay .shopping-foot { flex-wrap: wrap; justify-content: flex-start; padding: 18px clamp(14px, 4vw, 28px); }
+#shopping-overlay .shopping-foot button { min-height: 42px; }
+@media (max-width: 700px) {
+  #shopping-overlay .shopping-head { padding-left: 8px !important; padding-right: 8px !important; }
+  #shopping-overlay .shopping-head .v46-inline-menu { width: 36px; flex-basis: 36px; }
+  #shopping-overlay .shopping-head .v94-back { padding: 8px 6px; }
+  #shopping-overlay .shopping-head .v94-back span { display: none; }
+  #shopping-overlay .v48-shopping-view { max-width: calc(100% - 28px); margin: 12px 14px; }
+  #shopping-overlay .v48-shopping-view button { padding: 10px 12px; }
+}
+</style>
+
 <style id="marmito-v10733-mobile-safe-areas">
 /* V107.33 — correctif d'affichage mobile, sans changement de logique métier. */
 @media (max-width: 700px) {
@@ -9999,6 +10078,26 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureNavAtBodyLevel);
   else ensureNavAtBodyLevel();
+})();
+</script>
+
+<!-- V107.35 : masquer la navigation inferieure uniquement pendant l'ouverture du menu lateral. -->
+<style id="marmito-v10735-drawer-bottom-nav">
+@media (max-width:700px) {
+  body.marmito-drawer-open .marmito-v23-bottom-nav { display:none!important; }
+}
+</style>
+<script id="marmito-v10735-drawer-bottom-nav-sync">
+(function () {
+  function initDrawerNavSync() {
+    const drawer = document.getElementById('drawer');
+    if (!drawer) return;
+    const sync = () => document.body.classList.toggle('marmito-drawer-open', drawer.classList.contains('open'));
+    new MutationObserver(sync).observe(drawer, {attributes:true, attributeFilter:['class']});
+    sync();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initDrawerNavSync, {once:true});
+  else initDrawerNavSync();
 })();
 </script>
 </body>
