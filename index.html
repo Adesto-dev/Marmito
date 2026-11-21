@@ -3047,52 +3047,46 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
   }
 
   async function loadUserProfile() {
-    // Heure locale (pas UTC) pour eviter un reset premature en soiree a Montreal
-    const _now = new Date();
-    const currentMonth = _now.getFullYear() + '-' + String(_now.getMonth() + 1).padStart(2, '0');
-    const { data, error } = await sb.from('profiles').select('plan,recipe_count,reset_month,referral_code,bonus_plan,bonus_expires_at,referred_by,referral_applied').eq('id', currentUser.id).single();
-
-    if (data) {
-      // Succes : on charge le profil
-      userBasePlan = data.plan || 'free';
-      userBonusPlan = data.bonus_plan || null;
-      userPlan = userBasePlan;
-      userReferralCode = data.referral_code || null;
-      // V60 : seul Supabase attribue et conserve un code unique.
-      await ensureReferralCode();
-      await applyPendingReferral();
-      userBonusExpires = data.bonus_expires_at || null;
-      // Override plan with active bonus plan if it outranks current plan
-      if (data.bonus_plan && data.bonus_expires_at && new Date(data.bonus_expires_at) > new Date()) {
-        const planRank = {free:0, saveur:1, chef:2};
-        if ((planRank[data.bonus_plan] || 0) > (planRank[userPlan] || 0)) userPlan = data.bonus_plan;
-      }
-      // Cache le plan en localStorage pour resilience offline/erreur reseau
-      marmitoScopedSet('marmito-plan', userPlan);
-      syncPricingCurrentPlan();
-      // Le serveur est seul responsable du reset mensuel et du quota.
-      // Ne jamais remettre a zero localement ni reutiliser un compteur local pour autoriser une generation.
-      recipeCount = Number(data.recipe_count) || 0;
-      marmitoScopedSet('marmito-count', String(recipeCount));
-
-    } else if (error && error.code === 'PGRST116') {
-      // Aucun profil trouve (premiere connexion) - on cree le profil
-      // V107.6 : le rôle connecté n'a le droit d'écrire que id et email. Le plan 'free', le compteur et le mois viennent des valeurs par défaut et du serveur.
-      const { error: createError } = await sb.from('profiles').insert({ id: currentUser.id, email: currentUser.email });
-      if (createError && createError.code !== '23505') throw createError;
-      await ensureReferralCode();
-      await applyPendingReferral();
-      userPlan = 'free'; userBasePlan = 'free'; userBonusPlan = null; recipeCount = 0;
-      marmitoScopedSet('marmito-plan', 'free');
-    } else {
-      // Erreur reseau ou Supabase indisponible : on utilise le cache local
-      // NE PAS ecraser le plan avec 'free' - utiliser la derniere valeur connue
-      console.warn('[Marmito] loadProfile erreur:', error ? error.message : 'no data', '- utilisation du cache local');
-      // Le cache est propre au compte connecté et son contenu est validé.
-      const cachedPlan = marmitoScopedGet('marmito-plan');
-      if (cachedPlan && PLAN_LIMITS[cachedPlan]) userPlan = cachedPlan;
-      // sinon userPlan reste 'free' par defaut
+    // V107.32 : les droits proviennent exclusivement du profil Supabase.
+    // Une panne de lecture ne doit jamais être interprétée comme un forfait Gratuit.
+    if (!currentUser || !currentUser.id) throw new Error('Session requise pour le profil');
+    const profileUserId = currentUser.id;
+    const fields = 'plan,recipe_count,reset_month,referral_code,bonus_plan,bonus_expires_at,referred_by,referral_applied';
+    async function fetchProfile() {
+      return await sb.from('profiles').select(fields).eq('id', profileUserId).single();
     }
+    let result = await fetchProfile();
+    // Une seule nouvelle tentative sur erreur transitoire, sans créer de profil.
+    if (result.error && result.error.code !== 'PGRST116') {
+      await new Promise(resolve => setTimeout(resolve, 650));
+      result = await fetchProfile();
+    }
+    if (result.error && result.error.code === 'PGRST116') {
+      // Profil réellement absent : création minimale, puis relecture des droits serveur.
+      const { error: createError } = await sb.from('profiles').insert({ id: profileUserId, email: currentUser.email });
+      if (createError && createError.code !== '23505') throw createError;
+      result = await fetchProfile();
+    }
+    if (result.error || !result.data) {
+      throw result.error || new Error('Profil Supabase indisponible');
+    }
+    if (!currentUser || currentUser.id !== profileUserId) throw new Error('Session modifiée pendant le chargement du profil');
+    const data = result.data;
+    if (!Object.prototype.hasOwnProperty.call(PLAN_LIMITS, data.plan)) {
+      throw new Error('Forfait Supabase inconnu');
+    }
+    userBasePlan = data.plan;
+    userBonusPlan = data.bonus_plan || null;
+    userBonusExpires = data.bonus_expires_at || null;
+    userPlan = marmitoEffectivePlan(userBasePlan);
+    userReferralCode = data.referral_code || null;
+    recipeCount = Number(data.recipe_count) || 0;
+    // Le cache est informatif uniquement, jamais une source de droits.
+    marmitoScopedSet('marmito-plan', userPlan);
+    marmitoScopedSet('marmito-count', String(recipeCount));
+    syncPricingCurrentPlan();
+    await ensureReferralCode();
+    await applyPendingReferral();
   }
 
   async function refreshPlanBtn() {
