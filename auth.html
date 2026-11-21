@@ -199,8 +199,8 @@ body{background:radial-gradient(ellipse at 15% 10%,#e8efdf 0,transparent 45%),ra
 <script>
 const SUPABASE_URL = 'https://osfhpzgfqpbzyrbjkajk.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_HAduBBuXWYfdKvOnfZ7X-Q_liL5Xj7h';
-// Utiliser le même flux OAuth implicite que index.html.
-// Supabase traite automatiquement les jetons du retour Google dans l'URL.
+// Flux implicite cohérent avec index.html : Supabase traite automatiquement
+// les jetons du retour Google, sans échange PKCE manuel ni code-verifier.
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true }
 });
@@ -211,73 +211,44 @@ if (inviteCode && /^[A-Z0-9]{6,24}$/i.test(inviteCode)) {
 }
 
 
-// OAuth V107.31 — correctif n° 3 : flux implicite cohérent avec index.html.
-// Ne jamais appeler exchangeCodeForSession sans le code-verifier PKCE associé.
+// OAuth V107.31 — retour Google géré par Supabase JS (une seule fois).
 const authParams = new URLSearchParams(window.location.search);
 const oauthCallback = authParams.get('oauth') === 'callback';
 let authNavigationStarted = false;
-let oauthCompleted = false;
-
 function goToAppOnce(session) {
   if (!session?.access_token || !session?.user || authNavigationStarted) return;
   authNavigationStarted = true;
-  oauthCompleted = true;
+  // Ne pas conserver de jetons OAuth dans l'historique.
   window.location.replace('/');
 }
 function oauthFailure(message) {
-  if (oauthCompleted || authNavigationStarted) return;
   showMsg('Connexion Google non finalisée : ' + message, 'error');
 }
-function providerErrorFromUrl() {
-  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-  return authParams.get('error_description') || hash.get('error_description') ||
-    authParams.get('error') || hash.get('error');
-}
-function cleanCallbackUrl() {
-  if (oauthCallback) window.history.replaceState(null, '', '/auth.html');
-}
-
-sb.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-    if (session) goToAppOnce(session);
-  }
-});
-
 async function finishAuthReturn() {
-  const providerError = providerErrorFromUrl();
-  if (providerError) {
-    oauthFailure(providerError);
-    return;
-  }
   if (oauthCallback) showMsg('Connexion Google en cours...', 'success');
   try {
-    // Supabase initialise automatiquement les jetons de retour (fragment #).
-    // getSession attend la fin de cette initialisation.
-    const { data, error } = await sb.auth.getSession();
-    if (error) throw error;
-    if (data?.session) {
-      goToAppOnce(data.session);
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const providerError = authParams.get('error_description') || hash.get('error_description') ||
+      authParams.get('error') || hash.get('error');
+    if (providerError) {
+      oauthFailure(providerError);
       return;
     }
-    if (oauthCallback) {
-      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-      if (authParams.has('code')) {
-        // Ancien lien PKCE : le code-verifier peut avoir disparu dans Safari privé.
-        oauthFailure('ancien retour Google incompatible. Revenez sur Connexion et relancez Google.');
-      } else if (hash.has('access_token')) {
-        oauthFailure('les jetons Google n’ont pas pu être enregistrés. Réessayez.');
-      } else {
-        oauthFailure('aucune session reçue. Réessayez avec Google.');
-      }
-      cleanCallbackUrl();
-    }
+    // getSession attend l'initialisation Supabase, y compris le traitement
+    // automatique du fragment #access_token=...&refresh_token=...
+    const { data, error } = await sb.auth.getSession();
+    if (error) throw error;
+    if (data?.session) { goToAppOnce(data.session); return; }
+    if (oauthCallback) oauthFailure('aucune session reçue après le retour Google. Réessayez.');
   } catch (error) {
     const safeMessage = String(error?.message || 'erreur inconnue')
-      .replace(/(access_token|refresh_token|code)=([^&\\s]+)/gi, '$1=[masqué]');
+      .replace(/(access_token|refresh_token|code)=([^&\s]+)/gi, '$1=[masqué]');
     oauthFailure(safeMessage);
-    cleanCallbackUrl();
   }
 }
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' && session) goToAppOnce(session);
+});
 finishAuthReturn();
 
 function switchTab(tab){
