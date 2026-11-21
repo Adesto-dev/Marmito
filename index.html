@@ -4779,6 +4779,27 @@ function seededShuffle(arr, seed) {
   return a;
 }
 
+  // V107.29 — Recipe-specific thumbnails, with a graceful icon fallback.
+function marmitoV129PhotoMarkup(recipe, cls='marmito-v129-photo'){
+ if(!recipe)return '<span class="'+cls+' marmito-v129-empty" aria-hidden="true">🍽️</span>';
+ const url=typeof marmitoRecipePhotoUrl==='function'?marmitoRecipePhotoUrl(recipe):'';
+ if(!url)return '<span class="'+cls+' marmito-v129-empty" aria-hidden="true">'+escapeMarmitoHTML(recipe.emoji||'🍽️')+'</span>';
+ return '<span class="'+cls+'"><img loading="lazy" decoding="async" src="'+escapeMarmitoHTML(url)+'" alt="" onerror="this.parentElement.classList.add(\'marmito-v129-empty\');this.parentElement.textContent=\'🍽️\'"></span>';
+}
+function marmitoV129PhotoNode(recipe){
+ const span=document.createElement('span');span.className='marmito-v129-photo';span.setAttribute('aria-hidden','true');
+ const url=recipe&&typeof marmitoRecipePhotoUrl==='function'?marmitoRecipePhotoUrl(recipe):'';
+ if(!url){span.classList.add('marmito-v129-empty');span.textContent=recipe?.emoji||'🍽️';return span;}
+ const img=document.createElement('img');img.loading='lazy';img.decoding='async';img.alt='';img.onerror=()=>{span.replaceChildren();span.classList.add('marmito-v129-empty');span.textContent='🍽️';};img.src=url;span.append(img);return span;
+}
+function marmitoV129SyncChoice(button,recipe){
+ if(!button)return;
+ const parent=button.parentElement;if(!parent)return;
+ parent.querySelectorAll('.marmito-v129-choice-preview').forEach(n=>n.remove());
+ if(!recipe)return;
+ const preview=marmitoV129PhotoNode(recipe);preview.classList.add('marmito-v129-choice-preview');button.before(preview);
+}
+
 function openPlanRepas() {
   const overlay = document.getElementById('plan-overlay');
   const sheet = document.getElementById('plan-sheet');
@@ -4825,26 +4846,6 @@ function openPlanRepas() {
     if (r && r.ingredients) r.ingredients.forEach(ing => { allIngs[ing] = true; });
   });
 
-  // V107.29 — Recipe-specific thumbnails, with a graceful icon fallback.
-function marmitoV129PhotoMarkup(recipe, cls='marmito-v129-photo'){
- if(!recipe)return '<span class="'+cls+' marmito-v129-empty" aria-hidden="true">🍽️</span>';
- const url=typeof marmitoRecipePhotoUrl==='function'?marmitoRecipePhotoUrl(recipe):'';
- if(!url)return '<span class="'+cls+' marmito-v129-empty" aria-hidden="true">'+escapeMarmitoHTML(recipe.emoji||'🍽️')+'</span>';
- return '<span class="'+cls+'"><img loading="lazy" decoding="async" src="'+escapeMarmitoHTML(url)+'" alt="" onerror="this.parentElement.classList.add(\'marmito-v129-empty\');this.parentElement.textContent=\'🍽️\'"></span>';
-}
-function marmitoV129PhotoNode(recipe){
- const span=document.createElement('span');span.className='marmito-v129-photo';span.setAttribute('aria-hidden','true');
- const url=recipe&&typeof marmitoRecipePhotoUrl==='function'?marmitoRecipePhotoUrl(recipe):'';
- if(!url){span.classList.add('marmito-v129-empty');span.textContent=recipe?.emoji||'🍽️';return span;}
- const img=document.createElement('img');img.loading='lazy';img.decoding='async';img.alt='';img.onerror=()=>{span.replaceChildren();span.classList.add('marmito-v129-empty');span.textContent='🍽️';};img.src=url;span.append(img);return span;
-}
-function marmitoV129SyncChoice(button,recipe){
- if(!button)return;
- const parent=button.parentElement;if(!parent)return;
- parent.querySelectorAll('.marmito-v129-choice-preview').forEach(n=>n.remove());
- if(!recipe)return;
- const preview=marmitoV129PhotoNode(recipe);preview.classList.add('marmito-v129-choice-preview');button.before(preview);
-}
 function renderPlanBody(displayTitles) {
     const en = currentLang === 'en';
     const today = new Date().getDay();
