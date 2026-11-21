@@ -4145,19 +4145,64 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
   }
 
   // === SEARCH ===
+  // Recherche uniquement dans le catalogue autorisé par la RPC Supabase.
+  // Normalisation FR/EN : accents, apostrophes, pluriels et tajine/tagine.
+  function marmitoSearchNormalize(value) {
+    return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().replace(/œ/g, 'oe').replace(/æ/g, 'ae')
+      .replace(/tagine/g, 'tajine').replace(/[^a-z0-9]+/g, ' ').trim().replace(/\s+/g, ' ');
+  }
+  function marmitoSearchDistance(a,b,max=2) {
+    if(Math.abs(a.length-b.length)>max)return max+1;
+    let prev=Array.from({length:b.length+1},(_,i)=>i);
+    for(let i=1;i<=a.length;i++){
+      const next=[i];let rowMin=i;
+      for(let j=1;j<=b.length;j++){
+        const v=Math.min(prev[j]+1,next[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+        next.push(v);rowMin=Math.min(rowMin,v);
+      }
+      if(rowMin>max)return max+1;
+      prev=next;
+    }
+    return prev[b.length];
+  }
+  function marmitoSearchScore(title,query) {
+    const name=marmitoSearchNormalize(title), q=marmitoSearchNormalize(query);
+    if(!q)return 0;
+    if(name===q)return 1000;
+    if(name.startsWith(q))return 900;
+    if(name.includes(q))return 800;
+    const words=name.split(' '), terms=q.split(' ').filter(t=>!['de','du','des','d','le','la','les','a','au','aux','et','the','of'].includes(t));
+    if(!terms.length)return 0;
+    let total=0;
+    for(const term of terms){
+      if(words.some(w=>w===term)){total+=100;continue;}
+      if(words.some(w=>w.startsWith(term))){total+=80;continue;}
+      if(term.length>=4&&words.some(w=>marmitoSearchDistance(w,term,term.length>=5?2:1)<= (term.length>=5?2:1))){total+=50;continue;}
+      return 0;
+    }
+    return total;
+  }
+  function marmitoSearchResults(query,allowed,limit=50){
+    return allowed.map((r,i)=>({r,i,score:marmitoSearchScore(r.title,query)}))
+      .filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.i-b.i)
+      .slice(0,limit).map(x=>x.r);
+  }
   function onSearchInput(val) {
-    const q = val.trim().toLowerCase();
     const drop = document.getElementById('search-dropdown');
-    if (!q) { drop.classList.remove('open'); drop.innerHTML=''; return; }
-    const matches = recipes.filter(r => r.title.toLowerCase().includes(q)).slice(0, 8);
-    if (!matches.length) { drop.classList.remove('open'); drop.innerHTML=''; return; }
+    if (!val.trim()) { closeSearch(); return; }
+    if (!marmitoCatalogLoaded) { closeSearch(); return; }
+    const matches=marmitoSearchResults(val,recipes,50);
     window.marmitoSearchMatches=matches;
-    drop.innerHTML = matches.map((r,i) =>
+    if (!matches.length) {
+      drop.textContent=currentLang==='en'?'No matching recipe in your plan.':'Aucune recette correspondante dans votre forfait.';
+      drop.classList.add('open');return;
+    }
+    drop.innerHTML=matches.map((r,i)=>
       `<div class="search-item" onmousedown="pickSearchIndex(event,${i})">
         ${escapeMarmitoHTML(r.title)}
         <div class="search-item-region">${escapeMarmitoHTML(r.region)} · ${escapeMarmitoHTML(r.type)} · ${escapeMarmitoHTML(r.time)}</div>
-      </div>`
-    ).join('');
+      </div>`).join('');
     drop.classList.add('open');
   }
   function escapeMarmitoHTML(v){return String(v||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -5029,7 +5074,7 @@ function marmitoV92Picker(allowed,button,en){
  const list=document.createElement('div');list.className='v92-picker-list';dialog.append(list);
  const clear=document.createElement('button');clear.type='button';clear.className='v92-picker-clear';clear.textContent=en?'Leave this meal empty':'Laisser ce repas vide';clear.onclick=()=>{button.dataset.value='';button.textContent=en?'Choose a recipe':'Choisir une recette';marmitoV129SyncChoice(button,null);dismiss()};dialog.append(clear);
  const render=()=>{
-  list.replaceChildren();const query=input.value.trim().toLocaleLowerCase();const matches=allowed.filter(r=>(!category.value||r.region===category.value)&&(!query||r.title.toLocaleLowerCase().includes(query))).slice(0,60);
+  list.replaceChildren();const query=input.value.trim().toLocaleLowerCase();const matches=(query?marmitoSearchResults(query,allowed,allowed.length):allowed).filter(r=>!category.value||r.region===category.value);
   if(!matches.length){const empty=document.createElement('p');empty.textContent=en?'No matching recipe':'Aucune recette correspondante';list.append(empty);return}
   matches.forEach(r=>{const item=document.createElement('button');item.type='button';item.className='v92-picker-item';
    const name=document.createElement('strong');name.textContent=r.title;const meta=document.createElement('small');meta.textContent=[r.region,r.time].filter(Boolean).join(' · ');
