@@ -207,13 +207,38 @@ if (inviteCode && /^[A-Z0-9]{6,24}$/i.test(inviteCode)) {
 }
 
 
-sb.auth.getSession().then(({data:{session}})=>{
-  if(session) window.location.href='/';
+// OAuth V107.31 correctif : traiter le retour Google sur cette page avant d'ouvrir l'application.
+// Une seule navigation, après confirmation d'une session Supabase valide.
+const oauthCallback = new URLSearchParams(location.search).get('oauth') === 'callback';
+let authNavigationStarted = false;
+function goToAppOnce(session) {
+  if (!session?.access_token || !session?.user || authNavigationStarted) return;
+  authNavigationStarted = true;
+  window.location.replace('/');
+}
+async function finishAuthReturn() {
+  if (oauthCallback) showMsg('Connexion Google en cours...', 'success');
+  try {
+    // Supabase JS v2 restaure automatiquement le retour OAuth (hash ou code).
+    const {data, error} = await sb.auth.getSession();
+    if (error) throw error;
+    if (data?.session) { goToAppOnce(data.session); return; }
+    if (oauthCallback) {
+      // L'événement SIGNED_IN peut suivre la première lecture de session sur Safari.
+      await new Promise(resolve => setTimeout(resolve, 900));
+      const retry = await sb.auth.getSession();
+      if (retry.error) throw retry.error;
+      if (retry.data?.session) { goToAppOnce(retry.data.session); return; }
+      showMsg('Connexion Google non finalisée. Réessayez ou contactez le support.', 'error');
+    }
+  } catch (error) {
+    showMsg('Erreur de connexion : ' + (error?.message || 'session indisponible'), 'error');
+  }
+}
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' && session) goToAppOnce(session);
 });
-
-sb.auth.onAuthStateChange((event, session)=>{
-  if(session) window.location.href='/';
-});
+finishAuthReturn();
 
 function switchTab(tab){
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===(tab==='login'?0:1)));
@@ -263,7 +288,7 @@ async function doSignup(){
 async function doGoogle(){
   const{error}=await sb.auth.signInWithOAuth({
     provider:'google',
-    options:{redirectTo:window.location.origin+'/',queryParams:{prompt:'select_account'}}
+    options:{redirectTo:window.location.origin+'/auth.html?oauth=callback',queryParams:{prompt:'select_account'}}
   });
   if(error)showMsg(error.message,'error');
 }
