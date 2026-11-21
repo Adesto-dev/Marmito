@@ -199,9 +199,10 @@ body{background:radial-gradient(ellipse at 15% 10%,#e8efdf 0,transparent 45%),ra
 <script>
 const SUPABASE_URL = 'https://osfhpzgfqpbzyrbjkajk.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_HAduBBuXWYfdKvOnfZ7X-Q_liL5Xj7h';
-// Callback OAuth traité explicitement sur cette page, sans course avec la détection automatique.
+// Utiliser le même flux OAuth implicite que index.html.
+// Supabase traite automatiquement les jetons du retour Google dans l'URL.
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { flowType: 'pkce', detectSessionInUrl: false, persistSession: true, autoRefreshToken: true }
+  auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true }
 });
 // V60 : mémoriser le code d'invitation sur le même domaine que l'application.
 const inviteCode = new URLSearchParams(location.search).get('ref');
@@ -210,66 +211,73 @@ if (inviteCode && /^[A-Z0-9]{6,24}$/i.test(inviteCode)) {
 }
 
 
-// OAuth V107.31 — deuxième correctif : finalisation explicite du retour Google.
-// Une seule navigation vers l'application, uniquement après confirmation de la session.
+// OAuth V107.31 — correctif n° 3 : flux implicite cohérent avec index.html.
+// Ne jamais appeler exchangeCodeForSession sans le code-verifier PKCE associé.
 const authParams = new URLSearchParams(window.location.search);
 const oauthCallback = authParams.get('oauth') === 'callback';
 let authNavigationStarted = false;
+let oauthCompleted = false;
+
 function goToAppOnce(session) {
   if (!session?.access_token || !session?.user || authNavigationStarted) return;
   authNavigationStarted = true;
+  oauthCompleted = true;
   window.location.replace('/');
 }
 function oauthFailure(message) {
+  if (oauthCompleted || authNavigationStarted) return;
   showMsg('Connexion Google non finalisée : ' + message, 'error');
 }
+function providerErrorFromUrl() {
+  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  return authParams.get('error_description') || hash.get('error_description') ||
+    authParams.get('error') || hash.get('error');
+}
+function cleanCallbackUrl() {
+  if (oauthCallback) window.history.replaceState(null, '', '/auth.html');
+}
+
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+    if (session) goToAppOnce(session);
+  }
+});
+
 async function finishAuthReturn() {
+  const providerError = providerErrorFromUrl();
+  if (providerError) {
+    oauthFailure(providerError);
+    return;
+  }
   if (oauthCallback) showMsg('Connexion Google en cours...', 'success');
   try {
-    // Les erreurs renvoyées par le fournisseur peuvent apparaître dans l'URL.
-    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-    const providerError = authParams.get('error_description') || hash.get('error_description') ||
-      authParams.get('error') || hash.get('error');
-    if (providerError) {
-      oauthFailure(providerError);
-      return;
-    }
-
-    // Avec PKCE, Supabase renvoie ?code=... : l'échanger explicitement.
-    const code = authParams.get('code');
-    if (code) {
-      const { data, error } = await sb.auth.exchangeCodeForSession(code);
-      if (error) throw error;
-      // Éviter de conserver le code à usage unique dans l'historique du navigateur.
-      window.history.replaceState(null, '', '/auth.html?oauth=callback');
-      if (data?.session) { goToAppOnce(data.session); return; }
-    } else if (hash.get('access_token') && hash.get('refresh_token')) {
-      // Compatibilité avec un ancien retour OAuth implicite.
-      const { data, error } = await sb.auth.setSession({
-        access_token: hash.get('access_token'), refresh_token: hash.get('refresh_token')
-      });
-      if (error) throw error;
-      window.history.replaceState(null, '', '/auth.html?oauth=callback');
-      if (data?.session) { goToAppOnce(data.session); return; }
-    }
-
+    // Supabase initialise automatiquement les jetons de retour (fragment #).
+    // getSession attend la fin de cette initialisation.
     const { data, error } = await sb.auth.getSession();
     if (error) throw error;
-    if (data?.session) { goToAppOnce(data.session); return; }
+    if (data?.session) {
+      goToAppOnce(data.session);
+      return;
+    }
     if (oauthCallback) {
-      oauthFailure(code ? 'échange terminé sans session.' :
-        'aucun code OAuth ni session reçus. Vérifiez la redirection autorisée dans Supabase.');
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+      if (authParams.has('code')) {
+        // Ancien lien PKCE : le code-verifier peut avoir disparu dans Safari privé.
+        oauthFailure('ancien retour Google incompatible. Revenez sur Connexion et relancez Google.');
+      } else if (hash.has('access_token')) {
+        oauthFailure('les jetons Google n’ont pas pu être enregistrés. Réessayez.');
+      } else {
+        oauthFailure('aucune session reçue. Réessayez avec Google.');
+      }
+      cleanCallbackUrl();
     }
   } catch (error) {
-    // Afficher la vraie erreur sans exposer de jetons ou de code OAuth.
     const safeMessage = String(error?.message || 'erreur inconnue')
-      .replace(/(access_token|refresh_token|code)=([^&\s]+)/gi, '$1=[masqué]');
+      .replace(/(access_token|refresh_token|code)=([^&\\s]+)/gi, '$1=[masqué]');
     oauthFailure(safeMessage);
+    cleanCallbackUrl();
   }
 }
-sb.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' && session && !oauthCallback) goToAppOnce(session);
-});
 finishAuthReturn();
 
 function switchTab(tab){
