@@ -199,7 +199,10 @@ body{background:radial-gradient(ellipse at 15% 10%,#e8efdf 0,transparent 45%),ra
 <script>
 const SUPABASE_URL = 'https://osfhpzgfqpbzyrbjkajk.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_HAduBBuXWYfdKvOnfZ7X-Q_liL5Xj7h';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Callback OAuth traité explicitement sur cette page, sans course avec la détection automatique.
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { flowType: 'pkce', detectSessionInUrl: false, persistSession: true, autoRefreshToken: true }
+});
 // V60 : mémoriser le code d'invitation sur le même domaine que l'application.
 const inviteCode = new URLSearchParams(location.search).get('ref');
 if (inviteCode && /^[A-Z0-9]{6,24}$/i.test(inviteCode)) {
@@ -207,36 +210,65 @@ if (inviteCode && /^[A-Z0-9]{6,24}$/i.test(inviteCode)) {
 }
 
 
-// OAuth V107.31 correctif : traiter le retour Google sur cette page avant d'ouvrir l'application.
-// Une seule navigation, après confirmation d'une session Supabase valide.
-const oauthCallback = new URLSearchParams(location.search).get('oauth') === 'callback';
+// OAuth V107.31 — deuxième correctif : finalisation explicite du retour Google.
+// Une seule navigation vers l'application, uniquement après confirmation de la session.
+const authParams = new URLSearchParams(window.location.search);
+const oauthCallback = authParams.get('oauth') === 'callback';
 let authNavigationStarted = false;
 function goToAppOnce(session) {
   if (!session?.access_token || !session?.user || authNavigationStarted) return;
   authNavigationStarted = true;
   window.location.replace('/');
 }
+function oauthFailure(message) {
+  showMsg('Connexion Google non finalisée : ' + message, 'error');
+}
 async function finishAuthReturn() {
   if (oauthCallback) showMsg('Connexion Google en cours...', 'success');
   try {
-    // Supabase JS v2 restaure automatiquement le retour OAuth (hash ou code).
-    const {data, error} = await sb.auth.getSession();
+    // Les erreurs renvoyées par le fournisseur peuvent apparaître dans l'URL.
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const providerError = authParams.get('error_description') || hash.get('error_description') ||
+      authParams.get('error') || hash.get('error');
+    if (providerError) {
+      oauthFailure(providerError);
+      return;
+    }
+
+    // Avec PKCE, Supabase renvoie ?code=... : l'échanger explicitement.
+    const code = authParams.get('code');
+    if (code) {
+      const { data, error } = await sb.auth.exchangeCodeForSession(code);
+      if (error) throw error;
+      // Éviter de conserver le code à usage unique dans l'historique du navigateur.
+      window.history.replaceState(null, '', '/auth.html?oauth=callback');
+      if (data?.session) { goToAppOnce(data.session); return; }
+    } else if (hash.get('access_token') && hash.get('refresh_token')) {
+      // Compatibilité avec un ancien retour OAuth implicite.
+      const { data, error } = await sb.auth.setSession({
+        access_token: hash.get('access_token'), refresh_token: hash.get('refresh_token')
+      });
+      if (error) throw error;
+      window.history.replaceState(null, '', '/auth.html?oauth=callback');
+      if (data?.session) { goToAppOnce(data.session); return; }
+    }
+
+    const { data, error } = await sb.auth.getSession();
     if (error) throw error;
     if (data?.session) { goToAppOnce(data.session); return; }
     if (oauthCallback) {
-      // L'événement SIGNED_IN peut suivre la première lecture de session sur Safari.
-      await new Promise(resolve => setTimeout(resolve, 900));
-      const retry = await sb.auth.getSession();
-      if (retry.error) throw retry.error;
-      if (retry.data?.session) { goToAppOnce(retry.data.session); return; }
-      showMsg('Connexion Google non finalisée. Réessayez ou contactez le support.', 'error');
+      oauthFailure(code ? 'échange terminé sans session.' :
+        'aucun code OAuth ni session reçus. Vérifiez la redirection autorisée dans Supabase.');
     }
   } catch (error) {
-    showMsg('Erreur de connexion : ' + (error?.message || 'session indisponible'), 'error');
+    // Afficher la vraie erreur sans exposer de jetons ou de code OAuth.
+    const safeMessage = String(error?.message || 'erreur inconnue')
+      .replace(/(access_token|refresh_token|code)=([^&\s]+)/gi, '$1=[masqué]');
+    oauthFailure(safeMessage);
   }
 }
 sb.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' && session) goToAppOnce(session);
+  if (event === 'SIGNED_IN' && session && !oauthCallback) goToAppOnce(session);
 });
 finishAuthReturn();
 
