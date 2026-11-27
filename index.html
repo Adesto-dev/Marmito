@@ -4357,26 +4357,36 @@ document.addEventListener('click',function(e){if(e.target.closest('[onclick*="se
     });
   }
 
-  function onPortions(val) {
-    const newVal = parseInt(val);
-    portionsMultiplier = portionsBase > 0 ? newVal / portionsBase : 1;
-    document.getElementById('portions-val').textContent = translateServes(newVal + ' pers.');
-    const servesEl = document.getElementById('r-serves');
-    if (servesEl) servesEl.textContent = translateServes(newVal + ' pers.');
-    if (cur && cur.ingredients) {
-      renderRecipeIngredients(cur, (currentLang === 'en' && cur._ingEN) ? cur._ingEN : cur.ingredients);
-    }
+  let portionsUnit = 'pers.';
+  let portionsScalable = true;
+  function marmitoPortionLabel(value) {
+    if (!portionsScalable) return translateServes(cur?.serves || '');
+    let unit = portionsUnit;
+    const singular = {'verres':'verre','tasses':'tasse','pièces':'pièce','parts':'part','pains':'pain','tranches':'tranche','boureks':'bourek','crêpes':'crêpe','beignets':'beignet','carrés':'carré','biscuits':'biscuit','pots':'pot','portions':'portion'};
+    if(Number(value)===1) unit=singular[unit]||unit;
+    else if(Object.values(singular).includes(unit)) unit=Object.keys(singular).find(k=>singular[k]===unit)||unit;
+    return translateServes(value+' '+unit);
   }
-
+  function onPortions(val) {
+    if(!portionsScalable)return;
+    const newVal = parseInt(val,10);
+    if(!Number.isFinite(newVal)||newVal<1)return;
+    portionsMultiplier = newVal / portionsBase;
+    document.getElementById('portions-val').textContent = marmitoPortionLabel(newVal);
+    const servesEl = document.getElementById('r-serves');
+    if (servesEl) servesEl.textContent = marmitoPortionLabel(newVal);
+    if (cur && cur.ingredients) renderRecipeIngredients(cur, (currentLang === 'en' && cur._ingEN) ? cur._ingEN : cur.ingredients);
+  }
   function initPortions(recipe) {
     portionsMultiplier = 1;
-    // Parse base serves from recipe.serves e.g. "4 pers." → 4
-    const match = recipe.serves != null ? String(recipe.serves).match(/(\d+)/) : null;
-    portionsBase = match ? parseInt(match[1]) : 4;
-    const slider = document.getElementById('portions-slider');
-    const val = document.getElementById('portions-val');
-    if (slider) { slider.value = portionsBase; slider.min = 1; slider.max = Math.max(12, portionsBase * 3); }
-    if (val) val.textContent = translateServes(portionsBase + ' pers.');
+    const match = String(recipe.serves||'').trim().match(/^(\d+)\s+(pers\.|portions?|verres?|tasses?|pièces?|parts?|pains?|tranches?|boureks?|crêpes?|arancini|cannoli|beignets?|carrés?|biscuits?|pots?)$/i);
+    portionsScalable=!!match && Number(match[1])>0;
+    portionsBase=portionsScalable?Number(match[1]):1;
+    portionsUnit=portionsScalable?match[2]:'pers.';
+    const slider=document.getElementById('portions-slider');
+    const val=document.getElementById('portions-val');
+    if(slider){slider.min=1;slider.max=Math.max(12,portionsBase*3);slider.value=portionsBase;slider.disabled=!portionsScalable;slider.hidden=!portionsScalable;}
+    if(val)val.textContent=portionsScalable?marmitoPortionLabel(portionsBase):translateServes(recipe.serves||'');
   }
 
   initAuth();
@@ -4457,6 +4467,7 @@ async function marmitoLoadSecureCatalog(){
     if(!Number.isInteger(id)||id<1||id>limit||seenIds.has(id)||!fr||typeof fr.title!=='string'||!fr.title.trim()||!Array.isArray(fr.ingredients)||!Array.isArray(fr.steps)||!en||!Array.isArray(en.ingredients)||!Array.isArray(en.steps)||seenTitles.has(fr.title)){
       throw new Error('Catalogue incomplet ou invalide');
     }
+    if(!Array.isArray(fr.ingredientQuantities)||fr.ingredientQuantities.length!==fr.ingredients.length||en.ingredients.length!==fr.ingredients.length||en.steps.length!==fr.steps.length||!Array.isArray(en.sourceSteps)||en.sourceSteps.length!==fr.steps.length||!en.sourceSteps.every((source,i)=>source===(typeof fr.steps[i]==='string'?fr.steps[i]:fr.steps[i]?.text)))throw new Error('Catalogue bilingue incohérent : '+id);
     seenIds.add(id);seenTitles.add(fr.title);
   }
   if(entries.some((entry,index)=>Number(entry.recipe_id)!==index+1))throw new Error('Ordre des recettes incorrect');
@@ -4480,12 +4491,13 @@ async function marmitoRefreshCatalogForPlan(){
 }
 
 
-const ICONS={mix:"🌀",fry:"🔥",cook:"♨️",oven:"🥘",cut:"🔪",rest:"⏳",serve:"🍽️"};
+const ICONS={mix:"🌀",fry:"🔥",cook:"♨️",oven:"🥘",cut:"🔪",rest:"⏳",serve:"🍽️",wash:"💧"};
 function getIcon(s){
   const k=s.icon||"";
   const t=(s.text||"").toLowerCase();
   let type="default";
-  if(k==="mix"||/m.lang|fouett|remuan|battre|p.trir|mixer|malax|sabler/.test(t)) type="mix";
+  if(Object.prototype.hasOwnProperty.call(ICONS,k)) type=k;
+  else if(k==="mix"||/m.lang|fouett|remuan|battre|p.trir|mixer|malax|sabler/.test(t)) type="mix";
   else if(k==="fry"||/faire revenir|faire dorer|faire frire|frire|griller|dorer|revenir|poele/.test(t)) type="fry";
   else if(k==="cook"||/cuire|mijoter|bouillir|infuser|chauffer/.test(t)) type="cook";
   else if(k==="oven"||/pr.chauffer|four|enfourner|gril/.test(t)) type="oven";
@@ -4500,6 +4512,7 @@ function getIcon(s){
     cut:'<div class="ca-cut"><div class="ca-knife"></div><div class="ca-board"></div></div>',
     rest:'<div class="ca-rest-wrap"><div class="ca-rest"><div class="ca-hg-top"></div><div class="ca-hg-mid"></div><div class="ca-hg-bot"></div><div class="ca-sand"></div></div></div>',
     serve:'<div class="ca-serve"><div class="ca-plate"><div class="ca-plate-inner"></div></div><div class="ca-cloche"></div></div>',
+    wash:'<span style="font-size:24px">💧</span>',
     default:'<span style="font-size:18px">&#128104;&#8205;&#127859;</span>'
   };
   return{html:anims[type]||anims.default,type};
@@ -5779,7 +5792,8 @@ function translateMeta(key, val) {
 function translateServes(val) {
   const text = String(val);
   if (currentLang !== 'en') return text;
-  return text.replace('pers.', 'servings');
+  const units={'pers.':'servings','portion':'serving','portions':'servings','verre':'glass','verres':'glasses','tasse':'cup','tasses':'cups','pièce':'piece','pièces':'pieces','part':'slice','parts':'slices','pain':'loaf','pains':'loaves','tranche':'slice','tranches':'slices','crêpe':'crepe','crêpes':'crepes','beignet':'fritter','beignets':'fritters','carré':'square','carrés':'squares','biscuit':'cookie','biscuits':'cookies','pot':'jar','pots':'jars'};
+  return text.replace(/\S+/g,w=>units[w]||w).replace('Environ','About').replace(/(\d) à (\d)/g,'$1–$2');
 }
 
 // ===== i18n LANGUAGE TOGGLE =====
@@ -6180,9 +6194,9 @@ function toggleLang() {
     const _slider = document.getElementById('portions-slider');
     const _curP = _slider ? parseInt(_slider.value) : portionsBase;
     const _pval = document.getElementById('portions-val');
-    if (_pval) _pval.textContent = translateServes(_curP + ' pers.');
+    if (_pval) _pval.textContent = marmitoPortionLabel(_curP);
     const _rserves = document.getElementById('r-serves');
-    if (_rserves) _rserves.textContent = translateServes(_curP + ' pers.');
+    if (_rserves) _rserves.textContent = marmitoPortionLabel(_curP);
     const _rdiff = document.getElementById('r-diff');
     if (_rdiff && cur.diff) _rdiff.textContent = translateMeta('diff', cur.diff);
   }
